@@ -42,6 +42,7 @@ func main() {
 		// handle err
 		log.Printf("Error reading body: %v", err)
 		//http.Error(resp, "can't read body", http.StatusBadRequest)
+		//test commit
 		return
 	}
 
