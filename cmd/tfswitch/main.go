@@ -1,5 +1,24 @@
 package main
 
+/*
+* Version 0.0.1
+* Compatible with Mac OS X ONLY
+ */
+
+/*** WORKFLOW ***/
+/*
+* 1- Check if user has sudo permission
+* 2- Ask password to run sudo commands
+* 3- Create /usr/local/terraform directory if does not exist
+* 4- Download zip file from url to /usr/local/terraform
+* 5- Unzip the file to /usr/local/terraform
+* 6- Rename the file from `terraform` to `terraform_version`
+* 7- Remove the downloaded zip file
+* 8- Read the existing symlink for terraform (Check if it's a homebrew symlink)
+* 9- Remove that symlink (Check if it's a homebrew symlink)
+* 10- Create new symlink to binary  `terraform_version`
+ */
+
 import (
 	"archive/zip"
 	"fmt"
@@ -16,129 +35,80 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
-type tfVersion struct {
-	version string
-	url     string
-}
-
-type tfList struct {
-	tflist []tfVersion
-}
-
-type tfListA struct {
+type tfVersionList struct {
 	tflist []string
 }
 
+const (
+	hashiURL = "https://releases.hashicorp.com/terraform/"
+)
+
 func main() {
 
-	resp, err := http.Get("https://releases.hashicorp.com/terraform/")
-	if err != nil {
-		// handle err
+	resp, errURL := http.Get(hashiURL)
+	if errURL != nil {
+		log.Printf("Error getting url: %v", errURL)
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		// handle err
-		log.Printf("Error reading body: %v", err)
-		//http.Error(resp, "can't read body", http.StatusBadRequest)
-		//test commit
+	body, errBody := ioutil.ReadAll(resp.Body)
+	if errBody != nil {
+		log.Printf("Error reading body: %v", errBody)
 		return
 	}
 
 	bodyString := string(body)
-	//fmt.Println(bodyString)
-
-	// r, _ := regexp.Compile("terraform")
-
-	// fmt.Println(r.FindString(bodyString))
-
-	//scanner := bufio.NewScanner(bodyString)
 	result := strings.Split(bodyString, "\n")
 
-	//var tfList tfList
-
-	// Display all elements.
-
-	var tfListA tfListA
-
-	var tfList tfList
+	var tfVersionList tfVersionList
 
 	for i := range result {
-
-		//r, _ := regexp.Compile("terraform")
+		//getting versions from body
 		r, _ := regexp.Compile(`\/(\d+)(\.)(\d+)(\.)(\d+)\/`)
-		//var re = regexp.MustCompile(`\/(\d+)(\.)(\d+)(\.)(\d+)\/`)
-
-		//fmt.Println(r.FindString(result[i]))
-		//fmt.Println("u")
-		//fmt.Println(r.MatchString("terraform"))
-
-		var tfVersion tfVersion
 
 		if r.MatchString(result[i]) {
-
-			//fmt.Println(result[i])
-			//fmt.Println(r.FindString(result[i]))
 			str := r.FindString(result[i])
 			trimstr := strings.Trim(str, "/")
-			//fmt.Printf(trimstr)
-
-			tfVersion.version = trimstr
-
-			tfVersion.url = "https://releases.hashicorp.com/terraform/" + trimstr + "/terraform_" + trimstr + "_darwin_amd64.zip"
-
-			tfListA.tflist = append(tfListA.tflist, trimstr)
-
-			tfList.tflist = append(tfList.tflist, tfVersion)
-
+			tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
 		}
-
-		//tfList = append(tfList[i].
-
 	}
-
-	//fmt.Println(tfListA)
-	//fmt.Println(tfList)
 
 	prompt := promptui.Select{
-		Label: "Select Day",
-		Items: tfListA.tflist,
-		// Items: []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-		// 	"Saturday", "Sunday"},
+		Label: "Select Version",
+		Items: tfVersionList.tflist,
 	}
 
-	_, result1, err1 := prompt.Run()
+	_, version, errPrompt := prompt.Run()
 
-	if err1 != nil {
-		fmt.Printf("Prompt failed %v\n", err1)
+	if errPrompt != nil {
+		log.Printf("Prompt failed %v\n", errPrompt)
 		return
 	}
-	//fmt.Printf(Items)
-	fmt.Printf("You choose %q\n", result1)
-	url := "https://releases.hashicorp.com/terraform/" + result1 + "/terraform_" + result1 + "_darwin_amd64.zip"
-	zipFile, _ := downloadFromUrl(url)
-	//getUser()
 
-	fmt.Println("zipFile: " + zipFile)
+	log.Printf("You picked %q\n", version)
 
-	files, err2 := Unzip(zipFile, "/usr/local/terraform")
-	if err2 != nil {
-		log.Fatal(err2)
+	url := hashiURL + version + "/terraform_" + version + "_darwin_amd64.zip"
+
+	zipFile, _ := downloadFromURL(url)
+
+	log.Printf("ZipFile: " + zipFile)
+
+	files, errUnzip := Unzip(zipFile, "/usr/local/terraform")
+	if errUnzip != nil {
+		log.Fatal(errUnzip)
 	}
 
-	fmt.Println("Unzipped:\n" + strings.Join(files, "\n"))
+	log.Printf("Unzipped:\n" + strings.Join(files, "\n"))
 
-	moveFile("/usr/local/terraform/terraform", "/usr/local/terraform/terraform"+"_"+result1)
-	removeFiles("/usr/local/terraform/terraform_" + result1 + "_darwin_amd64.zip")
+	moveFile("/usr/local/terraform/terraform", "/usr/local/terraform/terraform"+"_"+version)
+	removeFiles("/usr/local/terraform/terraform_" + version + "_darwin_amd64.zip")
 	ReadlinkI("/usr/local/bin/terraform")
 	readLink("/usr/local/bin/terraform")
 	removeSymlink("/usr/local/bin/terraform")
-	CreateSymlink("/usr/local/terraform/terraform"+"_"+result1, "/usr/local/bin/terraform")
-
+	CreateSymlink("/usr/local/terraform/terraform"+"_"+version, "/usr/local/bin/terraform")
 }
 
-func downloadFromUrl(url string) (string, error) {
+func downloadFromURL(url string) (string, error) {
 	tokens := strings.Split(url, "/")
 	fileName := tokens[len(tokens)-1]
 	fmt.Println("Downloading", url, "to", fileName)
