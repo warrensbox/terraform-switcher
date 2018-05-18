@@ -18,3 +18,5 @@ src
 .glide/
 
 main
+
+.DS_Store

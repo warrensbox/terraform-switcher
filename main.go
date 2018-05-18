@@ -41,32 +41,40 @@ type tfVersionList struct {
 }
 
 const (
-	hashiURL        = "https://releases.hashicorp.com/terraform/"
-	installLocation = "/usr/local/terraform/"
-	installFile     = "terraform"
-	installVersion  = "terraform_"
-	binLocation     = "/usr/local/bin/terraform"
+	hashiURL = "https://releases.hashicorp.com/terraform/"
+	//installLocation = "/usr/local/terraform/"
+	//installLocation = "~/.terraform/"
+	installFile    = "terraform"
+	installVersion = "terraform_"
+	binLocation    = "/usr/local/bin/terraform"
 )
 
 func main() {
 
+	usr, err1 := user.Current()
+	if err1 != nil {
+		log.Fatal(err1)
+	}
+	fmt.Println(usr.HomeDir)
+
+	installLocation := usr.HomeDir + "/.terraform/"
+
+	/* check if terraform is already installed */
 	cmd := cmd.NewCommand("terraform")
 	next := cmd.Find()
-
-	//log.Printf(next)
-
+	installedPath := binLocation
 	existed := false
-
 	for path := next(); len(path) > 0; path = next() {
-		fmt.Println(path)
+		log.Printf("Found installation path: %v", path)
+		installedPath = path
 		existed = true
-		//if !argument.option_all {
-		//	break
-		//}
 	}
 	if !existed {
-		//syscall.Exit(NotFoundStatus)
+		installedPath = binLocation
+		log.Printf("Installation path created: %v", installedPath)
 	}
+	/* 3- Create /usr/local/terraform directory if does not exist*/
+	CreateDirIfNotExist(installLocation)
 
 	resp, errURL := http.Get(hashiURL)
 	if errURL != nil {
@@ -110,9 +118,20 @@ func main() {
 
 	log.Printf("You picked %q\n", version)
 
+	/* check if version exist locally*/
+	fileExist := CheckFileExist(installLocation + installVersion + version)
+
+	if fileExist {
+		removeSymlink(binLocation)
+		CreateSymlink(installLocation+installVersion+version, binLocation)
+		log.Printf("Exiting early")
+		os.Exit(0)
+	}
+
+	log.Printf("Still working")
 	url := hashiURL + version + "/terraform_" + version + "_darwin_amd64.zip"
 
-	zipFile, _ := DownloadFromURL(url)
+	zipFile, _ := DownloadFromURL(installLocation, url)
 
 	log.Printf("ZipFile: " + zipFile)
 
@@ -123,25 +142,25 @@ func main() {
 
 	log.Printf("Unzipped:\n" + strings.Join(files, "\n"))
 
-	// RenameFile(installLocation+installFile, installLocation+installVersion+version)
-	// RemoveFiles(installLocation + installVersion + version + "_darwin_amd64.zip")
-	// ReadlinkI(binLocation)
-	// readLink(binLocation)
-	// removeSymlink(binLocation)
-	// CreateSymlink(installLocation+installVersion+version, binLocation)
+	RenameFile(installLocation+installFile, installLocation+installVersion+version)
+	RemoveFiles(installLocation + installVersion + version + "_darwin_amd64.zip")
+	//ReadlinkI(binLocation)
+	//readLink(binLocation)
+	removeSymlink(binLocation)
+	CreateSymlink(installLocation+installVersion+version, binLocation)
 
 }
 
 // DownloadFromURL : Downloads the binary from the source url
-func DownloadFromURL(url string) (string, error) {
+func DownloadFromURL(installLocation string, url string) (string, error) {
 	tokens := strings.Split(url, "/")
 	fileName := tokens[len(tokens)-1]
 	fmt.Println("Downloading", url, "to", fileName)
 
 	// TODO: check file existence first with io.IsExist
-	output, err := os.Create("/usr/local/terraform/" + fileName)
+	output, err := os.Create(installLocation + fileName)
 	if err != nil {
-		fmt.Println("Error while creating", "/usr/local/terraform/"+fileName, "-", err)
+		fmt.Println("Error while creating", installLocation+fileName, "-", err)
 		return "", err
 	}
 	defer output.Close()
@@ -160,7 +179,7 @@ func DownloadFromURL(url string) (string, error) {
 	}
 
 	fmt.Println(n, "bytes downloaded.")
-	return "/usr/local/terraform/" + fileName, nil
+	return installLocation + fileName, nil
 }
 
 //RenameFile : rename file name
@@ -304,4 +323,24 @@ func removeSymlink(symlinkPath string) error {
 	}
 	os.Remove(symlinkPath)
 	return nil
+}
+
+func CreateDirIfNotExist(dir string) {
+	log.Printf("entering here")
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		log.Printf("Creating directory for teraform: %v", dir)
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			log.Fatal("Unable to create directory for teraform: %v", dir)
+			panic(err)
+		}
+	}
+}
+
+func CheckFileExist(file string) bool {
+	_, err := os.Stat(file)
+	if err != nil {
+		return false
+	}
+	return true
 }
