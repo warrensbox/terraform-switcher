@@ -7,16 +7,14 @@ package main
 
 /*** WORKFLOW ***/
 /*
-* 1- Check if user has sudo permission
-* 2- Ask password to run sudo commands
-* 3- Create /usr/local/terraform directory if does not exist
-* 4- Download zip file from url to /usr/local/terraform
-* 5- Unzip the file to /usr/local/terraform
-* 6- Rename the file from `terraform` to `terraform_version`
-* 7- Remove the downloaded zip file
-* 8- Read the existing symlink for terraform (Check if it's a homebrew symlink)
-* 9- Remove that symlink (Check if it's a homebrew symlink)
-* 10- Create new symlink to binary  `terraform_version`
+* 1- Create /usr/local/terraform directory if does not exist
+* 2- Download zip file from url to /usr/local/terraform
+* 3- Unzip the file to /usr/local/terraform
+* 4- Rename the file from `terraform` to `terraform_version`
+* 5- Remove the downloaded zip file
+* 6- Read the existing symlink for terraform (Check if it's a homebrew symlink)
+* 7- Remove that symlink (Check if it's a homebrew symlink)
+* 8- Create new symlink to binary  `terraform_version`
  */
 
 import (
@@ -41,41 +39,46 @@ type tfVersionList struct {
 }
 
 const (
-	hashiURL = "https://releases.hashicorp.com/terraform/"
-	//installLocation = "/usr/local/terraform/"
-	//installLocation = "~/.terraform/"
+	hashiURL       = "https://releases.hashicorp.com/terraform/"
 	installFile    = "terraform"
 	installVersion = "terraform_"
 	binLocation    = "/usr/local/bin/terraform"
+	installPath    = "/.terraform.versions/"
 )
 
 func main() {
 
-	usr, err1 := user.Current()
-	if err1 != nil {
-		log.Fatal(err1)
+	/* get current user */
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
 	}
-	fmt.Println(usr.HomeDir)
+	fmt.Printf("Current user: %v", usr.HomeDir)
 
-	installLocation := usr.HomeDir + "/.terraform/"
+	/* set installation location */
+	installLocation := usr.HomeDir + installPath
 
-	/* check if terraform is already installed */
+	/* set default binary path for terraform */
+	installedBinPath := binLocation
+
+	/* find terraform binary location if terraform is already installed*/
 	cmd := cmd.NewCommand("terraform")
 	next := cmd.Find()
-	installedPath := binLocation
-	existed := false
+	//existed := false
+
+	/* overrride installation default binary path if terraform is already installed */
+	/* find the last bin path */
 	for path := next(); len(path) > 0; path = next() {
-		log.Printf("Found installation path: %v", path)
-		installedPath = path
-		existed = true
+		fmt.Printf("Found installation path: %v", path)
+		installedBinPath = path
 	}
-	if !existed {
-		installedPath = binLocation
-		log.Printf("Installation path created: %v", installedPath)
-	}
-	/* 3- Create /usr/local/terraform directory if does not exist*/
+
+	fmt.Printf("Terraform binary path: %v", installedBinPath)
+
+	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
 
+	/* Get list of terraform versions from hashicorp releases */
 	resp, errURL := http.Get(hashiURL)
 	if errURL != nil {
 		log.Printf("Error getting url: %v", errURL)
@@ -94,18 +97,19 @@ func main() {
 	var tfVersionList tfVersionList
 
 	for i := range result {
-		//getting versions from body
+		//getting versions from body; should return match /X.X.X/
 		r, _ := regexp.Compile(`\/(\d+)(\.)(\d+)(\.)(\d+)\/`)
 
 		if r.MatchString(result[i]) {
 			str := r.FindString(result[i])
-			trimstr := strings.Trim(str, "/")
+			trimstr := strings.Trim(str, "/") //remove "/" from /X.X.X/
 			tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
 		}
 	}
 
+	/* prompt user to select version of terraform */
 	prompt := promptui.Select{
-		Label: "Select Version",
+		Label: "Select Terraform version",
 		Items: tfVersionList.tflist,
 	}
 
@@ -113,42 +117,51 @@ func main() {
 
 	if errPrompt != nil {
 		log.Printf("Prompt failed %v\n", errPrompt)
-		return
+		os.Exit(1)
 	}
 
-	log.Printf("You picked %q\n", version)
+	fmt.Printf("Terraform version %q selected\n", version)
 
-	/* check if version exist locally*/
+	/* check if selected version already downloaded */
 	fileExist := CheckFileExist(installLocation + installVersion + version)
 
+	/* if selected version already exist, */
 	if fileExist {
-		removeSymlink(binLocation)
-		CreateSymlink(installLocation+installVersion+version, binLocation)
-		log.Printf("Exiting early")
+		/* remove current symlink and set new symlink to desired version */
+		RemoveSymlink(installedBinPath)
+		/* set symlink to desired version */
+		CreateSymlink(installLocation+installVersion+version, installedBinPath)
+		fmt.Printf("Swicthed terraform to version %q \n", version)
 		os.Exit(0)
 	}
 
-	log.Printf("Still working")
+	/* if selected version already exist, */
+	/* proceed to download it from the hashicorp release page */
 	url := hashiURL + version + "/terraform_" + version + "_darwin_amd64.zip"
-
 	zipFile, _ := DownloadFromURL(installLocation, url)
 
-	log.Printf("ZipFile: " + zipFile)
+	fmt.Printf("Downloaded zipFile: %q \n", zipFile)
 
+	/* unzip the downloaded zipfile */
 	files, errUnzip := Unzip(zipFile, installLocation)
 	if errUnzip != nil {
+		fmt.Println("Unable to unzip downloaded zip file")
 		log.Fatal(errUnzip)
+		os.Exit(1)
 	}
 
-	log.Printf("Unzipped:\n" + strings.Join(files, "\n"))
+	fmt.Println("Unzipped:\n" + strings.Join(files, "\n"))
 
+	/* rename unzipped file to terraform version name - terraform_x.x.x */
 	RenameFile(installLocation+installFile, installLocation+installVersion+version)
+	/* remove zipped file to clear clutter */
 	RemoveFiles(installLocation + installVersion + version + "_darwin_amd64.zip")
-	//ReadlinkI(binLocation)
-	//readLink(binLocation)
-	removeSymlink(binLocation)
-	CreateSymlink(installLocation+installVersion+version, binLocation)
-
+	/* remove current symlink and set new symlink to desired version  */
+	RemoveSymlink(installedBinPath)
+	/* set symlink to desired version */
+	CreateSymlink(installLocation+installVersion+version, installedBinPath)
+	fmt.Printf("Swicthed terraform to version %q \n", version)
+	os.Exit(0)
 }
 
 // DownloadFromURL : Downloads the binary from the source url
@@ -192,20 +205,6 @@ func RenameFile(src string, dest string) {
 		return
 	}
 
-}
-
-func getUser() {
-	user, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Hello " + user.Name)
-	fmt.Println("Hello GroupId" + user.Gid)
-	fmt.Println("====")
-	fmt.Println("Id: " + user.Uid)
-	fmt.Println("Username: " + user.Username)
-	fmt.Println("Home Dir: " + user.HomeDir)
 }
 
 // Unzip will decompress a zip archive, moving all files and folders
@@ -316,7 +315,7 @@ func CreateSymlink(cwd string, dir string) error {
 	return nil
 }
 
-func removeSymlink(symlinkPath string) error {
+func RemoveSymlink(symlinkPath string) error {
 
 	if _, err := os.Lstat(symlinkPath); err != nil {
 		return err
