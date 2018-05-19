@@ -5,7 +5,7 @@ package main
 * Compatible with Mac OS X ONLY
  */
 
-/*** WORKFLOW ***/
+/*** OPERATION WORKFLOW ***/
 /*
 * 1- Create /usr/local/terraform directory if does not exist
 * 2- Download zip file from url to /usr/local/terraform
@@ -41,6 +41,7 @@ const (
 	installVersion = "terraform_"
 	binLocation    = "/usr/local/bin/terraform"
 	installPath    = "/.terraform.versions/"
+	macOS          = "_darwin_amd64.zip"
 )
 
 func main() {
@@ -135,10 +136,10 @@ func main() {
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	url := hashiURL + version + "/terraform_" + version + "_darwin_amd64.zip"
+	url := hashiURL + version + "/" + installVersion + version + macOS
 	zipFile, _ := lib.DownloadFromURL(installLocation, url)
 
-	fmt.Printf("Downloaded zipFile: %q \n", zipFile)
+	fmt.Printf("Downloaded zipFile: %v \n", zipFile)
 
 	/* unzip the downloaded zipfile */
 	files, errUnzip := lib.Unzip(zipFile, installLocation)
@@ -148,13 +149,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println("Unzipped:" + strings.Join(files, "\n"))
+	fmt.Println("Unzipped: " + strings.Join(files, "\n"))
 
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
 	lib.RenameFile(installLocation+installFile, installLocation+installVersion+version)
 
 	/* remove zipped file to clear clutter */
-	lib.RemoveFiles(installLocation + installVersion + version + "_darwin_amd64.zip")
+	lib.RemoveFiles(installLocation + installVersion + version + macOS)
 
 	/* remove current symlink and set new symlink to desired version  */
 	lib.RemoveSymlink(installedBinPath)
