@@ -8,25 +8,28 @@ import (
 	"strings"
 )
 
+// Command : type string
 type Command struct {
 	name string
 }
 
+// NewCommand : get command
 func NewCommand(name string) *Command {
 	return &Command{name: name}
 }
 
-func (this *Command) PathList() []string {
+// PathList : get bin path list
+func (cmd *Command) PathList() []string {
 	path := os.Getenv("PATH")
 	return strings.Split(path, string(os.PathListSeparator))
 }
 
 func isDir(path string) bool {
-	file_info, err := os.Stat(path)
+	fileInfo, err := os.Stat(path)
 	if err != nil || os.IsNotExist(err) {
 		return false
 	}
-	return file_info.IsDir()
+	return fileInfo.IsDir()
 }
 
 func isExecutable(path string) bool {
@@ -34,7 +37,7 @@ func isExecutable(path string) bool {
 		return false
 	}
 
-	file_info, err := os.Stat(path)
+	fileInfo, err := os.Stat(path)
 	if err != nil || os.IsNotExist(err) {
 		return false
 	}
@@ -43,36 +46,37 @@ func isExecutable(path string) bool {
 		return true
 	}
 
-	if file_info.Mode()&0111 != 0 {
+	if fileInfo.Mode()&0111 != 0 {
 		return true
 	}
 
 	return false
 }
 
-func (this *Command) Find() func() string {
-	path_chan := make(chan string)
+// Find : find all bin path
+func (cmd *Command) Find() func() string {
+	pathChan := make(chan string)
 	go func() {
-		for _, p := range this.PathList() {
+		for _, p := range cmd.PathList() {
 			if !isDir(p) {
 				continue
 			}
-			file_list, err := ioutil.ReadDir(p)
+			fileList, err := ioutil.ReadDir(p)
 			if err != nil {
 				continue
 			}
 
-			for _, f := range file_list {
+			for _, f := range fileList {
 				path := filepath.Join(p, f.Name())
-				if isExecutable(path) && f.Name() == this.name {
-					path_chan <- path
+				if isExecutable(path) && f.Name() == cmd.name {
+					pathChan <- path
 				}
 			}
 		}
-		path_chan <- ""
+		pathChan <- ""
 	}()
 
 	return func() string {
-		return <-path_chan
+		return <-pathChan
 	}
 }
