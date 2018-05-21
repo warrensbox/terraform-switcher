@@ -5,4 +5,7 @@ go:
   - "1.10.1"
 
 before_install:
-    - go get -t ./...
+  - mkdir -p $HOME/gopath/src/github.com/warren-veerasingam/terraform-switcher
+  - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/warren-veerasingam/terraform-switcher
+  - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/warren-veerasingam/terraform-switcher
+  - cd $HOME/gopath/src/github.com/warren-veerasingam/terraform-switcher
