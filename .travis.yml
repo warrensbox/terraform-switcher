@@ -4,5 +4,5 @@ install: true
 go:
   - "1.10.1"
 
-install:
+before_install:
     - go get github.com/warren-veerasingam/lib  
