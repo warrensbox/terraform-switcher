@@ -6,7 +6,8 @@ GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
 
 $(EXE): Gopkg.lock *.go lib/*.go
-	go build -v -o $@ $(PKG)
+	#go build -v -o $@ $(PKG)
+	go build -v -o $@ $(PKG).main.go
 
 Gopkg.lock: Gopkg.toml
 	dep ensure
