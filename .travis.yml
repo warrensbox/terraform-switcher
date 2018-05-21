@@ -1,0 +1,5 @@
+language: go
+install: true
+
+go:
+  - "1.10.x"
