@@ -1,10 +1,5 @@
 language: go
- 
+install: true
 
 go:
   - "1.10.1"
-
-before_install:
-  - git config --global url.https://github.com/.insteadOf ssh://git@github.com/
-
-go_import_path: github.com/warren-veerasingam/lib 
