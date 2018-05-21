@@ -1,4 +1,4 @@
-EXE  := aws-runas
+EXE  := tfswitch
 PKG  := github.com/warren-veerasingam/terraform-switcher
 VER  := $(shell git describe --tags)
 PATH := build:$(PATH)
