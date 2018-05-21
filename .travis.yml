@@ -6,3 +6,4 @@ go:
 
 before_install:
   - go get github.com/fzipp/gocyclo
+  - go get github.com/warren-veerasingam/terraform-switcher
