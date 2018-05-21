@@ -28,8 +28,9 @@ import (
 	"strings"
 
 	"github.com/manifoldco/promptui"
-	lib "github.com/warren-veerasingam/lib"
+	lib "github.com/warren-veerasingam/terraform-switcher/lib"
 )
+/Users/uveerum/Personal/go/src/github.com/warren-veerasingam/lib
 
 type tfVersionList struct {
 	tflist []string
