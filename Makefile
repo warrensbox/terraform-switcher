@@ -14,11 +14,9 @@ Gopkg.lock: Gopkg.toml
 .PHONY: release
 release: $(EXE) darwin windows linux
 
-# .PHONY: darwin linux windows
+# .PHONY: darwin linux 
 # darwin linux:
 # 	GOOS=$@ go build -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
-# windows:
-# 	GOOS=$@ go build -o $(EXE)-$(VER)-$@-$(GOARCH).exe $(PKG)
 
 .PHONY: clean
 clean:
