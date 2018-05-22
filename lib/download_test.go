@@ -1,4 +1,4 @@
-package lib_test
+package lib
 
 import (
 	"fmt"
@@ -8,8 +8,6 @@ import (
 	"os/user"
 	"path/filepath"
 	"testing"
-
-	lib "github.com/warren-veerasingam/lib"
 )
 
 const (
@@ -47,7 +45,7 @@ func TestDownloadURL(t *testing.T) {
 
 	url := hashiURL + lowest_version + "/" + installVersion + lowest_version + macOS
 	expectedFile := usr.HomeDir + installPath + installVersion + lowest_version + macOS
-	installFile, _ := lib.DownloadFromURL(installLocation, url)
+	installFile, _ := DownloadFromURL(installLocation, url)
 
 	if installFile == expectedFile {
 		t.Logf("Expected file %v", expectedFile)
@@ -64,7 +62,7 @@ func TestDownloadURL(t *testing.T) {
 
 	url = hashiURL + latest_version + "/" + installVersion + latest_version + macOS
 	expectedFile = usr.HomeDir + installPath + installVersion + latest_version + macOS
-	installFile, _ = lib.DownloadFromURL(installLocation, url)
+	installFile, _ = DownloadFromURL(installLocation, url)
 
 	if installFile == expectedFile {
 		t.Logf("Expected file name %v", expectedFile)
@@ -105,7 +103,7 @@ func TestDownloadedFileExist(t *testing.T) {
 
 	url := hashiURL + lowest_version + "/" + installVersion + lowest_version + macOS
 	expectedFile := usr.HomeDir + installPath + installVersion + lowest_version + macOS
-	installFile, _ := lib.DownloadFromURL(installLocation, url)
+	installFile, _ := DownloadFromURL(installLocation, url)
 
 	if checkFileExist(expectedFile) {
 		t.Logf("Expected file %v", expectedFile)
@@ -122,7 +120,7 @@ func TestDownloadedFileExist(t *testing.T) {
 
 	url = hashiURL + latest_version + "/" + installVersion + latest_version + macOS
 	expectedFile = usr.HomeDir + installPath + installVersion + latest_version + macOS
-	installFile, _ = lib.DownloadFromURL(installLocation, url)
+	installFile, _ = DownloadFromURL(installLocation, url)
 
 	if checkFileExist(expectedFile) {
 		t.Logf("Expected file %v", expectedFile)
