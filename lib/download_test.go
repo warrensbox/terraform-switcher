@@ -41,10 +41,10 @@ func TestDownloadURL(t *testing.T) {
 	}
 
 	/* test download lowest terraform version */
-	lowest_version := "0.0.1"
+	lowestVersion := "0.0.1"
 
-	url := hashiURL + lowest_version + "/" + installVersion + lowest_version + macOS
-	expectedFile := usr.HomeDir + installPath + installVersion + lowest_version + macOS
+	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
+	expectedFile := usr.HomeDir + installPath + installVersion + lowestVersion + macOS
 	installFile, _ := DownloadFromURL(installLocation, url)
 
 	if installFile == expectedFile {
@@ -58,10 +58,10 @@ func TestDownloadURL(t *testing.T) {
 	}
 
 	/* test download latest terraform version */
-	latest_version := "0.11.7"
+	latestVersion := "0.11.7"
 
-	url = hashiURL + latest_version + "/" + installVersion + latest_version + macOS
-	expectedFile = usr.HomeDir + installPath + installVersion + latest_version + macOS
+	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
+	expectedFile = usr.HomeDir + installPath + installVersion + latestVersion + macOS
 	installFile, _ = DownloadFromURL(installLocation, url)
 
 	if installFile == expectedFile {
@@ -99,10 +99,10 @@ func TestDownloadedFileExist(t *testing.T) {
 	}
 
 	/* test download lowest terraform version */
-	lowest_version := "0.0.1"
+	lowestVersion := "0.0.1"
 
-	url := hashiURL + lowest_version + "/" + installVersion + lowest_version + macOS
-	expectedFile := usr.HomeDir + installPath + installVersion + lowest_version + macOS
+	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
+	expectedFile := usr.HomeDir + installPath + installVersion + lowestVersion + macOS
 	installFile, _ := DownloadFromURL(installLocation, url)
 
 	if checkFileExist(expectedFile) {
@@ -116,10 +116,10 @@ func TestDownloadedFileExist(t *testing.T) {
 	}
 
 	/* test download latest terraform version */
-	latest_version := "0.11.7"
+	latestVersion := "0.11.7"
 
-	url = hashiURL + latest_version + "/" + installVersion + latest_version + macOS
-	expectedFile = usr.HomeDir + installPath + installVersion + latest_version + macOS
+	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
+	expectedFile = usr.HomeDir + installPath + installVersion + latestVersion + macOS
 	installFile, _ = DownloadFromURL(installLocation, url)
 
 	if checkFileExist(expectedFile) {
