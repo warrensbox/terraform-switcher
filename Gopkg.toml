@@ -27,7 +27,7 @@
 
 [[constraint]]
   name = "github.com/manifoldco/promptui"
-  version = "0.2.1"
+  branch = "master"
 
 [prune]
   go-tests = true
