@@ -31,4 +31,4 @@ dist-clean: clean
 .PHONY: test
 test: $(EXE)
 	mv $(EXE) build
-	go test -v $(go list ./... | grep -v /vendor/github.com/manifoldco)
+	go test -v ./...
