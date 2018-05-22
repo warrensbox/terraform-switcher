@@ -14,3 +14,7 @@ required=[
 [[constraint]]
   name = "github.com/juju/master"
   branch = "master"
+
+[[constraint]]
+  name = "github.com/manifoldco/promptui"
+  branch = "master"
