@@ -3,7 +3,7 @@
 
 # terraform-switcher
 
-Build status:
+Circle build status:
 [![CircleCI](https://circleci.com/gh/warren-veerasingam/terraform-switcher.svg?style=svg)](https://circleci.com/gh/warren-veerasingam/terraform-switcher)   
 
 
