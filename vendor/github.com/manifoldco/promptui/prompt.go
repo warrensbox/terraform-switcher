@@ -85,7 +85,7 @@ func (p *Prompt) Run() (string, error) {
 	}
 
 	if p.stdin != nil {
-		c.Stdin = p.stdin
+		//c.Stdin = p.stdin
 	}
 
 	if p.stdout != nil {
