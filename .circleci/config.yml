@@ -45,7 +45,7 @@ jobs:
       - run: git status
       - run: git tag 0.0.${CIRCLE_BUILD_NUM}
       - run: git config --global user.email "warren.veerasingam@gmail.com"
-      - run: git config --global user.name "Warren Veerasingam"
+      - run: git config --global user.name "warren-veerasingam"
       - run: git push origin 0.0.${CIRCLE_BUILD_NUM}
 
 workflows:
