@@ -1,4 +1,4 @@
-package lib
+package lib_test
 
 import (
 	"fmt"
@@ -8,18 +8,25 @@ import (
 	"os/user"
 	"path/filepath"
 	"testing"
+
+	lib "github.com/warren-veerasingam/terraform-switcher/lib"
 )
 
-const (
-	hashiURL       = "https://releases.hashicorp.com/terraform/"
-	installFile    = "terraform"
-	installVersion = "terraform_"
-	binLocation    = "/usr/local/bin/terraform"
-	installPath    = "/.terraform.versions_test/"
-	macOS          = "_darwin_amd64.zip"
-)
+// const (
+// 	hashiURL       = "https://releases.hashicorp.com/terraform/"
+// 	installFile    = "terraform"
+// 	installVersion = "terraform_"
+// 	binLocation    = "/usr/local/bin/terraform"
+// 	installPath    = "/.terraform.versions_test/"
+// 	macOS          = "_darwin_amd64.zip"
+// )
 
 func TestDownloadURL(t *testing.T) {
+
+	hashiURL := "https://releases.hashicorp.com/terraform/"
+	installVersion := "terraform_"
+	installPath := "/.terraform.versions_test/"
+	macOS := "_darwin_amd64.zip"
 
 	// get current user
 	usr, errCurr := user.Current()
@@ -45,16 +52,16 @@ func TestDownloadURL(t *testing.T) {
 
 	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
 	expectedFile := usr.HomeDir + installPath + installVersion + lowestVersion + macOS
-	installFile, _ := DownloadFromURL(installLocation, url)
+	installedFile, _ := lib.DownloadFromURL(installLocation, url)
 
-	if installFile == expectedFile {
+	if installedFile == expectedFile {
 		t.Logf("Expected file %v", expectedFile)
-		t.Logf("Downloaded file %v", installFile)
+		t.Logf("Downloaded file %v", installedFile)
 		t.Log("Download file matches expected file")
 	} else {
 		t.Logf("Expected file %v", expectedFile)
-		t.Logf("Downloaded file %v", installFile)
-		t.Error("Downoad file mismatches expected file")
+		t.Logf("Downloaded file %v", installedFile)
+		t.Error("Download file mismatches expected file")
 	}
 
 	/* test download latest terraform version */
@@ -62,15 +69,15 @@ func TestDownloadURL(t *testing.T) {
 
 	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
 	expectedFile = usr.HomeDir + installPath + installVersion + latestVersion + macOS
-	installFile, _ = DownloadFromURL(installLocation, url)
+	installedFile, _ = lib.DownloadFromURL(installLocation, url)
 
-	if installFile == expectedFile {
+	if installedFile == expectedFile {
 		t.Logf("Expected file name %v", expectedFile)
-		t.Logf("Downloaded file name %v", installFile)
+		t.Logf("Downloaded file name %v", installedFile)
 		t.Log("Download file name matches expected file")
 	} else {
 		t.Logf("Expected file name %v", expectedFile)
-		t.Logf("Downloaded file name %v", installFile)
+		t.Logf("Downloaded file name %v", installedFile)
 		t.Error("Downoad file name mismatches expected file")
 	}
 
@@ -79,6 +86,12 @@ func TestDownloadURL(t *testing.T) {
 
 func TestDownloadedFileExist(t *testing.T) {
 
+	hashiURL := "https://releases.hashicorp.com/terraform/"
+	installFile := "terraform"
+	installVersion := "terraform_"
+	installPath := "/.terraform.versions_test/"
+	macOS := "_darwin_amd64.zip"
+
 	// get current user
 	usr, errCurr := user.Current()
 	if errCurr != nil {
@@ -103,15 +116,15 @@ func TestDownloadedFileExist(t *testing.T) {
 
 	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
 	expectedFile := usr.HomeDir + installPath + installVersion + lowestVersion + macOS
-	installFile, _ := DownloadFromURL(installLocation, url)
+	installedFile, _ := lib.DownloadFromURL(installLocation, url)
 
 	if checkFileExist(expectedFile) {
 		t.Logf("Expected file %v", expectedFile)
-		t.Logf("Downloaded file %v", installFile)
+		t.Logf("Downloaded file %v", installedFile)
 		t.Log("Download file matches expected file")
 	} else {
 		t.Logf("Expected file %v", expectedFile)
-		t.Logf("Downloaded file %v", installFile)
+		t.Logf("Downloaded file %v", installedFile)
 		t.Error("Downoad file mismatches expected file")
 	}
 
@@ -120,7 +133,7 @@ func TestDownloadedFileExist(t *testing.T) {
 
 	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
 	expectedFile = usr.HomeDir + installPath + installVersion + latestVersion + macOS
-	installFile, _ = DownloadFromURL(installLocation, url)
+	installFile, _ = lib.DownloadFromURL(installLocation, url)
 
 	if checkFileExist(expectedFile) {
 		t.Logf("Expected file %v", expectedFile)
@@ -137,6 +150,8 @@ func TestDownloadedFileExist(t *testing.T) {
 
 func TestURLValid(t *testing.T) {
 
+	hashiURL := "https://releases.hashicorp.com/terraform/"
+
 	url, err := url.ParseRequestURI(hashiURL)
 	if err != nil {
 		t.Errorf("Valid URL provided:  %v", err)
@@ -149,14 +164,6 @@ func TestURLValid(t *testing.T) {
 func cleanUp(path string) {
 	removeContents(path)
 	removeFiles(path)
-}
-
-func checkFileExist(file string) bool {
-	_, err := os.Stat(file)
-	if err != nil {
-		return false
-	}
-	return true
 }
 
 func removeFiles(src string) {
