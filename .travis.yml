@@ -3,3 +3,6 @@ install: true
 
 go:
   - "1.10.1"
+
+# scripts:
+#   - go 
