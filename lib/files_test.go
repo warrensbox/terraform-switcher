@@ -160,4 +160,5 @@ func TestCreateDirIfNotExist(t *testing.T) {
 		t.Error("Directory should exist")
 	}
 
+	cleanUp(installLocation)
 }
