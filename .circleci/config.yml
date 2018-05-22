@@ -23,3 +23,24 @@ jobs:
       - persist_to_workspace:
           root: build
           paths: tfswitch
+
+  test:
+    docker:
+      - image: "circleci/ruby:2.5-stretch"
+
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: build
+
+
+workflows:
+  version: 2
+
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
