@@ -1,6 +1,6 @@
 EXE  := tfswitch
 PKG  := github.com/warren-veerasingam/terraform-switcher
-VER  := $(shell git describe --tags)
+#VER  := $(shell git describe --tags)
 PATH := build:$(PATH)
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
@@ -14,11 +14,11 @@ Gopkg.lock: Gopkg.toml
 .PHONY: release
 release: $(EXE) darwin windows linux
 
-.PHONY: darwin linux windows
-darwin linux:
-	GOOS=$@ go build -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
-windows:
-	GOOS=$@ go build -o $(EXE)-$(VER)-$@-$(GOARCH).exe $(PKG)
+# .PHONY: darwin linux windows
+# darwin linux:
+# 	GOOS=$@ go build -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
+# windows:
+# 	GOOS=$@ go build -o $(EXE)-$(VER)-$@-$(GOARCH).exe $(PKG)
 
 .PHONY: clean
 clean:
