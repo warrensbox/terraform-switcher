@@ -7,7 +7,8 @@ import (
 //CreateSymlink : create symlink
 func CreateSymlink(cwd string, dir string) error {
 
-	if err := os.Symlink(cwd, dir); err != nil {
+	err := os.Symlink(cwd, dir)
+	if err != nil {
 		return err
 	}
 	return nil
@@ -16,7 +17,8 @@ func CreateSymlink(cwd string, dir string) error {
 //RemoveSymlink : remove symlink
 func RemoveSymlink(symlinkPath string) error {
 
-	if _, err := os.Lstat(symlinkPath); err != nil {
+	_, err := os.Lstat(symlinkPath)
+	if err != nil {
 		return err
 	}
 	os.Remove(symlinkPath)
