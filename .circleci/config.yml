@@ -42,6 +42,7 @@ jobs:
     steps:
       - checkout
       - run: ls
+      - run: git status
 
 
 
