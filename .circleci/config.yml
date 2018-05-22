@@ -34,6 +34,14 @@ jobs:
       - attach_workspace:
           at: build
 
+  deployment:
+
+    steps:
+      - git push --set-upstream origin ${CIRCLE_BRANCH}
+      - git config --global user.email "Warren.Veerasingam@gmail.com"
+      - git config --global user.name "WarrenVeerasingam"
+
+
 
 workflows:
   version: 2
