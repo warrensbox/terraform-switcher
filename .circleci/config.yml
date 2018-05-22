@@ -35,9 +35,13 @@ jobs:
           at: build
 
   deployment:
+    docker:
+      # specify the version
+      - image: circleci/golang:1.10
 
     steps:
-      - git push --set-upstream origin ${CIRCLE_BRANCH}
+      - checkout
+      - git push --set-upstream origin 0.0.${CIRCLE_BRANCH}
       - git config --global user.email "Warren.Veerasingam@gmail.com"
       - git config --global user.name "WarrenVeerasingam"
 
