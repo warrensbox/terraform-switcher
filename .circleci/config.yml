@@ -41,9 +41,7 @@ jobs:
 
     steps:
       - checkout
-      - git push --set-upstream origin 0.0.${CIRCLE_BRANCH}
-      - git config --global user.email "Warren.Veerasingam@gmail.com"
-      - git config --global user.name "WarrenVeerasingam"
+      - run: ls
 
 
 
