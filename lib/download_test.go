@@ -11,16 +11,8 @@ import (
 	lib "github.com/warren-veerasingam/terraform-switcher/lib"
 )
 
-// const (
-// 	hashiURL       = "https://releases.hashicorp.com/terraform/"
-// 	installFile    = "terraform"
-// 	installVersion = "terraform_"
-// 	binLocation    = "/usr/local/bin/terraform"
-// 	installPath    = "/.terraform.versions_test/"
-// 	macOS          = "_darwin_amd64.zip"
-// )
-
-func TestDownloadURL(t *testing.T) {
+// TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
+func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installVersion := "terraform_"
@@ -83,7 +75,8 @@ func TestDownloadURL(t *testing.T) {
 	cleanUp(installLocation)
 }
 
-func TestDownloadedFileExist(t *testing.T) {
+// TestDownloadFromURL_FileExist : Check expected file exist when downloaded
+func TestDownloadFromURL_FileExist(t *testing.T) {
 
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installFile := "terraform"
@@ -147,7 +140,7 @@ func TestDownloadedFileExist(t *testing.T) {
 	cleanUp(installLocation)
 }
 
-func TestURLValid(t *testing.T) {
+func TestDownloadFromURL_Valid(t *testing.T) {
 
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 
