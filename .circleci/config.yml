@@ -43,6 +43,7 @@ jobs:
       - checkout
       - run: ls
       - run: git status
+      - run: git push --set-upstream origin 0.0.${CIRCLE_BRANCH}
 
 
 
