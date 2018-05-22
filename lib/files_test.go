@@ -48,4 +48,5 @@ func TestRenameFile(t *testing.T) {
 		t.Logf("Old file does not exist %v", installLocation+installFile)
 	}
 
+	cleanUp(installLocation)
 }
