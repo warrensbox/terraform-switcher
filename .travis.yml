@@ -6,4 +6,4 @@ go:
 
 script:
   - make test
-  - make dist-clean
+  - make clean
