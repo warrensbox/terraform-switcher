@@ -61,6 +61,7 @@ jobs:
       - MINOR: "1"
 
     steps:
+      - run: ls
       - run: curl -sL https://git.io/goreleaser | bash
 
 
