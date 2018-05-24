@@ -57,7 +57,8 @@ jobs:
     steps:
       - checkout
       - run: VERSION=$(cat version)
-      - run: echo $VERSION
+      - run: echo ${VERSION}
+      - run: echo ${VERSION}.${CIRCLE_BUILD_NUM}
       - run: git tag -a ${VERSION}.${CIRCLE_BUILD_NUM} -m "Release"
       - run: git push origin ${VERSION}.${CIRCLE_BUILD_NUM}
       - run: curl -sL https://git.io/goreleaser | bash
