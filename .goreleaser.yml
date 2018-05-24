@@ -19,3 +19,68 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+brew:
+  # Name of the recipe
+  # Default to project name
+  name: tfswitch
+
+  # Reporitory to push the tap to.
+  github:
+    owner: warren-veerasingam
+    name: terraform-switcher
+
+  # Allows you to set a custom download strategy.
+  # Default is empty.
+  download_strategy: GitHubPrivateRepositoryReleaseDownloadStrategy
+
+  # Git author used to commit to the repository.
+  # Defaults are shown.
+  commit_author:
+    name: Warren Veerasingam
+    email: warren.veerasingam@gmail.com
+
+  # Folder inside the repository to put the formula.
+  # Default is the root folder.
+  folder: Formula
+
+  # Caveats for the user of your binary.
+  # Default is empty.
+  caveats: "Type 'tfswitch' on your command line and choose the terraform version that you want from the dropdown. This command currently only works on MacOs and Linux"
+
+  # Your app's homepage.
+  # Default is empty.
+  homepage: "https://warren-veerasingam.github.io/terraform-switcher/"
+
+  # Your app's description.
+  # Default is empty.
+  description: "The tfswitch command lets you switch between terraform versions."
+
+  # Setting this will prevent goreleaser to actually try to commit the updated
+  # formula - instead, the formula file will be stored on the dist folder only,
+  # leaving the responsibility of publishing it to the user.
+  # Default is false.
+  skip_upload: false
+
+  # Packages your package depends on.
+  dependencies:
+    - git
+ 
+  # Packages your source package depends on.
+  build_dependencies:
+    - make
+    - gcc
+
+  # Packages that conflict with your package.
+  conflicts:
+    - terraform
+
+  # So you can `brew test` your formula.
+  # Default is empty.
+  test: |
+    system "#{bin}/tfswitch --version"
+
+  # Custom install script for brew.
+  # Default is 'bin.install "program"'.
+  install: |
+    bin.install "tfswitch"
+
