@@ -57,6 +57,7 @@ jobs:
     steps:
       - checkout
       - run: VERSION=$(cat version)
+      - run: cat version
       - run: echo ${VERSION}
       - run: echo ${VERSION}.${CIRCLE_BUILD_NUM}
       - run: git tag -a ${VERSION}.${CIRCLE_BUILD_NUM} -m "Release"
