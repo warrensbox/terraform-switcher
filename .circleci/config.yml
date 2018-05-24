@@ -67,6 +67,7 @@ jobs:
             git tag -a ${VERSION}.${CIRCLE_BUILD_NUM} -m "Release"
             git push origin ${VERSION}.${CIRCLE_BUILD_NUM}
             curl -sL https://git.io/goreleaser |   VERSION=v0.76.1 bash
+            echo "done"
 
 workflows:
   version: 2
