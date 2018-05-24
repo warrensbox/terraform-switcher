@@ -59,7 +59,7 @@ brew:
   # formula - instead, the formula file will be stored on the dist folder only,
   # leaving the responsibility of publishing it to the user.
   # Default is false.
-  skip_upload: true
+  skip_upload: false
 
   # Packages your package depends on.
   dependencies:
