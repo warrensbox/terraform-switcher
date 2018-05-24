@@ -56,7 +56,8 @@ jobs:
 
     steps:
       - checkout
-      - run: VERSION=$(cat version)
+      - run: source version
+      - run: export VERSION
       - run: cat version
       - run: echo ${VERSION}
       - run: echo ${VERSION}.${CIRCLE_BUILD_NUM}
