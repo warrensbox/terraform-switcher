@@ -64,8 +64,10 @@ jobs:
     # tag:
     #   tag: /v[0-9]+(\.[0-9]+)*(-.*)*/
     #   owner: warren-veeraingam
-      commands:
-        - curl -sL https://git.io/goreleaser | bash
+       - run:
+        shell: /bin/sh
+          commands:
+            - curl -sL https://git.io/goreleaser | bash
     # docker:
     #   - image: circleci/golang:1.10
 
