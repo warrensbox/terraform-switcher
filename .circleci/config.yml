@@ -58,21 +58,13 @@ jobs:
       - checkout
       - run: 
           command: |
-            echo Running test
             set +e
-            mkdir -p /tmp/test-results
             source version
             export VERSION; 
             echo $VERSION
-      # - run: source version
-      # - run: export VERSION; echo $VERSION
-      # - run: TEST=version
-      # - run: echo ${TEST}
-      # - run: echo ${VERSION}.${CIRCLE_BUILD_NUM}
-      # - run: git tag -a ${VERSION}.${CIRCLE_BUILD_NUM} -m "Release"
-      # - run: git push origin ${VERSION}.${CIRCLE_BUILD_NUM}
-      # - run: curl -sL https://git.io/goreleaser | bash
-
+            git tag -a ${VERSION}.${CIRCLE_BUILD_NUM} -m "Release"
+            git push origin ${VERSION}.${CIRCLE_BUILD_NUM}
+            curl -sL https://git.io/goreleaser | bash
 
 workflows:
   version: 2
