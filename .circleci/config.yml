@@ -62,9 +62,9 @@ jobs:
             source version
             export VERSION; 
             echo $VERSION
+            git config user.email "warren.veerasingam@gmail.com"
+            git config user.name "warren-veerasingam"
             git tag -a ${VERSION}.${CIRCLE_BUILD_NUM} -m "Release"
-            git config --global user.email "warren.veerasingam@gmail.com"
-            git config --global user.name "warren-veerasingam"
             git push origin ${VERSION}.${CIRCLE_BUILD_NUM}
             curl -sL https://git.io/goreleaser | bash
 
