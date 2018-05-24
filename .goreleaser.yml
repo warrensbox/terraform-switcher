@@ -2,7 +2,7 @@
 # Make sure to check the documentation at http://goreleaser.com
 builds:
   - ldflags:
-   - -s -w -X "main.version={{.Env.VERSION}}"
+    - -s -w -X "main.version={{.Env.VERSION}}"
   - main: main.go
     binary: tfswitch
     goos:
