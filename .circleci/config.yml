@@ -8,6 +8,9 @@ jobs:
       # specify the version
       - image: circleci/golang:1.10
 
+    # machine:
+    #   environment:
+
     working_directory: /go/src/github.com/warren-veerasingam/terraform-switcher
 
     steps:
@@ -59,6 +62,7 @@ jobs:
       - run: 
           command: |
             set +e
+            make release
             source version
             export VERSION; 
             echo $VERSION
