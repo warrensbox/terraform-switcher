@@ -73,7 +73,7 @@ jobs:
             git push origin ${VERSION}.${CIRCLE_BUILD_NUM}
             curl -sL https://git.io/goreleaser |   VERSION=v0.76.1 bash
             make clean
-            echo "done"
+            echo $GOPATH
 
 workflows:
   version: 2
