@@ -1,4 +1,6 @@
 theme: jekyll-theme-minimal
+github: [metadata]
 
-title: Your awesome title
-email: your-email@example.com
+logo: /assets/img/logo.png
+
+show_downloads: true
