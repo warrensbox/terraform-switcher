@@ -59,7 +59,7 @@ brew:
   # formula - instead, the formula file will be stored on the dist folder only,
   # leaving the responsibility of publishing it to the user.
   # Default is false.
-  skip_upload: false
+  skip_upload: true
 
   # Packages your package depends on.
   dependencies:
@@ -69,6 +69,7 @@ brew:
   build_dependencies:
     - make
     - gcc
+    - go
 
   # Packages that conflict with your package.
   conflicts:
