@@ -19,5 +19,6 @@ src
 
 main
 build
+dist
 
 .DS_Store
