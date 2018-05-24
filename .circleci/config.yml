@@ -57,9 +57,9 @@ jobs:
     steps:
       - checkout
       - run: source version
-      - run: export VERSION
-      - run: cat version
-      - run: echo ${VERSION}
+      - run: export VERSION; echo $VERSION
+      - run: TEST=version
+      - run: echo ${TEST}
       - run: echo ${VERSION}.${CIRCLE_BUILD_NUM}
       - run: git tag -a ${VERSION}.${CIRCLE_BUILD_NUM} -m "Release"
       - run: git push origin ${VERSION}.${CIRCLE_BUILD_NUM}
