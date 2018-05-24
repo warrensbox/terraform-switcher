@@ -59,7 +59,7 @@ brew:
 
   # Your app's homepage.
   # Default is empty.
-  homepage: "https://warren-veerasingam.github.io/terraform-switcher/"
+  homepage: "https://warren-veerasingam.github.io/terraform-switcher"
 
   # Your app's description.
   # Default is empty.
