@@ -1,4 +1,6 @@
-## hello   
+## hello  
+
+![Build Status](https://travis-ci.org/warren-veerasingam/terraform-switcher.svg?branch=master)
 ## hello
 ## hello
 
