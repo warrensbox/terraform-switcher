@@ -74,6 +74,7 @@ jobs:
             make clean
             echo $GOPATH
             pwd
+            ls
 
 workflows:
   version: 2
