@@ -27,7 +27,7 @@ brew:
   # Reporitory to push the tap to.
   github:
     owner: warren-veerasingam
-    name: terraform-switcher
+    name: homebrew-tap
 
   # Allows you to set a custom download strategy.
   # Default is empty.
