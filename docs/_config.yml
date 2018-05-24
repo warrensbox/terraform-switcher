@@ -1,6 +1,8 @@
 theme: jekyll-theme-minimal
-github: [metadata]
-
+github: [metadata] 
+repository: warren-veerasingam/terraform-switcher
 logo: /assets/img/logo.png
 
 show_downloads: true
+
+github: [metadata] 
