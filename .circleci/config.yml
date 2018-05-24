@@ -62,6 +62,7 @@ jobs:
             source version
             export VERSION; 
             echo $VERSION
+            make release
             git config user.email "warren.veerasingam@gmail.com"
             git config user.name "warren-veerasingam"
             git tag -a ${VERSION}.${CIRCLE_BUILD_NUM} -m "Release"
