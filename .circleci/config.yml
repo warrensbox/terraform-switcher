@@ -48,11 +48,13 @@ jobs:
       - run: git push origin 0.0.${CIRCLE_BUILD_NUM}
 
   deployment:
-    tag:
-      tag: /v[0-9]+(\.[0-9]+)*(-.*)*/
-      owner: warren-veeraingam
-      commands:
-        - curl -sL https://git.io/goreleaser | bash
+
+    steps:
+      tag:
+        tag: /v[0-9]+(\.[0-9]+)*(-.*)*/
+        owner: warren-veeraingam
+        commands:
+          - curl -sL https://git.io/goreleaser | bash
     # docker:
     #   - image: circleci/golang:1.10
 
