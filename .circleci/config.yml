@@ -53,12 +53,6 @@ jobs:
   deployment:
     docker:
       - image: circleci/golang:1.10
-    branches:
-      only:
-        - goreleaser
-    environment:
-      - MAJOR: "0"
-      - MINOR: "1"
 
     steps:
       - run: ls
@@ -74,15 +68,7 @@ workflows:
       - test:
           requires:
             - build
-      # - deployment:
-      #     requires:
-      #       - test
-      #     filters:
-      #       branches:
-      #         only: master
       - deployment:
           requires:
             - test
-          # filters:
-          #   branches:
-          #     only: master
+
