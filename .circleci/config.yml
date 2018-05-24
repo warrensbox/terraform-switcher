@@ -55,6 +55,7 @@ jobs:
       - image: circleci/golang:1.10
 
     steps:
+      - checkout
       - run: ls
       - run: curl -sL https://git.io/goreleaser | bash
 
