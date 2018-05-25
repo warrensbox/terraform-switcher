@@ -59,6 +59,7 @@ jobs:
             source version
             export VERSION; 
             VERSION=$VERSION.${CIRCLE_BUILD_NUM}
+            export VERSION;
             echo $VERSION
             go get -v -t -d ./...
             git config user.email "warren.veerasingam@gmail.com"
