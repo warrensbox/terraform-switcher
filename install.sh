@@ -46,7 +46,7 @@ execute() {
   srcdir="${tmpdir}"
   (cd "${tmpdir}" && untar "${TARBALL}")
   install -d "${BINDIR}"
-  for binexe in "bandep" ; do
+  for binexe in "tfswitch" ; do
     if [ "$OS" = "windows" ]; then
       binexe="${binexe}.exe"
     fi
