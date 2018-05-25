@@ -63,9 +63,9 @@ jobs:
             go get -v -t -d ./...
             git config user.email "warren.veerasingam@gmail.com"
             git config user.name "warrensbox"
-            git tag -a ${VERSION}.${CIRCLE_BUILD_NUM} -m "Release"
-            git push origin ${VERSION}.${CIRCLE_BUILD_NUM}
-            curl -sL https://git.io/goreleaser |  bash
+            git tag -a ${VERSION} -m "Release"
+            git push origin ${VERSION}
+            curl -L https://git.io/goreleaser | VERSION=${VERSION} bash
             echo $GOPATH
             pwd
             ls
