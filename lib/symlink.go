@@ -1,26 +1,32 @@
 package lib
 
 import (
+	"log"
 	"os"
 )
 
 //CreateSymlink : create symlink
-func CreateSymlink(cwd string, dir string) error {
+func CreateSymlink(cwd string, dir string) {
 
 	err := os.Symlink(cwd, dir)
 	if err != nil {
-		return err
+		log.Fatal("Unable to create symlink. You must have SUDO privileges")
+		panic(err)
 	}
-	return nil
 }
 
 //RemoveSymlink : remove symlink
-func RemoveSymlink(symlinkPath string) error {
+func RemoveSymlink(symlinkPath string) {
 
 	_, err := os.Lstat(symlinkPath)
 	if err != nil {
-		return err
+		log.Fatal("Unable to remove symlink. You must have SUDO privileges")
+		panic(err)
+	} else {
+		errRemove := os.Remove(symlinkPath)
+		if errRemove != nil {
+			log.Fatal("Unable to remove symlink. You must have SUDO privileges")
+			panic(errRemove)
+		}
 	}
-	os.Remove(symlinkPath)
-	return nil
 }

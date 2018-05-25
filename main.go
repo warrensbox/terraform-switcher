@@ -25,6 +25,7 @@ import (
 	"os"
 	"os/user"
 	"regexp"
+	"runtime"
 	"strings"
 
 	"github.com/manifoldco/promptui"
@@ -42,6 +43,7 @@ const (
 	binLocation    = "/usr/local/bin/terraform"
 	installPath    = "/.terraform.versions/"
 	macOS          = "_darwin_amd64.zip"
+	linux          = "_darwin_amd64.zip"
 )
 
 var version = "0.0.1\n"
@@ -60,6 +62,9 @@ func main() {
 			fmt.Println(version)
 		}
 	} else {
+
+		goarch := runtime.GOARCH
+		goos := runtime.GOOS
 
 		/* get current user */
 		usr, errCurr := user.Current()
@@ -150,7 +155,7 @@ func main() {
 
 		/* if selected version already exist, */
 		/* proceed to download it from the hashicorp release page */
-		url := hashiURL + version + "/" + installVersion + version + macOS
+		url := hashiURL + version + "/" + installVersion + version + "_" + goos + "_" + goarch + ".zip"
 		zipFile, _ := lib.DownloadFromURL(installLocation, url)
 
 		fmt.Printf("Downloaded zipFile: %v \n", zipFile)
@@ -169,7 +174,7 @@ func main() {
 		lib.RenameFile(installLocation+installFile, installLocation+installVersion+version)
 
 		/* remove zipped file to clear clutter */
-		lib.RemoveFiles(installLocation + installVersion + version + macOS)
+		lib.RemoveFiles(installLocation + installVersion + version + "_" + goos + "_" + goarch + ".zip")
 
 		/* remove current symlink and set new symlink to desired version  */
 		lib.RemoveSymlink(installedBinPath)
@@ -177,7 +182,6 @@ func main() {
 		/* set symlink to desired version */
 		lib.CreateSymlink(installLocation+installVersion+version, installedBinPath)
 		fmt.Printf("Swicthed terraform to version %q \n", version)
+		os.Exit(0)
 	}
-	os.Exit(0)
-
 }
