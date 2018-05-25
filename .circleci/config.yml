@@ -57,16 +57,16 @@ jobs:
           command: |
             set +e
             source version
-            export VERSION; 
-            VERSION=$VERSION.${CIRCLE_BUILD_NUM}
-            export VERSION;
-            echo $VERSION
+            export RELEASE_VERSION; 
+            RELEASE_VERSION=$RELEASE_VERSION.${CIRCLE_BUILD_NUM}
+            export RELEASE_VERSION;
+            echo $RELEASE_VERSION
             go get -v -t -d ./...
             git config user.email "warren.veerasingam@gmail.com"
             git config user.name "warrensbox"
-            git tag -a ${VERSION} -m "Release"
-            git push origin ${VERSION}
-            curl -L https://git.io/goreleaser | VERSION=${VERSION} bash
+            git tag -a ${RELEASE_VERSION} -m "Release"
+            git push origin ${RELEASE_VERSION}
+            curl -L https://git.io/goreleaser | VERSION=v0.76.1 bash
             echo $GOPATH
             pwd
             ls

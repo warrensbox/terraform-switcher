@@ -2,7 +2,7 @@
 # Make sure to check the documentation at http://goreleaser.com
 builds:
   - ldflags:
-    - -s -w -X "main.version={{.Env.VERSION}}"
+    - -s -w -X "main.version={{.Env.RELEASE_VERSION}}"
   - main: main.go
     binary: tfswitch
     goos:
@@ -12,7 +12,7 @@ builds:
     goarch:
       - amd64
 checksum:
-  name_template: '{{ .ProjectName }}_{{.Env.VERSION}}_checksums.txt'
+  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_checksums.txt'
 changelog:
   sort: asc
   filters:
@@ -20,7 +20,7 @@ changelog:
     - '^docs:'
     - '^test:'
 archive:
-  name_template: '{{ .ProjectName }}_{{.Env.VERSION}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
   replacements:
     darwin: darwin
     linux: linux
