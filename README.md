@@ -3,6 +3,8 @@
 
 # terraform-switcher
 
+#remove this
+
 Circle build status:
 [![CircleCI](https://circleci.com/gh/warrensbox/terraform-switcher.svg?style=svg)](https://circleci.com/gh/warrensbox/terraform-switcher)   
 
