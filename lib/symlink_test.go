@@ -6,7 +6,7 @@ import (
 	"os/user"
 	"testing"
 
-	"github.com/warren-veerasingam/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 // TestCreateSymlink : check if symlink exist-remove if exist,

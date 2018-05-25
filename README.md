@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/warren-veerasingam/terraform-switcher.svg?branch=master)](https://travis-ci.org/warren-veerasingam/terraform-switcher)
-[![Go Report Card](https://goreportcard.com/badge/github.com/warren-veerasingam/terraform-switcher)](https://goreportcard.com/report/github.com/warren-veerasingam/terraform-switcher)
+[![Build Status](https://travis-ci.org/warrensbox/terraform-switcher.svg?branch=master)](https://travis-ci.org/warrensbox/terraform-switcher)
+[![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher)](https://goreportcard.com/report/github.com/warrensbox/terraform-switcher)
 
 # terraform-switcher
 
 Circle build status:
-[![CircleCI](https://circleci.com/gh/warren-veerasingam/terraform-switcher.svg?style=svg)](https://circleci.com/gh/warren-veerasingam/terraform-switcher)   
+[![CircleCI](https://circleci.com/gh/warrensbox/terraform-switcher.svg?style=svg)](https://circleci.com/gh/warrensbox/terraform-switcher)   
 
 

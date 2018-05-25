@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/warren-veerasingam/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 // TestRenameFile : Create a file, check filename exist,

@@ -36,7 +36,7 @@ brew:
 
   # Reporitory to push the tap to.
   github:
-    owner: warren-veerasingam
+    owner: warrensbox
     name: homebrew-tap
 
   # Allows you to set a custom download strategy.
@@ -59,7 +59,7 @@ brew:
 
   # Your app's homepage.
   # Default is empty.
-  homepage: "https://warren-veerasingam.github.io/terraform-switcher"
+  homepage: "https://warrensbox.github.io/terraform-switcher"
 
   # Your app's description.
   # Default is empty.

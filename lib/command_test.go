@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/warren-veerasingam/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 // TestNewCommand : pass value and check if returned value is a pointer

@@ -29,7 +29,7 @@ import (
 	"strings"
 
 	"github.com/manifoldco/promptui"
-	lib "github.com/warren-veerasingam/terraform-switcher/lib"
+	lib "github.com/warrensbox/terraform-switcher/lib"
 )
 
 type tfVersionList struct {
