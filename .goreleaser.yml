@@ -12,7 +12,7 @@ builds:
     goarch:
       - amd64
 checksum:
-  name_template: 'checksums.txt'
+  name_template: '{{ .ProjectName }}_{{.Env.VERSION}}_checksums.txt'
 changelog:
   sort: asc
   filters:
@@ -20,12 +20,12 @@ changelog:
     - '^docs:'
     - '^test:'
 archive:
-  name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+  name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}_{{.Env.VERSION}}_{{ if .Arm }}v{{ .Arm }}{{ end }}'
   replacements:
-    darwin: Darwin
-    linux: Linux
-    386: i386
-    amd64: x86_64
+    darwin: darwin
+    linux: linux
+    386: 386
+    amd64: amd64
   format_overrides:
   - goos: windows
     format: zip
