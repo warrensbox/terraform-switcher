@@ -1,7 +1,7 @@
 theme: jekyll-theme-minimal
 github: [metadata] 
 repository: warrensbox/terraform-switcher
-logo: /assets/img/tfswitchlogo.png
+logo: /assets/img/logo.png
 title: tfswitch
 
 show_downloads: true
