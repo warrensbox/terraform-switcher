@@ -4,7 +4,7 @@
 
 # Terraform Switcher 
 
-<img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/smallerlogo.png" alt="drawing" style="width: 100px;"/>
+<img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/smallerlogo.png" alt="drawing" style="width: 80px;"/>
 
 <!-- ![gopher](https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/logo.png =100x20) -->
 
