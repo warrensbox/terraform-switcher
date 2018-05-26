@@ -40,7 +40,7 @@ Alternatively, you can install the binary from source [here](https://github.com/
 
 ## How to use:
 
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch.gif" alt="drawing" style="width: 480px;"/>
+<img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch.gif" alt="drawing" style="width: 480px;"/>
 
 1.  You can start using by typing the command `tfswitch` on your terminal. 
 2.  Select the version of terraform you require by using the up and down arrow.
