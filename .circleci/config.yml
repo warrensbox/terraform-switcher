@@ -82,7 +82,9 @@ workflows:
             - test
           filters:
             branches:
-              only: master
+              only: 
+              - master
+              - release
       - release:
           requires:
             - develop-master
@@ -90,5 +92,4 @@ workflows:
             branches:
               only: 
               - release
-              - master
 
