@@ -6,17 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.4.0 -->
-<title>Terraform Switcher | terraform-switcher</title>
+<title>terraform-switcher | The tfswitch command lets you switch between terraform versions</title>
 <meta name="generator" content="Jekyll v3.7.3" />
-<meta property="og:title" content="Terraform Switcher" />
+<meta property="og:title" content="terraform-switcher" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="The tfswitch command lets you switch between terraform versions" />
 <meta property="og:description" content="The tfswitch command lets you switch between terraform versions" />
-<link rel="canonical" href="http://localhost:4000/" />
-<meta property="og:url" content="http://localhost:4000/" />
+<link rel="canonical" href="http://localhost:4000/addtional.html" />
+<meta property="og:url" content="http://localhost:4000/addtional.html" />
 <meta property="og:site_name" content="terraform-switcher" />
 <script type="application/ld+json">
-{"name":"terraform-switcher","description":"The tfswitch command lets you switch between terraform versions","@type":"WebSite","url":"http://localhost:4000/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/logo.png"}},"headline":"Terraform Switcher","@context":"http://schema.org"}</script>
+{"description":"The tfswitch command lets you switch between terraform versions","@type":"WebPage","url":"http://localhost:4000/addtional.html","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/logo.png"}},"headline":"terraform-switcher","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
     <link rel="stylesheet" href="/assets/css/style.css?v=">
@@ -56,63 +56,50 @@
       </header>
       <section>
 
-      <h1 id="terraform-switcher">Terraform Switcher</h1>
+      
+<p><a href="index">Back to main</a></p>
 
-<p>The tfswitch command lets you switch between different terraform versions. 
-If you do not have a particular version installed, tfswitch will download the version you desire.
-The installation is minimal and easy. 
-Simply select the version you require from the dropdown and start using terraform with ease.</p>
-
-<hr />
-
-<h2 id="installation">Installation</h2>
-
-<p>At the moment, installation is available for most unix/linux based operating systems.</p>
+<h2 id="upgrade">Upgrade:</h2>
 
 <h3 id="homebrew">Homebrew</h3>
 
-<p>Installation for MacOS is the easiest with Homebrew. <a href="https://brew.sh/">If you do not have homebrew installed, click here</a>.</p>
-
-<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">install</span> <span class="n">warrensbox</span><span class="o">/</span><span class="n">tap</span><span class="o">/</span><span class="n">tfswitch</span>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">upgrade</span> <span class="n">warrensbox</span><span class="o">/</span><span class="n">tap</span><span class="o">/</span><span class="n">tfswitch</span>
 </code></pre></div></div>
-
-<p>To upgrade, simply run <code class="highlighter-rouge">brew upgrade warrensbox/tap/tfswitch</code></p>
-
 <h3 id="linux">Linux</h3>
 
-<p>Installation for other linux operation systems.</p>
+<p>Rerun:</p>
 
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-L</span> https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 </code></pre></div></div>
 
-<p>To upgrade, simply run</p>
+<h2 id="uninstall">Uninstall:</h2>
 
-<h3 id="install-from-source">Install from source</h3>
+<h3 id="homebrew-1">Homebrew</h3>
 
-<p>Alternatively, you can install the binary from source <a href="https://github.com/warrensbox/terraform-switcher/releases">here</a></p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">uninstall</span> <span class="n">warrensbox</span><span class="o">/</span><span class="n">tap</span><span class="o">/</span><span class="n">tfswitch</span>
+</code></pre></div></div>
+<h3 id="linux-1">Linux</h3>
 
-<hr />
+<p>Rerun:</p>
 
-<h2 id="how-to-use">How to use:</h2>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rm /usr/local/bin/tfswitch
+</code></pre></div></div>
 
-<p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch.gif" alt="drawing" style="width: 480px;" /></p>
+<h2 id="troubleshoot">Troubleshoot:</h2>
 
-<ol>
-  <li>You can start using by typing the command <code class="highlighter-rouge">tfswitch</code> on your terminal.</li>
-  <li>Select the version of terraform you require by using the up and down arrow.</li>
-  <li>Hit <strong>Enter</strong> to select the desired version</li>
-</ol>
+<p>Common issues:</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="ss">install: </span><span class="n">can</span><span class="err">'</span><span class="n">t</span> <span class="n">change</span> <span class="n">permissions</span> <span class="n">of</span> <span class="sr">/usr/</span><span class="n">local</span><span class="o">/</span><span class="ss">bin: </span><span class="no">Operation</span> <span class="n">not</span> <span class="n">permitted</span>
+</code></pre></div></div>
 
-<hr />
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"Unable to remove symlink. You must have SUDO privileges"</span>
+</code></pre></div></div>
 
-<h2 id="issues">Issues</h2>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="s2">"Unable to create symlink. You must have SUDO privileges"</span>
+</code></pre></div></div>
+<p>You probably need to have <strong>sudo</strong> privileges to install <em>tfswitch</em>.</p>
 
-<p>Please open  <em>issues</em> here: <a href="https://github.com/warrensbox/terraform-switcher/issues">New Issue</a></p>
-
-<hr />
-
-<p>See how to <em>upgrade</em>, <em>uninstall</em>, <em>troubleshoot</em> here:
-<a href="addtional">Additional Info</a></p>
+<p><a href="#upgrade">Back to top</a>  <br />
+<a href="index">Back to main</a></p>
 
 
       </section>
