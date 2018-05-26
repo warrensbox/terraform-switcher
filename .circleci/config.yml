@@ -34,9 +34,6 @@ jobs:
   develop-master:
     docker:
       - image: circleci/golang:1.10
-    branches:
-      only:
-        - master
 
     steps:
       - checkout
@@ -50,9 +47,6 @@ jobs:
   release:
     docker:
       - image: circleci/golang:1.10
-    branches:
-      only:
-        - release
 
     steps:
       - checkout
@@ -83,15 +77,13 @@ workflows:
       - develop-master:
           requires:
             - test
-          filter:
+          filters:
             branches:
-              only: 
-                - master
+              only: master
       - release:
           requires:
             - develop-master
-          filter:
+          filters:
             branches:
-              only: 
-                - release
+              only: release
 
