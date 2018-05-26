@@ -88,5 +88,7 @@ workflows:
             - develop-master
           filters:
             branches:
-              only: release
+              only: 
+              - release
+              - master
 
