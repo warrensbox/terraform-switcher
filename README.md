@@ -50,7 +50,7 @@ Alternatively, you can install the binary from source [here](https://github.com/
 
 ## Additional Info
 
-See how to *upgrade*, *uninstall*, *troubleshoot* here:[More info](https://warrensbox.github.io/terraform-switcher/addition)
+See how to *upgrade*, *uninstall*, *troubleshoot* here:[More info](https://warrensbox.github.io/terraform-switcher/additional)
 
 
 ## Issues

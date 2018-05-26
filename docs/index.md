@@ -51,4 +51,4 @@ Please open  *issues* here: [New Issue](https://github.com/warrensbox/terraform-
 <hr>
 
 See how to *upgrade*, *uninstall*, *troubleshoot* here:
-[Additional Info](addtional)
+[Additional Info](additional)
