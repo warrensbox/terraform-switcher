@@ -52,7 +52,7 @@ Alternatively, you can install the binary from source [here](https://github.com/
 
 ## Additional Info
 
-[tfswitch main site](https://warrensbox.github.io/terraform-switcher/)
+[Visit Site](https://warrensbox.github.io/terraform-switcher/)
 
 
 ## Issues
