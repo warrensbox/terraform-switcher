@@ -9,7 +9,7 @@ Simply select the version you require from the dropdown and start using terrafor
 
 ## Installation
 
-At the moment, installation is available for most unix/linux based operating systems.
+`tfswitch` is available for MacOS and Linux based operating systems.
 
 ### Homebrew
 
@@ -20,29 +20,25 @@ Installation for MacOS is the easiest with Homebrew. [If you do not have homebre
 brew install warrensbox/tap/tfswitch
 ```
 
-To upgrade, simply run `brew upgrade warrensbox/tap/tfswitch`
-
 ### Linux
 
-Installation for other linux operation systems.
+Installation for Linux operation systems.
 
 ```sh
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 ```
 
-To upgrade, simply run 
-
 ### Install from source
 
-Alternatively, you can install the binary from source [here](https://github.com/warrensbox/terraform-switcher/releases) 
+Alternatively, you can install the binary from the source [here](https://github.com/warrensbox/terraform-switcher/releases) 
 
 <hr>
 
 ## How to use:
 
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch.gif" alt="drawing" style="width: 480px;"/>
+<img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch.gif" alt="drawing" style="width: 480px;"/>
 
-1.  You can start using by typing the command `tfswitch` on your terminal. 
+1.  You can switch between different versions of terraform by typing the command `tfswitch` on your terminal. 
 2.  Select the version of terraform you require by using the up and down arrow.
 3.  Hit **Enter** to select the desired version
 
