@@ -13,8 +13,6 @@ If you do not have a particular version installed, tfswitch will download the ve
 The installation is minimal and easy. 
 Simply select the version you require from the dropdown and start using terraform with ease. 
 
-<hr>
-
 ## Installation
 
 At the moment, installation is available for most unix/linux based operating systems.
@@ -44,8 +42,6 @@ To upgrade, simply run
 
 Alternatively, you can install the binary from source [here](https://github.com/warrensbox/terraform-switcher/releases) 
 
-<hr>
-
 ## How to use:
 
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch.gif" alt="drawing" style="width: 180px;"/>
@@ -53,8 +49,6 @@ Alternatively, you can install the binary from source [here](https://github.com/
 1.  You can start using by typing the command `tfswitch` on your terminal. 
 2.  Select the version of terraform you require by using the up and down arrow.
 3.  Hit **Enter** to select the desired version
-
-<hr>
 
 ## Additional Info
 
