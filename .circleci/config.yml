@@ -83,13 +83,13 @@ workflows:
       - develop-master:
           requires:
             - test
-          filters:
+          filter:
             branches:
               only: master
       - release:
           requires:
             - develop-master
-          filters:
+          filter:
             branches:
               only: release
 
