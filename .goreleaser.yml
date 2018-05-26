@@ -72,8 +72,8 @@ brew:
   skip_upload: false
 
   # Packages that conflict with your package.
-  conflicts:
-    - terraform
+  # conflicts:
+  #   - terraform
 
   # So you can `brew test` your formula.
   # Default is empty.
