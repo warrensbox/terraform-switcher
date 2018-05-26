@@ -39,10 +39,10 @@ jobs:
       - checkout
       - run: ls
       - run: git status
-      - run: source version; export VERSION; git tag ${VERSION}.${CIRCLE_BUILD_NUM}
+      - run: source version; export RELEASE_VERSION; git tag $RELEASE_VERSION.${CIRCLE_BUILD_NUM}
       - run: git config --global user.email "warren.veerasingam@gmail.com"
       - run: git config --global user.name "warrensbox"
-      - run: source version; export VERSION; git push origin ${VERSION}.${CIRCLE_BUILD_NUM}
+      - run: source version; export RELEASE_VERSION; git push origin $RELEASE_VERSION.${CIRCLE_BUILD_NUM}
 
   release:
     docker:
