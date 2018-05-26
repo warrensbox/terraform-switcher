@@ -2,8 +2,9 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher)](https://goreportcard.com/report/github.com/warrensbox/terraform-switcher)
 [![CircleCI](https://circleci.com/gh/warrensbox/terraform-switcher/tree/master.svg?style=shield&circle-token=55ddceec95ff67eb38269152282f8a7d761c79a5)](https://circleci.com/gh/warrensbox/terraform-switcher)
 
-
 # Terraform Switcher 
+
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/logo.png" alt="drawing" style="width: 200px;"/>
 
 The tfswitch command lets you switch between different terraform versions. 
 If you do not have a particular version installed, tfswitch will download the version you desire.
