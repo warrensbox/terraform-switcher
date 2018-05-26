@@ -1,154 +1,58 @@
 # Terraform Switcher 
 
-Often times, we work with different versions
-of terraform for multiple projects. The tfswitch 
-command lets you switch different versions of the terraform installation on your computer. The installation is minimal and
-easy. Simply select the version you require from the dropdown and 
-start using terraform with ease. 
+The tfswitch command lets you switch between different terraform versions. 
+If you do not have a particular version installed, tfswitch will download the version you desire.
+The installation is minimal and easy. 
+Simply select the version you require from the dropdown and start using terraform with ease. 
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+<hr>
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+## Installation
 
+At the moment, installation is available for most unix/linux based operating systems.
 
-[jekyll-organization]: https://github.com/jekyll
+### Homebrew
 
-## hello   
-## hello
-## hello
-
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
-
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
-
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+Installation for MacOS is the easiest with Homebrew. [If you do not have homebrew installed, click here](https://brew.sh/). 
 
 
-[jekyll-organization]: https://github.com/jekyll
+```ruby
+brew install warrensbox/tap/tfswitch
+```
 
-## hello   
-## hello
-## hello
+To upgrade, simply run `brew upgrade warrensbox/tap/tfswitch`
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+### Linux
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+Installation for other linux operation systems.
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+```sh
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
+```
 
+To upgrade, simply run 
 
-[jekyll-organization]: https://github.com/jekyll
+### Install from source
 
-## hello   
-## hello
-## hello
+Alternatively, you can install the binary from source [here](https://github.com/warrensbox/terraform-switcher/releases) 
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+<hr>
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+## How to use:
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch.gif" alt="drawing" style="width: 480px;"/>
 
+1.  You can start using by typing the command `tfswitch` on your terminal. 
+2.  Select the version of terraform you require by using the up and down arrow.
+3.  Hit **Enter** to select the desired version
 
-[jekyll-organization]: https://github.com/jekyll
+<hr>
 
-## hello   
-## hello
-## hello
+## Issues
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+Please open  *issues* here: [New Issue](https://github.com/warrensbox/terraform-switcher/issues)
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+<hr>
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
-
-
-[jekyll-organization]: https://github.com/jekyll
-
-## hello   
-## hello
-## hello
-
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
-
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
-
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
-
-
-[jekyll-organization]: https://github.com/jekyll
-
-## hello   
-## hello
-## hello
-
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
-
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
-
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
-
-
-[jekyll-organization]: https://github.com/jekyll
-
-## hello   
-## hello
-## hello
-
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
-
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
-
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
-
-
-[jekyll-organization]: https://github.com/jekyll
-
-## hello   
-## hello
-## hello
-
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
-
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
-
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
-
-
-[jekyll-organization]: https://github.com/jekyll
+See how to *upgrade*, *uninstall*, *troubleshoot* here:
+[Additional Info](addtional)

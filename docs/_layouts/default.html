@@ -14,13 +14,14 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1 style="font-size:25px;"><a href="{{ "/" | absolute_url }}">{{ site.title | default: site.github.repository_name }}</a></h1>
-        
+        <!-- <h1 style="font-size:25px;"><a href="{{ "/" | absolute_url }}">{{ site.title | default: site.github.repository_name }}</a></h1> -->
+        <h1 style="font-size:25px; text-align: center"><a href="{{ "/" | absolute_url }}">tfswitch</a></h1>
+
         {% if site.logo %}
           <img src="{{site.logo | relative_url}}" alt="Logo" />
         {% endif %}
 
-        <p>{{ site.description | default: site.github.project_tagline }}</p>
+        <p style="text-align: center">{{ site.description | default: site.github.project_tagline }}</p>
         <!-- <p>Written in go</p> -->
         <img src="https://travis-ci.org/warrensbox/terraform-switcher.svg?branch=master" alt="Travis" />
         <img src="https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher" alt="Go Report" />
@@ -38,9 +39,9 @@
 
         {% if site.show_downloads %}
         <ul>
-          <li><a href="{{ site.github.zip_url }}">Download <strong>MacOS</strong></a></li>
-          <li><a href="{{ site.github.tar_url }}">Download <strong>Linux</strong></a></li>
-          <li><a href="{{ site.github.repository_url }}">View On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.3.256/terraform-switcher_0.3.256_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.3.256/terraform-switcher_0.3.256_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases">Releases On <strong>GitHub</strong></a></li>
         </ul>
         {% endif %}
       </header>
