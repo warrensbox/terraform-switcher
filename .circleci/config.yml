@@ -31,7 +31,7 @@ jobs:
       - attach_workspace:
           at: build
 
-  release:
+  develop-master:
     docker:
       - image: circleci/golang:1.10
     branches:
@@ -47,9 +47,12 @@ jobs:
       - run: git config --global user.name "warrensbox"
       - run: git push origin 0.0.${CIRCLE_BUILD_NUM}
 
-  deployment:
+  release:
     docker:
       - image: circleci/golang:1.10
+    branches:
+      only:
+        - release
 
     steps:
       - checkout
@@ -67,9 +70,6 @@ jobs:
             git tag -a ${RELEASE_VERSION} -m "Release"
             git push origin ${RELEASE_VERSION}
             curl -L https://git.io/goreleaser | VERSION=v0.76.1 bash
-            echo $GOPATH
-            pwd
-            ls
 
 workflows:
   version: 2
@@ -80,7 +80,18 @@ workflows:
       - test:
           requires:
             - build
-      - deployment:
+      - develop-master:
           requires:
             - test
+          filters:
+            branches:
+              only:
+                - master
+      - release:
+          requires:
+            - develop-master
+          filters:
+            branches:
+              only:
+                - release
 
