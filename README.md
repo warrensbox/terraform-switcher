@@ -4,7 +4,9 @@
 
 # Terraform Switcher 
 
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/logo.png" alt="drawing" style="width: 200px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/logo.png" alt="drawing" style="width: 40px;"/>
+
+<!-- ![gopher](https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/logo.png =100x20) -->
 
 The tfswitch command lets you switch between different terraform versions. 
 If you do not have a particular version installed, tfswitch will download the version you desire.
