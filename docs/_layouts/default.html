@@ -27,20 +27,11 @@
         <img src="https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher" alt="Go Report" />
 
         <hr style="margin-top: 20px;">
-        {% if site.github.is_project_page %}
-        <p class="view"><a href="{{ site.github.repository_url }}">View the Project on GitHub <small>{{ site.github.repository_nwo }}</small></a></p>
-        {% endif %}
-
-      
-
-        {% if site.github.is_user_page %}  
-        <p class="view"><a href="{{ site.github.owner_url }}">View My GitHub Profile</a></p>
-        {% endif %}
 
         {% if site.show_downloads %}
         <ul>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.3.256/terraform-switcher_0.3.256_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.3.256/terraform-switcher_0.3.256_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/{{ site.github.releases[0].tag_name }}/terraform-switcher_{{ site.github.releases[0].tag_name }}_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/{{ site.github.releases[0].tag_name }}/terraform-switcher_{{ site.github.releases[0].tag_name }}_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
           <li><a href="https://github.com/warrensbox/terraform-switcher/releases">Releases On <strong>GitHub</strong></a></li>
         </ul>
         {% endif %}
@@ -48,13 +39,13 @@
       <section>
 
       {{ content }}
-
+      {% if site.github.is_project_page %}
+      <p><small>VERSION: {{ site.github.releases[0].tag_name }}. This project is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></small></p>
+      {% endif %}
       </section>
       <footer>
-        {% if site.github.is_project_page %}
-        <p>This project is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></p>
-        {% endif %}
         <p><small>View other products &mdash; by <a href="http://warren.veerasingam.com/#about_me">Warren Veerasingam</a></small></p>
+
       </footer>
     </div>
     <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
