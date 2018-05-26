@@ -57,11 +57,40 @@
 
       <h1 id="terraform-switcher">Terraform Switcher</h1>
 
-<p>Often times, we work with different versions
-of terraform for multiple projects. The tfswitch 
-command lets you switch different versions of the terraform installation on your computer. The installation is minimal and
-easy. Simply select the version you require from the dropdown and 
-start using terraform with ease.</p>
+<p>The tfswitch command lets you switch between different terraform versions. 
+If you do not have a particular version installed, tfswitch will download the version you desire.
+The installation is minimal and easy. 
+Simply select the version you require from the dropdown and start using terraform with ease.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>At the moment, installation is available for most unix/linux based operating systems.</p>
+
+<h3 id="homebrew">Homebrew</h3>
+
+<p>Installation for MacOS is the easiest with Homebrew. <a href="https://brew.sh/">If you do not have homebrew installed, click here</a></p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">brew</span> <span class="n">install</span> <span class="n">warrensbox</span><span class="o">/</span><span class="n">tap</span><span class="o">/</span><span class="n">tfswitch</span>
+</code></pre></div></div>
+
+<h3 id="linux">Linux</h3>
+
+<p>Installation ofr other linux operation systems.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-L</span> https://raw.githubusercontent.com/warrensbox/terraform-switcher/0.3.207/install.sh | bash
+</code></pre></div></div>
+
+<h3 id="install-from-source">Install from source</h3>
+
+<p>Alternatively, you can install the binary from source <a href="https://github.com/warrensbox/terraform-switcher/releases">here</a></p>
+
+<h2 id="how-to-use">How to use:</h2>
+
+<ol>
+  <li>You can start using by typing the command <code class="highlighter-rouge">tfswitch</code> on your terminal.</li>
+  <li>Select the version of terraform you require by using the up and down arrow.</li>
+  <li>Hit <strong>Enter</strong> to select the desired version</li>
+</ol>
 
 <p>You can find the source code for Minima at GitHub:
 <a href="https://github.com/jekyll">jekyll</a> /
@@ -158,20 +187,6 @@ start using terraform with ease.</p>
 <h2 id="hello-18">hello</h2>
 <h2 id="hello-19">hello</h2>
 <h2 id="hello-20">hello</h2>
-
-<p>This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at <a href="https://jekyllrb.com/">jekyllrb.com</a></p>
-
-<p>You can find the source code for Minima at GitHub:
-<a href="https://github.com/jekyll">jekyll</a> /
-<a href="https://github.com/jekyll/minima">minima</a></p>
-
-<p>You can find the source code for Jekyll at GitHub:
-<a href="https://github.com/jekyll">jekyll</a> /
-<a href="https://github.com/jekyll/jekyll">jekyll</a></p>
-
-<h2 id="hello-21">hello</h2>
-<h2 id="hello-22">hello</h2>
-<h2 id="hello-23">hello</h2>
 
 <p>This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at <a href="https://jekyllrb.com/">jekyllrb.com</a></p>
 
