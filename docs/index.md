@@ -1,7 +1,7 @@
 # Terraform Switcher 
 
-The tfswitch command lets you switch between different terraform versions. 
-If you do not have a particular version installed, tfswitch will download the version you desire.
+The `tfswitch` command lets you switch between different terraform versions. 
+If you do not have a particular version installed, `tfswitch` will download the version you desire.
 The installation is minimal and easy. 
 Simply select the version you require from the dropdown and start using terraform with ease. 
 
