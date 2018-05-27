@@ -1,6 +1,6 @@
 # Terraform Switcher 
 
-The `tfswitch` command line tool lets you switch between different versions of [terraform](https://www.terraform.io/). 
+The `tfswitch` command line tool lets you switch between different versions of [terraform](https://www.terraform.io/){:target="_blank"}. 
 If you do not have a particular version of terraform installed, `tfswitch` will download the version you desire.
 The installation is minimal and easy. 
 Once installed, simply select the version you require from the dropdown and start using terraform. 
@@ -13,7 +13,7 @@ Once installed, simply select the version you require from the dropdown and star
 
 ### Homebrew
 
-Installation for MacOS is the easiest with Homebrew. [If you do not have homebrew installed, click here](https://brew.sh/). 
+Installation for MacOS is the easiest with Homebrew. [If you do not have homebrew installed, click here](https://brew.sh/){:target="_blank"}. 
 
 
 ```ruby
@@ -46,7 +46,7 @@ Alternatively, you can install the binary from the source [here](https://github.
 
 ## Issues
 
-Please open  *issues* here: [New Issue](https://github.com/warrensbox/terraform-switcher/issues)
+Please open  *issues* here: [New Issue](https://github.com/warrensbox/terraform-switcher/issues){:target="_blank"}
 
 <hr>
 
