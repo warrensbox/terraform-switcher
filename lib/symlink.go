@@ -20,12 +20,12 @@ func RemoveSymlink(symlinkPath string) {
 
 	_, err := os.Lstat(symlinkPath)
 	if err != nil {
-		log.Fatal("Unable to remove symlink. You must have SUDO privileges")
+		log.Fatalf("Unable to find symlink. You must have SUDO privileges - %v \n", err)
 		panic(err)
 	} else {
 		errRemove := os.Remove(symlinkPath)
 		if errRemove != nil {
-			log.Fatal("Unable to remove symlink. You must have SUDO privileges")
+			log.Fatalf("Unable to remove symlink. You must have SUDO privileges - %v \n", err)
 			panic(errRemove)
 		}
 	}
