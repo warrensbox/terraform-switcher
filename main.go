@@ -144,8 +144,15 @@ func main() {
 
 		/* if selected version already exist, */
 		if fileExist {
-			/* remove current symlink and set new symlink to desired version */
-			lib.RemoveSymlink(installedBinPath)
+			/* remove current symlink if exist*/
+			exist := lib.CheckFileExist(installedBinPath)
+
+			if !exist {
+				fmt.Println("Symlink does not exist")
+			} else {
+				fmt.Printf("Symlink exist")
+				lib.RemoveSymlink(installedBinPath)
+			}
 
 			/* set symlink to desired version */
 			lib.CreateSymlink(installLocation+installVersion+version, installedBinPath)
@@ -176,8 +183,15 @@ func main() {
 		/* remove zipped file to clear clutter */
 		lib.RemoveFiles(installLocation + installVersion + version + "_" + goos + "_" + goarch + ".zip")
 
-		/* remove current symlink and set new symlink to desired version  */
-		lib.RemoveSymlink(installedBinPath)
+		/* remove current symlink if exist*/
+		exist := lib.CheckFileExist(installedBinPath)
+
+		if !exist {
+			fmt.Println("Symlink does not exist")
+		} else {
+			fmt.Printf("Symlink exist")
+			lib.RemoveSymlink(installedBinPath)
+		}
 
 		/* set symlink to desired version */
 		lib.CreateSymlink(installLocation+installVersion+version, installedBinPath)
