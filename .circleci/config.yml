@@ -26,9 +26,15 @@ jobs:
       - image: "circleci/ubuntu-server"
 
     steps:
-      - run: apk update && 
-      - run: apk --no-cache add ca-certificates
-      - run: ls
+      - setup_remote_docker
+      - run:
+          name: Build the image(s)
+          command: |
+            docker-compose build
+      - run:
+          name: Run tests
+          command: |
+            docker-compose run ci
 
       - attach_workspace:
           at: build
