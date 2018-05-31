@@ -34,10 +34,22 @@ jobs:
 
   test-alpine:
     docker:
-      - image: "alpine"
+      - image: technekes/circleci:alpine
+
+    working_directory: /tmp/app
 
     steps:
-      - run: ls
+      - setup_remote_docker
+
+      - run:
+          name: Build the image(s)
+          command: |
+            docker-compose build
+
+      - run:
+          name: Run tests
+          command: |
+            docker-compose run ci
 
       - attach_workspace:
           at: build
