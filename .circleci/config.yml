@@ -35,13 +35,7 @@ jobs:
 
   test-alpine:
     docker:
-      - image: "alpine:3.7"
-
-    steps:
-      - run: ls
-
-      - attach_workspace:
-          at: build
+      - image: "alpine"
 
     steps:
       - run: ls
