@@ -21,15 +21,23 @@ jobs:
           root: build
           paths: tfswitch
 
-  test:
+  test-ubuntu:
     docker:
-      - image: "circleci/ruby:2.5-stretch"
+      - image: "circleci/ubuntu-server"
 
     steps:
+    
       - run: ls
 
       - attach_workspace:
           at: build
+
+  test-alpine:
+    docker:
+      - image: "mhart/alpine-node"
+
+    steps:
+      - run: ls
 
   develop-master:
     docker:
@@ -74,12 +82,16 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - test:
+      - test-ubuntu:
+          requires:
+            - build
+      - test-alpine:
           requires:
             - build
       - develop-master:
           requires:
-            - test
+            - test-ubuntu
+            - test-alpine
           filters:
             branches:
               only: 
