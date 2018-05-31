@@ -34,22 +34,10 @@ jobs:
 
   test-alpine:
     docker:
-      - image: technekes/circleci:alpine
-
-    working_directory: /tmp/app
+      - image: "mhart/alpine-node"
 
     steps:
-      - setup_remote_docker
-
-      - run:
-          name: Build the image(s)
-          command: |
-            docker-compose build
-
-      - run:
-          name: Run tests
-          command: |
-            docker-compose run ci
+      - run: ls
 
       - attach_workspace:
           at: build
