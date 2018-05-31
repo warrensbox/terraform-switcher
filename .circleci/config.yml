@@ -39,9 +39,6 @@ jobs:
     steps:
       - run: ls
 
-      - attach_workspace:
-          at: build
-
   develop-master:
     docker:
       - image: circleci/golang:1.10
