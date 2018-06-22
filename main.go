@@ -30,21 +30,10 @@ import (
 )
 
 const (
-	hashiURL       = "https://releases.hashicorp.com/terraform/"
-	installFile    = "terraform"
-	installVersion = "terraform_"
-	binLocation    = "/usr/local/bin/terraform"
-	installPath    = "/.terraform.versions/"
-	macOS          = "_darwin_amd64.zip"
-	linux          = "_darwin_amd64.zip"
+	hashiURL = "https://releases.hashicorp.com/terraform/"
 )
 
 var version = "0.0.1\n"
-
-// var (
-// 	installLocation  = "/tmp"
-// 	installedBinPath = "/tmp"
-// )
 
 func main() {
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch", "something")
@@ -57,7 +46,7 @@ func main() {
 	if *versionFlag {
 		fmt.Println(version)
 	} else if *helpFlag {
-		UsageMessage()
+		usageMessage()
 	} else {
 
 		if len(args) == 1 {
@@ -78,7 +67,7 @@ func main() {
 			} else {
 				fmt.Println("Not a valid terraform version")
 				fmt.Println("Args must be a valid terraform version")
-				UsageMessage()
+				usageMessage()
 			}
 
 		} else if len(args) == 0 {
@@ -103,12 +92,12 @@ func main() {
 
 			lib.Install(tfversion)
 		} else {
-			UsageMessage()
+			usageMessage()
 		}
 	}
 }
 
-func UsageMessage() {
+func usageMessage() {
 	fmt.Println("\n\nInvalid Selection")
 	getopt.PrintUsage(os.Stderr)
 	fmt.Println("Supply the terraform version as an argument, or choose from a menu")
