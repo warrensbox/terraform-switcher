@@ -49,7 +49,7 @@ func init() {
 		installedBinPath = path
 	}
 
-	fmt.Printf("Terraform binary path: %v", installedBinPath)
+	fmt.Printf("Terraform binary path: %v \n", installedBinPath)
 
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
@@ -73,7 +73,7 @@ func Install(tfversion string) {
 		if !exist {
 			fmt.Println("Symlink does not exist")
 		} else {
-			fmt.Printf("Symlink exist")
+			fmt.Println("Symlink exist")
 			RemoveSymlink(installedBinPath)
 		}
 
@@ -112,7 +112,7 @@ func Install(tfversion string) {
 	if !exist {
 		fmt.Println("Symlink does not exist")
 	} else {
-		fmt.Printf("Symlink exist")
+		fmt.Println("Symlink exist")
 		RemoveSymlink(installedBinPath)
 	}
 

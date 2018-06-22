@@ -22,10 +22,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/manifoldco/promptui"
-	lib "github.com/warrensbox/terraform-switcher/lib"
-	"github.com/pborman/getopt"
 	"regexp"
+
+	"github.com/manifoldco/promptui"
+	"github.com/pborman/getopt"
+	lib "github.com/warrensbox/terraform-switcher/lib"
 )
 
 const (
@@ -60,10 +61,20 @@ func main() {
 	} else {
 
 		if len(args) == 1 {
-			semver_regex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
-			if semver_regex.MatchString(args[0]) {
-				requested_version := args[0]
-				lib.Install(requested_version)
+			semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+			if semverRegex.MatchString(args[0]) {
+				requestedVersion := args[0]
+
+				//check if version exist before downloading it
+				tflist, _ := lib.GetTFList(hashiURL)
+				exist := lib.VersionExist(requestedVersion, tflist)
+
+				if exist {
+					lib.Install(requestedVersion)
+				} else {
+					fmt.Println("Not a valid terraform version")
+				}
+
 			} else {
 				fmt.Println("Not a valid terraform version")
 				fmt.Println("Args must be a valid terraform version")
@@ -96,7 +107,6 @@ func main() {
 		}
 	}
 }
-
 
 func UsageMessage() {
 	fmt.Println("\n\nInvalid Selection")

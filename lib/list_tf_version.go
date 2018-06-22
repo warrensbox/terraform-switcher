@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"reflect"
 	"regexp"
 	"strings"
 )
@@ -12,7 +13,7 @@ type tfVersionList struct {
 	tflist []string
 }
 
-//GetTFList:  Get the list of available terraform version given the hashicorp url
+//GetTFList :  Get the list of available terraform version given the hashicorp url
 func GetTFList(hashiURL string) ([]string, error) {
 
 	/* Get list of terraform versions from hashicorp releases */
@@ -47,4 +48,23 @@ func GetTFList(hashiURL string) ([]string, error) {
 
 	return tfVersionList.tflist, nil
 
+}
+
+//VersionExist : check if requested version exist
+func VersionExist(val interface{}, array interface{}) (exists bool) {
+
+	exists = false
+	switch reflect.TypeOf(array).Kind() {
+	case reflect.Slice:
+		s := reflect.ValueOf(array)
+
+		for i := 0; i < s.Len(); i++ {
+			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
+				exists = true
+				return exists
+			}
+		}
+	}
+
+	return exists
 }
