@@ -24,6 +24,8 @@ import (
 
 	"github.com/manifoldco/promptui"
 	lib "github.com/warrensbox/terraform-switcher/lib"
+	"github.com/pborman/getopt"
+	"regexp"
 )
 
 const (
@@ -44,38 +46,60 @@ var version = "0.0.1\n"
 // )
 
 func main() {
+	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch", "something")
+	helpFlag := getopt.BoolLong("help", 'h', "displays help message", "something")
+	_ = versionFlag
 
-	args := os.Args
+	getopt.Parse()
+	args := getopt.Args()
 
-	if len(os.Args) > 1 {
-		switch os := args[1]; os {
-		case "--version":
-			fmt.Println(version)
-		case "version":
-			fmt.Println(version)
-		case "-v":
-			fmt.Println(version)
-		}
+	if *versionFlag {
+		fmt.Println(version)
+	} else if *helpFlag {
+		UsageMessage()
 	} else {
 
-		tflist, _ := lib.GetTFList(hashiURL)
+		if len(args) == 1 {
+			semver_regex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+			if semver_regex.MatchString(args[0]) {
+				requested_version := args[0]
+				lib.Install(requested_version)
+			} else {
+				fmt.Println("Not a valid terraform version")
+				fmt.Println("Args must be a valid terraform version")
+				UsageMessage()
+			}
 
-		/* prompt user to select version of terraform */
-		prompt := promptui.Select{
-			Label: "Select Terraform version",
-			Items: tflist,
+		} else if len(args) == 0 {
+
+			// os.Exit(-1)
+			tflist, _ := lib.GetTFList(hashiURL)
+
+			/* prompt user to select version of terraform */
+			prompt := promptui.Select{
+				Label: "Select Terraform version",
+				Items: tflist,
+			}
+
+			_, tfversion, errPrompt := prompt.Run()
+
+			if errPrompt != nil {
+				log.Printf("Prompt failed %v\n", errPrompt)
+				os.Exit(1)
+			}
+
+			fmt.Printf("Terraform version %q selected\n", tfversion)
+
+			lib.Install(tfversion)
+		} else {
+			UsageMessage()
 		}
-
-		_, tfversion, errPrompt := prompt.Run()
-
-		if errPrompt != nil {
-			log.Printf("Prompt failed %v\n", errPrompt)
-			os.Exit(1)
-		}
-
-		fmt.Printf("Terraform version %q selected\n", tfversion)
-
-		lib.Install(tfversion)
-
 	}
+}
+
+
+func UsageMessage() {
+	fmt.Println("\n\nInvalid Selection")
+	getopt.PrintUsage(os.Stderr)
+	fmt.Println("Supply the terraform version as an argument, or choose from a menu")
 }
