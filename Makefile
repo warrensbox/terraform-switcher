@@ -26,3 +26,8 @@ clean:
 test: $(EXE)
 	mv $(EXE) build
 	go test -v ./...
+
+
+.PHONEY: dep
+dep:
+	dep ensure
