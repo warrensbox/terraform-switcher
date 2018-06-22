@@ -24,11 +24,18 @@
 #   go-tests = true
 #   unused-packages = true
 
+required = ["github.com/pborman/getopt/v2"]
+
+[[constraint]]
+  name = "github.com/pborman/getopt"
+  branch = "master"
 
 [[constraint]]
   name = "github.com/manifoldco/promptui"
   branch = "master"
 
+
 [prune]
   go-tests = true
   unused-packages = true
+
