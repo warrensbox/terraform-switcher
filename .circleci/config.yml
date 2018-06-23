@@ -41,7 +41,7 @@ jobs:
 
   develop-master:
     docker:
-      - image: circleci/golang:1.10
+      - image: warrensbox/go-rb-py-aws
 
     steps:
       - checkout
