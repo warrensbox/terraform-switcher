@@ -1,7 +1,7 @@
 package main
 
 /*
-* Version 0.0.1
+* Version 0.3.0
 * Compatible with Mac OS X ONLY
  */
 
@@ -22,60 +22,87 @@ import (
 	"log"
 	"os"
 
+	"regexp"
+
 	"github.com/manifoldco/promptui"
+	"github.com/pborman/getopt"
 	lib "github.com/warrensbox/terraform-switcher/lib"
 )
 
 const (
-	hashiURL       = "https://releases.hashicorp.com/terraform/"
-	installFile    = "terraform"
-	installVersion = "terraform_"
-	binLocation    = "/usr/local/bin/terraform"
-	installPath    = "/.terraform.versions/"
-	macOS          = "_darwin_amd64.zip"
-	linux          = "_darwin_amd64.zip"
+	hashiURL = "https://releases.hashicorp.com/terraform/"
 )
 
-var version = "0.0.1\n"
-
-// var (
-// 	installLocation  = "/tmp"
-// 	installedBinPath = "/tmp"
-// )
+var version = "0.3.0\n"
 
 func main() {
+	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch")
+	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
+	_ = versionFlag
 
-	args := os.Args
+	getopt.Parse()
+	args := getopt.Args()
 
-	if len(os.Args) > 1 {
-		switch os := args[1]; os {
-		case "--version":
-			fmt.Println(version)
-		case "version":
-			fmt.Println(version)
-		case "-v":
-			fmt.Println(version)
-		}
+	if *versionFlag {
+		fmt.Printf("\nVersion: %v\n", version)
+	} else if *helpFlag {
+		usageMessage()
 	} else {
 
-		tflist, _ := lib.GetTFList(hashiURL)
+		if len(args) == 1 {
+			semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+			if semverRegex.MatchString(args[0]) {
+				requestedVersion := args[0]
 
-		/* prompt user to select version of terraform */
-		prompt := promptui.Select{
-			Label: "Select Terraform version",
-			Items: tflist,
+				//check if version exist before downloading it
+				tflist, _ := lib.GetTFList(hashiURL)
+				exist := lib.VersionExist(requestedVersion, tflist)
+
+				if exist {
+					lib.AddRecent(requestedVersion) //add to recent file for faster lookup
+					lib.Install(requestedVersion)
+				} else {
+					fmt.Println("Not a valid terraform version")
+				}
+
+			} else {
+				fmt.Println("Not a valid terraform version")
+				fmt.Println("Args must be a valid terraform version")
+				usageMessage()
+			}
+
+		} else if len(args) == 0 {
+
+			tflist, _ := lib.GetTFList(hashiURL)
+			recentVersions, _ := lib.GetRecentVersions() //get recent versions from RECENT file
+			tflist = append(recentVersions, tflist...)   //append recent versions to the top of the list
+			tflist = lib.RemoveDuplicateVersions(tflist) //remove duplicate version
+
+			/* prompt user to select version of terraform */
+			prompt := promptui.Select{
+				Label: "Select Terraform version",
+				Items: tflist,
+			}
+
+			_, tfversion, errPrompt := prompt.Run()
+
+			if errPrompt != nil {
+				log.Printf("Prompt failed %v\n", errPrompt)
+				os.Exit(1)
+			}
+
+			fmt.Printf("Terraform version %q selected\n", tfversion)
+			lib.AddRecent(tfversion) //add to recent file for faster lookup
+			lib.Install(tfversion)
+
+		} else {
+			usageMessage()
 		}
-
-		_, tfversion, errPrompt := prompt.Run()
-
-		if errPrompt != nil {
-			log.Printf("Prompt failed %v\n", errPrompt)
-			os.Exit(1)
-		}
-
-		fmt.Printf("Terraform version %q selected\n", tfversion)
-
-		lib.Install(tfversion)
-
 	}
+}
+
+func usageMessage() {
+	fmt.Print("\n\n")
+	getopt.PrintUsage(os.Stderr)
+	fmt.Println("Supply the terraform version as an argument, or choose from a menu")
 }

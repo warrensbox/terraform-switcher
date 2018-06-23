@@ -46,6 +46,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/pborman/getopt"
+  packages = [
+    ".",
+    "v2"
+  ]
+  revision = "7148bc3a4c3008adfcab60cbebfd0576018f330b"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "7c87d13f8e835d2fb3a70a2912c811ed0c1d241b"
@@ -53,6 +62,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c5a19c2965341aa002c255d5d4897641f71d9b408c488d91893ad7c8ce3f1c42"
+  inputs-digest = "a5dc72475471726b59af6f658f3a1e826062fdc6b42689d1943e239d936df0cb"
   solver-name = "gps-cdcl"
   solver-version = 1
