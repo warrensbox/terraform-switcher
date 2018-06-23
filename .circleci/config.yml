@@ -21,15 +21,23 @@ jobs:
           root: build
           paths: tfswitch
 
-  test:
+  test-ubuntu:
     docker:
-      - image: "circleci/ruby:2.5-stretch"
+      - image: "circleci/ubuntu-server"
 
     steps:
+    
       - run: ls
 
       - attach_workspace:
           at: build
+
+  test-alpine:
+    docker:
+      - image: "mhart/alpine-node"
+
+    steps:
+      - run: ls
 
   develop-master:
     docker:
@@ -39,17 +47,12 @@ jobs:
       - checkout
       - run: 
           command: |
-            git status
-            source version 
-            export RELEASE_VERSION
-            git tag $RELEASE_VERSION.${CIRCLE_BUILD_NUM}
-            git config --global user.email "warren.veerasingam@gmail.com"
-            git config --global user.name "warrensbox"
-            git push origin $RELEASE_VERSION.${CIRCLE_BUILD_NUM}
+            echo "Placeholder"
+
 
   release:
     docker:
-      - image: circleci/golang:1.10
+      - image: warrensbox/go-rb-py-aws
 
     steps:
       - checkout
@@ -61,6 +64,7 @@ jobs:
             RELEASE_VERSION=$RELEASE_VERSION.${CIRCLE_BUILD_NUM}
             export RELEASE_VERSION;
             echo $RELEASE_VERSION
+            cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
             go get -v -t -d ./...
             git config user.email "warren.veerasingam@gmail.com"
             git config user.name "warrensbox"
@@ -74,12 +78,16 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - test:
+      - test-ubuntu:
+          requires:
+            - build
+      - test-alpine:
           requires:
             - build
       - develop-master:
           requires:
-            - test
+            - test-ubuntu
+            - test-alpine
           filters:
             branches:
               only: 

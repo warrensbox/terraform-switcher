@@ -1,7 +1,7 @@
 package main
 
 /*
-* Version 0.0.1
+* Version 0.3.0
 * Compatible with Mac OS X ONLY
  */
 
@@ -19,183 +19,90 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
-	"os/user"
+
 	"regexp"
-	"runtime"
-	"strings"
 
 	"github.com/manifoldco/promptui"
+	"github.com/pborman/getopt"
 	lib "github.com/warrensbox/terraform-switcher/lib"
 )
 
-type tfVersionList struct {
-	tflist []string
-}
-
 const (
-	hashiURL       = "https://releases.hashicorp.com/terraform/"
-	installFile    = "terraform"
-	installVersion = "terraform_"
-	binLocation    = "/usr/local/bin/terraform"
-	installPath    = "/.terraform.versions/"
-	macOS          = "_darwin_amd64.zip"
-	linux          = "_darwin_amd64.zip"
+	hashiURL = "https://releases.hashicorp.com/terraform/"
 )
 
-var version = "0.0.1\n"
+var version = "0.3.0\n"
 
 func main() {
+	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch")
+	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
+	_ = versionFlag
 
-	args := os.Args
+	getopt.Parse()
+	args := getopt.Args()
 
-	if len(os.Args) > 1 {
-		switch os := args[1]; os {
-		case "--version":
-			fmt.Println(version)
-		case "version":
-			fmt.Println(version)
-		case "-v":
-			fmt.Println(version)
-		}
+	if *versionFlag {
+		fmt.Printf("\nVersion: %v\n", version)
+	} else if *helpFlag {
+		usageMessage()
 	} else {
 
-		goarch := runtime.GOARCH
-		goos := runtime.GOOS
+		if len(args) == 1 {
+			semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+			if semverRegex.MatchString(args[0]) {
+				requestedVersion := args[0]
 
-		/* get current user */
-		usr, errCurr := user.Current()
-		if errCurr != nil {
-			log.Fatal(errCurr)
-		}
+				//check if version exist before downloading it
+				tflist, _ := lib.GetTFList(hashiURL)
+				exist := lib.VersionExist(requestedVersion, tflist)
 
-		/* set installation location */
-		installLocation := usr.HomeDir + installPath
+				if exist {
+					lib.AddRecent(requestedVersion) //add to recent file for faster lookup
+					lib.Install(requestedVersion)
+				} else {
+					fmt.Println("Not a valid terraform version")
+				}
 
-		/* set default binary path for terraform */
-		installedBinPath := binLocation
-
-		/* find terraform binary location if terraform is already installed*/
-		cmd := lib.NewCommand("terraform")
-		next := cmd.Find()
-		//existed := false
-
-		/* overrride installation default binary path if terraform is already installed */
-		/* find the last bin path */
-		for path := next(); len(path) > 0; path = next() {
-			fmt.Printf("Found installation path: %v \n", path)
-			installedBinPath = path
-		}
-
-		fmt.Printf("Terraform binary path: %v", installedBinPath)
-
-		/* Create local installation directory if it does not exist */
-		lib.CreateDirIfNotExist(installLocation)
-
-		/* Get list of terraform versions from hashicorp releases */
-		resp, errURL := http.Get(hashiURL)
-		if errURL != nil {
-			log.Printf("Error getting url: %v", errURL)
-		}
-		defer resp.Body.Close()
-
-		body, errBody := ioutil.ReadAll(resp.Body)
-		if errBody != nil {
-			log.Printf("Error reading body: %v", errBody)
-			return
-		}
-
-		bodyString := string(body)
-		result := strings.Split(bodyString, "\n")
-
-		var tfVersionList tfVersionList
-
-		for i := range result {
-			//getting versions from body; should return match /X.X.X/
-			r, _ := regexp.Compile(`\/(\d+)(\.)(\d+)(\.)(\d+)\/`)
-
-			if r.MatchString(result[i]) {
-				str := r.FindString(result[i])
-				trimstr := strings.Trim(str, "/") //remove "/" from /X.X.X/
-				tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
-			}
-		}
-
-		/* prompt user to select version of terraform */
-		prompt := promptui.Select{
-			Label: "Select Terraform version",
-			Items: tfVersionList.tflist,
-		}
-
-		_, version, errPrompt := prompt.Run()
-
-		if errPrompt != nil {
-			log.Printf("Prompt failed %v\n", errPrompt)
-			os.Exit(1)
-		}
-
-		fmt.Printf("Terraform version %q selected\n", version)
-
-		/* check if selected version already downloaded */
-		fileExist := lib.CheckFileExist(installLocation + installVersion + version)
-
-		/* if selected version already exist, */
-		if fileExist {
-			/* remove current symlink if exist*/
-			exist := lib.CheckFileExist(installedBinPath)
-
-			if !exist {
-				fmt.Println("Symlink does not exist")
 			} else {
-				fmt.Printf("Symlink exist")
-				lib.RemoveSymlink(installedBinPath)
+				fmt.Println("Not a valid terraform version")
+				fmt.Println("Args must be a valid terraform version")
+				usageMessage()
 			}
 
-			/* set symlink to desired version */
-			lib.CreateSymlink(installLocation+installVersion+version, installedBinPath)
-			fmt.Printf("Swicthed terraform to version %q \n", version)
-			os.Exit(0)
-		}
+		} else if len(args) == 0 {
 
-		/* if selected version already exist, */
-		/* proceed to download it from the hashicorp release page */
-		url := hashiURL + version + "/" + installVersion + version + "_" + goos + "_" + goarch + ".zip"
-		zipFile, _ := lib.DownloadFromURL(installLocation, url)
+			tflist, _ := lib.GetTFList(hashiURL)
+			recentVersions, _ := lib.GetRecentVersions() //get recent versions from RECENT file
+			tflist = append(recentVersions, tflist...)   //append recent versions to the top of the list
+			tflist = lib.RemoveDuplicateVersions(tflist) //remove duplicate version
 
-		fmt.Printf("Downloaded zipFile: %v \n", zipFile)
+			/* prompt user to select version of terraform */
+			prompt := promptui.Select{
+				Label: "Select Terraform version",
+				Items: tflist,
+			}
 
-		/* unzip the downloaded zipfile */
-		files, errUnzip := lib.Unzip(zipFile, installLocation)
-		if errUnzip != nil {
-			fmt.Println("Unable to unzip downloaded zip file")
-			log.Fatal(errUnzip)
-			os.Exit(1)
-		}
+			_, tfversion, errPrompt := prompt.Run()
 
-		fmt.Println("Unzipped: " + strings.Join(files, "\n"))
+			if errPrompt != nil {
+				log.Printf("Prompt failed %v\n", errPrompt)
+				os.Exit(1)
+			}
 
-		/* rename unzipped file to terraform version name - terraform_x.x.x */
-		lib.RenameFile(installLocation+installFile, installLocation+installVersion+version)
+			fmt.Printf("Terraform version %q selected\n", tfversion)
+			lib.AddRecent(tfversion) //add to recent file for faster lookup
+			lib.Install(tfversion)
 
-		/* remove zipped file to clear clutter */
-		lib.RemoveFiles(installLocation + installVersion + version + "_" + goos + "_" + goarch + ".zip")
-
-		/* remove current symlink if exist*/
-		exist := lib.CheckFileExist(installedBinPath)
-
-		if !exist {
-			fmt.Println("Symlink does not exist")
 		} else {
-			fmt.Printf("Symlink exist")
-			lib.RemoveSymlink(installedBinPath)
+			usageMessage()
 		}
-
-		/* set symlink to desired version */
-		lib.CreateSymlink(installLocation+installVersion+version, installedBinPath)
-		fmt.Printf("Swicthed terraform to version %q \n", version)
-		os.Exit(0)
 	}
+}
+
+func usageMessage() {
+	fmt.Print("\n\n")
+	getopt.PrintUsage(os.Stderr)
+	fmt.Println("Supply the terraform version as an argument, or choose from a menu")
 }

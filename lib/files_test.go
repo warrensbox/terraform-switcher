@@ -1,11 +1,15 @@
 package lib_test
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/user"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -130,7 +134,7 @@ func TestUnzip(t *testing.T) {
 	cleanUp(installLocation)
 }
 
-// TestCreateDirIfNotExist : Create a directory, check directory exist,
+// TestCreateDirIfNotExist : Create a directory, check directory exist
 func TestCreateDirIfNotExist(t *testing.T) {
 
 	installPath := "/.terraform.versions_test/"
@@ -161,4 +165,127 @@ func TestCreateDirIfNotExist(t *testing.T) {
 	}
 
 	cleanUp(installLocation)
+}
+
+//TestWriteLines : write to file, check readline to verify
+func TestWriteLines(t *testing.T) {
+
+	installPath := "/.terraform.versions_test/"
+	recentFile := "RECENT"
+	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+	installLocation := usr.HomeDir + installPath
+
+	createDirIfNotExist(installLocation)
+
+	test_array := []string{"0.0.1", "0.0.2", "0.0.3"}
+
+	errWrite := lib.WriteLines(test_array, installLocation+recentFile)
+
+	if errWrite != nil {
+		t.Logf("Write should work %v (unexpected)", errWrite)
+		log.Fatal(errWrite)
+	} else {
+
+		var (
+			file             *os.File
+			part             []byte
+			prefix           bool
+			errOpen, errRead error
+			lines            []string
+		)
+		if file, errOpen = os.Open(installLocation + recentFile); errOpen != nil {
+			log.Fatal(errOpen)
+		}
+		defer file.Close()
+
+		reader := bufio.NewReader(file)
+		buffer := bytes.NewBuffer(make([]byte, 0))
+		for {
+			if part, prefix, errRead = reader.ReadLine(); errRead != nil {
+				break
+			}
+			buffer.Write(part)
+			if !prefix {
+				lines = append(lines, buffer.String())
+				buffer.Reset()
+			}
+		}
+		if errRead == io.EOF {
+			errRead = nil
+		}
+
+		if errRead != nil {
+			log.Fatalf("Error: %s\n", errRead)
+		}
+
+		for _, line := range lines {
+			if !semverRegex.MatchString(line) {
+				log.Fatalf("Write to file is not invalid: %s\n", line)
+				break
+			}
+		}
+
+		t.Log("Write versions exist (expected)")
+	}
+
+	cleanUp(installLocation)
+
+}
+
+// TestReadLines : read from file, check write to verify
+func TestReadLines(t *testing.T) {
+	installPath := "/.terraform.versions_test/"
+	recentFile := "RECENT"
+	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+	installLocation := usr.HomeDir + installPath
+
+	createDirIfNotExist(installLocation)
+
+	test_array := []string{"0.0.1", "0.0.2", "0.0.3"}
+
+	var (
+		file      *os.File
+		errCreate error
+	)
+
+	if file, errCreate = os.Create(installLocation + recentFile); errCreate != nil {
+		log.Fatalf("Error: %s\n", errCreate)
+	}
+	defer file.Close()
+
+	for _, item := range test_array {
+		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
+		if err != nil {
+			log.Fatalf("Error: %s\n", err)
+			break
+		}
+	}
+
+	lines, errRead := lib.ReadLines(installLocation + recentFile)
+
+	if errRead != nil {
+		log.Fatalf("Error: %s\n", errRead)
+	}
+
+	for _, line := range lines {
+		if !semverRegex.MatchString(line) {
+			log.Fatalf("Write to file is not invalid: %s\n", line)
+			break
+		}
+	}
+
+	t.Log("Read versions exist (expected)")
+
+	cleanUp(installLocation)
+
 }
