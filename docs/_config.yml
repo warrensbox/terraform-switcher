@@ -6,4 +6,6 @@ title: tfswitch
 
 show_downloads: true
 
+exclude: [vendor]
+
 #github: [metadata] 
