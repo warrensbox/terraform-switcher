@@ -47,7 +47,7 @@ jobs:
       - checkout
       - run: 
           command: |
-            make test
+            echo "Placeholder"
 
 
   release:
