@@ -1,7 +1,7 @@
 package main
 
 /*
-* Version 0.0.1
+* Version 0.3.0
 * Compatible with Mac OS X ONLY
  */
 
@@ -33,18 +33,18 @@ const (
 	hashiURL = "https://releases.hashicorp.com/terraform/"
 )
 
-var version = "0.0.1\n"
+var version = "0.3.0\n"
 
 func main() {
-	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch", "something")
-	helpFlag := getopt.BoolLong("help", 'h', "displays help message", "something")
+	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch")
+	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
 	_ = versionFlag
 
 	getopt.Parse()
 	args := getopt.Args()
 
 	if *versionFlag {
-		fmt.Println(version)
+		fmt.Printf("\nVersion: %v\n", version)
 	} else if *helpFlag {
 		usageMessage()
 	} else {
@@ -59,6 +59,7 @@ func main() {
 				exist := lib.VersionExist(requestedVersion, tflist)
 
 				if exist {
+					lib.AddRecent(requestedVersion) //add to recent file for faster lookup
 					lib.Install(requestedVersion)
 				} else {
 					fmt.Println("Not a valid terraform version")
@@ -72,8 +73,10 @@ func main() {
 
 		} else if len(args) == 0 {
 
-			// os.Exit(-1)
 			tflist, _ := lib.GetTFList(hashiURL)
+			recentVersions, _ := lib.GetRecentVersions() //get recent versions from RECENT file
+			tflist = append(recentVersions, tflist...)   //append recent versions to the top of the list
+			tflist = lib.RemoveDuplicateVersions(tflist) //remove duplicate version
 
 			/* prompt user to select version of terraform */
 			prompt := promptui.Select{
@@ -89,8 +92,9 @@ func main() {
 			}
 
 			fmt.Printf("Terraform version %q selected\n", tfversion)
-
+			lib.AddRecent(tfversion) //add to recent file for faster lookup
 			lib.Install(tfversion)
+
 		} else {
 			usageMessage()
 		}
@@ -98,7 +102,7 @@ func main() {
 }
 
 func usageMessage() {
-	fmt.Println("\n\nInvalid Selection")
+	fmt.Print("\n\n")
 	getopt.PrintUsage(os.Stderr)
 	fmt.Println("Supply the terraform version as an argument, or choose from a menu")
 }

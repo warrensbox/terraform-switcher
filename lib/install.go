@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"regexp"
 	"runtime"
 	"strings"
 )
@@ -17,6 +18,7 @@ const (
 	installPath    = "/.terraform.versions/"
 	macOS          = "_darwin_amd64.zip"
 	linux          = "_darwin_amd64.zip"
+	recentFile     = "RECENT"
 )
 
 var (
@@ -73,7 +75,6 @@ func Install(tfversion string) {
 		if !exist {
 			fmt.Println("Symlink does not exist")
 		} else {
-			fmt.Println("Symlink exist")
 			RemoveSymlink(installedBinPath)
 		}
 
@@ -120,4 +121,78 @@ func Install(tfversion string) {
 	CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
 	fmt.Printf("Swicthed terraform to version %q \n", tfversion)
 	os.Exit(0)
+}
+
+// AddRecent : add to recent file
+func AddRecent(requestedVersion string) {
+
+	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+
+	fileExist := CheckFileExist(installLocation + recentFile)
+	if fileExist {
+		lines, errRead := ReadLines(installLocation + recentFile)
+
+		if errRead != nil {
+			fmt.Printf("Error: %s\n", errRead)
+			return
+		}
+
+		for _, line := range lines {
+			if !semverRegex.MatchString(line) {
+				fmt.Println("file corrupted")
+				RemoveFiles(installLocation + recentFile)
+				CreateRecentFile(requestedVersion)
+				return
+			}
+		}
+
+		versionExist := VersionExist(requestedVersion, lines)
+
+		if !versionExist {
+			if len(lines) >= 3 {
+				_, lines = lines[len(lines)-1], lines[:len(lines)-1]
+
+				lines = append([]string{requestedVersion}, lines...)
+				WriteLines(lines, installLocation+recentFile)
+			} else {
+				lines = append([]string{requestedVersion}, lines...)
+				WriteLines(lines, installLocation+recentFile)
+			}
+		}
+
+	} else {
+		CreateRecentFile(requestedVersion)
+	}
+}
+
+// GetRecentVersions : get recent version from file
+func GetRecentVersions() ([]string, error) {
+
+	fileExist := CheckFileExist(installLocation + recentFile)
+	if fileExist {
+		semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+
+		lines, errRead := ReadLines(installLocation + recentFile)
+
+		if errRead != nil {
+			fmt.Printf("Error: %s\n", errRead)
+			return nil, errRead
+		}
+
+		for _, line := range lines {
+			if !semverRegex.MatchString(line) {
+				RemoveFiles(installLocation + recentFile)
+				return nil, errRead
+			}
+		}
+
+		return lines, nil
+	}
+
+	return nil, nil
+}
+
+//CreateRecentFile : create a recent file
+func CreateRecentFile(requestedVersion string) {
+	WriteLines([]string{requestedVersion}, installLocation+recentFile)
 }
