@@ -48,6 +48,12 @@ jobs:
       - run: 
           command: |
             echo "Placeholder"
+            cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+            git config user.email "warren.veerasingam@gmail.com"
+            git config user.name "warrensbox"
+            git add .
+            git commit -m "Release Version"
+            git push origin ${RELEASE_VERSION}
 
 
   release:
