@@ -40,8 +40,9 @@ Alternatively, you can install the binary from the source [here](https://github.
 
 1.  You can switch between different versions of terraform by typing the command `tfswitch` on your terminal. 
 2.  Select the version of terraform you require by using the up and down arrow.
-3.  Hit **Enter** to select the desired version
-The most recently selected versions are presented at the top of the dropdown
+3.  Hit **Enter** to select the desired version.
+
+The most recently selected versions are presented at the top of the dropdown.
 
 ### Supply version on command line
 <img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v4.gif" alt="drawing" style="width: 480px;"/>
