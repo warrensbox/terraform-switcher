@@ -44,7 +44,7 @@ Alternatively, you can install the binary from the source [here](https://github.
 The most recently selected versions are presented at the top of the dropdown
 
 ### Supply version on command line
-<img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v4.gif" alt="drawing" style="width: 375px;"/>
+<img align="center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v4.gif" alt="drawing" style="width: 480px;"/>
 
 1. You can also supply the desired version as an argument on the command line
 2. For example, `tfswitch 0.10.5` for version 0.10.5 of terraform
