@@ -22,3 +22,9 @@ build
 dist
 
 .DS_Store
+
+docs/vendor/**
+
+docs/.bundle/**
+
+.sass-cache
