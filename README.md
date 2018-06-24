@@ -53,9 +53,9 @@ The most recently selected versions are presented at the top of the dropdown.
 ### Supply version on command line
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v4.gif" alt="drawing" style="width: 170px;"/>
 
-1. You can also supply the desired version as an argument on the command line
-2. For example, `tfswitch 0.10.5` for version 0.10.5 of terraform
-3. Hit **Enter** to after completed
+1. You can also supply the desired version as an argument on the command line.
+2. For example, `tfswitch 0.10.5` for version 0.10.5 of terraform.
+3. Hit **Enter** to switch.
 
 ## Additional Info
 
