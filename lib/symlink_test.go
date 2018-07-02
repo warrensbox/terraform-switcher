@@ -82,3 +82,37 @@ func TestRemoveSymlink(t *testing.T) {
 		t.Logf("Symlink was removed  %v [expected]", lnCheck)
 	}
 }
+
+// TestCheckSymlink : Create symlink, test if file is symlink
+func TestCheckSymlink(t *testing.T) {
+
+	testSymlinkSrc := "/test-tgshifter-src"
+
+	testSymlinkDest := "/test-tgshifter-dest"
+
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+	symlinkPathSrc := usr.HomeDir + testSymlinkSrc
+	symlinkPathDest := usr.HomeDir + testSymlinkDest
+
+	ln, _ := os.Readlink(symlinkPathSrc)
+
+	if ln != symlinkPathDest {
+		t.Log("Creating symlink")
+		if err := os.Symlink(symlinkPathDest, symlinkPathSrc); err != nil {
+			t.Error(err)
+		}
+	}
+
+	symlinkExist := lib.CheckSymlink(symlinkPathSrc)
+
+	if symlinkExist {
+		t.Logf("Symlink does exist %v [expected]", ln)
+	} else {
+		t.Logf("Symlink does not exist %v [unexpected]", ln)
+	}
+
+	os.Remove(symlinkPathSrc)
+}

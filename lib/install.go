@@ -16,8 +16,6 @@ const (
 	installVersion = "terraform_"
 	binLocation    = "/usr/local/bin/terraform"
 	installPath    = "/.terraform.versions/"
-	macOS          = "_darwin_amd64.zip"
-	linux          = "_darwin_amd64.zip"
 	recentFile     = "RECENT"
 )
 
@@ -69,19 +67,19 @@ func Install(tfversion string) {
 
 	/* if selected version already exist, */
 	if fileExist {
-		/* remove current symlink if exist*/
-		exist := CheckFileExist(installedBinPath)
 
-		if !exist {
-			fmt.Println("Symlink does not exist")
-		} else {
+		/* remove current symlink if exist*/
+		symlinkExist := CheckSymlink(installedBinPath)
+
+		if symlinkExist {
+			fmt.Println("Reset symlink")
 			RemoveSymlink(installedBinPath)
 		}
 
 		/* set symlink to desired version */
 		CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
 		fmt.Printf("Swicthed terraform to version %q \n", tfversion)
-		os.Exit(0)
+		return
 	}
 
 	/* if selected version already exist, */
@@ -108,12 +106,10 @@ func Install(tfversion string) {
 	RemoveFiles(installLocation + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip")
 
 	/* remove current symlink if exist*/
-	exist := CheckFileExist(installedBinPath)
+	symlinkExist := CheckSymlink(installedBinPath)
 
-	if !exist {
-		fmt.Println("Symlink does not exist")
-	} else {
-		fmt.Println("Symlink exist")
+	if symlinkExist {
+		fmt.Println("Reset symlink")
 		RemoveSymlink(installedBinPath)
 	}
 
