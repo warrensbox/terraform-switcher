@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -161,4 +162,42 @@ func ReadLines(path string) (lines []string, err error) {
 		err = nil
 	}
 	return
+}
+
+//IsDirEmpty : check if directory is empty (TODO UNIT TEST)
+func IsDirEmpty(name string) bool {
+
+	exist := false
+
+	f, err := os.Open(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	_, err = f.Readdirnames(1) // Or f.Readdir(1)
+	if err == io.EOF {
+		exist = true
+	}
+	return exist // Either not empty or error, suits both cases
+}
+
+//CheckDirHasTGBin : // check binary exist (TODO UNIT TEST)
+func CheckDirHasTGBin(dir, prefix string) bool {
+
+	exist := false
+
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Fatal(err)
+		//return exist, err
+	}
+	res := []string{}
+	for _, f := range files {
+		if !f.IsDir() && strings.HasPrefix(f.Name(), prefix) {
+			res = append(res, filepath.Join(dir, f.Name()))
+			exist = true
+		}
+	}
+	return exist
 }

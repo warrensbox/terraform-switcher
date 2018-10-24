@@ -91,7 +91,6 @@ func main() {
 				os.Exit(1)
 			}
 
-			fmt.Printf("Terraform version %q selected\n", tfversion)
 			lib.AddRecent(tfversion) //add to recent file for faster lookup
 			lib.Install(tfversion)
 
