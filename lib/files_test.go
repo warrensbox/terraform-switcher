@@ -10,8 +10,10 @@ import (
 	"os/user"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/warrensbox/terraform-switcher/lib"
 )
@@ -288,4 +290,71 @@ func TestReadLines(t *testing.T) {
 
 	cleanUp(installLocation)
 
+}
+
+// TestIsDirEmpty : create empty directory, check if empty
+func TestIsDirEmpty(t *testing.T) {
+
+	current := time.Now()
+
+	installPath := "/.terraform.versions_test/"
+
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+	installLocation := usr.HomeDir + installPath
+
+	test_dir := current.Format("2006-01-02")
+	t.Logf("Create test dir: %v \n", test_dir)
+
+	createDirIfNotExist(installLocation)
+
+	createDirIfNotExist(installLocation + "/" + test_dir)
+
+	empty := lib.IsDirEmpty(installLocation + "/" + test_dir)
+
+	t.Logf("Expected directory to be empty %v [expected]", installLocation+"/"+test_dir)
+
+	if empty == true {
+		t.Logf("Directory empty")
+	} else {
+		t.Error("Directory not empty")
+	}
+
+	cleanUp(installLocation + "/" + test_dir)
+
+	cleanUp(installLocation)
+
+}
+
+// TestCheckDirHasTGBin : create tg file in directory, check if exist
+func TestCheckDirHasTFBin(t *testing.T) {
+
+	goarch := runtime.GOARCH
+	goos := runtime.GOOS
+	installPath := "/.terraform.versions_test/"
+	installFile := "terraform"
+
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+	installLocation := usr.HomeDir + installPath
+
+	createDirIfNotExist(installLocation)
+
+	createFile(installLocation + installFile + "_" + goos + "_" + goarch)
+
+	empty := lib.CheckDirHasTGBin(installLocation, installFile)
+
+	t.Logf("Expected directory to have tf file %v [expected]", installLocation+installFile+"_"+goos+"_"+goarch)
+
+	if empty == true {
+		t.Logf("Directory empty")
+	} else {
+		t.Error("Directory not empty")
+	}
+
+	cleanUp(installLocation)
 }

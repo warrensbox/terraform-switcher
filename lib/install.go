@@ -7,7 +7,6 @@ import (
 	"os/user"
 	"regexp"
 	"runtime"
-	"strings"
 )
 
 const (
@@ -16,8 +15,6 @@ const (
 	installVersion = "terraform_"
 	binLocation    = "/usr/local/bin/terraform"
 	installPath    = "/.terraform.versions/"
-	macOS          = "_darwin_amd64.zip"
-	linux          = "_darwin_amd64.zip"
 	recentFile     = "RECENT"
 )
 
@@ -47,11 +44,8 @@ func init() {
 	/* overrride installation default binary path if terraform is already installed */
 	/* find the last bin path */
 	for path := next(); len(path) > 0; path = next() {
-		fmt.Printf("Found installation path: %v \n", path)
 		installedBinPath = path
 	}
-
-	fmt.Printf("Terraform binary path: %v \n", installedBinPath)
 
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
@@ -69,12 +63,11 @@ func Install(tfversion string) {
 
 	/* if selected version already exist, */
 	if fileExist {
-		/* remove current symlink if exist*/
-		exist := CheckFileExist(installedBinPath)
 
-		if !exist {
-			fmt.Println("Symlink does not exist")
-		} else {
+		/* remove current symlink if exist*/
+		symlinkExist := CheckSymlink(installedBinPath)
+
+		if symlinkExist {
 			RemoveSymlink(installedBinPath)
 		}
 
@@ -89,17 +82,13 @@ func Install(tfversion string) {
 	url := hashiURL + tfversion + "/" + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip"
 	zipFile, _ := DownloadFromURL(installLocation, url)
 
-	fmt.Printf("Downloaded zipFile: %v \n", zipFile)
-
 	/* unzip the downloaded zipfile */
-	files, errUnzip := Unzip(zipFile, installLocation)
+	_, errUnzip := Unzip(zipFile, installLocation)
 	if errUnzip != nil {
 		fmt.Println("Unable to unzip downloaded zip file")
 		log.Fatal(errUnzip)
 		os.Exit(1)
 	}
-
-	fmt.Println("Unzipped: " + strings.Join(files, "\n"))
 
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
 	RenameFile(installLocation+installFile, installLocation+installVersion+tfversion)
@@ -108,12 +97,9 @@ func Install(tfversion string) {
 	RemoveFiles(installLocation + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip")
 
 	/* remove current symlink if exist*/
-	exist := CheckFileExist(installedBinPath)
+	symlinkExist := CheckSymlink(installedBinPath)
 
-	if !exist {
-		fmt.Println("Symlink does not exist")
-	} else {
-		fmt.Println("Symlink exist")
+	if symlinkExist {
 		RemoveSymlink(installedBinPath)
 	}
 
