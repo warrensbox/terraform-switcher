@@ -73,8 +73,8 @@ func Install(tfversion string) {
 
 		/* set symlink to desired version */
 		CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
-		fmt.Printf("Swicthed terraform to version %q \n", tfversion)
-		return
+		fmt.Printf("Switched terraform to version %q \n", tfversion)
+		os.Exit(0)
 	}
 
 	/* if selected version already exist, */
@@ -105,7 +105,7 @@ func Install(tfversion string) {
 
 	/* set symlink to desired version */
 	CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
-	fmt.Printf("Swicthed terraform to version %q \n", tfversion)
+	fmt.Printf("Switched terraform to version %q \n", tfversion)
 	os.Exit(0)
 }
 

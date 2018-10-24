@@ -41,13 +41,19 @@ jobs:
 
   develop-master:
     docker:
-      - image: circleci/golang:1.10
+      - image: warrensbox/go-rb-py-aws
 
     steps:
       - checkout
       - run: 
           command: |
             echo "Placeholder"
+            # cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+            # git config user.email "warren.veerasingam@gmail.com"
+            # git config user.name "warrensbox"
+            # git add .
+            # git commit -m "Release Version"
+            # git push origin ${RELEASE_VERSION}
 
 
   release:
@@ -64,13 +70,15 @@ jobs:
             RELEASE_VERSION=$RELEASE_VERSION.${CIRCLE_BUILD_NUM}
             export RELEASE_VERSION;
             echo $RELEASE_VERSION
-            cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+          
             go get -v -t -d ./...
             git config user.email "warren.veerasingam@gmail.com"
             git config user.name "warrensbox"
             git tag -a ${RELEASE_VERSION} -m "Release Version"
             git push origin ${RELEASE_VERSION}
             curl -L https://git.io/goreleaser | VERSION=v0.76.1 bash
+
+            cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
 
 workflows:
   version: 2
