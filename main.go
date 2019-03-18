@@ -19,8 +19,10 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	"regexp"
 
@@ -42,6 +44,13 @@ func main() {
 
 	getopt.Parse()
 	args := getopt.Args()
+
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Printf("Failed to get current directory %v\n", err)
+		os.Exit(1)
+	}
+	rcfile := dir + "/.tfswitchrc"
 
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
@@ -71,6 +80,17 @@ func main() {
 				usageMessage()
 			}
 
+		} else if _, err := os.Stat(rcfile); err == nil {
+
+			file_contents, err := ioutil.ReadFile(rcfile)
+			if err != nil {
+				log.Printf("Failed to read .tfswitchrc %v\n", err)
+				os.Exit(1)
+			}
+			tfversion := strings.TrimSuffix(string(file_contents), "\n")
+
+			lib.AddRecent(string(tfversion)) //add to recent file for faster lookup
+			lib.Install(string(tfversion))
 		} else if len(args) == 0 {
 
 			tflist, _ := lib.GetTFList(hashiURL)

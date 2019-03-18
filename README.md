@@ -2,16 +2,16 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher)](https://goreportcard.com/report/github.com/warrensbox/terraform-switcher)
 [![CircleCI](https://circleci.com/gh/warrensbox/terraform-switcher/tree/master.svg?style=shield&circle-token=55ddceec95ff67eb38269152282f8a7d761c79a5)](https://circleci.com/gh/warrensbox/terraform-switcher)
 
-# Terraform Switcher 
+# Terraform Switcher
 
 <img style="text-allign:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/smallerlogo.png" alt="drawing" width="120" height="130"/>
 
 <!-- ![gopher](https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/logo.png =100x20) -->
 
-The `tfswitch` command line tool lets you switch between different versions of [terraform](https://www.terraform.io/). 
+The `tfswitch` command line tool lets you switch between different versions of [terraform](https://www.terraform.io/).
 If you do not have a particular version of terraform installed, `tfswitch` will download the version you desire.
-The installation is minimal and easy. 
-Once installed, simply select the version you require from the dropdown and start using terraform. 
+The installation is minimal and easy.
+Once installed, simply select the version you require from the dropdown and start using terraform.
 
 See installation guide here: [tfswitch installation](https://warrensbox.github.io/terraform-switcher/)
 
@@ -21,7 +21,7 @@ See installation guide here: [tfswitch installation](https://warrensbox.github.i
 
 ### Homebrew
 
-Installation for MacOS is the easiest with Homebrew. [If you do not have homebrew installed, click here](https://brew.sh/). 
+Installation for MacOS is the easiest with Homebrew. [If you do not have homebrew installed, click here](https://brew.sh/).
 
 
 ```ruby
@@ -38,13 +38,13 @@ curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/
 
 ### Install from source
 
-Alternatively, you can install the binary from source [here](https://github.com/warrensbox/terraform-switcher/releases) 
+Alternatively, you can install the binary from source [here](https://github.com/warrensbox/terraform-switcher/releases)
 
 ## How to use:
 ### Use dropdown menu to select version
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch.gif" alt="drawing" style="width: 180px;"/>
 
-1.  You can switch between different versions of terraform by typing the command `tfswitch` on your terminal. 
+1.  You can switch between different versions of terraform by typing the command `tfswitch` on your terminal.
 2.  Select the version of terraform you require by using the up and down arrow.
 3.  Hit **Enter** to select the desired version.
 
@@ -56,6 +56,41 @@ The most recently selected versions are presented at the top of the dropdown.
 1. You can also supply the desired version as an argument on the command line.
 2. For example, `tfswitch 0.10.5` for version 0.10.5 of terraform.
 3. Hit **Enter** to switch.
+
+### Use .tfswitchrc file
+
+1. Create a `.tfswitchrc` file containing the desired version
+2. For example, `echo "0.10.5" >> .tfswitchrc` for version 0.10.5 of terraform
+3. Run the command `tfswitch` in the same directory as your `.tfswitchrc`
+
+**Automatically switch with zsh**
+
+Add the following to the end of your `~/.zshrc` file:
+```
+load-tfswitch() {
+  local tfswitchrc_path=".tfswitchrc"
+
+  if [ -f "$tfswitchrc_path" ]; then
+    tfswitch
+  fi
+}
+add-zsh-hook chpwd load-tfswitch
+load-tfswitch
+```
+
+**Automatically switch with bash**
+
+Add the following to the end of your `~/.bashrc` file:
+```
+cdtfswitch(){
+  cd "$@";
+  if [ -f ".tfswitchrc" ]; then
+    tfswitch
+  fi
+}
+alias cd='cdtfswitch'
+
+```
 
 ## Additional Info
 
