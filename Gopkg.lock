@@ -3,65 +3,85 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:35079f2cb6f8db82741f69e2bba9bc7abaeec1137b524b5c4b29509aadf965eb"
   name = "github.com/chzyer/readline"
   packages = ["."]
+  pruneopts = "UT"
   revision = "f6d7a1f6fbf35bbf9beb80dc63c56a29dcfb759f"
 
 [[projects]]
   branch = "master"
+  digest = "1:e51f40f0c19b39c1825eadd07d5c0a98a2ad5942b166d9fc4f54750ce9a04810"
   name = "github.com/juju/ansiterm"
   packages = [
     ".",
-    "tabwriter"
+    "tabwriter",
   ]
+  pruneopts = "UT"
   revision = "720a0952cc2ac777afc295d9861263e2a4cf96a1"
 
 [[projects]]
   branch = "master"
+  digest = "1:586d64cc78241ec7896fd170256b1d1f98bfd16757fce222927fd928431461a1"
   name = "github.com/lunixbochs/vtclean"
   packages = ["."]
+  pruneopts = "UT"
   revision = "d14193dfc626125c831501c1c42340b4248e1f5a"
 
 [[projects]]
   branch = "master"
+  digest = "1:7f7799cc0ef4fe591dbd165e2d0920d2061e8490e0bc1ea7c797739367b4a2d5"
   name = "github.com/manifoldco/promptui"
   packages = [
     ".",
     "list",
-    "screenbuf"
+    "screenbuf",
   ]
+  pruneopts = "UT"
   revision = "c0c0d3afc6a03bcb5c1df10b70b862a650db9f9b"
 
 [[projects]]
+  digest = "1:c658e84ad3916da105a761660dcaeb01e63416c8ec7bc62256a9b411a05fcd67"
   name = "github.com/mattn/go-colorable"
   packages = ["."]
+  pruneopts = "UT"
   revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
   version = "v0.0.9"
 
 [[projects]]
+  digest = "1:d4d17353dbd05cb52a2a52b7fe1771883b682806f68db442b436294926bbfafb"
   name = "github.com/mattn/go-isatty"
   packages = ["."]
+  pruneopts = "UT"
   revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
   version = "v0.0.3"
 
 [[projects]]
   branch = "master"
+  digest = "1:e26c0e7f85b846550cfe64561a3451f8cb624ba85e6d2728b21706ec3fc934fa"
   name = "github.com/pborman/getopt"
   packages = [
     ".",
-    "v2"
+    "v2",
   ]
+  pruneopts = "UT"
   revision = "7148bc3a4c3008adfcab60cbebfd0576018f330b"
 
 [[projects]]
   branch = "master"
+  digest = "1:38d86cb18bfc409c9f5667962e89395b2a01f1dfc0a1df01b5706f329e06d093"
   name = "golang.org/x/sys"
   packages = ["unix"]
+  pruneopts = "UT"
   revision = "7c87d13f8e835d2fb3a70a2912c811ed0c1d241b"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a5dc72475471726b59af6f658f3a1e826062fdc6b42689d1943e239d936df0cb"
+  input-imports = [
+    "github.com/manifoldco/promptui",
+    "github.com/pborman/getopt",
+    "github.com/pborman/getopt/v2",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
