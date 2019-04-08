@@ -88,7 +88,7 @@ func main() {
 			tfversion := strings.TrimSuffix(string(fileContents), "\n")
 
 			if lib.ValidVersionFormat(tfversion) { //check if version is correct
-				fmt.Println("Reading required terraform version from .tfswitchrc file")
+				fmt.Println("Reading required terraform version ...")
 				lib.AddRecent(string(tfversion)) //add to recent file for faster lookup
 				lib.Install(string(tfversion))
 			} else {
