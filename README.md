@@ -92,7 +92,7 @@ cd(){
 }
 ```
 
-*Without add-zsh-hook enabled (newer version)*
+*Or with add-zsh-hook enabled (newer version)*
 ```
 load-tfswitch() {
   local tfswitchrc_path=".tfswitchrc"
