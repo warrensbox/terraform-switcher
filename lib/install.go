@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"os/user"
-	"regexp"
 	"runtime"
 )
 
@@ -112,8 +111,6 @@ func Install(tfversion string) {
 // AddRecent : add to recent file
 func AddRecent(requestedVersion string) {
 
-	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
-
 	fileExist := CheckFileExist(installLocation + recentFile)
 	if fileExist {
 		lines, errRead := ReadLines(installLocation + recentFile)
@@ -124,8 +121,8 @@ func AddRecent(requestedVersion string) {
 		}
 
 		for _, line := range lines {
-			if !semverRegex.MatchString(line) {
-				fmt.Println("file corrupted")
+			if !ValidVersionFormat(line) {
+				fmt.Println("File dirty. Recreating cache file.")
 				RemoveFiles(installLocation + recentFile)
 				CreateRecentFile(requestedVersion)
 				return
@@ -156,7 +153,6 @@ func GetRecentVersions() ([]string, error) {
 
 	fileExist := CheckFileExist(installLocation + recentFile)
 	if fileExist {
-		semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
 
 		lines, errRead := ReadLines(installLocation + recentFile)
 
@@ -166,7 +162,7 @@ func GetRecentVersions() ([]string, error) {
 		}
 
 		for _, line := range lines {
-			if !semverRegex.MatchString(line) {
+			if !ValidVersionFormat(line) {
 				RemoveFiles(installLocation + recentFile)
 				return nil, errRead
 			}

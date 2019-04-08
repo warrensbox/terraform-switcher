@@ -52,3 +52,59 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 		t.Log("Write versions exist (expected)")
 	}
 }
+
+//TestValidVersionFormat : test if func returns valid version format
+func TestValidVersionFormat(t *testing.T) {
+
+	var version string
+	version = "0.11.8"
+
+	valid := lib.ValidVersionFormat(version)
+
+	if valid == true {
+		t.Log("Valid version format (expected)")
+	} else {
+		log.Fatalf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "1.11.9"
+
+	valid = lib.ValidVersionFormat(version)
+
+	if valid == true {
+		t.Log("Valid version format (expected)")
+	} else {
+		log.Fatalf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "1.11.a"
+
+	valid = lib.ValidVersionFormat(version)
+
+	if valid == false {
+		t.Log("Invalid version format (expected)")
+	} else {
+		log.Fatalf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "22323"
+
+	valid = lib.ValidVersionFormat(version)
+
+	if valid == false {
+		t.Log("Invalid version format (expected)")
+	} else {
+		log.Fatalf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "@^&*!)!"
+
+	valid = lib.ValidVersionFormat(version)
+
+	if valid == false {
+		t.Log("Invalid version format (expected)")
+	} else {
+		log.Fatalf("Failed to verify version format: %s\n", version)
+	}
+
+}

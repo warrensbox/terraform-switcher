@@ -18,12 +18,14 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Manage terraform versions - the tfswitch command line tool lets you switch between different versions of terraform" />
 <meta property="og:description" content="Manage terraform versions - the tfswitch command line tool lets you switch between different versions of terraform" />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
 <meta property="og:site_name" content="tfswitch" />
 <script type="application/ld+json">
-{"name":"tfswitch","description":"Manage terraform versions - the tfswitch command line tool lets you switch between different versions of terraform","@type":"WebSite","url":"/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/logo.png"}},"headline":"Terraform Switcher","@context":"http://schema.org"}</script>
+{"name":"tfswitch","description":"Manage terraform versions - the tfswitch command line tool lets you switch between different versions of terraform","@type":"WebSite","url":"http://localhost:4000/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"http://localhost:4000/assets/img/logo.png"}},"headline":"Terraform Switcher","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/assets/css/style.css?v=3113bfa1fc6d5c3ee7ee24ef78c5e90c3232615c">
+    <link rel="stylesheet" href="/assets/css/style.css?v=1ead8e0ef849a39a64a66a55ecab86069398dcfd">
     <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -41,8 +43,8 @@
   <body>
     <div class="wrapper">
       <header>
-        <!-- <h1 style="font-size:25px;"><a href="/">tfswitch</a></h1> -->
-        <!-- <h1 style="font-size:25px; text-align: center"><a href="/">tfswitch</a></h1> -->
+        <!-- <h1 style="font-size:25px;"><a href="http://localhost:4000/">tfswitch</a></h1> -->
+        <!-- <h1 style="font-size:25px; text-align: center"><a href="http://localhost:4000/">tfswitch</a></h1> -->
 
         <p align="center">
           <img align="middle" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/logo.png" alt="Logo" />
@@ -57,8 +59,8 @@
 
         
         <ul>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.4.595/terraform-switcher_0.4.595_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.4.595/terraform-switcher_0.4.595_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.4.611/terraform-switcher_0.4.611_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.4.611/terraform-switcher_0.4.611_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
           <li><a href="https://github.com/warrensbox/terraform-switcher/releases">Releases On <strong>GitHub</strong></a></li>
         </ul>
         
@@ -119,6 +121,52 @@ Once installed, simply select the version you require from the dropdown and star
   <li>Hit <strong>Enter</strong> to switch.</li>
 </ol>
 
+<h3 id="use-tfswitchrc-file">Use .tfswitchrc file</h3>
+
+<ol>
+  <li>Create a <code class="highlighter-rouge">.tfswitchrc</code> file containing the desired version</li>
+  <li>For example, <code class="highlighter-rouge">echo "0.10.5" &gt;&gt; .tfswitchrc</code> for version 0.10.5 of terraform</li>
+  <li>Run the command <code class="highlighter-rouge">tfswitch</code> in the same directory as your <code class="highlighter-rouge">.tfswitchrc</code></li>
+</ol>
+
+<p><strong>Automatically switch with bash</strong></p>
+
+<p>Add the following to the end of your <code class="highlighter-rouge">~/.bashrc</code> file:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdtfswitch(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tfswitchrc" ]; then
+    tfswitch
+  fi
+}
+alias cd='cdtfswitch'
+</code></pre></div></div>
+
+<p><strong>Automatically switch with zsh</strong></p>
+
+<p>Add the following to the end of your <code class="highlighter-rouge">~/.zshrc</code> file:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>load-tfswitch() {
+  local tfswitchrc_path=".tfswitchrc"
+
+  if [ -f "$tfswitchrc_path" ]; then
+    tfswitch
+  fi
+}
+add-zsh-hook chpwd load-tfswitch
+load-tfswitch
+</code></pre></div></div>
+
+<p><em>older version of zsh</em></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tfswitchrc" ]; then
+    tfswitch
+  fi
+}
+</code></pre></div></div>
+
 <hr />
 
 <h2 id="issues">Issues</h2>
@@ -131,12 +179,12 @@ Once installed, simply select the version you require from the dropdown and star
 <a href="additional">Additional Info</a></p>
 
       
-      <p><small>VERSION: 0.4.595. This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p>
+      <p><small>This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p>
       
       </section>
       <footer>
         <!-- <p><small>View other products &mdash; by <a href="http://warren.veerasingam.com/#about_me" target="_blank">Warren Veerasingam</a></small></p> -->
-        <p><small>VERSION: 0.4.595. This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p>
+        <p><small>This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p>
       </footer>
     </div>
     <script src="/assets/js/scale.fix.js"></script>

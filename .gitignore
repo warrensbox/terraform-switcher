@@ -28,3 +28,7 @@ docs/vendor/**
 docs/.bundle/**
 
 .sass-cache
+
+.tfswitchrc
+
+tfswitch

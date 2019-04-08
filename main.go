@@ -19,10 +19,10 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
-
-	"regexp"
+	"strings"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
@@ -33,7 +33,7 @@ const (
 	hashiURL = "https://releases.hashicorp.com/terraform/"
 )
 
-var version = "0.3.0\n"
+var version = "0.5.0\n"
 
 func main() {
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch")
@@ -43,15 +43,22 @@ func main() {
 	getopt.Parse()
 	args := getopt.Args()
 
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Printf("Failed to get current directory %v\n", err)
+		os.Exit(1)
+	}
+	rcfile := dir + "/.tfswitchrc"
+
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
 	} else if *helpFlag {
 		usageMessage()
 	} else {
 
-		if len(args) == 1 {
-			semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
-			if semverRegex.MatchString(args[0]) {
+		if len(args) == 1 { //if tf version is provided in command line
+
+			if lib.ValidVersionFormat(args[0]) {
 				requestedVersion := args[0]
 
 				//check if version exist before downloading it
@@ -62,16 +69,34 @@ func main() {
 					lib.AddRecent(requestedVersion) //add to recent file for faster lookup
 					lib.Install(requestedVersion)
 				} else {
-					fmt.Println("Not a valid terraform version")
+					log.Println("Invalid terraform version format. Format should be #.#.# where # is a number. For example, 0.11.7 is a valid version")
 				}
 
 			} else {
-				fmt.Println("Not a valid terraform version")
+				log.Println("Invalid terraform version format. Format should be #.#.# where # is a number. For example, 0.11.7 is a valid version")
 				fmt.Println("Args must be a valid terraform version")
 				usageMessage()
 			}
 
-		} else if len(args) == 0 {
+		} else if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
+
+			fileContents, err := ioutil.ReadFile(rcfile)
+			if err != nil {
+				log.Println("Failed to read .tfswitchrc file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
+				log.Printf("Error: %s\n", err)
+				os.Exit(1)
+			}
+			tfversion := strings.TrimSuffix(string(fileContents), "\n")
+
+			if lib.ValidVersionFormat(tfversion) { //check if version is correct
+				fmt.Println("Reading required terraform version ...")
+				lib.AddRecent(string(tfversion)) //add to RECENT file for faster lookup
+				lib.Install(string(tfversion))
+			} else {
+				log.Println("Invalid terraform version format. Format should be #.#.# where # is a number. For example, 0.11.7 is a valid version")
+				os.Exit(1)
+			}
+		} else if len(args) == 0 { //if there are no commmand line arguments
 
 			tflist, _ := lib.GetTFList(hashiURL)
 			recentVersions, _ := lib.GetRecentVersions() //get recent versions from RECENT file
