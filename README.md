@@ -82,7 +82,17 @@ alias cd='cdtfswitch'
 
 Add the following to the end of your `~/.zshrc` file:
 
-*With add-zsh-hook enabled*
+```
+cd(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tfswitchrc" ]; then
+    tfswitch
+  fi
+}
+```
+
+*Without add-zsh-hook enabled (newer version)*
 ```
 load-tfswitch() {
   local tfswitchrc_path=".tfswitchrc"
@@ -93,18 +103,6 @@ load-tfswitch() {
 }
 add-zsh-hook chpwd load-tfswitch
 load-tfswitch
-```
-
-*Without add-zsh-hook enabled (similiar to bashrc setup)*
-```
-cdtfswitch(){
-  builtin cd "$@";
-  cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
-    tfswitch
-  fi
-}
-alias cd='cdtfswitch'
 ```
 
 ## Additional Info
