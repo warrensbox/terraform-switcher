@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"fmt"
 	"log"
 	"os"
 )
@@ -53,18 +52,12 @@ func RemoveSymlink(symlinkPath string) {
 // CheckSymlink : check file is symlink
 func CheckSymlink(symlinkPath string) bool {
 
-	//symlink := false
-	//fmt.Println("Checking symlink")
-
 	fi, err := os.Lstat(symlinkPath)
 	if err != nil {
-		fmt.Println(err)
-		// symlink = false
 		return false
 	}
 
 	if fi.Mode()&os.ModeSymlink != 0 {
-		//symlink = true
 		return true
 	}
 

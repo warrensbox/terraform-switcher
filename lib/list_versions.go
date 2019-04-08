@@ -88,3 +88,14 @@ func RemoveDuplicateVersions(elements []string) []string {
 	// Return the new slice.
 	return result
 }
+
+// ValidVersionFormat : returns valid version format
+// For example: The 0.1.2 = valid
+// For example: The a.1.2 = invalid
+// For example: The 0.1. 2 = invalid
+func ValidVersionFormat(version string) bool {
+
+	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+	semverRegex.MatchString(version)
+	return semverRegex.MatchString(version)
+}
