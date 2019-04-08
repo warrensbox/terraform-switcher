@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"fmt"
 	"log"
 	"os"
 )
@@ -13,12 +12,12 @@ func CreateSymlink(cwd string, dir string) {
 	if err != nil {
 		log.Fatalf(`
 		Unable to create new symlink.
-		Maybe symlink already exist. Try running removing existing symlink.
+		Maybe symlink already exist. Try removing existing symlink manually.
 		Try running "unlink %s" to remove existing symlink.
-		Maybe you do not have privilege to create symlink at %s.
+		If error persist, you may not have the permission to create a symlink at %s.
 		Error: %s
 		`, dir, dir, err)
-		panic(err)
+		os.Exit(1)
 	}
 }
 
@@ -29,23 +28,23 @@ func RemoveSymlink(symlinkPath string) {
 	if err != nil {
 		log.Fatalf(`
 		Unable to remove symlink.
-		Try running removing existing symlink.
+		Maybe symlink already exist. Try removing existing symlink manually.
 		Try running "unlink %s" to remove existing symlink.
-		Maybe you do not have privilege to remove symlink at %s.
+		If error persist, you may not have the permission to create a symlink at %s.
 		Error: %s
 		`, symlinkPath, symlinkPath, err)
-		panic(err)
+		os.Exit(1)
 	} else {
 		errRemove := os.Remove(symlinkPath)
 		if errRemove != nil {
 			log.Fatalf(`
 			Unable to remove symlink.
-			Try running removing existing symlink.
+			Maybe symlink already exist. Try removing existing symlink manually.
 			Try running "unlink %s" to remove existing symlink.
-			Maybe you do not have privilege to remove symlink at %s.
+			If error persist, you may not have the permission to create a symlink at %s.
 			Error: %s
 			`, symlinkPath, symlinkPath, errRemove)
-			panic(errRemove)
+			os.Exit(1)
 		}
 	}
 }
@@ -53,18 +52,12 @@ func RemoveSymlink(symlinkPath string) {
 // CheckSymlink : check file is symlink
 func CheckSymlink(symlinkPath string) bool {
 
-	//symlink := false
-	//fmt.Println("Checking symlink")
-
 	fi, err := os.Lstat(symlinkPath)
 	if err != nil {
-		fmt.Println(err)
-		// symlink = false
 		return false
 	}
 
 	if fi.Mode()&os.ModeSymlink != 0 {
-		//symlink = true
 		return true
 	}
 

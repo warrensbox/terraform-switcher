@@ -63,9 +63,25 @@ The most recently selected versions are presented at the top of the dropdown.
 2. For example, `echo "0.10.5" >> .tfswitchrc` for version 0.10.5 of terraform
 3. Run the command `tfswitch` in the same directory as your `.tfswitchrc`
 
+
+**Automatically switch with bash**
+
+Add the following to the end of your `~/.bashrc` file:
+```
+cdtfswitch(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tfswitchrc" ]; then
+    tfswitch
+  fi
+}
+alias cd='cdtfswitch'
+```
+
 **Automatically switch with zsh**
 
 Add the following to the end of your `~/.zshrc` file:
+
 ```
 load-tfswitch() {
   local tfswitchrc_path=".tfswitchrc"
@@ -78,18 +94,15 @@ add-zsh-hook chpwd load-tfswitch
 load-tfswitch
 ```
 
-**Automatically switch with bash**
-
-Add the following to the end of your `~/.bashrc` file:
+*older version of zsh*
 ```
-cdtfswitch(){
-  cd "$@";
-  if [ -f ".tfswitchrc" ]; then
+cd(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tfswitchrc" ]; then
     tfswitch
   fi
 }
-alias cd='cdtfswitch'
-
 ```
 
 ## Additional Info
