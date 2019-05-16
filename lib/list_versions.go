@@ -37,7 +37,7 @@ func GetTFList(hashiURL string) ([]string, error) {
 
 	for i := range result {
 		//getting versions from body; should return match /X.X.X/
-		r, _ := regexp.Compile(`\/(\d+)(\.)(\d+)(\.)(\d+)\/`)
+		r, _ := regexp.Compile(`\/(\d+)(\.)(\d+)(\.)(\d+)(-\w+\d+)?\/`)
 
 		if r.MatchString(result[i]) {
 			str := r.FindString(result[i])
@@ -95,7 +95,7 @@ func RemoveDuplicateVersions(elements []string) []string {
 // For example: The 0.1. 2 = invalid
 func ValidVersionFormat(version string) bool {
 
-	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d+)?\z`)
 	semverRegex.MatchString(version)
 	return semverRegex.MatchString(version)
 }

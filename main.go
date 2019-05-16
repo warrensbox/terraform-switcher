@@ -69,11 +69,11 @@ func main() {
 					lib.AddRecent(requestedVersion) //add to recent file for faster lookup
 					lib.Install(requestedVersion)
 				} else {
-					log.Println("Invalid terraform version format. Format should be #.#.# where # is a number. For example, 0.11.7 is a valid version")
+					log.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				}
 
 			} else {
-				log.Println("Invalid terraform version format. Format should be #.#.# where # is a number. For example, 0.11.7 is a valid version")
+				log.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				fmt.Println("Args must be a valid terraform version")
 				usageMessage()
 			}
@@ -93,7 +93,7 @@ func main() {
 				lib.AddRecent(string(tfversion)) //add to RECENT file for faster lookup
 				lib.Install(string(tfversion))
 			} else {
-				log.Println("Invalid terraform version format. Format should be #.#.# where # is a number. For example, 0.11.7 is a valid version")
+				log.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
 			}
 		} else if len(args) == 0 { //if there are no commmand line arguments
