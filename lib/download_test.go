@@ -30,10 +30,10 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
-		log.Printf("Creating directory for teraform: %v", installLocation)
+		log.Printf("Creating directory for terraform: %v", installLocation)
 		err = os.MkdirAll(installLocation, 0755)
 		if err != nil {
-			fmt.Printf("Unable to create directory for teraform: %v", installLocation)
+			fmt.Printf("Unable to create directory for terraform: %v", installLocation)
 			panic(err)
 		}
 	}
@@ -95,10 +95,10 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
-		log.Printf("Creating directory for teraform: %v", installLocation)
+		log.Printf("Creating directory for terraform: %v", installLocation)
 		err = os.MkdirAll(installLocation, 0755)
 		if err != nil {
-			fmt.Printf("Unable to create directory for teraform: %v", installLocation)
+			fmt.Printf("Unable to create directory for terraform: %v", installLocation)
 			panic(err)
 		}
 	}
