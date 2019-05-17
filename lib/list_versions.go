@@ -14,7 +14,7 @@ type tfVersionList struct {
 }
 
 //GetTFList :  Get the list of available terraform version given the hashicorp url
-func GetTFList(hashiURL string) ([]string, error) {
+func GetTFList(hashiURL string, listAll bool) ([]string, error) {
 
 	/* Get list of terraform versions from hashicorp releases */
 	resp, errURL := http.Get(hashiURL)
@@ -37,7 +37,10 @@ func GetTFList(hashiURL string) ([]string, error) {
 
 	for i := range result {
 		//getting versions from body; should return match /X.X.X/
-		r, _ := regexp.Compile(`\/(\d+)(\.)(\d+)(\.)(\d+)(-\w+\d+)?\/`)
+		r, _ := regexp.Compile(`\/(\d+)(\.)(\d+)(\.)(\d+)?\/`)
+		if listAll {
+			r, _ = regexp.Compile(`\/(\d+)(\.)(\d+)(\.)(\d+)(-\w+\d*)?\/`)
+		}
 
 		if r.MatchString(result[i]) {
 			str := r.FindString(result[i])
@@ -90,12 +93,13 @@ func RemoveDuplicateVersions(elements []string) []string {
 }
 
 // ValidVersionFormat : returns valid version format
-// For example: The 0.1.2 = valid
-// For example: The a.1.2 = invalid
-// For example: The 0.1. 2 = invalid
+// For example: 0.1.2 = valid
+// For example: 0.1.2-beta1 = valid
+// For example: a.1.2 = invalid
+// For example: 0.1. 2 = invalid
 func ValidVersionFormat(version string) bool {
 
-	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d+)?\z`)
+	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
 	semverRegex.MatchString(version)
 	return semverRegex.MatchString(version)
 }
