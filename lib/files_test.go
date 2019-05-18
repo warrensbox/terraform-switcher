@@ -174,7 +174,8 @@ func TestWriteLines(t *testing.T) {
 
 	installPath := "/.terraform.versions_test/"
 	recentFile := "RECENT"
-	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
+	//semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
@@ -184,7 +185,7 @@ func TestWriteLines(t *testing.T) {
 
 	createDirIfNotExist(installLocation)
 
-	test_array := []string{"0.0.1", "0.0.2", "0.0.3"}
+	test_array := []string{"0.1.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
 
 	errWrite := lib.WriteLines(test_array, installLocation+recentFile)
 
@@ -243,7 +244,7 @@ func TestWriteLines(t *testing.T) {
 func TestReadLines(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 	recentFile := "RECENT"
-	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
@@ -253,7 +254,7 @@ func TestReadLines(t *testing.T) {
 
 	createDirIfNotExist(installLocation)
 
-	test_array := []string{"0.0.1", "0.0.2", "0.0.3"}
+	test_array := []string{"0.0.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
 
 	var (
 		file      *os.File

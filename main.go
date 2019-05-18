@@ -73,7 +73,7 @@ func main() {
 					lib.AddRecent(requestedVersion) //add to recent file for faster lookup
 					lib.Install(requestedVersion)
 				} else {
-					log.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+					log.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
 				}
 
 			} else {
