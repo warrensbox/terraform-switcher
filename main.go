@@ -125,7 +125,7 @@ func installOption(listAll bool) {
 	tflist, _ := lib.GetTFList(hashiURL, listAll) //get list of versions
 	recentVersions, _ := lib.GetRecentVersions()  //get recent versions from RECENT file
 	tflist = append(recentVersions, tflist...)    //append recent versions to the top of the list
-	//tflist = lib.RemoveDuplicateVersions(tflist)  //remove duplicate version
+	tflist = lib.RemoveDuplicateVersions(tflist)  //remove duplicate version
 
 	/* prompt user to select version of terraform */
 	prompt := promptui.Select{
@@ -134,6 +134,7 @@ func installOption(listAll bool) {
 	}
 
 	_, tfversion, errPrompt := prompt.Run()
+	tfversion = strings.Trim(tfversion, " *recent") //trim versions with the word *recent included
 
 	if errPrompt != nil {
 		log.Printf("Prompt failed %v\n", errPrompt)
@@ -143,8 +144,3 @@ func installOption(listAll bool) {
 	lib.AddRecent(tfversion) //add to recent file for faster lookup
 	lib.Install(tfversion)
 }
-
-// func appendRecent(tflist []string) {
-
-// 	for _, vals := range
-// }

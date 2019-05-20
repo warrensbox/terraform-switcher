@@ -54,6 +54,11 @@ func init() {
 //Install : Install the provided version in the argument
 func Install(tfversion string) {
 
+	if !ValidVersionFormat(tfversion) {
+		fmt.Printf("The provided terraform version does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
+		os.Exit(0)
+	}
+
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
 
@@ -155,6 +160,7 @@ func GetRecentVersions() ([]string, error) {
 	if fileExist {
 
 		lines, errRead := ReadLines(installLocation + recentFile)
+		appendRecent := []string{}
 
 		if errRead != nil {
 			fmt.Printf("Error: %s\n", errRead)
@@ -162,13 +168,19 @@ func GetRecentVersions() ([]string, error) {
 		}
 
 		for _, line := range lines {
+			/* 	checks if versions in the recent file are valid.
+			If any version is invalid, it will be consider dirty
+			and the recent file will be removed
+			*/
 			if !ValidVersionFormat(line) {
 				RemoveFiles(installLocation + recentFile)
 				return nil, errRead
 			}
+
+			appendRecent = append(appendRecent, fmt.Sprintf("%s *recent", line))
 		}
 
-		return lines, nil
+		return appendRecent, nil
 	}
 
 	return nil, nil
