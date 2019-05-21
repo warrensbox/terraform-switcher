@@ -78,6 +78,7 @@ func Install(tfversion string) {
 		/* set symlink to desired version */
 		CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
 		fmt.Printf("Switched terraform to version %q \n", tfversion)
+		AddRecent(tfversion) //add to recent file for faster lookup
 		os.Exit(0)
 	}
 
@@ -86,6 +87,7 @@ func Install(tfversion string) {
 	url := hashiURL + tfversion + "/" + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip"
 	zipFile, errDownload := DownloadFromURL(installLocation, url)
 
+	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
 		fmt.Println(errDownload)
 		os.Exit(1)
@@ -166,7 +168,7 @@ func GetRecentVersions() ([]string, error) {
 	if fileExist {
 
 		lines, errRead := ReadLines(installLocation + recentFile)
-		appendRecent := []string{}
+		outputRecent := []string{}
 
 		if errRead != nil {
 			fmt.Printf("Error: %s\n", errRead)
@@ -183,10 +185,13 @@ func GetRecentVersions() ([]string, error) {
 				return nil, errRead
 			}
 
-			appendRecent = append(appendRecent, fmt.Sprintf("%s *recent", line))
+			/* 	output can be confusing since it displays the 3 most recent used terraform version
+			append the string *recent to the output to make it more user friendly
+			*/
+			outputRecent = append(outputRecent, fmt.Sprintf("%s *recent", line))
 		}
 
-		return appendRecent, nil
+		return outputRecent, nil
 	}
 
 	return nil, nil

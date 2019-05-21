@@ -36,10 +36,13 @@ func GetTFList(hashiURL string, listAll bool) ([]string, error) {
 	var tfVersionList tfVersionList
 
 	for i := range result {
-		//getting versions from body; should return match /X.X.X/
+		// Getting versions from body; should return match /X.X.X/ where X is a number
+		// Follow https://semver.org/spec/v2.0.0.html
 		r, _ := regexp.Compile(`\/(\d+\.\d+\.\d+)\/`)
-		//r, _ := regexp.Compile(`\/(\d+)(\.)(\d+)(\.)(\d+)\/`)
 		if listAll {
+			// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
+			// Follow https://semver.org/spec/v1.0.0-beta.html
+			// Check regular expression at https://rubular.com/r/ju3PxbaSBALpJB
 			r, _ = regexp.Compile(`\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?\/`)
 		}
 
@@ -95,12 +98,17 @@ func RemoveDuplicateVersions(elements []string) []string {
 }
 
 // ValidVersionFormat : returns valid version format
-// For example: 0.1.2 = valid
+/* For example: 0.1.2 = valid
 // For example: 0.1.2-beta1 = valid
+// For example: 0.1.2-alpha = valid
 // For example: a.1.2 = invalid
 // For example: 0.1. 2 = invalid
+*/
 func ValidVersionFormat(version string) bool {
 
+	// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
+	// Follow https://semver.org/spec/v1.0.0-beta.html
+	// Check regular expression at https://rubular.com/r/ju3PxbaSBALpJB
 	semverRegex := regexp.MustCompile(`^(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?$`)
 
 	return semverRegex.MatchString(version)

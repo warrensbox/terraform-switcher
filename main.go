@@ -63,9 +63,9 @@ func main() {
 		if len(args) == 1 { //if tf version is provided in command line
 
 			if lib.ValidVersionFormat(args[0]) {
-				requestedVersion := args[0]
-				listAll := true //set list all true - all versions including beta and rc will be displayed
 
+				requestedVersion := args[0]
+				listAll := true                                     //set list all true - all versions including beta and rc will be displayed
 				tflist, _ := lib.GetTFList(hashiURL, listAll)       //get list of versions
 				exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
 
@@ -132,7 +132,7 @@ func installOption(listAll bool) {
 	}
 
 	_, tfversion, errPrompt := prompt.Run()
-	tfversion = strings.Trim(tfversion, " *recent") //trim versions with the word *recent included
+	tfversion = strings.Trim(tfversion, " *recent") //trim versions with the string " *recent" appended
 
 	if errPrompt != nil {
 		log.Printf("Prompt failed %v\n", errPrompt)
