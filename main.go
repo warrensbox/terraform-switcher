@@ -1,7 +1,7 @@
 package main
 
 /*
-* Version 0.5.0
+* Version 0.6.0
 * Compatible with Mac OS X ONLY
  */
 
@@ -33,7 +33,7 @@ const (
 	hashiURL = "https://releases.hashicorp.com/terraform/"
 )
 
-var version = "0.5.0\n"
+var version = "0.6.0\n"
 
 func main() {
 	listAllFlag := getopt.BoolLong("list-all", 'l', "list all versions of terraform - including beta and rc")
@@ -70,14 +70,13 @@ func main() {
 				exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
 
 				if exist {
-					lib.AddRecent(requestedVersion) //add to recent file for faster lookup
 					lib.Install(requestedVersion)
 				} else {
-					log.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
+					fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
 				}
 
 			} else {
-				log.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				fmt.Println("Args must be a valid terraform version")
 				usageMessage()
 			}
@@ -87,17 +86,16 @@ func main() {
 
 			fileContents, err := ioutil.ReadFile(rcfile)
 			if err != nil {
-				log.Println("Failed to read .tfswitchrc file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
-				log.Printf("Error: %s\n", err)
+				fmt.Println("Failed to read .tfswitchrc file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
+				fmt.Printf("Error: %s\n", err)
 				os.Exit(1)
 			}
 			tfversion := strings.TrimSuffix(string(fileContents), "\n")
 
 			if lib.ValidVersionFormat(tfversion) { //check if version is correct
-				lib.AddRecent(string(tfversion)) //add to RECENT file for faster lookup
 				lib.Install(string(tfversion))
 			} else {
-				log.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
 			}
 		} else if len(args) == 0 { //if there are no commmand line arguments
@@ -141,6 +139,5 @@ func installOption(listAll bool) {
 		os.Exit(1)
 	}
 
-	lib.AddRecent(tfversion) //add to recent file for faster lookup
 	lib.Install(tfversion)
 }

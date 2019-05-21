@@ -55,8 +55,8 @@ func init() {
 func Install(tfversion string) {
 
 	if !ValidVersionFormat(tfversion) {
-		fmt.Printf("The provided terraform version does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
-		os.Exit(0)
+		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
+		os.Exit(1)
 	}
 
 	goarch := runtime.GOARCH
@@ -84,7 +84,12 @@ func Install(tfversion string) {
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
 	url := hashiURL + tfversion + "/" + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip"
-	zipFile, _ := DownloadFromURL(installLocation, url)
+	zipFile, errDownload := DownloadFromURL(installLocation, url)
+
+	if errDownload != nil {
+		fmt.Println(errDownload)
+		os.Exit(1)
+	}
 
 	/* unzip the downloaded zipfile */
 	_, errUnzip := Unzip(zipFile, installLocation)
@@ -110,6 +115,7 @@ func Install(tfversion string) {
 	/* set symlink to desired version */
 	CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
 	fmt.Printf("Switched terraform to version %q \n", tfversion)
+	AddRecent(tfversion) //add to recent file for faster lookup
 	os.Exit(0)
 }
 
