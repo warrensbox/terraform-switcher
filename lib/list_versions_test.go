@@ -15,7 +15,8 @@ const (
 // TestGetTFList : Get list from hashicorp
 func TestGetTFList(t *testing.T) {
 
-	list, _ := lib.GetTFList(hashiURL)
+	listAll := true
+	list, _ := lib.GetTFList(hashiURL, listAll)
 
 	val := "0.1.0"
 	var exists bool
@@ -42,7 +43,7 @@ func TestGetTFList(t *testing.T) {
 //TestRemoveDuplicateVersions :  test to removed duplicate
 func TestRemoveDuplicateVersions(t *testing.T) {
 
-	test_array := []string{"0.0.1", "0.0.2", "0.0.3", "0.0.1"}
+	test_array := []string{"0.0.1", "0.0.2", "0.0.3", "0.0.1", "0.12.0-beta1", "0.12.0-beta1"}
 
 	list := lib.RemoveDuplicateVersions(test_array)
 
@@ -54,6 +55,7 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 }
 
 //TestValidVersionFormat : test if func returns valid version format
+// more regex testing at https://rubular.com/r/UvWXui7EU2icSb
 func TestValidVersionFormat(t *testing.T) {
 
 	var version string
@@ -62,7 +64,7 @@ func TestValidVersionFormat(t *testing.T) {
 	valid := lib.ValidVersionFormat(version)
 
 	if valid == true {
-		t.Log("Valid version format (expected)")
+		t.Logf("Valid version format : %s (expected)", version)
 	} else {
 		log.Fatalf("Failed to verify version format: %s\n", version)
 	}
@@ -72,7 +74,7 @@ func TestValidVersionFormat(t *testing.T) {
 	valid = lib.ValidVersionFormat(version)
 
 	if valid == true {
-		t.Log("Valid version format (expected)")
+		t.Logf("Valid version format : %s (expected)", version)
 	} else {
 		log.Fatalf("Failed to verify version format: %s\n", version)
 	}
@@ -82,7 +84,7 @@ func TestValidVersionFormat(t *testing.T) {
 	valid = lib.ValidVersionFormat(version)
 
 	if valid == false {
-		t.Log("Invalid version format (expected)")
+		t.Logf("Invalid version format : %s (expected)", version)
 	} else {
 		log.Fatalf("Failed to verify version format: %s\n", version)
 	}
@@ -92,7 +94,7 @@ func TestValidVersionFormat(t *testing.T) {
 	valid = lib.ValidVersionFormat(version)
 
 	if valid == false {
-		t.Log("Invalid version format (expected)")
+		t.Logf("Invalid version format : %s (expected)", version)
 	} else {
 		log.Fatalf("Failed to verify version format: %s\n", version)
 	}
@@ -102,7 +104,47 @@ func TestValidVersionFormat(t *testing.T) {
 	valid = lib.ValidVersionFormat(version)
 
 	if valid == false {
-		t.Log("Invalid version format (expected)")
+		t.Logf("Invalid version format : %s (expected)", version)
+	} else {
+		log.Fatalf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "1.11.9-beta1"
+
+	valid = lib.ValidVersionFormat(version)
+
+	if valid == true {
+		t.Logf("Valid version format : %s (expected)", version)
+	} else {
+		log.Fatalf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "0.12.0-rc2"
+
+	valid = lib.ValidVersionFormat(version)
+
+	if valid == true {
+		t.Logf("Valid version format : %s (expected)", version)
+	} else {
+		log.Fatalf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "1.11.4-boom"
+
+	valid = lib.ValidVersionFormat(version)
+
+	if valid == true {
+		t.Logf("Valid version format : %s (expected)", version)
+	} else {
+		log.Fatalf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "1.11.4-1"
+
+	valid = lib.ValidVersionFormat(version)
+
+	if valid == false {
+		t.Logf("Invalid version format : %s (expected)", version)
 	} else {
 		log.Fatalf("Failed to verify version format: %s\n", version)
 	}

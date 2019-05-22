@@ -14,7 +14,7 @@ type tfVersionList struct {
 }
 
 //GetTFList :  Get the list of available terraform version given the hashicorp url
-func GetTFList(hashiURL string) ([]string, error) {
+func GetTFList(hashiURL string, listAll bool) ([]string, error) {
 
 	/* Get list of terraform versions from hashicorp releases */
 	resp, errURL := http.Get(hashiURL)
@@ -36,8 +36,15 @@ func GetTFList(hashiURL string) ([]string, error) {
 	var tfVersionList tfVersionList
 
 	for i := range result {
-		//getting versions from body; should return match /X.X.X/
-		r, _ := regexp.Compile(`\/(\d+)(\.)(\d+)(\.)(\d+)\/`)
+		// Getting versions from body; should return match /X.X.X/ where X is a number
+		// Follow https://semver.org/spec/v2.0.0.html
+		r, _ := regexp.Compile(`\/(\d+\.\d+\.\d+)\/`)
+		if listAll {
+			// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
+			// Follow https://semver.org/spec/v1.0.0-beta.html
+			// Check regular expression at https://rubular.com/r/ju3PxbaSBALpJB
+			r, _ = regexp.Compile(`\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?\/`)
+		}
 
 		if r.MatchString(result[i]) {
 			str := r.FindString(result[i])
@@ -75,14 +82,15 @@ func RemoveDuplicateVersions(elements []string) []string {
 	encountered := map[string]bool{}
 	result := []string{}
 
-	for v := range elements {
-		if encountered[elements[v]] == true {
+	for _, val := range elements {
+		versionOnly := strings.Trim(val, " *recent")
+		if encountered[versionOnly] == true {
 			// Do not add duplicate.
 		} else {
 			// Record this element as an encountered element.
-			encountered[elements[v]] = true
+			encountered[versionOnly] = true
 			// Append to result slice.
-			result = append(result, elements[v])
+			result = append(result, val)
 		}
 	}
 	// Return the new slice.
@@ -90,12 +98,18 @@ func RemoveDuplicateVersions(elements []string) []string {
 }
 
 // ValidVersionFormat : returns valid version format
-// For example: The 0.1.2 = valid
-// For example: The a.1.2 = invalid
-// For example: The 0.1. 2 = invalid
+/* For example: 0.1.2 = valid
+// For example: 0.1.2-beta1 = valid
+// For example: 0.1.2-alpha = valid
+// For example: a.1.2 = invalid
+// For example: 0.1. 2 = invalid
+*/
 func ValidVersionFormat(version string) bool {
 
-	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
-	semverRegex.MatchString(version)
+	// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
+	// Follow https://semver.org/spec/v1.0.0-beta.html
+	// Check regular expression at https://rubular.com/r/ju3PxbaSBALpJB
+	semverRegex := regexp.MustCompile(`^(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?$`)
+
 	return semverRegex.MatchString(version)
 }

@@ -1,7 +1,7 @@
 package main
 
 /*
-* Version 0.3.0
+* Version 0.6.0
 * Compatible with Mac OS X ONLY
  */
 
@@ -33,9 +33,10 @@ const (
 	hashiURL = "https://releases.hashicorp.com/terraform/"
 )
 
-var version = "0.5.0\n"
+var version = "0.6.0\n"
 
 func main() {
+	listAllFlag := getopt.BoolLong("list-all", 'l', "list all versions of terraform - including beta and rc")
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
 	_ = versionFlag
@@ -54,70 +55,53 @@ func main() {
 		fmt.Printf("\nVersion: %v\n", version)
 	} else if *helpFlag {
 		usageMessage()
+	} else if *listAllFlag {
+		listAll := true //set list all true - all versions including beta and rc will be displayed
+		installOption(listAll)
 	} else {
 
 		if len(args) == 1 { //if tf version is provided in command line
 
 			if lib.ValidVersionFormat(args[0]) {
-				requestedVersion := args[0]
 
-				//check if version exist before downloading it
-				tflist, _ := lib.GetTFList(hashiURL)
-				exist := lib.VersionExist(requestedVersion, tflist)
+				requestedVersion := args[0]
+				listAll := true                                     //set list all true - all versions including beta and rc will be displayed
+				tflist, _ := lib.GetTFList(hashiURL, listAll)       //get list of versions
+				exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
 
 				if exist {
-					lib.AddRecent(requestedVersion) //add to recent file for faster lookup
 					lib.Install(requestedVersion)
 				} else {
-					log.Println("Invalid terraform version format. Format should be #.#.# where # is a number. For example, 0.11.7 is a valid version")
+					fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
 				}
 
 			} else {
-				log.Println("Invalid terraform version format. Format should be #.#.# where # is a number. For example, 0.11.7 is a valid version")
+				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				fmt.Println("Args must be a valid terraform version")
 				usageMessage()
 			}
 
 		} else if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
+			fmt.Println("Reading required terraform version ...")
 
 			fileContents, err := ioutil.ReadFile(rcfile)
 			if err != nil {
-				log.Println("Failed to read .tfswitchrc file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
-				log.Printf("Error: %s\n", err)
+				fmt.Println("Failed to read .tfswitchrc file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
+				fmt.Printf("Error: %s\n", err)
 				os.Exit(1)
 			}
 			tfversion := strings.TrimSuffix(string(fileContents), "\n")
 
 			if lib.ValidVersionFormat(tfversion) { //check if version is correct
-				fmt.Println("Reading required terraform version ...")
-				lib.AddRecent(string(tfversion)) //add to RECENT file for faster lookup
 				lib.Install(string(tfversion))
 			} else {
-				log.Println("Invalid terraform version format. Format should be #.#.# where # is a number. For example, 0.11.7 is a valid version")
+				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
 			}
 		} else if len(args) == 0 { //if there are no commmand line arguments
 
-			tflist, _ := lib.GetTFList(hashiURL)
-			recentVersions, _ := lib.GetRecentVersions() //get recent versions from RECENT file
-			tflist = append(recentVersions, tflist...)   //append recent versions to the top of the list
-			tflist = lib.RemoveDuplicateVersions(tflist) //remove duplicate version
-
-			/* prompt user to select version of terraform */
-			prompt := promptui.Select{
-				Label: "Select Terraform version",
-				Items: tflist,
-			}
-
-			_, tfversion, errPrompt := prompt.Run()
-
-			if errPrompt != nil {
-				log.Printf("Prompt failed %v\n", errPrompt)
-				os.Exit(1)
-			}
-
-			lib.AddRecent(tfversion) //add to recent file for faster lookup
-			lib.Install(tfversion)
+			listAll := false //set list all false - only official release will be displayed
+			installOption(listAll)
 
 		} else {
 			usageMessage()
@@ -129,4 +113,31 @@ func usageMessage() {
 	fmt.Print("\n\n")
 	getopt.PrintUsage(os.Stderr)
 	fmt.Println("Supply the terraform version as an argument, or choose from a menu")
+}
+
+/* installOption : displays & installs tf version */
+/* listAll = true - all versions including beta and rc will be displayed */
+/* listAll = false - only official stable release are displayed */
+func installOption(listAll bool) {
+
+	tflist, _ := lib.GetTFList(hashiURL, listAll) //get list of versions
+	recentVersions, _ := lib.GetRecentVersions()  //get recent versions from RECENT file
+	tflist = append(recentVersions, tflist...)    //append recent versions to the top of the list
+	tflist = lib.RemoveDuplicateVersions(tflist)  //remove duplicate version
+
+	/* prompt user to select version of terraform */
+	prompt := promptui.Select{
+		Label: "Select Terraform version",
+		Items: tflist,
+	}
+
+	_, tfversion, errPrompt := prompt.Run()
+	tfversion = strings.Trim(tfversion, " *recent") //trim versions with the string " *recent" appended
+
+	if errPrompt != nil {
+		log.Printf("Prompt failed %v\n", errPrompt)
+		os.Exit(1)
+	}
+
+	lib.Install(tfversion)
 }

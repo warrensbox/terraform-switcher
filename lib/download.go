@@ -14,20 +14,27 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 	fileName := tokens[len(tokens)-1]
 	fmt.Println("Downloading", url, "to", fileName)
 	fmt.Println("Downloading ...")
-	// TODO: check file existence first with io.IsExist
+
+	response, err := http.Get(url)
+
+	if err != nil {
+		fmt.Println("Error while downloading", url, "-", err)
+		return "", err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != 200 {
+		//Sometimes hashicorp terraform file names are not consistent
+		//For example 0.12.0-alpha4 naming convention in the release repo is not consistent
+		return "", fmt.Errorf("Unable to download from %s\nPlease download manually from https://releases.hashicorp.com/terraform/", url)
+	}
+
 	output, err := os.Create(installLocation + fileName)
 	if err != nil {
 		fmt.Println("Error while creating", installLocation+fileName, "-", err)
 		return "", err
 	}
 	defer output.Close()
-
-	response, err := http.Get(url)
-	if err != nil {
-		fmt.Println("Error while downloading", url, "-", err)
-		return "", err
-	}
-	defer response.Body.Close()
 
 	n, err := io.Copy(output, response.Body)
 	if err != nil {

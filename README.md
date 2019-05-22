@@ -57,7 +57,16 @@ The most recently selected versions are presented at the top of the dropdown.
 2. For example, `tfswitch 0.10.5` for version 0.10.5 of terraform.
 3. Hit **Enter** to switch.
 
+### See all versions including beta, alpha and release candidates(rc)
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v5.gif" alt="drawing" style="width: 170px;"/>
+
+1. Display all versions including beta, alpha and release candidates(rc). 
+2. For example, `tfswitch -l` or `tfswitch --list-all` to see all versions.
+3. Hit **Enter** to select the desired version.
+
+
 ### Use .tfswitchrc file
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v6.gif" alt="drawing" style="width: 170px;"/>
 
 1. Create a `.tfswitchrc` file containing the desired version
 2. For example, `echo "0.10.5" >> .tfswitchrc` for version 0.10.5 of terraform
