@@ -34,10 +34,10 @@ func createFile(path string) {
 
 func createDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		log.Printf("Creating directory for teraform: %v", dir)
+		log.Printf("Creating directory for terraform: %v", dir)
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			fmt.Printf("Unable to create directory for teraform: %v", dir)
+			fmt.Printf("Unable to create directory for terraform: %v", dir)
 			panic(err)
 		}
 	}

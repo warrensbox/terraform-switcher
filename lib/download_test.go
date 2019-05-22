@@ -30,20 +30,25 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
-		log.Printf("Creating directory for teraform: %v", installLocation)
+		log.Printf("Creating directory for terraform: %v", installLocation)
 		err = os.MkdirAll(installLocation, 0755)
 		if err != nil {
-			fmt.Printf("Unable to create directory for teraform: %v", installLocation)
+			fmt.Printf("Unable to create directory for terraform: %v", installLocation)
 			panic(err)
 		}
 	}
 
 	/* test download lowest terraform version */
-	lowestVersion := "0.0.1"
+	lowestVersion := "0.1.0"
 
 	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
 	expectedFile := usr.HomeDir + installPath + installVersion + lowestVersion + macOS
-	installedFile, _ := lib.DownloadFromURL(installLocation, url)
+	installedFile, errDownload := lib.DownloadFromURL(installLocation, url)
+
+	if errDownload != nil {
+		t.Logf("Expected file name %v to be downloaded", expectedFile)
+		t.Error("Download not possible (unexpected)")
+	}
 
 	if installedFile == expectedFile {
 		t.Logf("Expected file %v", expectedFile)
@@ -52,7 +57,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	} else {
 		t.Logf("Expected file %v", expectedFile)
 		t.Logf("Downloaded file %v", installedFile)
-		t.Error("Download file mismatches expected file")
+		t.Error("Download file mismatches expected file (unexpected)")
 	}
 
 	/* test download latest terraform version */
@@ -60,7 +65,12 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
 	expectedFile = usr.HomeDir + installPath + installVersion + latestVersion + macOS
-	installedFile, _ = lib.DownloadFromURL(installLocation, url)
+	installedFile, errDownload = lib.DownloadFromURL(installLocation, url)
+
+	if errDownload != nil {
+		t.Logf("Expected file name %v to be downloaded", expectedFile)
+		t.Error("Download not possible (unexpected)")
+	}
 
 	if installedFile == expectedFile {
 		t.Logf("Expected file name %v", expectedFile)
@@ -69,7 +79,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	} else {
 		t.Logf("Expected file name %v", expectedFile)
 		t.Logf("Downloaded file name %v", installedFile)
-		t.Error("Downoad file name mismatches expected file")
+		t.Error("Dowload file name mismatches expected file (unexpected)")
 	}
 
 	cleanUp(installLocation)
@@ -95,20 +105,25 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
-		log.Printf("Creating directory for teraform: %v", installLocation)
+		log.Printf("Creating directory for terraform: %v", installLocation)
 		err = os.MkdirAll(installLocation, 0755)
 		if err != nil {
-			fmt.Printf("Unable to create directory for teraform: %v", installLocation)
+			fmt.Printf("Unable to create directory for terraform: %v", installLocation)
 			panic(err)
 		}
 	}
 
 	/* test download lowest terraform version */
-	lowestVersion := "0.0.1"
+	lowestVersion := "0.1.0"
 
 	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
 	expectedFile := usr.HomeDir + installPath + installVersion + lowestVersion + macOS
-	installedFile, _ := lib.DownloadFromURL(installLocation, url)
+	installedFile, errDownload := lib.DownloadFromURL(installLocation, url)
+
+	if errDownload != nil {
+		t.Logf("Expected file name %v to be downloaded", expectedFile)
+		t.Error("Download not possible (unexpected)")
+	}
 
 	if checkFileExist(expectedFile) {
 		t.Logf("Expected file %v", expectedFile)
@@ -117,7 +132,7 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 	} else {
 		t.Logf("Expected file %v", expectedFile)
 		t.Logf("Downloaded file %v", installedFile)
-		t.Error("Downoad file mismatches expected file")
+		t.Error("Download file mismatches expected file (unexpected)")
 	}
 
 	/* test download latest terraform version */
@@ -125,7 +140,12 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 
 	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
 	expectedFile = usr.HomeDir + installPath + installVersion + latestVersion + macOS
-	installFile, _ = lib.DownloadFromURL(installLocation, url)
+	installFile, errDownload = lib.DownloadFromURL(installLocation, url)
+
+	if errDownload != nil {
+		t.Logf("Expected file name %v to be downloaded", expectedFile)
+		t.Error("Download not possible (unexpected)")
+	}
 
 	if checkFileExist(expectedFile) {
 		t.Logf("Expected file %v", expectedFile)
@@ -134,12 +154,53 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 	} else {
 		t.Logf("Expected file %v", expectedFile)
 		t.Logf("Downloaded file %v", installFile)
-		t.Error("Downoad file mismatches expected file")
+		t.Error("Download file mismatches expected file (unexpected)")
 	}
 
 	cleanUp(installLocation)
 }
 
+// TestInvalidURL : Invalid url should throw an error
+func TestInvalidURL(t *testing.T) {
+
+	hashiURL := "https://releases.hashicorp.com/terraform/"
+	installVersion := "terraform_"
+	installPath := "/.terraform.versions_test/"
+	macOS := "_darwin_amd64.zip"
+	invalidVersion := "0.11.7-nonexistent"
+
+	// get current user
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+
+	fmt.Printf("Current user: %v \n", usr.HomeDir)
+	installLocation := usr.HomeDir + installPath
+
+	// create /.terraform.versions_test/ directory to store code
+	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
+		log.Printf("Creating directory for terraform: %v\n", installLocation)
+		err = os.MkdirAll(installLocation, 0755)
+		if err != nil {
+			fmt.Printf("Unable to create directory for terraform: %v\n", installLocation)
+			panic(err)
+		}
+	}
+
+	url := hashiURL + invalidVersion + "/" + installVersion + invalidVersion + macOS
+	//expectedFile := usr.HomeDir + installPath + installVersion + invalidVersion + macOS
+	_, errDownload := lib.DownloadFromURL(installLocation, url)
+
+	if errDownload != nil {
+		t.Logf("Unable to download from %s - invalid url or version (expected)\n", url)
+		t.Logf("Download not possible (expected)")
+	}
+
+	cleanUp(installLocation)
+}
+
+// TestDownloadFromURL_Valid : Test if https://releases.hashicorp.com/terraform/ is still valid
 func TestDownloadFromURL_Valid(t *testing.T) {
 
 	hashiURL := "https://releases.hashicorp.com/terraform/"

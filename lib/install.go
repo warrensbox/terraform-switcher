@@ -54,6 +54,11 @@ func init() {
 //Install : Install the provided version in the argument
 func Install(tfversion string) {
 
+	if !ValidVersionFormat(tfversion) {
+		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
+		os.Exit(1)
+	}
+
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
 
@@ -73,13 +78,20 @@ func Install(tfversion string) {
 		/* set symlink to desired version */
 		CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
 		fmt.Printf("Switched terraform to version %q \n", tfversion)
+		AddRecent(tfversion) //add to recent file for faster lookup
 		os.Exit(0)
 	}
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
 	url := hashiURL + tfversion + "/" + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip"
-	zipFile, _ := DownloadFromURL(installLocation, url)
+	zipFile, errDownload := DownloadFromURL(installLocation, url)
+
+	/* If unable to download file from url, exit(1) immediately */
+	if errDownload != nil {
+		fmt.Println(errDownload)
+		os.Exit(1)
+	}
 
 	/* unzip the downloaded zipfile */
 	_, errUnzip := Unzip(zipFile, installLocation)
@@ -105,6 +117,7 @@ func Install(tfversion string) {
 	/* set symlink to desired version */
 	CreateSymlink(installLocation+installVersion+tfversion, installedBinPath)
 	fmt.Printf("Switched terraform to version %q \n", tfversion)
+	AddRecent(tfversion) //add to recent file for faster lookup
 	os.Exit(0)
 }
 
@@ -155,6 +168,7 @@ func GetRecentVersions() ([]string, error) {
 	if fileExist {
 
 		lines, errRead := ReadLines(installLocation + recentFile)
+		outputRecent := []string{}
 
 		if errRead != nil {
 			fmt.Printf("Error: %s\n", errRead)
@@ -162,13 +176,22 @@ func GetRecentVersions() ([]string, error) {
 		}
 
 		for _, line := range lines {
+			/* 	checks if versions in the recent file are valid.
+			If any version is invalid, it will be consider dirty
+			and the recent file will be removed
+			*/
 			if !ValidVersionFormat(line) {
 				RemoveFiles(installLocation + recentFile)
 				return nil, errRead
 			}
+
+			/* 	output can be confusing since it displays the 3 most recent used terraform version
+			append the string *recent to the output to make it more user friendly
+			*/
+			outputRecent = append(outputRecent, fmt.Sprintf("%s *recent", line))
 		}
 
-		return lines, nil
+		return outputRecent, nil
 	}
 
 	return nil, nil
