@@ -36,6 +36,7 @@ const (
 var version = "0.6.0\n"
 
 func main() {
+	custBinPath := getopt.StringLong("bin", 'b', "/usr/local/bin/terraform", "custom binary path")
 	listAllFlag := getopt.BoolLong("list-all", 'l', "list all versions of terraform - including beta and rc")
 	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
@@ -51,13 +52,15 @@ func main() {
 	}
 	rcfile := dir + "/.tfswitchrc"
 
+	fmt.Println(*custBinPath)
+
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
 	} else if *helpFlag {
 		usageMessage()
 	} else if *listAllFlag {
 		listAll := true //set list all true - all versions including beta and rc will be displayed
-		installOption(listAll)
+		installOption(listAll, custBinPath)
 	} else {
 
 		if len(args) == 1 { //if tf version is provided in command line
@@ -70,7 +73,7 @@ func main() {
 				exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
 
 				if exist {
-					lib.Install(requestedVersion)
+					lib.Install(requestedVersion, *custBinPath)
 				} else {
 					fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
 				}
@@ -93,7 +96,7 @@ func main() {
 			tfversion := strings.TrimSuffix(string(fileContents), "\n")
 
 			if lib.ValidVersionFormat(tfversion) { //check if version is correct
-				lib.Install(string(tfversion))
+				lib.Install(string(tfversion), *custBinPath)
 			} else {
 				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
@@ -101,7 +104,7 @@ func main() {
 		} else if len(args) == 0 { //if there are no commmand line arguments
 
 			listAll := false //set list all false - only official release will be displayed
-			installOption(listAll)
+			installOption(listAll, custBinPath)
 
 		} else {
 			usageMessage()
@@ -118,7 +121,7 @@ func usageMessage() {
 /* installOption : displays & installs tf version */
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
-func installOption(listAll bool) {
+func installOption(listAll bool, custBinPath *string) {
 
 	tflist, _ := lib.GetTFList(hashiURL, listAll) //get list of versions
 	recentVersions, _ := lib.GetRecentVersions()  //get recent versions from RECENT file
@@ -139,5 +142,5 @@ func installOption(listAll bool) {
 		os.Exit(1)
 	}
 
-	lib.Install(tfversion)
+	lib.Install(tfversion, *custBinPath)
 }
