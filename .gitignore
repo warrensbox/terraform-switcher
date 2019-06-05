@@ -31,4 +31,8 @@ docs/.bundle/**
 
 .tfswitchrc
 
-tfswitch
+tfswitch*
+
+build-script.sh
+
+.tfswitch.toml
