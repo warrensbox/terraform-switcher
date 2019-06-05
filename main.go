@@ -33,13 +33,13 @@ const (
 	hashiURL = "https://releases.hashicorp.com/terraform/"
 )
 
-var version = "0.6.0\n"
+var version = "0.7.0\n"
 
 func main() {
-	custBinPath := getopt.StringLong("bin", 'b', "/usr/local/bin/terraform", "custom binary path")
-	listAllFlag := getopt.BoolLong("list-all", 'l', "list all versions of terraform - including beta and rc")
-	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch")
-	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
+	custBinPath := getopt.StringLong("bin", 'b', "/usr/local/bin/terraform", "Custom binary path. For example: /Users/username/bin/terraform")
+	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
+	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
+	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
 	_ = versionFlag
 
 	getopt.Parse()
@@ -52,7 +52,13 @@ func main() {
 	}
 	rcfile := dir + "/.tfswitchrc"
 
-	fmt.Println(*custBinPath)
+	errBinDirExist := lib.CheckDirExist(lib.Path(*custBinPath))
+
+	if errBinDirExist != nil {
+		fmt.Printf("Binary path does not exist: %s\n", lib.Path(*custBinPath))
+		fmt.Printf("Please create binary path: %s for terraform installation\n", lib.Path(*custBinPath))
+		os.Exit(1)
+	}
 
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)

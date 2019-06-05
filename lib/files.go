@@ -201,3 +201,18 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 	}
 	return exist
 }
+
+//CheckDirExist : check if directory exist
+func CheckDirExist(dir string) error {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return err
+	}
+
+	return nil
+}
+
+// Path : removes base directory
+func Path(value string) string {
+
+	return filepath.Dir(value)
+}
