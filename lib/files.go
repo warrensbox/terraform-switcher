@@ -218,7 +218,7 @@ func Path(value string) string {
 	return filepath.Dir(value)
 }
 
-// GetFileName : remove file exist .tfswitch.config returns .tfswitch
+// GetFileName : remove file ext.  .tfswitch.config returns .tfswitch
 func GetFileName(configfile string) string {
 
 	return strings.TrimSuffix(configfile, filepath.Ext(configfile))
