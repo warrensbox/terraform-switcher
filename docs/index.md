@@ -96,6 +96,10 @@ load-tfswitch() {
 add-zsh-hook chpwd load-tfswitch
 load-tfswitch
 ```
+> NOTE: if you see an error like this: `command not found: add-zsh-hook`, then you might be on an older version of zsh (see below), or you simply need to load `add-zsh-hook` by adding this to your `.zshrc`:
+>    ```
+>    autoload -U add-zsh-hook
+>    ```
 
 *older version of zsh*
 ```
