@@ -56,20 +56,25 @@ func main() {
 		os.Exit(1)
 	}
 
-	rcfile := dir + fmt.Sprintf("/%s", rcFilename)       //settings for .tfswitchrc file (backward compatible purpose)
-	configfile := dir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file (option to specify bin directory)
+	rcfile := dir + fmt.Sprintf("/%s", rcFilename)       //settings for .tfswitchrc file in current directory (backward compatible purpose)
+	configfile := dir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in current directory (option to specify bin directory)
 
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
 	} else if *helpFlag {
 		usageMessage()
 	} else {
-
+		/* This block checks to see if the tfswitch toml file is provided in the current path.
+		 * If the .tfswitch.toml file exist, it has a higher precedence than the .tfswitchrc file
+		 * You can specify the custom binary path and the version you desire
+		 * If you provide a custom binary path with the -b option, this will override the bin value in the toml file
+		 * If you provide a version on the command line, this will override the version value in the toml file
+		 */
 		if _, err := os.Stat(configfile); err == nil {
 			fmt.Printf("Reading configuration from %s\n", tomlFilename)
 			tfversion := ""
-			binPath := *custBinPath
-			configfileName := lib.GetFileName(tomlFilename)
+			binPath := *custBinPath                         //takes the default bin (defaultBin) if user does not specify bin path
+			configfileName := lib.GetFileName(tomlFilename) //get the config file
 			viper.SetConfigType("toml")
 			viper.SetConfigName(configfileName)
 			viper.AddConfigPath(dir)
@@ -78,25 +83,25 @@ func main() {
 			if errs != nil {
 				fmt.Printf("Unable to read %s provided\n", tomlFilename) // Handle errors reading the config file
 				fmt.Println(err)
-				os.Exit(1)
+				os.Exit(1) // exit immediately if config file provided but it is unable to read it
 			}
 
-			bin := viper.Get("bin")
-			if binPath == defaultBin && bin != nil {
+			bin := viper.Get("bin")                  // read custom binary location
+			if binPath == defaultBin && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
 				binPath = bin.(string)
 			}
-			version := viper.Get("version")
+			version := viper.Get("version") //attempt to get the version if it's provided in the toml
 
-			if len(args) == 1 {
+			if len(args) == 1 { //if the version is passed in the command line
 				requestedVersion := args[0]
 				listAll := true                                     //set list all true - all versions including beta and rc will be displayed
 				tflist, _ := lib.GetTFList(hashiURL, listAll)       //get list of versions
 				exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
 
 				if exist {
-					tfversion = requestedVersion
+					tfversion = requestedVersion // set tfversion = the version needed
 				}
-			} else if version != nil {
+			} else if version != nil { // if the required version in the toml file is provided (use it)
 				tfversion = version.(string)
 			}
 
@@ -107,10 +112,10 @@ func main() {
 				fmt.Printf("Binary path does not exist: %s\n", pathDir)
 				fmt.Printf("Create binary path: %s for terraform installation\n", pathDir)
 				os.Exit(1)
-			} else if *listAllFlag {
+			} else if *listAllFlag { //show all terraform version including betas and RCs
 				listAll := true //set list all true - all versions including beta and rc will be displayed
 				installOption(listAll, &binPath)
-			} else if tfversion == "" {
+			} else if tfversion == "" { // if no version is provided, show a dropdown of available release versions
 				listAll := false //set list all false - only official release will be displayed
 				installOption(listAll, &binPath)
 			} else {
