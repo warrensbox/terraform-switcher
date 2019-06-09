@@ -76,51 +76,6 @@ version = "0.11.3"
 
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 170px;"/>
 
-**Automatically switch with bash**
-
-Add the following to the end of your `~/.bashrc` file:
-```
-cdtfswitch(){
-  builtin cd "$@";
-  cdir=$PWD;
-  if [ -f "$cdir/.tfswitch.toml" ]; then
-    tfswitch
-  fi
-}
-alias cd='cdtfswitch'
-```
-
-**Automatically switch with zsh**
-
-Add the following to the end of your `~/.zshrc` file:
-
-```
-load-tfswitch() {
-  local tfswitchrc_path=".tfswitch.toml"
-
-  if [ -f "$tfswitchrc_path" ]; then
-    tfswitch
-  fi
-}
-add-zsh-hook chpwd load-tfswitch
-load-tfswitch
-```
-> NOTE: if you see an error like this: `command not found: add-zsh-hook`, then you might be on an older version of zsh (see below), or you simply need to load `add-zsh-hook` by adding this to your `.zshrc`:
->    ```
->    autoload -U add-zsh-hook
->    ```
-
-*older version of zsh*
-```
-cd(){
-  builtin cd "$@";
-  cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
-    tfswitch
-  fi
-}
-```
-
 ### Use .tfswitchrc file
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v6.gif" alt="drawing" style="width: 490px;"/>
 
@@ -131,7 +86,9 @@ cd(){
 
 **Automatically switch with bash**
 
-Add the following to the end of your `~/.bashrc` file:
+Add the following to the end of your `~/.bashrc` file: 
+(Use either `.tfswitchrc` or `.tfswitch.toml`)
+
 ```
 cdtfswitch(){
   builtin cd "$@";
