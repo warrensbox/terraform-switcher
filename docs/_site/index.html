@@ -23,7 +23,7 @@
 {"name":"tfswitch","description":"Manage terraform versions - the tfswitch command line tool lets you switch between different versions of terraform","@type":"WebSite","url":"/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/logo.png"}},"headline":"Terraform Switcher","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/assets/css/style.css?v=53c4a658dbed6fd2f05b5ffb643fb2bd96cbbf88">
+    <link rel="stylesheet" href="/assets/css/style.css?v=6d07d7f358b39ef797c837ef812a979456d32f5f">
     <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -57,8 +57,8 @@
 
         
         <ul>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.5.642/terraform-switcher_0.5.642_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.5.642/terraform-switcher_0.5.642_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.7.0/terraform-switcher_0.7.0_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.7.0/terraform-switcher_0.7.0_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
           <li><a href="https://github.com/warrensbox/terraform-switcher/releases">Releases On <strong>GitHub</strong></a></li>
         </ul>
         
@@ -128,6 +128,69 @@ Once installed, simply select the version you require from the dropdown and star
   <li>Hit <strong>Enter</strong> to select the desired version.</li>
 </ol>
 
+<h3 id="use-tfswitchtoml-file--for-uprivilege-users-non-admin---users-with-limited-privilege-on-their-computer">Use .tfswitch.toml file  (For uprivilege users/ non-admin - users with limited privilege on their computer)</h3>
+<p>This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation</p>
+
+<p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v8.gif" alt="drawing" style="width: 170px;" /></p>
+
+<ol>
+  <li>Create a custom binary path. Ex: <code class="highlighter-rouge">mkdir /Users/warrenveerasingam/bin</code> (replace warrenveerasingam with your username)</li>
+  <li>Add the path to your PATH. Ex: <code class="highlighter-rouge">export PATH=$PATH:/Users/warrenveerasingam/bin</code> (add this to your bash profile or zsh profile)</li>
+  <li>Pass -b or –bin parameter with your custom path to install terraform. Ex: <code class="highlighter-rouge">tfswitch -b /Users/warrenveerasingam/bin/terraform 0.10.8 </code></li>
+  <li>Optionally, you can create a <code class="highlighter-rouge">.tfswitch.toml</code> file in your terraform directory.</li>
+  <li>Your <code class="highlighter-rouge">.tfswitch.toml</code> file should look like this:
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bin = "/Users/warrenveerasingam/bin/terraform"
+version = "0.11.3"
+</code></pre></div>    </div>
+  </li>
+  <li>Run <code class="highlighter-rouge">tfswitch</code> and it should automatically install the required terraform version in the specified binary path</li>
+</ol>
+
+<p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 170px;" /></p>
+
+<p><strong>Automatically switch with bash</strong></p>
+
+<p>Add the following to the end of your <code class="highlighter-rouge">~/.bashrc</code> file:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdtfswitch(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tfswitch.toml" ]; then
+    tfswitch
+  fi
+}
+alias cd='cdtfswitch'
+</code></pre></div></div>
+
+<p><strong>Automatically switch with zsh</strong></p>
+
+<p>Add the following to the end of your <code class="highlighter-rouge">~/.zshrc</code> file:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>load-tfswitch() {
+  local tfswitchrc_path=".tfswitch.toml"
+
+  if [ -f "$tfswitchrc_path" ]; then
+    tfswitch
+  fi
+}
+add-zsh-hook chpwd load-tfswitch
+load-tfswitch
+</code></pre></div></div>
+<blockquote>
+  <p>NOTE: if you see an error like this: <code class="highlighter-rouge">command not found: add-zsh-hook</code>, then you might be on an older version of zsh (see below), or you simply need to load <code class="highlighter-rouge">add-zsh-hook</code> by adding this to your <code class="highlighter-rouge">.zshrc</code>:</p>
+  <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   autoload -U add-zsh-hook
+</code></pre></div>  </div>
+</blockquote>
+
+<p><em>older version of zsh</em></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd(){
+  builtin cd "$@";
+  cdir=$PWD;
+  if [ -f "$cdir/.tfswitchrc" ]; then
+    tfswitch
+  fi
+}
+</code></pre></div></div>
+
 <h3 id="use-tfswitchrc-file">Use .tfswitchrc file</h3>
 <p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v6.gif" alt="drawing" style="width: 490px;" /></p>
 
@@ -164,6 +227,11 @@ alias cd='cdtfswitch'
 add-zsh-hook chpwd load-tfswitch
 load-tfswitch
 </code></pre></div></div>
+<blockquote>
+  <p>NOTE: if you see an error like this: <code class="highlighter-rouge">command not found: add-zsh-hook</code>, then you might be on an older version of zsh (see below), or you simply need to load <code class="highlighter-rouge">add-zsh-hook</code> by adding this to your <code class="highlighter-rouge">.zshrc</code>:</p>
+  <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   autoload -U add-zsh-hook
+</code></pre></div>  </div>
+</blockquote>
 
 <p><em>older version of zsh</em></p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd(){
