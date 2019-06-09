@@ -359,3 +359,48 @@ func TestCheckDirHasTFBin(t *testing.T) {
 
 	cleanUp(installLocation)
 }
+
+// TestPath : create file in directory, check if path exist
+func TestPath(t *testing.T) {
+
+	installPath := "/.terraform.versions_test"
+	installFile := "terraform"
+
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+	installLocation := usr.HomeDir + installPath
+
+	createDirIfNotExist(installLocation)
+
+	createFile(installLocation + "/" + installFile)
+
+	path := lib.Path(installLocation + "/" + installFile)
+
+	t.Logf("Path created %s\n", installLocation+installFile)
+	t.Logf("Path expected %s\n", installLocation)
+	t.Logf("Path from library %s\n", path)
+	if path == installLocation {
+		t.Logf("Path exist (expected)")
+	} else {
+		t.Error("Path does not exist (unexpected)")
+	}
+
+	cleanUp(installLocation)
+}
+
+// TestGetFileName : remove file ext.  .tfswitch.config returns .tfswitch
+
+func TestGetFileName(t *testing.T) {
+
+	fileNameWithExt := "file.toml"
+
+	fileName := lib.GetFileName(fileNameWithExt)
+
+	if fileName == "file" {
+		t.Logf("File removed extension (expected)")
+	} else {
+		t.Error("File did not remove extension (unexpected)")
+	}
+}
