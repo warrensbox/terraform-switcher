@@ -26,19 +26,25 @@ import (
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
+	"github.com/spf13/viper"
 	lib "github.com/warrensbox/terraform-switcher/lib"
 )
 
 const (
-	hashiURL = "https://releases.hashicorp.com/terraform/"
+	hashiURL     = "https://releases.hashicorp.com/terraform/"
+	defaultBin   = "/usr/local/bin/terraform" //default bin installation dir
+	rcFilename   = ".tfswitchrc"
+	tomlFilename = ".tfswitch.toml"
 )
 
-var version = "0.6.0\n"
+var version = "0.7.0\n"
 
 func main() {
-	listAllFlag := getopt.BoolLong("list-all", 'l', "list all versions of terraform - including beta and rc")
-	versionFlag := getopt.BoolLong("version", 'v', "displays the version of tfswitch")
-	helpFlag := getopt.BoolLong("help", 'h', "displays help message")
+
+	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. For example: /Users/username/bin/terraform")
+	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
+	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
+	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
 	_ = versionFlag
 
 	getopt.Parse()
@@ -49,19 +55,96 @@ func main() {
 		log.Printf("Failed to get current directory %v\n", err)
 		os.Exit(1)
 	}
-	rcfile := dir + "/.tfswitchrc"
+
+	rcfile := dir + fmt.Sprintf("/%s", rcFilename)       //settings for .tfswitchrc file in current directory (backward compatible purpose)
+	configfile := dir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in current directory (option to specify bin directory)
 
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
 	} else if *helpFlag {
 		usageMessage()
-	} else if *listAllFlag {
-		listAll := true //set list all true - all versions including beta and rc will be displayed
-		installOption(listAll)
 	} else {
+		/* This block checks to see if the tfswitch toml file is provided in the current path.
+		 * If the .tfswitch.toml file exist, it has a higher precedence than the .tfswitchrc file
+		 * You can specify the custom binary path and the version you desire
+		 * If you provide a custom binary path with the -b option, this will override the bin value in the toml file
+		 * If you provide a version on the command line, this will override the version value in the toml file
+		 */
+		if _, err := os.Stat(configfile); err == nil {
+			fmt.Printf("Reading configuration from %s\n", tomlFilename)
+			tfversion := ""
+			binPath := *custBinPath                         //takes the default bin (defaultBin) if user does not specify bin path
+			configfileName := lib.GetFileName(tomlFilename) //get the config file
+			viper.SetConfigType("toml")
+			viper.SetConfigName(configfileName)
+			viper.AddConfigPath(dir)
 
-		if len(args) == 1 { //if tf version is provided in command line
+			errs := viper.ReadInConfig() // Find and read the config file
+			if errs != nil {
+				fmt.Printf("Unable to read %s provided\n", tomlFilename) // Handle errors reading the config file
+				fmt.Println(err)
+				os.Exit(1) // exit immediately if config file provided but it is unable to read it
+			}
 
+			bin := viper.Get("bin")                  // read custom binary location
+			if binPath == defaultBin && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
+				binPath = bin.(string)
+			}
+			version := viper.Get("version") //attempt to get the version if it's provided in the toml
+
+			if len(args) == 1 { //if the version is passed in the command line
+				requestedVersion := args[0]
+				listAll := true                                     //set list all true - all versions including beta and rc will be displayed
+				tflist, _ := lib.GetTFList(hashiURL, listAll)       //get list of versions
+				exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
+
+				if exist {
+					tfversion = requestedVersion // set tfversion = the version needed
+				}
+			} else if version != nil { // if the required version in the toml file is provided (use it)
+				tfversion = version.(string)
+			}
+
+			pathDir := lib.Path(binPath)              //get path directory from binary path
+			binDirExist := lib.CheckDirExist(pathDir) //check bin path exist
+
+			if !binDirExist {
+				fmt.Printf("Binary path does not exist: %s\n", pathDir)
+				fmt.Printf("Create binary path: %s for terraform installation\n", pathDir)
+				os.Exit(1)
+			} else if *listAllFlag { //show all terraform version including betas and RCs
+				listAll := true //set list all true - all versions including beta and rc will be displayed
+				installOption(listAll, &binPath)
+			} else if tfversion == "" { // if no version is provided, show a dropdown of available release versions
+				listAll := false //set list all false - only official release will be displayed
+				installOption(listAll, &binPath)
+			} else {
+				if lib.ValidVersionFormat(tfversion) { //check if version is correct
+					lib.Install(tfversion, binPath)
+				} else {
+					fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+					os.Exit(1)
+				}
+			}
+
+		} else if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
+			fmt.Printf("Reading required terraform version %s ", rcFilename)
+
+			fileContents, err := ioutil.ReadFile(rcfile)
+			if err != nil {
+				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", rcFilename)
+				fmt.Printf("Error: %s\n", err)
+				os.Exit(1)
+			}
+			tfversion := strings.TrimSuffix(string(fileContents), "\n")
+
+			if lib.ValidVersionFormat(tfversion) { //check if version is correct
+				lib.Install(string(tfversion), *custBinPath)
+			} else {
+				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+				os.Exit(1)
+			}
+		} else if len(args) == 1 { //if tf version is provided in command line
 			if lib.ValidVersionFormat(args[0]) {
 
 				requestedVersion := args[0]
@@ -70,7 +153,7 @@ func main() {
 				exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
 
 				if exist {
-					lib.Install(requestedVersion)
+					lib.Install(requestedVersion, *custBinPath)
 				} else {
 					fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
 				}
@@ -81,27 +164,14 @@ func main() {
 				usageMessage()
 			}
 
-		} else if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
-			fmt.Println("Reading required terraform version ...")
+		} else if *listAllFlag {
+			listAll := true //set list all true - all versions including beta and rc will be displayed
+			installOption(listAll, custBinPath)
 
-			fileContents, err := ioutil.ReadFile(rcfile)
-			if err != nil {
-				fmt.Println("Failed to read .tfswitchrc file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
-				fmt.Printf("Error: %s\n", err)
-				os.Exit(1)
-			}
-			tfversion := strings.TrimSuffix(string(fileContents), "\n")
-
-			if lib.ValidVersionFormat(tfversion) { //check if version is correct
-				lib.Install(string(tfversion))
-			} else {
-				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
-				os.Exit(1)
-			}
 		} else if len(args) == 0 { //if there are no commmand line arguments
 
 			listAll := false //set list all false - only official release will be displayed
-			installOption(listAll)
+			installOption(listAll, custBinPath)
 
 		} else {
 			usageMessage()
@@ -118,7 +188,7 @@ func usageMessage() {
 /* installOption : displays & installs tf version */
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
-func installOption(listAll bool) {
+func installOption(listAll bool, custBinPath *string) {
 
 	tflist, _ := lib.GetTFList(hashiURL, listAll) //get list of versions
 	recentVersions, _ := lib.GetRecentVersions()  //get recent versions from RECENT file
@@ -139,5 +209,6 @@ func installOption(listAll bool) {
 		os.Exit(1)
 	}
 
-	lib.Install(tfversion)
+	lib.Install(tfversion, *custBinPath)
+	os.Exit(0)
 }

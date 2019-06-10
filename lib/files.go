@@ -201,3 +201,25 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 	}
 	return exist
 }
+
+//CheckDirExist : check if directory exist
+//dir=path to file
+//return path to directory
+func CheckDirExist(dir string) bool {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
+// Path : returns path of directory
+// value=path to file
+func Path(value string) string {
+	return filepath.Dir(value)
+}
+
+// GetFileName : remove file ext.  .tfswitch.config returns .tfswitch
+func GetFileName(configfile string) string {
+
+	return strings.TrimSuffix(configfile, filepath.Ext(configfile))
+}
