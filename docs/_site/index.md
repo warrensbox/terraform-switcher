@@ -61,6 +61,7 @@ The most recently selected versions are presented at the top of the dropdown.
 ### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
 
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 490px;"/>
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v8.gif" alt="drawing" style="width: 490px;"/>
 
 1. Create a custom binary path. Ex: `mkdir /Users/warrenveerasingam/bin` (replace warrenveerasingam with your username)
@@ -73,8 +74,6 @@ bin = "/Users/warrenveerasingam/bin/terraform"
 version = "0.11.3"
 ```
 4. Run `tfswitch` and it should automatically install the required terraform version in the specified binary path
-
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 490px;"/>
 
 ### Use .tfswitchrc file
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v6.gif" alt="drawing" style="width: 490px;"/>
