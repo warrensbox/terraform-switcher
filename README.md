@@ -65,7 +65,7 @@ The most recently selected versions are presented at the top of the dropdown.
 3. Hit **Enter** to select the desired version.
 
 
-### Use .tfswitch.toml file  (For uprivilege users/ non-admin - users with limited privilege on their computer)
+### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
 
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v8.gif" alt="drawing" style="width: 170px;"/>
