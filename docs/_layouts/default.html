@@ -26,6 +26,9 @@
 
       gtag('config', 'UA-120055973-1');
     </script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
   </head>
   <body>
     <div class="wrapper">
@@ -51,17 +54,20 @@
           <li><a href="https://github.com/warrensbox/terraform-switcher/releases">Releases On <strong>GitHub</strong></a></li>
         </ul>
         {% endif %}
+
+        <!-- Place this tag where you want the button to render. -->
+<a class="github-button" href="https://github.com/warrensbox/terraform-switcher" data-size="large" data-show-count="true" aria-label="Star warrensbox/terraform-switcher on GitHub">Star</a>
       </header>
       <section>
 
       {{ content }}
       {% if site.github.is_project_page %}
-      <p><small>This project is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></small></p>
+      <p><small>This project is maintained by <a href="{{ site.github.repository_url }}">{{ site.github.owner_name }}</a></small></p>
       {% endif %}
       </section>
       <footer>
         <!-- <p><small>View other products &mdash; by <a href="http://warren.veerasingam.com/#about_me" target="_blank">Warren Veerasingam</a></small></p> -->
-        <p><small>This project is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a></small></p>
+        <p><small>This project is maintained by <a href="{{ site.github.repository_url }}">{{ site.github.owner_name }}</a></small></p>
       </footer>
     </div>
     <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
