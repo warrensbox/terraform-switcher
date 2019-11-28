@@ -88,7 +88,7 @@ func main() {
 
 			bin := viper.Get("bin")                  // read custom binary location
 			if binPath == defaultBin && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
-				binPath = bin.(string)
+				binPath = os.ExpandEnv(bin.(string))
 			}
 			version := viper.Get("version") //attempt to get the version if it's provided in the toml
 
