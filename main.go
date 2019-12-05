@@ -33,6 +33,7 @@ import (
 const (
 	hashiURL     = "https://releases.hashicorp.com/terraform/"
 	defaultBin   = "/usr/local/bin/terraform" //default bin installation dir
+	tfvFilename  = ".terraform-version"
 	rcFilename   = ".tfswitchrc"
 	tomlFilename = ".tfswitch.toml"
 )
@@ -56,6 +57,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	tfvfile := dir + fmt.Sprintf("/%s", tfvFilename)     //settings for .terraform-version file in current directory (tfenv compatible)
 	rcfile := dir + fmt.Sprintf("/%s", rcFilename)       //settings for .tfswitchrc file in current directory (backward compatible purpose)
 	configfile := dir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in current directory (option to specify bin directory)
 
@@ -133,6 +135,23 @@ func main() {
 			fileContents, err := ioutil.ReadFile(rcfile)
 			if err != nil {
 				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", rcFilename)
+				fmt.Printf("Error: %s\n", err)
+				os.Exit(1)
+			}
+			tfversion := strings.TrimSuffix(string(fileContents), "\n")
+
+			if lib.ValidVersionFormat(tfversion) { //check if version is correct
+				lib.Install(string(tfversion), *custBinPath)
+			} else {
+				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+				os.Exit(1)
+			}
+		} else if _, err := os.Stat(tfvfile); err == nil && len(args) == 0 { //if there is a .terraform-version file, and no command line arguments
+			fmt.Printf("Reading required terraform version %s ", tfvFilename)
+
+			fileContents, err := ioutil.ReadFile(tfvfile)
+			if err != nil {
+				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", tfvFilename)
 				fmt.Printf("Error: %s\n", err)
 				os.Exit(1)
 			}
