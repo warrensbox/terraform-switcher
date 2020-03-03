@@ -89,6 +89,7 @@ version = "0.11.3"
 2. For example, `echo "0.10.5" >> .tfswitchrc` for version 0.10.5 of terraform
 3. Run the command `tfswitch` in the same directory as your `.tfswitchrc`
 
+*instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
 
 **Automatically switch with bash**
 
@@ -139,7 +140,7 @@ cd(){
 
 ## Additional Info
 
-See how to *upgrade*, *uninstall*, *troubleshoot* here:[More info](https://warrensbox.github.io/terraform-switcher/additional)
+See how to *upgrade*, *uninstall*, *troubleshoot* here: [More info](https://warrensbox.github.io/terraform-switcher/additional)
 
 
 ## Issues
