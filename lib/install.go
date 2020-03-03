@@ -22,7 +22,7 @@ var (
 	//installedBinPath = "/tmp"
 )
 
-func init() {
+func initialize() {
 	/* get current user */
 	usr, errCurr := user.Current()
 	if errCurr != nil {
@@ -64,6 +64,17 @@ func Install(tfversion string, binPath string) {
 		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
 		os.Exit(1)
 	}
+
+	pathDir := Path(binPath)              //get path directory from binary path
+	binDirExist := CheckDirExist(pathDir) //check bin path exist
+
+	if !binDirExist {
+		fmt.Printf("Error - Binary path does not exist: %s\n", pathDir)
+		fmt.Printf("Create binary path: %s for terraform installation\n", pathDir)
+		os.Exit(1)
+	}
+
+	initialize() //initialize path
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
@@ -113,6 +124,7 @@ func Install(tfversion string, binPath string) {
 	/* remove zipped file to clear clutter */
 	RemoveFiles(installLocation + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip")
 
+	fmt.Println("rm2 symlink")
 	/* remove current symlink if exist*/
 	symlinkExist := CheckSymlink(binPath)
 

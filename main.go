@@ -105,14 +105,7 @@ func main() {
 				tfversion = version.(string)
 			}
 
-			pathDir := lib.Path(binPath)              //get path directory from binary path
-			binDirExist := lib.CheckDirExist(pathDir) //check bin path exist
-
-			if !binDirExist {
-				fmt.Printf("Binary path does not exist: %s\n", pathDir)
-				fmt.Printf("Create binary path: %s for terraform installation\n", pathDir)
-				os.Exit(1)
-			} else if *listAllFlag { //show all terraform version including betas and RCs
+			if *listAllFlag { //show all terraform version including betas and RCs
 				listAll := true //set list all true - all versions including beta and rc will be displayed
 				installOption(listAll, &binPath)
 			} else if tfversion == "" { // if no version is provided, show a dropdown of available release versions
