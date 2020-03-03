@@ -82,11 +82,12 @@ version = "0.11.3"
 2. For example, `echo "0.10.5" >> .tfswitchrc` for version 0.10.5 of terraform.
 3. Run the command `tfswitch` in the same directory as your `.tfswitchrc`.
 
+*Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
 
 **Automatically switch with bash**
 
 Add the following to the end of your `~/.bashrc` file: 
-(Use either `.tfswitchrc` or `.tfswitch.toml`)
+(Use either `.tfswitchrc` or `.tfswitch.toml` or `.terraform-version`)
 
 ```
 cdtfswitch(){
@@ -128,6 +129,18 @@ cd(){
     tfswitch
   fi
 }
+```
+
+### Jenkins setup
+```
+#!/bin/bash 
+
+echo "Installing tfswitch locally"
+wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
+chmod 755 install.sh
+./install.sh -b bin-directory
+
+./bin-directory/tfswitch
 ```
 
 <hr>
