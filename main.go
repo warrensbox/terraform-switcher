@@ -123,7 +123,7 @@ func main() {
 			}
 
 		} else if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
-			fmt.Printf("Reading required terraform version %s ", rcFilename)
+			fmt.Printf("Reading required terraform version %s \n", rcFilename)
 
 			fileContents, err := ioutil.ReadFile(rcfile)
 			if err != nil {
@@ -140,7 +140,7 @@ func main() {
 				os.Exit(1)
 			}
 		} else if _, err := os.Stat(tfvfile); err == nil && len(args) == 0 { //if there is a .terraform-version file, and no command line arguments
-			fmt.Printf("Reading required terraform version %s ", tfvFilename)
+			fmt.Printf("Reading required terraform version %s \n", tfvFilename)
 
 			fileContents, err := ioutil.ReadFile(tfvfile)
 			if err != nil {
