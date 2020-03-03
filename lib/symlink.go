@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"fmt"
 	"log"
 	"os"
 )
@@ -24,7 +23,7 @@ func CreateSymlink(cwd string, dir string) {
 
 //RemoveSymlink : remove symlink
 func RemoveSymlink(symlinkPath string) {
-	fmt.Println(symlinkPath)
+
 	_, err := os.Lstat(symlinkPath)
 	if err != nil {
 		log.Fatalf(`
@@ -37,7 +36,7 @@ func RemoveSymlink(symlinkPath string) {
 		os.Exit(1)
 	} else {
 		errRemove := os.Remove(symlinkPath)
-		fmt.Println("ATTEMPING TO RM")
+
 		if errRemove != nil {
 			log.Fatalf(`
 			Unable to remove symlink.
