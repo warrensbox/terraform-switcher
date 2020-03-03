@@ -12,27 +12,21 @@ const (
 	hashiURL       = "https://releases.hashicorp.com/terraform/"
 	installFile    = "terraform"
 	installVersion = "terraform_"
-	//binLocation    = "/usr/local/bin/terraform"
-	installPath = "/.terraform.versions/"
-	recentFile  = "RECENT"
+	installPath    = "/.terraform.versions/"
+	recentFile     = "RECENT"
 )
 
 var (
 	installLocation = "/tmp"
-	//installedBinPath = "/tmp"
 )
 
+// initialize : removes existing symlink to terraform binary
 func initialize() {
-	/* get current user */
-	usr, errCurr := user.Current()
-	if errCurr != nil {
-		log.Fatal(errCurr)
-	}
 
-	/* set installation location */
-	installLocation = usr.HomeDir + installPath
-
-	/* set default binary path for terraform */
+	/* Step 1 */
+	/* initilize default binary path for terraform */
+	/* assumes that terraform is installed here */
+	/* we will find the terraform path instalation later and replace this variable with the correct installed bin path */
 	installedBinPath := "/usr/local/bin/terraform"
 
 	/* find terraform binary location if terraform is already installed*/
@@ -45,15 +39,32 @@ func initialize() {
 		installedBinPath = path
 	}
 
-	/* remove current symlink if exist*/
+	/* check if current symlink to terraform binary exist */
 	symlinkExist := CheckSymlink(installedBinPath)
 
+	/* remove current symlink if exist*/
 	if symlinkExist {
 		RemoveSymlink(installedBinPath)
 	}
 
+}
+
+// getInstallLocation : get location where the terraform binary will be installed,
+// will create a directory in the home location if it does not exist
+func getInstallLocation() string {
+	/* get current user */
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+
+	/* set installation location */
+	installLocation = usr.HomeDir + installPath
+
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
+
+	return installLocation
 
 }
 
@@ -74,7 +85,8 @@ func Install(tfversion string, binPath string) {
 		os.Exit(1)
 	}
 
-	initialize() //initialize path
+	initialize()                           //initialize path
+	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
@@ -124,7 +136,6 @@ func Install(tfversion string, binPath string) {
 	/* remove zipped file to clear clutter */
 	RemoveFiles(installLocation + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip")
 
-	fmt.Println("rm2 symlink")
 	/* remove current symlink if exist*/
 	symlinkExist := CheckSymlink(binPath)
 
@@ -141,6 +152,8 @@ func Install(tfversion string, binPath string) {
 
 // AddRecent : add to recent file
 func AddRecent(requestedVersion string) {
+
+	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
 	fileExist := CheckFileExist(installLocation + recentFile)
 	if fileExist {
@@ -175,12 +188,15 @@ func AddRecent(requestedVersion string) {
 		}
 
 	} else {
+		fmt.Println("adding to recent5")
 		CreateRecentFile(requestedVersion)
 	}
 }
 
 // GetRecentVersions : get recent version from file
 func GetRecentVersions() ([]string, error) {
+
+	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
 	fileExist := CheckFileExist(installLocation + recentFile)
 	if fileExist {
@@ -217,5 +233,8 @@ func GetRecentVersions() ([]string, error) {
 
 //CreateRecentFile : create a recent file
 func CreateRecentFile(requestedVersion string) {
+
+	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
+
 	WriteLines([]string{requestedVersion}, installLocation+recentFile)
 }
