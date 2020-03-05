@@ -132,6 +132,8 @@ cd(){
 ```
 
 ### Jenkins setup
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 170px;"/>
+
 ```
 #!/bin/bash 
 
