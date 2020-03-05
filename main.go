@@ -33,6 +33,7 @@ import (
 const (
 	hashiURL     = "https://releases.hashicorp.com/terraform/"
 	defaultBin   = "/usr/local/bin/terraform" //default bin installation dir
+	tfvFilename  = ".terraform-version"
 	rcFilename   = ".tfswitchrc"
 	tomlFilename = ".tfswitch.toml"
 )
@@ -56,6 +57,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	tfvfile := dir + fmt.Sprintf("/%s", tfvFilename)     //settings for .terraform-version file in current directory (tfenv compatible)
 	rcfile := dir + fmt.Sprintf("/%s", rcFilename)       //settings for .tfswitchrc file in current directory (backward compatible purpose)
 	configfile := dir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in current directory (option to specify bin directory)
 
@@ -88,7 +90,7 @@ func main() {
 
 			bin := viper.Get("bin")                  // read custom binary location
 			if binPath == defaultBin && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
-				binPath = bin.(string)
+				binPath = os.ExpandEnv(bin.(string))
 			}
 			version := viper.Get("version") //attempt to get the version if it's provided in the toml
 
@@ -105,14 +107,7 @@ func main() {
 				tfversion = version.(string)
 			}
 
-			pathDir := lib.Path(binPath)              //get path directory from binary path
-			binDirExist := lib.CheckDirExist(pathDir) //check bin path exist
-
-			if !binDirExist {
-				fmt.Printf("Binary path does not exist: %s\n", pathDir)
-				fmt.Printf("Create binary path: %s for terraform installation\n", pathDir)
-				os.Exit(1)
-			} else if *listAllFlag { //show all terraform version including betas and RCs
+			if *listAllFlag { //show all terraform version including betas and RCs
 				listAll := true //set list all true - all versions including beta and rc will be displayed
 				installOption(listAll, &binPath)
 			} else if tfversion == "" { // if no version is provided, show a dropdown of available release versions
@@ -128,11 +123,28 @@ func main() {
 			}
 
 		} else if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
-			fmt.Printf("Reading required terraform version %s ", rcFilename)
+			fmt.Printf("Reading required terraform version %s \n", rcFilename)
 
 			fileContents, err := ioutil.ReadFile(rcfile)
 			if err != nil {
 				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", rcFilename)
+				fmt.Printf("Error: %s\n", err)
+				os.Exit(1)
+			}
+			tfversion := strings.TrimSuffix(string(fileContents), "\n")
+
+			if lib.ValidVersionFormat(tfversion) { //check if version is correct
+				lib.Install(string(tfversion), *custBinPath)
+			} else {
+				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+				os.Exit(1)
+			}
+		} else if _, err := os.Stat(tfvfile); err == nil && len(args) == 0 { //if there is a .terraform-version file, and no command line arguments
+			fmt.Printf("Reading required terraform version %s \n", tfvFilename)
+
+			fileContents, err := ioutil.ReadFile(tfvfile)
+			if err != nil {
+				fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", tfvFilename)
 				fmt.Printf("Error: %s\n", err)
 				os.Exit(1)
 			}

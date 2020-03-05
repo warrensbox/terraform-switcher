@@ -65,9 +65,10 @@ The most recently selected versions are presented at the top of the dropdown.
 3. Hit **Enter** to select the desired version.
 
 
-### Use .tfswitch.toml file  (For uprivilege users/ non-admin - users with limited privilege on their computer)
+### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
 
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 170px;"/>   
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v8.gif" alt="drawing" style="width: 170px;"/>
 
 1. Create a custom binary path. Ex: `mkdir /Users/warrenveerasingam/bin` (replace warrenveerasingam with your username)
@@ -81,53 +82,6 @@ version = "0.11.3"
 ```
 4. Run `tfswitch` and it should automatically install the required terraform version in the specified binary path
 
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 170px;"/>
-
-**Automatically switch with bash**
-
-Add the following to the end of your `~/.bashrc` file:
-```
-cdtfswitch(){
-  builtin cd "$@";
-  cdir=$PWD;
-  if [ -f "$cdir/.tfswitch.toml" ]; then
-    tfswitch
-  fi
-}
-alias cd='cdtfswitch'
-```
-
-**Automatically switch with zsh**
-
-Add the following to the end of your `~/.zshrc` file:
-
-```
-load-tfswitch() {
-  local tfswitchrc_path=".tfswitch.toml"
-
-  if [ -f "$tfswitchrc_path" ]; then
-    tfswitch
-  fi
-}
-add-zsh-hook chpwd load-tfswitch
-load-tfswitch
-```
-> NOTE: if you see an error like this: `command not found: add-zsh-hook`, then you might be on an older version of zsh (see below), or you simply need to load `add-zsh-hook` by adding this to your `.zshrc`:
->    ```
->    autoload -U add-zsh-hook
->    ```
-
-*older version of zsh*
-```
-cd(){
-  builtin cd "$@";
-  cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
-    tfswitch
-  fi
-}
-```
-
 ### Use .tfswitchrc file
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v6.gif" alt="drawing" style="width: 170px;"/>
 
@@ -135,10 +89,13 @@ cd(){
 2. For example, `echo "0.10.5" >> .tfswitchrc` for version 0.10.5 of terraform
 3. Run the command `tfswitch` in the same directory as your `.tfswitchrc`
 
+*Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
 
 **Automatically switch with bash**
 
 Add the following to the end of your `~/.bashrc` file:
+(Use either `.tfswitchrc` or `.tfswitch.toml` or `.terraform-version`)
+
 ```
 cdtfswitch(){
   builtin cd "$@";
@@ -181,9 +138,23 @@ cd(){
 }
 ```
 
+### Jenkins setup
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 170px;"/>
+
+```
+#!/bin/bash 
+
+echo "Installing tfswitch locally"
+wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
+chmod 755 install.sh
+./install.sh -b bin-directory
+
+./bin-directory/tfswitch
+```
+
 ## Additional Info
 
-See how to *upgrade*, *uninstall*, *troubleshoot* here:[More info](https://warrensbox.github.io/terraform-switcher/additional)
+See how to *upgrade*, *uninstall*, *troubleshoot* here: [More info](https://warrensbox.github.io/terraform-switcher/additional)
 
 
 ## Issues

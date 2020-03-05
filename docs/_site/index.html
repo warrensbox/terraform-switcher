@@ -23,7 +23,7 @@
 {"name":"tfswitch","description":"Manage terraform versions - the tfswitch command line tool lets you switch between different versions of terraform","@type":"WebSite","url":"/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/logo.png"}},"headline":"Terraform Switcher","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/assets/css/style.css?v=6d07d7f358b39ef797c837ef812a979456d32f5f">
+    <link rel="stylesheet" href="/assets/css/style.css?v=0b7be9932efc2fc12b75f7de015e535bb13fda26">
     <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -37,6 +37,9 @@
 
       gtag('config', 'UA-120055973-1');
     </script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
   </head>
   <body>
     <div class="wrapper">
@@ -57,11 +60,14 @@
 
         
         <ul>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.7.0/terraform-switcher_0.7.0_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
-          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.7.0/terraform-switcher_0.7.0_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.7.737/terraform-switcher_0.7.737_darwin_amd64.tar.gz">Download <strong>MacOS</strong></a></li>
+          <li><a href="https://github.com/warrensbox/terraform-switcher/releases/download/0.7.737/terraform-switcher_0.7.737_linux_amd64.tar.gz">Download <strong>Linux</strong></a></li>
           <li><a href="https://github.com/warrensbox/terraform-switcher/releases">Releases On <strong>GitHub</strong></a></li>
         </ul>
         
+
+        <!-- Place this tag where you want the button to render. -->
+<a class="github-button" href="https://github.com/warrensbox/terraform-switcher" data-size="large" data-show-count="true" aria-label="Star warrensbox/terraform-switcher on GitHub">Star</a>
       </header>
       <section>
 
@@ -128,10 +134,11 @@ Once installed, simply select the version you require from the dropdown and star
   <li>Hit <strong>Enter</strong> to select the desired version.</li>
 </ol>
 
-<h3 id="use-tfswitchtoml-file--for-uprivilege-users-non-admin---users-with-limited-privilege-on-their-computer">Use .tfswitch.toml file  (For uprivilege users/ non-admin - users with limited privilege on their computer)</h3>
+<h3 id="use-tfswitchtoml-file--for-non-admin---users-with-limited-privilege-on-their-computers">Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)</h3>
 <p>This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation</p>
 
-<p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v8.gif" alt="drawing" style="width: 170px;" /></p>
+<p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 490px;" />
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v8.gif" alt="drawing" style="width: 490px;" /></p>
 
 <ol>
   <li>Create a custom binary path. Ex: <code class="highlighter-rouge">mkdir /Users/warrenveerasingam/bin</code> (replace warrenveerasingam with your username)</li>
@@ -146,51 +153,6 @@ version = "0.11.3"
   <li>Run <code class="highlighter-rouge">tfswitch</code> and it should automatically install the required terraform version in the specified binary path</li>
 </ol>
 
-<p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 170px;" /></p>
-
-<p><strong>Automatically switch with bash</strong></p>
-
-<p>Add the following to the end of your <code class="highlighter-rouge">~/.bashrc</code> file:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdtfswitch(){
-  builtin cd "$@";
-  cdir=$PWD;
-  if [ -f "$cdir/.tfswitch.toml" ]; then
-    tfswitch
-  fi
-}
-alias cd='cdtfswitch'
-</code></pre></div></div>
-
-<p><strong>Automatically switch with zsh</strong></p>
-
-<p>Add the following to the end of your <code class="highlighter-rouge">~/.zshrc</code> file:</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>load-tfswitch() {
-  local tfswitchrc_path=".tfswitch.toml"
-
-  if [ -f "$tfswitchrc_path" ]; then
-    tfswitch
-  fi
-}
-add-zsh-hook chpwd load-tfswitch
-load-tfswitch
-</code></pre></div></div>
-<blockquote>
-  <p>NOTE: if you see an error like this: <code class="highlighter-rouge">command not found: add-zsh-hook</code>, then you might be on an older version of zsh (see below), or you simply need to load <code class="highlighter-rouge">add-zsh-hook</code> by adding this to your <code class="highlighter-rouge">.zshrc</code>:</p>
-  <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   autoload -U add-zsh-hook
-</code></pre></div>  </div>
-</blockquote>
-
-<p><em>older version of zsh</em></p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd(){
-  builtin cd "$@";
-  cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
-    tfswitch
-  fi
-}
-</code></pre></div></div>
-
 <h3 id="use-tfswitchrc-file">Use .tfswitchrc file</h3>
 <p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v6.gif" alt="drawing" style="width: 490px;" /></p>
 
@@ -200,9 +162,13 @@ load-tfswitch
   <li>Run the command <code class="highlighter-rouge">tfswitch</code> in the same directory as your <code class="highlighter-rouge">.tfswitchrc</code>.</li>
 </ol>
 
+<p><em>Instead of a <code class="highlighter-rouge">.tfswitchrc</code> file, a <code class="highlighter-rouge">.terraform-version</code> file may be used for compatibility with <a href="https://github.com/tfutils/tfenv#terraform-version-file"><code class="highlighter-rouge">tfenv</code></a> and other tools which use it</em></p>
+
 <p><strong>Automatically switch with bash</strong></p>
 
-<p>Add the following to the end of your <code class="highlighter-rouge">~/.bashrc</code> file:</p>
+<p>Add the following to the end of your <code class="highlighter-rouge">~/.bashrc</code> file: 
+(Use either <code class="highlighter-rouge">.tfswitchrc</code> or <code class="highlighter-rouge">.tfswitch.toml</code> or <code class="highlighter-rouge">.terraform-version</code>)</p>
+
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdtfswitch(){
   builtin cd "$@";
   cdir=$PWD;
@@ -243,6 +209,19 @@ load-tfswitch
 }
 </code></pre></div></div>
 
+<h3 id="jenkins-setup">Jenkins setup</h3>
+<p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 170px;" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash </span>
+
+<span class="nb">echo</span> <span class="s2">"Installing tfswitch locally"</span>
+wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
+chmod 755 install.sh
+./install.sh <span class="nt">-b</span> bin-directory
+
+./bin-directory/tfswitch
+</code></pre></div></div>
+
 <hr />
 
 <h2 id="issues">Issues</h2>
@@ -255,12 +234,12 @@ load-tfswitch
 <a href="additional">Additional Info</a></p>
 
       
-      <p><small>This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p>
+      <p><small>This project is maintained by <a href="http://github.com/warrensbox/terraform-switcher">warrensbox</a></small></p>
       
       </section>
       <footer>
         <!-- <p><small>View other products &mdash; by <a href="http://warren.veerasingam.com/#about_me" target="_blank">Warren Veerasingam</a></small></p> -->
-        <p><small>This project is maintained by <a href="http://github.com/warrensbox">warrensbox</a></small></p>
+        <p><small>This project is maintained by <a href="http://github.com/warrensbox/terraform-switcher">warrensbox</a></small></p>
       </footer>
     </div>
     <script src="/assets/js/scale.fix.js"></script>

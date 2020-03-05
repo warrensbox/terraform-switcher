@@ -27,7 +27,7 @@ func RemoveSymlink(symlinkPath string) {
 	_, err := os.Lstat(symlinkPath)
 	if err != nil {
 		log.Fatalf(`
-		Unable to remove symlink.
+		Unable to stat symlink.
 		Maybe symlink already exist. Try removing existing symlink manually.
 		Try running "unlink %s" to remove existing symlink.
 		If error persist, you may not have the permission to create a symlink at %s.
@@ -36,6 +36,7 @@ func RemoveSymlink(symlinkPath string) {
 		os.Exit(1)
 	} else {
 		errRemove := os.Remove(symlinkPath)
+
 		if errRemove != nil {
 			log.Fatalf(`
 			Unable to remove symlink.
