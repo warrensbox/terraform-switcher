@@ -188,7 +188,6 @@ func AddRecent(requestedVersion string) {
 		}
 
 	} else {
-		fmt.Println("adding to recent5")
 		CreateRecentFile(requestedVersion)
 	}
 }
