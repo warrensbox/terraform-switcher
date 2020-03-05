@@ -36,6 +36,7 @@ func RemoveSymlink(symlinkPath string) {
 		os.Exit(1)
 	} else {
 		errRemove := os.Remove(symlinkPath)
+
 		if errRemove != nil {
 			log.Fatalf(`
 			Unable to remove symlink.

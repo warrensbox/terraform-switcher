@@ -31,3 +31,8 @@ test: $(EXE)
 .PHONEY: dep
 dep:
 	dep ensure
+
+.PHONY: docs
+docs:
+	cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+

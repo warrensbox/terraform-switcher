@@ -23,7 +23,7 @@
 {"name":"tfswitch","description":"Manage terraform versions - the tfswitch command line tool lets you switch between different versions of terraform","@type":"WebSite","url":"/","publisher":{"@type":"Organization","logo":{"@type":"ImageObject","url":"/assets/img/logo.png"}},"headline":"Terraform Switcher","@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/assets/css/style.css?v=45af5d166a97ba6db56ba31181768391887b4abd">
+    <link rel="stylesheet" href="/assets/css/style.css?v=0b7be9932efc2fc12b75f7de015e535bb13fda26">
     <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
@@ -162,10 +162,12 @@ version = "0.11.3"
   <li>Run the command <code class="highlighter-rouge">tfswitch</code> in the same directory as your <code class="highlighter-rouge">.tfswitchrc</code>.</li>
 </ol>
 
+<p><em>Instead of a <code class="highlighter-rouge">.tfswitchrc</code> file, a <code class="highlighter-rouge">.terraform-version</code> file may be used for compatibility with <a href="https://github.com/tfutils/tfenv#terraform-version-file"><code class="highlighter-rouge">tfenv</code></a> and other tools which use it</em></p>
+
 <p><strong>Automatically switch with bash</strong></p>
 
 <p>Add the following to the end of your <code class="highlighter-rouge">~/.bashrc</code> file: 
-(Use either <code class="highlighter-rouge">.tfswitchrc</code> or <code class="highlighter-rouge">.tfswitch.toml</code>)</p>
+(Use either <code class="highlighter-rouge">.tfswitchrc</code> or <code class="highlighter-rouge">.tfswitch.toml</code> or <code class="highlighter-rouge">.terraform-version</code>)</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cdtfswitch(){
   builtin cd "$@";
@@ -205,6 +207,19 @@ load-tfswitch
     tfswitch
   fi
 }
+</code></pre></div></div>
+
+<h3 id="jenkins-setup">Jenkins setup</h3>
+<p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 170px;" /></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash </span>
+
+<span class="nb">echo</span> <span class="s2">"Installing tfswitch locally"</span>
+wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
+chmod 755 install.sh
+./install.sh <span class="nt">-b</span> bin-directory
+
+./bin-directory/tfswitch
 </code></pre></div></div>
 
 <hr />
