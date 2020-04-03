@@ -130,41 +130,41 @@ func main() {
 					os.Exit(1)
 				}
 			}
-		} else if module, _ := tfconfig.LoadModule(dir); len(module.RequiredCore) >= 1 && len(args) == 0 { //if there is required_version defined in TF code, and no commmand line arguments
+		} else if module, _ := tfconfig.LoadModule(dir); len(module.RequiredCore) >= 1 && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
 			tfversion := ""
 
 			// we skip duplicated definitions and use only first one
 			tfconstraint := module.RequiredCore[0]
 			tflist, _ := lib.GetTFList(hashiURL, true)
 			fmt.Printf("Reading required version from terraform code, constraint: %s\n", tfconstraint)
-			//fmt.Printf("Available versions: %#v\n", tflist)
 
 			c, err := semver.NewConstraint(tfconstraint)
 			if err != nil {
 				fmt.Println("Error parsing constraint:", err)
-				return
+				os.Exit(1)
 			}
 			vs := make([]*semver.Version, len(tflist))
 			for i, r := range tflist {
 				v, err := semver.NewVersion(r)
 				if err != nil {
 					fmt.Printf("Error parsing version: %s", err)
+					os.Exit(1)
 				}
 
 				vs[i] = v
 			}
 
-			sort.Sort(semver.Collection(vs))
+			sort.Sort(sort.Reverse(semver.Collection(vs)))
 
-			for i := range vs {
+			for _, element := range vs {
 				// Validate a version against a constraint.
-				// Take highest version that matches
-				if c.Check(vs[len(vs)-1-i]) {
-					tfversion = string(vs[len(vs)-1-i].String())
+				if c.Check(element) {
+					tfversion = string(element.String())
 					fmt.Printf("Matched version: %s\n", tfversion)
 
-					if lib.ValidVersionFormat(tfversion) { //check if version is correct
+					if lib.ValidVersionFormat(tfversion) {
 						lib.Install(string(tfversion), *custBinPath)
+						break
 					} else {
 						fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 						os.Exit(1)
@@ -173,6 +173,7 @@ func main() {
 			}
 
 			fmt.Println("No version found to match constraint.")
+			os.Exit(1)
 
 		} else if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
 			fmt.Printf("Reading required terraform version %s \n", rcFilename)
