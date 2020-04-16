@@ -47,7 +47,7 @@ const (
 	tomlFilename = ".tfswitch.toml"
 )
 
-var version = "0.7.0\n"
+var version = "0.8.0\n"
 
 func main() {
 
@@ -130,41 +130,41 @@ func main() {
 					os.Exit(1)
 				}
 			}
-		} else if module, _ := tfconfig.LoadModule(dir); len(module.RequiredCore) >= 1 && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
+		} else if module, _ := tfconfig.LoadModule(dir); len(module.RequiredCore) >= 1 && len(args) == 0 { //if there is a version.tf file, and no commmand line arguments
+
 			tfversion := ""
+			tfconstraint := module.RequiredCore[0]        //we skip duplicated definitions and use only first one
+			listAll := true                               //set list all true - all versions including beta and rc will be displayed
+			tflist, _ := lib.GetTFList(hashiURL, listAll) //get list of versions
+			fmt.Printf("Reading required version from terraform file, constraint: %s\n", tfconstraint)
 
-			// we skip duplicated definitions and use only first one
-			tfconstraint := module.RequiredCore[0]
-			tflist, _ := lib.GetTFList(hashiURL, true)
-			fmt.Printf("Reading required version from terraform code, constraint: %s\n", tfconstraint)
-
-			c, err := semver.NewConstraint(tfconstraint)
+			constrains, err := semver.NewConstraint(tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
 			if err != nil {
-				fmt.Println("Error parsing constraint:", err)
+				fmt.Printf("Error parsing constraint: %s\nPlease check constrain syntax on terraform file.\n", err)
+				fmt.Println()
 				os.Exit(1)
 			}
-			vs := make([]*semver.Version, len(tflist))
-			for i, r := range tflist {
-				v, err := semver.NewVersion(r)
+			versions := make([]*semver.Version, len(tflist))
+			for i, tfvals := range tflist {
+				version, err := semver.NewVersion(tfvals) //NewVersion parses a given version and returns an instance of Version or an error if unable to parse the version.
 				if err != nil {
 					fmt.Printf("Error parsing version: %s", err)
 					os.Exit(1)
 				}
 
-				vs[i] = v
+				versions[i] = version
 			}
 
-			sort.Sort(sort.Reverse(semver.Collection(vs)))
+			sort.Sort(sort.Reverse(semver.Collection(versions)))
 
-			for _, element := range vs {
-				// Validate a version against a constraint.
-				if c.Check(element) {
-					tfversion = string(element.String())
+			for _, element := range versions {
+
+				if constrains.Check(element) { // Validate a version against a constraint
+					tfversion = element.String()
+
 					fmt.Printf("Matched version: %s\n", tfversion)
-
-					if lib.ValidVersionFormat(tfversion) {
-						lib.Install(string(tfversion), *custBinPath)
-						break
+					if lib.ValidVersionFormat(tfversion) { //check if version format is correct
+						lib.Install(tfversion, *custBinPath)
 					} else {
 						fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 						os.Exit(1)
@@ -172,7 +172,7 @@ func main() {
 				}
 			}
 
-			fmt.Println("No version found to match constraint.")
+			fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
 			os.Exit(1)
 
 		} else if _, err := os.Stat(rcfile); err == nil && len(args) == 0 { //if there is a .tfswitchrc file, and no commmand line arguments
