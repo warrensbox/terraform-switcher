@@ -64,11 +64,25 @@ The most recently selected versions are presented at the top of the dropdown.
 2. For example, `tfswitch -l` or `tfswitch --list-all` to see all versions.
 3. Hit **Enter** to select the desired version.
 
+### Use version.tf file  
+If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to version `0.12.24`:     
+```
+terraform {
+  required_version = ">= 0.12.9"
+
+  required_providers {
+    aws        = ">= 2.52.0"
+    kubernetes = ">= 1.11.1"
+  }
+}
+```
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif" alt="drawing" style="width: 170px;"/>
+
 
 ### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
 
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 170px;"/>   
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 170px;"/>      
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v8.gif" alt="drawing" style="width: 170px;"/>
 
 1. Create a custom binary path. Ex: `mkdir /Users/warrenveerasingam/bin` (replace warrenveerasingam with your username)
@@ -89,7 +103,7 @@ version = "0.11.3"
 2. For example, `echo "0.10.5" >> .tfswitchrc` for version 0.10.5 of terraform
 3. Run the command `tfswitch` in the same directory as your `.tfswitchrc`
 
-*Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
+#### *Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
 
 **Automatically switch with bash**
 
@@ -100,7 +114,7 @@ Add the following to the end of your `~/.bashrc` file:
 cdtfswitch(){
   builtin cd "$@";
   cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
+  if [ -e "$cdir/.tfswitchrc" ]; then
     tfswitch
   fi
 }
@@ -132,7 +146,7 @@ load-tfswitch
 cd(){
   builtin cd "$@";
   cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
+  if [ -e "$cdir/.tfswitchrc" ]; then
     tfswitch
   fi
 }

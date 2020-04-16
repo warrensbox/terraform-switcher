@@ -58,6 +58,21 @@ The most recently selected versions are presented at the top of the dropdown.
 2. For example, `tfswitch -l` or `tfswitch --list-all` to see all versions.
 3. Hit **Enter** to select the desired version.
 
+### Use version.tf file  
+If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to version `0.12.24`:     
+```
+terraform {
+  required_version = ">= 0.12.9"
+
+  required_providers {
+    aws        = ">= 2.52.0"
+    kubernetes = ">= 1.11.1"
+  }
+}
+```
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif" alt="drawing" style="width: 490px;"/>
+
+
 ### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
 
@@ -93,7 +108,7 @@ Add the following to the end of your `~/.bashrc` file:
 cdtfswitch(){
   builtin cd "$@";
   cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
+  if [ -e "$cdir/.tfswitchrc" ]; then
     tfswitch
   fi
 }
@@ -125,7 +140,7 @@ load-tfswitch
 cd(){
   builtin cd "$@";
   cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
+  if [ -e "$cdir/.tfswitchrc" ]; then
     tfswitch
   fi
 }
