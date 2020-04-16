@@ -2,7 +2,7 @@ language: go
 install: true
 
 go:
-  - "1.10.1"
+  - "1.13.4"
 
 script:
   - make test

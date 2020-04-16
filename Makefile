@@ -8,9 +8,6 @@ GOARCH ?= $(shell go env GOARCH)
 $(EXE): go.mod *.go lib/*.go
 	go build -v -ldflags "-X main.version=$(VER)" -o $@ $(PKG)
 
-Gopkg.lock: Gopkg.toml
-	dep ensure
-
 .PHONY: release
 release: $(EXE) darwin linux
 
