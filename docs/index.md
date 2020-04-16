@@ -70,7 +70,7 @@ terraform {
   }
 }
 ```
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif" alt="drawing" style="width: 170px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif" alt="drawing" style="width: 490px;"/>
 
 
 ### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
