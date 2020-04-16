@@ -5,7 +5,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.10
+      - image: circleci/golang:1.13
 
     working_directory: /go/src/github.com/warrensbox/terraform-switcher
 
@@ -22,7 +22,7 @@ jobs:
 
   release:
     docker:
-      - image: circleci/golang:1.11
+      - image: circleci/golang:1.13
 
     working_directory: /go/src/github.com/warrensbox/terraform-switcher
 
