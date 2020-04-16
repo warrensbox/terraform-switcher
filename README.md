@@ -114,7 +114,7 @@ Add the following to the end of your `~/.bashrc` file:
 cdtfswitch(){
   builtin cd "$@";
   cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
+  if [ -e "$cdir/.tfswitchrc" ]; then
     tfswitch
   fi
 }
@@ -146,7 +146,7 @@ load-tfswitch
 cd(){
   builtin cd "$@";
   cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
+  if [ -e "$cdir/.tfswitchrc" ]; then
     tfswitch
   fi
 }
