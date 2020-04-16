@@ -71,6 +71,8 @@ terraform {
 }
 ```
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif" alt="drawing" style="width: 170px;"/>
+
+
 ### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
 
@@ -106,7 +108,7 @@ Add the following to the end of your `~/.bashrc` file:
 cdtfswitch(){
   builtin cd "$@";
   cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
+  if [ -e "$cdir/.tfswitchrc" ]; then
     tfswitch
   fi
 }
@@ -138,7 +140,7 @@ load-tfswitch
 cd(){
   builtin cd "$@";
   cdir=$PWD;
-  if [ -f "$cdir/.tfswitchrc" ]; then
+  if [ -e "$cdir/.tfswitchrc" ]; then
     tfswitch
   fi
 }
