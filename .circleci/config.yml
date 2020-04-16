@@ -37,7 +37,6 @@ jobs:
             export RELEASE_VERSION;
             echo $RELEASE_VERSION
             mkdir -p /home/circleci/bin
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             export PATH="/home/warrensbox/bin:${PATH}"
             rm -rf dist
             git config user.email "warren.veerasingam@gmail.com"
