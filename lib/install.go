@@ -18,6 +18,7 @@ const (
 
 var (
 	installLocation = "/tmp"
+	fileExt         = ""
 )
 
 // initialize : removes existing symlink to terraform binary
@@ -71,6 +72,10 @@ func getInstallLocation() string {
 //Install : Install the provided version in the argument
 func Install(tfversion string, binPath string) {
 
+	if runtime.GOOS == "windows" {
+		fileExt = ".exe"
+	}
+
 	if !ValidVersionFormat(tfversion) {
 		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
 		os.Exit(1)
@@ -92,7 +97,7 @@ func Install(tfversion string, binPath string) {
 	goos := runtime.GOOS
 
 	/* check if selected version already downloaded */
-	fileExist := CheckFileExist(installLocation + installVersion + tfversion)
+	fileExist := CheckFileExist(installLocation + installVersion + tfversion + fileExt)
 
 	/* if selected version already exist, */
 	if fileExist {
@@ -105,7 +110,7 @@ func Install(tfversion string, binPath string) {
 		}
 
 		/* set symlink to desired version */
-		CreateSymlink(installLocation+installVersion+tfversion, binPath)
+		CreateSymlink(installLocation+installVersion+tfversion+fileExt, binPath)
 		fmt.Printf("Switched terraform to version %q \n", tfversion)
 		AddRecent(tfversion) //add to recent file for faster lookup
 		os.Exit(0)
@@ -131,7 +136,7 @@ func Install(tfversion string, binPath string) {
 	}
 
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
-	RenameFile(installLocation+installFile, installLocation+installVersion+tfversion)
+	RenameFile(installLocation+installFile+fileExt, installLocation+installVersion+tfversion+fileExt)
 
 	/* remove zipped file to clear clutter */
 	RemoveFiles(installLocation + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip")
@@ -144,7 +149,7 @@ func Install(tfversion string, binPath string) {
 	}
 
 	/* set symlink to desired version */
-	CreateSymlink(installLocation+installVersion+tfversion, binPath)
+	CreateSymlink(installLocation+installVersion+tfversion+fileExt, binPath)
 	fmt.Printf("Switched terraform to version %q \n", tfversion)
 	AddRecent(tfversion) //add to recent file for faster lookup
 	os.Exit(0)
