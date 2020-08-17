@@ -1,4 +1,4 @@
-## Step by step on how to contribute
+## Step by step instructions
 
 An open source project becomes meaningful when people collaborate to improve the code. 
 

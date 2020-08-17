@@ -24,7 +24,7 @@ The most recently selected versions are presented at the top of the dropdown.
 3. Hit **Enter** to select the desired version.
 
 ### Use version.tf file  
-If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to version `0.12.24`:     
+If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the lastest version:     
 ```
 terraform {
   required_version = ">= 0.12.9"
