@@ -42,7 +42,7 @@ Alternatively, you can install the binary from source [here](https://github.com/
 
 ## How to use:
 ### Use dropdown menu to select version
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch.gif" alt="drawing" style="width: 180px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch.gif" alt="drawing" style="width: 370px;"/>
 
 1.  You can switch between different versions of terraform by typing the command `tfswitch` on your terminal.
 2.  Select the version of terraform you require by using the up and down arrow.
@@ -51,21 +51,21 @@ Alternatively, you can install the binary from source [here](https://github.com/
 The most recently selected versions are presented at the top of the dropdown.
 
 ### Supply version on command line
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v4.gif" alt="drawing" style="width: 170px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v4.gif" alt="drawing" style="width: 370px;"/>
 
 1. You can also supply the desired version as an argument on the command line.
 2. For example, `tfswitch 0.10.5` for version 0.10.5 of terraform.
 3. Hit **Enter** to switch.
 
 ### See all versions including beta, alpha and release candidates(rc)
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v5.gif" alt="drawing" style="width: 170px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v5.gif" alt="drawing" style="width: 370px;"/>
 
 1. Display all versions including beta, alpha and release candidates(rc). 
 2. For example, `tfswitch -l` or `tfswitch --list-all` to see all versions.
 3. Hit **Enter** to select the desired version.
 
 ### Use version.tf file  
-If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to version `0.12.24`:     
+If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the lastest version:     
 ```
 terraform {
   required_version = ">= 0.12.9"
@@ -76,14 +76,15 @@ terraform {
   }
 }
 ```
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif" alt="drawing" style="width: 170px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif" alt="drawing" style="width: 370px;"/>
 
 
 ### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
 
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 170px;"/>      
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v8.gif" alt="drawing" style="width: 170px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 370px;"/>     
+
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v8.gif" alt="drawing" style="width: 370px;"/>
 
 1. Create a custom binary path. Ex: `mkdir /Users/warrenveerasingam/bin` (replace warrenveerasingam with your username)
 2. Add the path to your PATH. Ex: `export PATH=$PATH:/Users/warrenveerasingam/bin` (add this to your bash profile or zsh profile)
@@ -97,7 +98,7 @@ version = "0.11.3"
 4. Run `tfswitch` and it should automatically install the required terraform version in the specified binary path
 
 ### Use .tfswitchrc file
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v6.gif" alt="drawing" style="width: 170px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v6.gif" alt="drawing" style="width: 370px;"/>
 
 1. Create a `.tfswitchrc` file containing the desired version
 2. For example, `echo "0.10.5" >> .tfswitchrc` for version 0.10.5 of terraform
@@ -166,9 +167,73 @@ chmod 755 install.sh
 ./bin-directory/tfswitch
 ```
 
+If you have limited permission, try:
+
+```sh
+#!/bin/bash 
+
+echo "Installing tfswitch locally"
+wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
+chmod 755 install.sh
+./install.sh -b bin-directory
+
+CUSTOMBIN=`pwd`/bin             #set custom bin path
+mkdir $CUSTOMBIN                #create custom bin path
+export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
+
+./bin-directory/tfswitch -b $CUSTOMBIN/terraform 0.11.7
+
+terraform -v                    #testing version
+```
+
+### Circle CI setup
+
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/circleci_tfswitch.png" alt="drawing" style="width: 280px;"/>
+
+
+Example config yaml
+```yaml
+version: 2
+jobs:
+  build:
+    docker:
+      - image: ubuntu
+
+    working_directory: /go/src/github.com/warrensbox/terraform-switcher
+
+    steps:
+      - checkout
+      - run: 
+          command: |    
+            set +e   
+            apt-get update 
+            apt-get install -y wget 
+            rm -rf /var/lib/apt/lists/*
+
+            echo "Installing tfswitch locally"
+
+            wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
+            chmod 755 install.sh
+            ./install.sh -b bin-directory
+
+            CUSTOMBIN=`pwd`/bin             #set custom bin path
+            mkdir $CUSTOMBIN                #create custom bin path
+            export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
+
+            ./bin-directory/tfswitch -b $CUSTOMBIN/terraform 0.11.7
+
+            terraform -v                    #testing version
+```
+
+## How to contribute    
+An open source project becomes meaningful when people collaborate to improve the code.    
+Feel free to look at the code, critique and make suggestions. Lets make `tfswitch` better!   
+
+See step-by-step instructions on how to contribute here: [Contribute](https://tfswitch.warrensbox.com/How-to-Contribute/)      
+
 ## Additional Info
 
-See how to *upgrade*, *uninstall*, *troubleshoot* here: [More info](https://warrensbox.github.io/terraform-switcher/additional)
+See how to *upgrade*, *uninstall*, *troubleshoot* here: [More info](https://tfswitch.warrensbox.com/Upgrade-or-Uninstall/)   
 
 
 ## Issues
