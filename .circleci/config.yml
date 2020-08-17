@@ -20,6 +20,7 @@ jobs:
             pip3 install mkdocs-material
             cd www
             mkdocs gh-deploy --force
+            cd ..
 
             echo "Building application" 
             go get -v -t -d ./...
