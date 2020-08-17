@@ -60,10 +60,11 @@ workflows:
 
   build_and_test:
     jobs:
-      - build
-          branches:
-            ignore:
-              - gh-pages
+      - build:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
       - release:
           requires:
             - build
