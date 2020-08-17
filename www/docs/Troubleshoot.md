@@ -18,7 +18,7 @@ install: cannot create regular file '/usr/local/bin/tfswitch': Permission denied
 
 Solution: You probably need to have privileges to install *tfswitch* at /usr/local/bin.
 
-Try the following.
+Try the following:
 
 ```sh
 wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
@@ -28,7 +28,7 @@ chmod 755 install.sh
 ./bin-directory/tfswitch
 ```
 
-Use custom directory option `-b`:    
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 370px;"/>    
+Or, use the custom directory option `-b`:    
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 670px;"/>    
 
 
