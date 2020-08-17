@@ -1,8 +1,8 @@
 ## Step by step on how to contribute
 
-An open source project becomes meaningful when people collaborate to improve the code. If I were to write all the code by myself, then I am only creating a software solely on my opnion and purpose. 
+An open source project becomes meaningful when people collaborate to improve the code. 
 
-So, please look at the code, critique and make suggestions. Lets make `tfswitch` better!
+Feel free to look at the code, critique and make suggestions. Lets make `tfswitch` better!
 
 ## Required version
 ```sh
