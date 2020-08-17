@@ -49,7 +49,7 @@ This is similiar to using a .tfswitchrc file, but you can specify a custom binar
 3. Pass -b or --bin parameter with your custom path to install terraform. Ex: `tfswitch -b /Users/warrenveerasingam/bin/terraform 0.10.8 `
 4. Optionally, you can create a `.tfswitch.toml` file in your terraform directory.
 5. Your `.tfswitch.toml` file should look like this:
-```
+```ruby
 bin = "/Users/warrenveerasingam/bin/terraform"
 version = "0.11.3"
 ```

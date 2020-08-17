@@ -28,5 +28,7 @@ chmod 755 install.sh
 ./bin-directory/tfswitch
 ```
 
+Use custom directory option `-b`:    
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 370px;"/>    
 
 
