@@ -1,0 +1,5 @@
+.tfswitchrc
+build
+build-script.sh
+main
+.tfswitch.toml

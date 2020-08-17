@@ -1,0 +1,70 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.13
+
+    working_directory: /go/src/github.com/warrensbox/terraform-switcher
+
+    steps:
+      - checkout
+      - run: 
+          command: |    
+            set +e  
+            echo "Building website" 
+            sudo apt-get install python3
+            sudo apt-get install python3-pip
+            pip3 install mkdocs-material
+            cd www
+            mkdocs gh-deploy --force
+            cd ..
+            echo "Building application" 
+            go get -v -t -d ./...
+            go vet -tests=false ./...
+            go test -v ./...
+            mkdir -p build
+            go build -v -o build/tfswitch
+  release:
+    docker:
+      - image: circleci/golang:1.13
+
+    working_directory: /go/src/github.com/warrensbox/terraform-switcher
+
+    steps:
+      - checkout
+      - run: 
+          command: |
+            set +e   
+            source version
+            export RELEASE_VERSION; 
+            RELEASE_VERSION=$RELEASE_VERSION.${CIRCLE_BUILD_NUM}
+            export RELEASE_VERSION;
+            echo $RELEASE_VERSION
+            mkdir -p /home/circleci/bin
+            export PATH="/home/warrensbox/bin:${PATH}"
+            rm -rf dist
+            git config user.email "warren.veerasingam@gmail.com"
+            git config user.name "warrensbox"
+            git tag -a ${RELEASE_VERSION} -m "Release Version"
+            git push origin ${RELEASE_VERSION}
+            curl -L https://git.io/goreleaser | VERSION=v0.99.0 bash -s -- --rm-dist
+workflows:
+  version: 2
+
+  build_and_test:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+      - release:
+          requires:
+            - build
+          filters:
+            branches:
+              only: 
+              - release
