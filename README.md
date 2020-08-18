@@ -13,8 +13,6 @@ If you do not have a particular version of terraform installed, `tfswitch` will 
 The installation is minimal and easy.
 Once installed, simply select the version you require from the dropdown and start using terraform.
 
-See installation guide here: [tfswitch installation](https://warrensbox.github.io/terraform-switcher/)
-
 ## Installation
 
 `tfswitch` is available for MacOS and Linux based operating systems.
