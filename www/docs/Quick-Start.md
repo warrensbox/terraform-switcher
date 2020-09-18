@@ -37,29 +37,6 @@ terraform {
 ```
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif" alt="drawing" style="width: 600px;"/>
 
-**Automatically switch with fish shell**
-
-Add the following to the end of your `~/.config/fish/config.fish` file:
-
-```sh
-function switch_terraform --on-event fish_postexec
-    string match --regex '^cd\s' "$argv" > /dev/null
-    set --local is_command_cd $status
-
-    if test $is_command_cd -eq 0 
-      if count *.tf > /dev/null
-
-        grep -c "required_version" *.tf > /dev/null
-        set --local tf_contains_version $status
-        
-        if test $tf_contains_version -eq 0      
-            command tfswitch
-        end
-      end
-    end
-end
-```
-
 ### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
 
@@ -131,4 +108,26 @@ cd(){
     tfswitch
   fi
 }
+```
+**Automatically switch with fish shell**
+
+Add the following to the end of your `~/.config/fish/config.fish` file:
+
+```sh
+function switch_terraform --on-event fish_postexec
+    string match --regex '^cd\s' "$argv" > /dev/null
+    set --local is_command_cd $status
+
+    if test $is_command_cd -eq 0 
+      if count *.tf > /dev/null
+
+        grep -c "required_version" *.tf > /dev/null
+        set --local tf_contains_version $status
+        
+        if test $tf_contains_version -eq 0      
+            command tfswitch
+        end
+      end
+    end
+end
 ```
