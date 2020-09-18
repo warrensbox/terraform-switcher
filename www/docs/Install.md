@@ -18,8 +18,16 @@ Installation for Linux operation systems.
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 ```
 
+### Snapcraft for CentOS, Ubuntu, Linux Mint, RHEL, Debian, Fedora
+
+```sh
+sudo snap install tfswitch
+```
+
 ### Install from source
 
 Alternatively, you can install the binary from the source <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">here</a>.
+
+[Having trouble installing](https://tfswitch.warrensbox.com/Troubleshoot/).
 
 

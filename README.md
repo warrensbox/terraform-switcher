@@ -40,10 +40,11 @@ curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/
 sudo snap install tfswitch
 ```
 
-
 ### Install from source
 
 Alternatively, you can install the binary from source [here](https://github.com/warrensbox/terraform-switcher/releases)
+
+[Having trouble installing](https://tfswitch.warrensbox.com/Troubleshoot/).
 
 ## How to use:
 ### Use dropdown menu to select version
@@ -160,19 +161,6 @@ cd(){
 
 ### Jenkins setup
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 170px;"/>
-
-```sh
-#!/bin/bash 
-
-echo "Installing tfswitch locally"
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
-chmod 755 install.sh
-./install.sh -b `pwd`/.bin
-
-`pwd`/.bin/tfswitch
-```
-
-If you have limited permission, try:
 
 ```sh
 #!/bin/bash 
