@@ -26,13 +26,20 @@ Installation for MacOS is the easiest with Homebrew. [If you do not have homebre
 brew install warrensbox/tap/tfswitch
 ```
 
-### Linux
+### General Linux
 
 Installation for other linux operation systems.
 
 ```sh
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 ```
+
+### Snap for CentOS, Ubuntu, Linux Mint, RHEL, Debian, Fedora
+
+```sh
+snap install --edge tfswitch
+```
+
 
 ### Install from source
 
