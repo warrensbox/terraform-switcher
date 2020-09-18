@@ -159,6 +159,29 @@ cd(){
 }
 ```
 
+**Automatically switch with fish shell**
+
+Add the following to the end of your `~/.config/fish/config.fish` file:
+
+```sh
+function switch_terraform --on-event fish_postexec
+    string match --regex '^cd\s' "$argv" > /dev/null
+    set --local is_command_cd $status
+
+    if test $is_command_cd -eq 0 
+      if count *.tf > /dev/null
+
+        grep -c "required_version" *.tf > /dev/null
+        set --local tf_contains_version $status
+        
+        if test $tf_contains_version -eq 0      
+            command tfswitch
+        end
+      end
+    end
+end
+```
+
 ### Jenkins setup
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 170px;"/>
 
