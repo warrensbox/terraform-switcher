@@ -1,32 +1,21 @@
 ### Jenkins setup
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 170px;"/>
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 370px;"/>
 
 ```sh
 #!/bin/bash 
 
 echo "Installing tfswitch locally"
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
-chmod 755 install.sh
-./install.sh -b `pwd`/.bin
+wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine
 
-`pwd`/.bin/tfswitch
-```
+chmod 755 install.sh #Make installer executable
 
-If you have limited permission, try:
+./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
 
-```sh
-#!/bin/bash 
+CUSTOMBIN=`pwd`/.bin            #set custom bin path
 
-echo "Installing tfswitch locally"
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
-chmod 755 install.sh
-./install.sh -b `pwd`/.bin
-
-CUSTOMBIN=`pwd`/.bin             #set custom bin path
-mkdir $CUSTOMBIN                #create custom bin path
 export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
-`pwd`/.bin/tfswitch -b $CUSTOMBIN/terraform 0.11.7
+$CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
 
 terraform -v                    #testing version
 ```
@@ -57,11 +46,13 @@ jobs:
 
             echo "Installing tfswitch locally"
 
-            wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
-            chmod 755 install.sh
-            ./install.sh -b $HOME/.bin 
+            wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine
 
-            CUSTOMBIN=$HOME/.bin             #set custom bin path
+            chmod 755 install.sh            #Make installer executable
+
+            ./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
+
+            CUSTOMBIN=`pwd`/.bin            #set custom bin path
 
             export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
