@@ -26,13 +26,20 @@ Installation for MacOS is the easiest with Homebrew. [If you do not have homebre
 brew install warrensbox/tap/tfswitch
 ```
 
-### Linux
+### General Linux
 
 Installation for other linux operation systems.
 
 ```sh
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 ```
+
+### Snapcraft for CentOS, Ubuntu, Linux Mint, RHEL, Debian, Fedora
+
+```sh
+sudo snap install tfswitch
+```
+
 
 ### Install from source
 
@@ -160,9 +167,9 @@ cd(){
 echo "Installing tfswitch locally"
 wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
 chmod 755 install.sh
-./install.sh -b bin-directory
+./install.sh -b `pwd`/.bin
 
-./bin-directory/tfswitch
+`pwd`/.bin/tfswitch
 ```
 
 If you have limited permission, try:
@@ -171,15 +178,17 @@ If you have limited permission, try:
 #!/bin/bash 
 
 echo "Installing tfswitch locally"
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
-chmod 755 install.sh
-./install.sh -b bin-directory
+wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh #Get the installer on to your machine
 
-CUSTOMBIN=`pwd`/bin             #set custom bin path
-mkdir $CUSTOMBIN                #create custom bin path
+chmod 755 install.sh            #Make installer executable
+
+./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
+
+CUSTOMBIN=`pwd`/.bin            #set custom bin path
+
 export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
-./bin-directory/tfswitch -b $CUSTOMBIN/terraform 0.11.7
+$CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
 
 terraform -v                    #testing version
 ```
@@ -210,15 +219,17 @@ jobs:
 
             echo "Installing tfswitch locally"
 
-            wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
-            chmod 755 install.sh
-            ./install.sh -b bin-directory
+            wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh #Get the installer on to your machine
 
-            CUSTOMBIN=`pwd`/bin             #set custom bin path
-            mkdir $CUSTOMBIN                #create custom bin path
+            chmod 755 install.sh            #Make installer executable
+
+            ./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
+
+            CUSTOMBIN=`pwd`/.bin            #set custom bin path
+
             export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
-            ./bin-directory/tfswitch -b $CUSTOMBIN/terraform 0.11.7
+            $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
 
             terraform -v                    #testing version
 ```

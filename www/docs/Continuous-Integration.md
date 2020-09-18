@@ -5,27 +5,17 @@
 #!/bin/bash 
 
 echo "Installing tfswitch locally"
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
-chmod 755 install.sh
-./install.sh -b bin-directory
+wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine
 
-./bin-directory/tfswitch
-```
-If you have limited permission, try:
+chmod 755 install.sh #Make installer executable
 
-```sh
-#!/bin/bash 
+./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
 
-echo "Installing tfswitch locally"
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
-chmod 755 install.sh
-./install.sh -b bin-directory
+CUSTOMBIN=`pwd`/.bin            #set custom bin path
 
-CUSTOMBIN=`pwd`/bin             #set custom bin path
-mkdir $CUSTOMBIN                #create custom bin path
 export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
-./bin-directory/tfswitch -b $CUSTOMBIN/terraform 0.11.7
+$CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
 
 terraform -v                    #testing version
 ```
@@ -56,15 +46,17 @@ jobs:
 
             echo "Installing tfswitch locally"
 
-            wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
-            chmod 755 install.sh
-            ./install.sh -b bin-directory
+            wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine
 
-            CUSTOMBIN=`pwd`/bin             #set custom bin path
-            mkdir $CUSTOMBIN                #create custom bin path
+            chmod 755 install.sh            #Make installer executable
+
+            ./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
+
+            CUSTOMBIN=`pwd`/.bin            #set custom bin path
+
             export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
-            ./bin-directory/tfswitch -b $CUSTOMBIN/terraform 0.11.7
+            $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
 
             terraform -v                    #testing version
 ```
