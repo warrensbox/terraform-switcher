@@ -34,10 +34,10 @@ Installation for other linux operation systems.
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 ```
 
-### Snap for CentOS, Ubuntu, Linux Mint, RHEL, Debian, Fedora
+### Snapcraft for CentOS, Ubuntu, Linux Mint, RHEL, Debian, Fedora
 
 ```sh
-snap install --edge tfswitch
+sudo snap install tfswitch
 ```
 
 
@@ -167,9 +167,9 @@ cd(){
 echo "Installing tfswitch locally"
 wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
 chmod 755 install.sh
-./install.sh -b bin-directory
+./install.sh -b `pwd`/.bin
 
-./bin-directory/tfswitch
+`pwd`/.bin/tfswitch
 ```
 
 If you have limited permission, try:
@@ -180,13 +180,13 @@ If you have limited permission, try:
 echo "Installing tfswitch locally"
 wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
 chmod 755 install.sh
-./install.sh -b bin-directory
+./install.sh -b `pwd`/.bin
 
-CUSTOMBIN=`pwd`/bin             #set custom bin path
+CUSTOMBIN=`pwd`/.bin             #set custom bin path
 mkdir $CUSTOMBIN                #create custom bin path
 export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
-./bin-directory/tfswitch -b $CUSTOMBIN/terraform 0.11.7
+`pwd`/.bin/tfswitch -b $CUSTOMBIN/terraform 0.11.7
 
 terraform -v                    #testing version
 ```
@@ -219,13 +219,13 @@ jobs:
 
             wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
             chmod 755 install.sh
-            ./install.sh -b bin-directory
+            ./install.sh -b $HOME/.bin 
 
-            CUSTOMBIN=`pwd`/bin             #set custom bin path
-            mkdir $CUSTOMBIN                #create custom bin path
+            CUSTOMBIN=$HOME/.bin             #set custom bin path
+
             export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
-            ./bin-directory/tfswitch -b $CUSTOMBIN/terraform 0.11.7
+            $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
 
             terraform -v                    #testing version
 ```
