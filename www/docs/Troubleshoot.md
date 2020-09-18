@@ -46,10 +46,3 @@ export PATH=$PATH:$HOME/.bin #Export your .bin into your path
 See the custom directory option `-b`:    
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 670px;"/>    
 
-```sh
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh 
-chmod 755 install.sh
-./install.sh -b $HOME/.bin
-
-$HOME/.bin/tfswitch
-```
