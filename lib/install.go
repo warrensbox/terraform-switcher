@@ -21,7 +21,7 @@ var (
 )
 
 // initialize : removes existing symlink to terraform binary
-func initialize() {
+func initialize(createSymlink bool) {
 
 	/* Step 1 */
 	/* initilize default binary path for terraform */
@@ -43,7 +43,7 @@ func initialize() {
 	symlinkExist := CheckSymlink(installedBinPath)
 
 	/* remove current symlink if exist*/
-	if symlinkExist {
+	if symlinkExist && createSymlink {
 		RemoveSymlink(installedBinPath)
 	}
 
@@ -69,11 +69,14 @@ func getInstallLocation() string {
 }
 
 //Install : Install the provided version in the argument
-func Install(tfversion string, binPath string) {
-
+func Install(tfversion string, binPath string, createSymlink bool) {
 	if !ValidVersionFormat(tfversion) {
 		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
 		os.Exit(1)
+	}
+
+	if !createSymlink {
+		fmt.Printf("Skipping symlink creation\n")
 	}
 
 	pathDir := Path(binPath)              //get path directory from binary path
@@ -85,7 +88,7 @@ func Install(tfversion string, binPath string) {
 		os.Exit(1)
 	}
 
-	initialize()                           //initialize path
+	initialize(createSymlink)              //initialize path
 	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
 	goarch := runtime.GOARCH
@@ -94,9 +97,14 @@ func Install(tfversion string, binPath string) {
 	/* check if selected version already downloaded */
 	fileExist := CheckFileExist(installLocation + installVersion + tfversion)
 
-	/* if selected version already exist, */
-	if fileExist {
+	/* if selected version already exists and no symlink is to be created */
+	if fileExist && !createSymlink {
+		fmt.Printf("Terraform version %q already exists\n", tfversion)
+		os.Exit(0)
+	}
 
+	/* if selected version already exist and symlink is to be created */
+	if fileExist {
 		/* remove current symlink if exist*/
 		symlinkExist := CheckSymlink(binPath)
 
@@ -106,6 +114,7 @@ func Install(tfversion string, binPath string) {
 
 		/* set symlink to desired version */
 		CreateSymlink(installLocation+installVersion+tfversion, binPath)
+
 		fmt.Printf("Switched terraform to version %q \n", tfversion)
 		AddRecent(tfversion) //add to recent file for faster lookup
 		os.Exit(0)
@@ -136,6 +145,12 @@ func Install(tfversion string, binPath string) {
 	/* remove zipped file to clear clutter */
 	RemoveFiles(installLocation + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip")
 
+	/* if no symlink is to be created, stop here */
+	if !createSymlink {
+		fmt.Printf("Terraform version %q installed\n", tfversion)
+		os.Exit(0)
+	}
+
 	/* remove current symlink if exist*/
 	symlinkExist := CheckSymlink(binPath)
 
@@ -145,6 +160,7 @@ func Install(tfversion string, binPath string) {
 
 	/* set symlink to desired version */
 	CreateSymlink(installLocation+installVersion+tfversion, binPath)
+
 	fmt.Printf("Switched terraform to version %q \n", tfversion)
 	AddRecent(tfversion) //add to recent file for faster lookup
 	os.Exit(0)

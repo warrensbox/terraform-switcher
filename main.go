@@ -53,6 +53,8 @@ func main() {
 
 	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. For example: /Users/username/bin/terraform")
 	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
+	noSymlinkFlag := getopt.BoolLong("no-symlink", 'n', "Skip symlink creation")
+	noPromptFlag := getopt.BoolLong("quiet", 'q', "Only switch if version is detected or specified")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
 	_ = versionFlag
@@ -69,6 +71,11 @@ func main() {
 	tfvfile := dir + fmt.Sprintf("/%s", tfvFilename)     //settings for .terraform-version file in current directory (tfenv compatible)
 	rcfile := dir + fmt.Sprintf("/%s", rcFilename)       //settings for .tfswitchrc file in current directory (backward compatible purpose)
 	configfile := dir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in current directory (option to specify bin directory)
+
+	createSymlink := true
+	if *noSymlinkFlag {
+		createSymlink = false
+	}
 
 	if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
@@ -118,13 +125,13 @@ func main() {
 
 			if *listAllFlag { //show all terraform version including betas and RCs
 				listAll := true //set list all true - all versions including beta and rc will be displayed
-				installOption(listAll, &binPath)
+				installOption(listAll, &binPath, createSymlink)
 			} else if tfversion == "" { // if no version is provided, show a dropdown of available release versions
 				listAll := false //set list all false - only official release will be displayed
-				installOption(listAll, &binPath)
+				installOption(listAll, &binPath, createSymlink)
 			} else {
 				if lib.ValidVersionFormat(tfversion) { //check if version is correct
-					lib.Install(tfversion, binPath)
+					lib.Install(tfversion, binPath, createSymlink)
 				} else {
 					fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 					os.Exit(1)
@@ -164,7 +171,7 @@ func main() {
 
 					fmt.Printf("Matched version: %s\n", tfversion)
 					if lib.ValidVersionFormat(tfversion) { //check if version format is correct
-						lib.Install(tfversion, *custBinPath)
+						lib.Install(tfversion, *custBinPath, createSymlink)
 					} else {
 						fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 						os.Exit(1)
@@ -187,7 +194,7 @@ func main() {
 			tfversion := strings.TrimSuffix(string(fileContents), "\n")
 
 			if lib.ValidVersionFormat(tfversion) { //check if version is correct
-				lib.Install(string(tfversion), *custBinPath)
+				lib.Install(string(tfversion), *custBinPath, createSymlink)
 			} else {
 				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
@@ -204,7 +211,7 @@ func main() {
 			tfversion := strings.TrimSuffix(string(fileContents), "\n")
 
 			if lib.ValidVersionFormat(tfversion) { //check if version is correct
-				lib.Install(string(tfversion), *custBinPath)
+				lib.Install(string(tfversion), *custBinPath, createSymlink)
 			} else {
 				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
@@ -218,7 +225,7 @@ func main() {
 				exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
 
 				if exist {
-					lib.Install(requestedVersion, *custBinPath)
+					lib.Install(requestedVersion, *custBinPath, createSymlink)
 				} else {
 					fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
 				}
@@ -231,12 +238,17 @@ func main() {
 
 		} else if *listAllFlag {
 			listAll := true //set list all true - all versions including beta and rc will be displayed
-			installOption(listAll, custBinPath)
+			installOption(listAll, custBinPath, createSymlink)
 
 		} else if len(args) == 0 { //if there are no commmand line arguments
 
+			if *noPromptFlag {
+				fmt.Println("No terraform version detected")
+				os.Exit(0)
+			}
+
 			listAll := false //set list all false - only official release will be displayed
-			installOption(listAll, custBinPath)
+			installOption(listAll, custBinPath, createSymlink)
 
 		} else {
 			usageMessage()
@@ -253,7 +265,7 @@ func usageMessage() {
 /* installOption : displays & installs tf version */
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
-func installOption(listAll bool, custBinPath *string) {
+func installOption(listAll bool, custBinPath *string, createSymlink bool) {
 
 	tflist, _ := lib.GetTFList(hashiURL, listAll) //get list of versions
 	recentVersions, _ := lib.GetRecentVersions()  //get recent versions from RECENT file
@@ -274,6 +286,6 @@ func installOption(listAll bool, custBinPath *string) {
 		os.Exit(1)
 	}
 
-	lib.Install(tfversion, *custBinPath)
+	lib.Install(tfversion, *custBinPath, createSymlink)
 	os.Exit(0)
 }
