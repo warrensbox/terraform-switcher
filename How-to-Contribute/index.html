@@ -1,6 +1,4 @@
 
-
-
 <!doctype html>
 <html lang="en" class="no-js">
   <head>
@@ -11,11 +9,12 @@
         <meta name="description" content="A command line tool to switch between different versions of terraform (install with homebrew and more)">
       
       
+      
         <link rel="canonical" href="https://tfswitch.warrensbox.com/How-to-Contribute/">
       
       
       <link rel="shortcut icon" href="../static/favicon_tfswitch_16.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.3">
     
     
       
@@ -23,19 +22,21 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.4dd2dd8d.min.css">
-      
-        <link rel="stylesheet" href="../assets/stylesheets/palette.6a5ad368.min.css">
-      
+      <link rel="stylesheet" href="../assets/stylesheets/main.2cb7adb3.min.css">
       
         
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f0267088.min.css">
         
-        <meta name="theme-color" content="#4051b5">
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
       
     
     
     
       
+        
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
@@ -57,9 +58,11 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="indigo" data-md-color-accent="">
-  
     
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="indigo" data-md-color-accent="">
+      
+  
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
@@ -75,7 +78,9 @@
       
     </div>
     
-      <header class="md-header" data-md-component="header">
+      
+
+<header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
     <a href="https://tfswitch.warrensbox.com" title="TFSwitch" class="md-header-nav__button md-logo" aria-label="TFSwitch">
       
@@ -149,8 +154,6 @@
     
     <div class="md-container" data-md-component="container">
       
-        
-      
       
         
       
@@ -161,7 +164,9 @@
               <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
-                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+                    
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="https://tfswitch.warrensbox.com" title="TFSwitch" class="md-nav__button md-logo" aria-label="TFSwitch">
       
@@ -192,7 +197,7 @@
 
 
   <li class="md-nav__item">
-    <a href=".." title="Introduction to tfswitch" class="md-nav__link">
+    <a href=".." class="md-nav__link">
       Introduction to tfswitch
     </a>
   </li>
@@ -204,7 +209,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Install/" title="Install" class="md-nav__link">
+    <a href="../Install/" class="md-nav__link">
       Install
     </a>
   </li>
@@ -216,7 +221,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Quick-Start/" title="Quick Start" class="md-nav__link">
+    <a href="../Quick-Start/" class="md-nav__link">
       Quick Start
     </a>
   </li>
@@ -228,7 +233,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Continuous-Integration/" title="Continuous Integration" class="md-nav__link">
+    <a href="../Continuous-Integration/" class="md-nav__link">
       Continuous Integration
     </a>
   </li>
@@ -240,7 +245,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Upgrade-or-Uninstall/" title="Upgrade or Uninstall" class="md-nav__link">
+    <a href="../Upgrade-or-Uninstall/" class="md-nav__link">
       Upgrade or Uninstall
     </a>
   </li>
@@ -263,7 +268,7 @@
         <span class="md-nav__icon md-icon"></span>
       </label>
     
-    <a href="./" title="How to Contribute" class="md-nav__link md-nav__link--active">
+    <a href="./" class="md-nav__link md-nav__link--active">
       How to Contribute
     </a>
     
@@ -353,7 +358,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Troubleshoot/" title="Troubleshoot" class="md-nav__link">
+    <a href="../Troubleshoot/" class="md-nav__link">
       Troubleshoot
     </a>
   </li>
@@ -459,18 +464,14 @@
                   </a>
                 
                 
-                  
-                
-                
                   <h1>How to Contribute</h1>
                 
                 <h2 id="step-by-step-instructions">Step by step instructions</h2>
 <p>An open source project becomes meaningful when people collaborate to improve the code. </p>
 <p>Feel free to look at the code, critique and make suggestions. Lets make <code>tfswitch</code> better!</p>
 <h2 id="required-version">Required version</h2>
-<pre><code class="sh">go version 1.13
+<pre><code class="language-sh">go version 1.13
 </code></pre>
-
 <h3 id="step-1-create-workspace">Step 1 - Create workspace</h3>
 <p><em>Skip this step if you already have a github go workspace</em> <br />
 Create a github workspace.
@@ -478,42 +479,34 @@ Create a github workspace.
 <h3 id="step-2-set-gopath">Step 2 - Set GOPATH</h3>
 <p><em>Skip this step if you already have a github go workspace</em>  <br />
 Export your GOPATH environment variable in your <code>go</code> directory.   </p>
-<pre><code class="sh">export GOPATH=`pwd`
+<pre><code class="language-sh">export GOPATH=`pwd`
 </code></pre>
-
 <p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-gopath.gif" alt="drawing" style="width: 600px;"/>   </p>
 <h3 id="step-3-clone-repository">Step 3 - Clone repository</h3>
 <p>Git clone this repository.  </p>
-<pre><code class="sh">git clone git@github.com:warrensbox/terraform-switcher.git
+<pre><code class="language-sh">git clone git@github.com:warrensbox/terraform-switcher.git
 </code></pre>
-
 <p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-git-clone.gif" alt="drawing" style="width: 600px;"/>  </p>
 <h3 id="step-4-get-dependencies">Step 4 - Get dependencies</h3>
 <p>Go get all the dependencies.   </p>
-<pre><code class="sh">go mod download
+<pre><code class="language-sh">go mod download
 </code></pre>
-
-<pre><code class="sh">go get -v -t -d ./...
+<pre><code class="language-sh">go get -v -t -d ./...
 </code></pre>
-
 <p>Test the code (optional).</p>
-<pre><code class="sh">go vet -tests=false ./...
+<pre><code class="language-sh">go vet -tests=false ./...
 </code></pre>
-
-<pre><code class="sh">go test -v ./...
+<pre><code class="language-sh">go test -v ./...
 </code></pre>
-
 <p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-go-get.gif" alt="drawing" style="width: 600px;"/>  </p>
 <h3 id="step-5-build-executable">Step 5 - Build executable</h3>
 <p>Create a new branch.   </p>
-<pre><code class="sh">git checkout -b feature/put-your-branch-name-here
+<pre><code class="language-sh">git checkout -b feature/put-your-branch-name-here
 </code></pre>
-
 <p>Refactor and add new features to the code.<br />
 Go build the code.   </p>
-<pre><code class="sh">go build -o test-tfswitch
+<pre><code class="language-sh">go build -o test-tfswitch
 </code></pre>
-
 <p>Test the code and create a new pull request!</p>
 <p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-build.gif" alt="drawing" style="width: 600px;"/>  </p>
 <h3 id="contributors">Contributors</h3>
@@ -537,7 +530,7 @@ https://avatars0.githubusercontent.com/u/49199497?s=64&v=4" alt="drawing" width=
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../Upgrade-or-Uninstall/" title="Upgrade or Uninstall" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../Upgrade-or-Uninstall/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -552,7 +545,7 @@ https://avatars0.githubusercontent.com/u/49199497?s=64&v=4" alt="drawing" width=
           </a>
         
         
-          <a href="../Troubleshoot/" title="Troubleshoot" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../Troubleshoot/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
@@ -589,15 +582,15 @@ https://avatars0.githubusercontent.com/u/49199497?s=64&v=4" alt="drawing" width=
       
     </div>
     
-      <script src="../assets/javascripts/vendor.3636a4ec.min.js"></script>
-      <script src="../assets/javascripts/bundle.e9fe3281.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../assets/javascripts/vendor.7e0ee788.min.js"></script>
+      <script src="../assets/javascripts/bundle.c1ccee15.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
           base: "..",
           features: [],
           search: Object.assign({
-            worker: "../assets/javascripts/worker/search.5eca75d3.min.js"
+            worker: "../assets/javascripts/worker/search.4ac00218.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>

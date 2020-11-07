@@ -1,6 +1,4 @@
 
-
-
 <!doctype html>
 <html lang="en" class="no-js">
   <head>
@@ -11,11 +9,12 @@
         <meta name="description" content="A command line tool to switch between different versions of terraform (install with homebrew and more)">
       
       
+      
         <link rel="canonical" href="https://tfswitch.warrensbox.com/Quick-Start/">
       
       
       <link rel="shortcut icon" href="../static/favicon_tfswitch_16.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.3">
     
     
       
@@ -23,19 +22,21 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.4dd2dd8d.min.css">
-      
-        <link rel="stylesheet" href="../assets/stylesheets/palette.6a5ad368.min.css">
-      
+      <link rel="stylesheet" href="../assets/stylesheets/main.2cb7adb3.min.css">
       
         
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f0267088.min.css">
         
-        <meta name="theme-color" content="#4051b5">
+          
+          
+          <meta name="theme-color" content="#4051b5">
+        
       
     
     
     
       
+        
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
         <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
@@ -57,9 +58,11 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="indigo" data-md-color-accent="">
-  
     
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="indigo" data-md-color-accent="">
+      
+  
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
@@ -75,7 +78,9 @@
       
     </div>
     
-      <header class="md-header" data-md-component="header">
+      
+
+<header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
     <a href="https://tfswitch.warrensbox.com" title="TFSwitch" class="md-header-nav__button md-logo" aria-label="TFSwitch">
       
@@ -149,8 +154,6 @@
     
     <div class="md-container" data-md-component="container">
       
-        
-      
       
         
       
@@ -161,7 +164,9 @@
               <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
-                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+                    
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="https://tfswitch.warrensbox.com" title="TFSwitch" class="md-nav__button md-logo" aria-label="TFSwitch">
       
@@ -192,7 +197,7 @@
 
 
   <li class="md-nav__item">
-    <a href=".." title="Introduction to tfswitch" class="md-nav__link">
+    <a href=".." class="md-nav__link">
       Introduction to tfswitch
     </a>
   </li>
@@ -204,7 +209,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Install/" title="Install" class="md-nav__link">
+    <a href="../Install/" class="md-nav__link">
       Install
     </a>
   </li>
@@ -227,7 +232,7 @@
         <span class="md-nav__icon md-icon"></span>
       </label>
     
-    <a href="./" title="Quick Start" class="md-nav__link md-nav__link--active">
+    <a href="./" class="md-nav__link md-nav__link--active">
       Quick Start
     </a>
     
@@ -310,7 +315,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Continuous-Integration/" title="Continuous Integration" class="md-nav__link">
+    <a href="../Continuous-Integration/" class="md-nav__link">
       Continuous Integration
     </a>
   </li>
@@ -322,7 +327,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Upgrade-or-Uninstall/" title="Upgrade or Uninstall" class="md-nav__link">
+    <a href="../Upgrade-or-Uninstall/" class="md-nav__link">
       Upgrade or Uninstall
     </a>
   </li>
@@ -334,7 +339,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../How-to-Contribute/" title="How to Contribute" class="md-nav__link">
+    <a href="../How-to-Contribute/" class="md-nav__link">
       How to Contribute
     </a>
   </li>
@@ -346,7 +351,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../Troubleshoot/" title="Troubleshoot" class="md-nav__link">
+    <a href="../Troubleshoot/" class="md-nav__link">
       Troubleshoot
     </a>
   </li>
@@ -445,9 +450,6 @@
                   </a>
                 
                 
-                  
-                
-                
                   <h1>Quick Start</h1>
                 
                 <h2 id="how-to-use">How to use:</h2>
@@ -484,7 +486,6 @@
   }
 }
 </code></pre>
-
 <p><img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif" alt="drawing" style="width: 600px;"/></p>
 <h3 id="use-tfswitchtoml-file-for-non-admin-users-with-limited-privilege-on-their-computers">Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)</h3>
 <p>This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation</p>
@@ -497,10 +498,9 @@
 <li>Optionally, you can create a <code>.tfswitch.toml</code> file in your terraform directory.</li>
 <li>Your <code>.tfswitch.toml</code> file should look like this:</li>
 </ol>
-<pre><code class="ruby">bin = &quot;/Users/warrenveerasingam/bin/terraform&quot;
+<pre><code class="language-ruby">bin = &quot;/Users/warrenveerasingam/bin/terraform&quot;
 version = &quot;0.11.3&quot;
 </code></pre>
-
 <ol>
 <li>Run <code>tfswitch</code> and it should automatically install the required terraform version in the specified binary path</li>
 </ol>
@@ -515,7 +515,7 @@ version = &quot;0.11.3&quot;
 <p><strong>Automatically switch with bash</strong></p>
 <p>Add the following to the end of your <code>~/.bashrc</code> file:
 (Use either <code>.tfswitchrc</code> or <code>.tfswitch.toml</code> or <code>.terraform-version</code>)</p>
-<pre><code class="sh">cdtfswitch(){
+<pre><code class="language-sh">cdtfswitch(){
   builtin cd &quot;$@&quot;;
   cdir=$PWD;
   if [ -e &quot;$cdir/.tfswitchrc&quot; ]; then
@@ -524,10 +524,9 @@ version = &quot;0.11.3&quot;
 }
 alias cd='cdtfswitch'
 </code></pre>
-
 <p><strong>Automatically switch with zsh</strong></p>
 <p>Add the following to the end of your <code>~/.zshrc</code> file:</p>
-<pre><code class="sh">load-tfswitch() {
+<pre><code class="language-sh">load-tfswitch() {
   local tfswitchrc_path=&quot;.tfswitchrc&quot;
 
   if [ -f &quot;$tfswitchrc_path&quot; ]; then
@@ -537,13 +536,12 @@ alias cd='cdtfswitch'
 add-zsh-hook chpwd load-tfswitch
 load-tfswitch
 </code></pre>
-
 <blockquote>
 <p>NOTE: if you see an error like this: <code>command not found: add-zsh-hook</code>, then you might be on an older version of zsh (see below), or you simply need to load <code>add-zsh-hook</code> by adding this to your <code>.zshrc</code>:
    <code>autoload -U add-zsh-hook</code></p>
 </blockquote>
 <p><em>older version of zsh</em></p>
-<pre><code class="sh">cd(){
+<pre><code class="language-sh">cd(){
   builtin cd &quot;$@&quot;;
   cdir=$PWD;
   if [ -e &quot;$cdir/.tfswitchrc&quot; ]; then
@@ -551,10 +549,9 @@ load-tfswitch
   fi
 }
 </code></pre>
-
 <p><strong>Automatically switch with fish shell</strong></p>
 <p>Add the following to the end of your <code>~/.config/fish/config.fish</code> file:</p>
-<pre><code class="sh">function switch_terraform --on-event fish_postexec
+<pre><code class="language-sh">function switch_terraform --on-event fish_postexec
     string match --regex '^cd\s' &quot;$argv&quot; &gt; /dev/null
     set --local is_command_cd $status
 
@@ -589,7 +586,7 @@ end
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../Install/" title="Install" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../Install/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -604,7 +601,7 @@ end
           </a>
         
         
-          <a href="../Continuous-Integration/" title="Continuous Integration" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../Continuous-Integration/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
@@ -641,15 +638,15 @@ end
       
     </div>
     
-      <script src="../assets/javascripts/vendor.3636a4ec.min.js"></script>
-      <script src="../assets/javascripts/bundle.e9fe3281.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../assets/javascripts/vendor.7e0ee788.min.js"></script>
+      <script src="../assets/javascripts/bundle.c1ccee15.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
           base: "..",
           features: [],
           search: Object.assign({
-            worker: "../assets/javascripts/worker/search.5eca75d3.min.js"
+            worker: "../assets/javascripts/worker/search.4ac00218.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
