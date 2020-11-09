@@ -70,11 +70,45 @@ func main() {
 	rcfile := dir + fmt.Sprintf("/%s", rcFilename)       //settings for .tfswitchrc file in current directory (backward compatible purpose)
 	configfile := dir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in current directory (option to specify bin directory)
 
-	if *versionFlag {
+	switch {
+	case *versionFlag:
+		//if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
-	} else if *helpFlag {
+	case *helpFlag:
+		//} else if *helpFlag {
 		usageMessage()
-	} else {
+	case *listAllFlag:
+		fmt.Println("passing list")
+		listAll := true //set list all true - all versions including beta and rc will be displayed
+		installOption(listAll, custBinPath)
+	case len(args) == 1:
+		fmt.Println("pass arg number")
+		if lib.ValidVersionFormat(args[0]) {
+
+			requestedVersion := args[0]
+			listAll := true                                     //set list all true - all versions including beta and rc will be displayed
+			tflist, _ := lib.GetTFList(hashiURL, listAll)       //get list of versions
+			exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
+
+			if exist {
+				lib.Install(requestedVersion, *custBinPath)
+			} else {
+				fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
+			}
+
+		} else {
+			fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+			fmt.Println("Args must be a valid terraform version")
+			usageMessage()
+		}
+	case fileExists(configfile) && len(args) == 0:
+		fmt.Println(configfile)
+	case fileExists(rcfile) && len(args) == 0:
+		fmt.Println(rcfile)
+	case fileExists(tfvfile) && len(args) == 0:
+		fmt.Println(tfvfile)
+	default:
+		//} else {
 		/* This block checks to see if the tfswitch toml file is provided in the current path.
 		 * If the .tfswitch.toml file exist, it has a higher precedence than the .tfswitchrc file
 		 * You can specify the custom binary path and the version you desire
@@ -118,6 +152,7 @@ func main() {
 
 			if *listAllFlag { //show all terraform version including betas and RCs
 				listAll := true //set list all true - all versions including beta and rc will be displayed
+				fmt.Println("testing listing all version")
 				installOption(listAll, &binPath)
 			} else if tfversion == "" { // if no version is provided, show a dropdown of available release versions
 				listAll := false //set list all false - only official release will be displayed
@@ -209,30 +244,6 @@ func main() {
 				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 				os.Exit(1)
 			}
-		} else if len(args) == 1 { //if tf version is provided in command line
-			if lib.ValidVersionFormat(args[0]) {
-
-				requestedVersion := args[0]
-				listAll := true                                     //set list all true - all versions including beta and rc will be displayed
-				tflist, _ := lib.GetTFList(hashiURL, listAll)       //get list of versions
-				exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
-
-				if exist {
-					lib.Install(requestedVersion, *custBinPath)
-				} else {
-					fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
-				}
-
-			} else {
-				fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
-				fmt.Println("Args must be a valid terraform version")
-				usageMessage()
-			}
-
-		} else if *listAllFlag {
-			listAll := true //set list all true - all versions including beta and rc will be displayed
-			installOption(listAll, custBinPath)
-
 		} else if len(args) == 0 { //if there are no commmand line arguments
 
 			listAll := false //set list all false - only official release will be displayed
@@ -242,6 +253,16 @@ func main() {
 			usageMessage()
 		}
 	}
+}
+
+// fileExists checks if a file exists and is not a directory before we
+// try using it to prevent further errors.
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }
 
 func usageMessage() {
