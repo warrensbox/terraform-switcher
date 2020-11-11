@@ -14,6 +14,7 @@ require (
 	github.com/manifoldco/promptui v0.2.2-0.20180308161052-c0c0d3afc6a0
 	github.com/mattn/go-colorable v0.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.3 // indirect
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pborman/getopt v0.0.0-20170112200414-7148bc3a4c30
 	github.com/pelletier/go-toml v1.4.0 // indirect
 	github.com/spf13/afero v1.2.2 // indirect

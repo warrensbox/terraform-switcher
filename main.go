@@ -29,6 +29,7 @@ import (
 	// TODO: move back to upstream
 	"github.com/Masterminds/semver"
 	"github.com/kiranjthomas/terraform-config-inspect/tfconfig"
+	"github.com/mitchellh/go-homedir"
 
 	//	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 
@@ -60,15 +61,22 @@ func main() {
 	getopt.Parse()
 	args := getopt.Args()
 
-	dir, err := os.Getwd()
+	dir, err := os.Getwd() //get current directory
 	if err != nil {
 		log.Printf("Failed to get current directory %v\n", err)
 		os.Exit(1)
 	}
 
-	tfvfile := dir + fmt.Sprintf("/%s", tfvFilename)         //settings for .terraform-version file in current directory (tfenv compatible)
-	rcfile := dir + fmt.Sprintf("/%s", rcFilename)           //settings for .tfswitchrc file in current directory (backward compatible purpose)
-	tomlconfigfile := dir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in current directory (option to specify bin directory)
+	homedir, errHome := homedir.Dir()
+	if errHome != nil {
+		log.Printf("Failed to get home directory %v\n", errHome)
+		os.Exit(1)
+	}
+
+	curr_tfvfile := dir + fmt.Sprintf("/%s", tfvFilename)             //settings for .terraform-version file in current directory (tfenv compatible)
+	curr_rcfile := dir + fmt.Sprintf("/%s", rcFilename)               //settings for .tfswitchrc file in current directory (backward compatible purpose)
+	curr_tomlconfigfile := dir + fmt.Sprintf("/%s", tomlFilename)     //settings for .tfswitch.toml file in current directory (option to specify bin directory)
+	home_tomlconfigfile := homedir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in current directory (option to specify bin directory)
 
 	switch {
 	case *versionFlag:
@@ -77,19 +85,26 @@ func main() {
 	case *helpFlag:
 		//} else if *helpFlag {
 		usageMessage()
-	/* Checks if the .tfswitch.toml file exist */
+	/* Checks if the .tfswitch.toml file exist in home or current directory */
 	/* This block checks to see if the tfswitch toml file is provided in the current path.
 	 * If the .tfswitch.toml file exist, it has a higher precedence than the .tfswitchrc file
 	 * You can specify the custom binary path and the version you desire
 	 * If you provide a custom binary path with the -b option, this will override the bin value in the toml file
 	 * If you provide a version on the command line, this will override the version value in the toml file
 	 */
-	case fileExists(tomlconfigfile):
+	case fileExists(curr_tomlconfigfile) || fileExists(home_tomlconfigfile):
 
-		readingFileMsg(tomlFilename)
-		version, binPath := getParamsTOML(custBinPath, dir)
+		version := ""
+		binPath := *custBinPath
+		if fileExists(curr_tomlconfigfile) { //read from toml from current directory
+			version, binPath = getParamsTOML(binPath, dir)
+		} else { // else read from toml from home directory
+			version, binPath = getParamsTOML(binPath, homedir)
+		}
 
 		switch {
+		case checkTFModuleFileExist(dir):
+			installTFProvidedModule(dir, &binPath)
 		case version != "":
 			installVersion(version, &binPath)
 		case len(args) == 1:
@@ -97,42 +112,11 @@ func main() {
 		case *listAllFlag:
 			listAll := true //set list all true - all versions including beta and rc will be displayed
 			installOption(listAll, &binPath)
-		case checkTFModuleFileExist(dir):
-			installTFProvidedModule(dir, &binPath)
 		default:
 			listAll := false //set list all false - only official release will be displayed
 			installOption(listAll, &binPath)
 		}
 
-		// if len(args) == 1 { //if the version is passed in the command line
-		// 	if lib.ValidVersionFormat(args[0]) {
-		// 		requestedVersion := args[0]
-		// 		listAll := true                                     //set list all true - all versions including beta and rc will be displayed
-		// 		tflist, _ := lib.GetTFList(hashiURL, listAll)       //get list of versions
-		// 		exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
-
-		// 		if exist {
-		// 			tfversion = requestedVersion // set tfversion = the version needed
-		// 		}
-		// 	} else if version != "" { // if the required version in the toml file is provided (use it)
-		// 		tfversion = version
-		// 	}
-		// }
-
-		// if *listAllFlag { //show all terraform version including betas and RCs
-		// 	listAll := true //set list all true - all versions including beta and rc will be displayed
-		// 	installOption(listAll, &binPath)
-		// } else if tfversion == "" { // if no version is provided, show a dropdown of available release versions
-		// 	listAll := false //set list all false - only official release will be displayed
-		// 	installOption(listAll, &binPath)
-		// } else {
-		//if lib.ValidVersionFormat(tfversion) { //check if version is correct
-		// 		lib.Install(tfversion, binPath)
-		// 	} else {
-		// 		printInvalidTFVersion()
-		// 		os.Exit(1)
-		// 	}
-		// }
 	/* list all versions, //show all terraform version including betas and RCs*/
 	case *listAllFlag:
 		installWithListAll(custBinPath)
@@ -142,15 +126,15 @@ func main() {
 		installVersion(args[0], custBinPath)
 
 	/* provide an tfswitchrc file */
-	case fileExists(rcfile) && len(args) == 0:
-		readingFileMsg(rcfile)
-		tfversion := retrieveFileContents(rcfile)
+	case fileExists(curr_rcfile) && len(args) == 0:
+		readingFileMsg(rcFilename)
+		tfversion := retrieveFileContents(curr_rcfile)
 		installVersion(tfversion, custBinPath)
 
 	/* if .terraform-version file found */
-	case fileExists(tfvfile) && len(args) == 0:
+	case fileExists(curr_tfvfile) && len(args) == 0:
 		readingFileMsg(tfvFilename)
-		tfversion := retrieveFileContents(tfvfile)
+		tfversion := retrieveFileContents(curr_tfvfile)
 		installVersion(tfversion, custBinPath)
 
 	/* if versions.tf file found */
@@ -212,7 +196,7 @@ func retrieveFileContents(file string) string {
 
 // Print message reading file content of :
 func readingFileMsg(filename string) {
-	fmt.Printf("Reading required terraform version %s \n", filename)
+	fmt.Printf("Reading file %s \n", filename)
 }
 
 // fileExists checks if a file exists and is not a directory before we try using it to prevent further errors.
@@ -246,11 +230,10 @@ func checkTFModuleFileExist(dir string) bool {
 // }
 
 /* parses everything in the toml file, return required version and bin path */
-func getParamsTOML(custBinPath *string, dir string) (string, string) {
+func getParamsTOML(binPath string, dir string) (string, string) {
 
-	fmt.Printf("Reading configuration from %s\n", tomlFilename)
-	binPath := *custBinPath                         //takes the default bin (defaultBin) if user does not specify bin path
-	configfileName := lib.GetFileName(tomlFilename) //get the config file
+	fmt.Printf("Reading configuration from %s\n", tomlFilename) //takes the default bin (defaultBin) if user does not specify bin path
+	configfileName := lib.GetFileName(tomlFilename)             //get the config file
 	viper.SetConfigType("toml")
 	viper.SetConfigName(configfileName)
 	viper.AddConfigPath(dir)
@@ -267,6 +250,9 @@ func getParamsTOML(custBinPath *string, dir string) (string, string) {
 		binPath = os.ExpandEnv(bin.(string))
 	}
 	version := viper.Get("version") //attempt to get the version if it's provided in the toml
+	if version == nil {
+		version = ""
+	}
 
 	return version.(string), binPath
 }
