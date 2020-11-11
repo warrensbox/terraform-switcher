@@ -2,7 +2,7 @@ package main
 
 /*
 * Version 0.6.0
-* Compatible with Mac OS X ONLY
+* Compatible with Mac OS X AND other LINUX OS ONLY
  */
 
 /*** OPERATION WORKFLOW ***/
