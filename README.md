@@ -88,7 +88,7 @@ This is similiar to using a .tfswitchrc file, but you can specify a custom binar
 1. Create a custom binary path. Ex: `mkdir /Users/warrenveerasingam/bin` (replace warrenveerasingam with your username)
 2. Add the path to your PATH. Ex: `export PATH=$PATH:/Users/warrenveerasingam/bin` (add this to your bash profile or zsh profile)
 3. Pass -b or --bin parameter with your custom path to install terraform. Ex: `tfswitch -b /Users/warrenveerasingam/bin/terraform 0.10.8 `
-4. Optionally, you can create a `.tfswitch.toml` file in your terraform directory.
+4. Optionally, you can create a `.tfswitch.toml` file in your terraform directory (current .tfswitch.toml) OR in your home (~/.tfswitch.toml) directory. The toml file in the current directory has a higher precedence than toml file in the home directory
 5. Your `.tfswitch.toml` file should look like this:
 ```
 bin = "/Users/warrenveerasingam/bin/terraform"
