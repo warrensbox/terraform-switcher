@@ -76,7 +76,7 @@ func main() {
 	curr_tfvfile := dir + fmt.Sprintf("/%s", tfvFilename)             //settings for .terraform-version file in current directory (tfenv compatible)
 	curr_rcfile := dir + fmt.Sprintf("/%s", rcFilename)               //settings for .tfswitchrc file in current directory (backward compatible purpose)
 	curr_tomlconfigfile := dir + fmt.Sprintf("/%s", tomlFilename)     //settings for .tfswitch.toml file in current directory (option to specify bin directory)
-	home_tomlconfigfile := homedir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in current directory (option to specify bin directory)
+	home_tomlconfigfile := homedir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in home directory (option to specify bin directory)
 
 	switch {
 	case *versionFlag:
@@ -105,13 +105,21 @@ func main() {
 		switch {
 		case checkTFModuleFileExist(dir):
 			installTFProvidedModule(dir, &binPath)
-		case version != "":
-			installVersion(version, &binPath)
 		case len(args) == 1:
 			installVersion(args[0], &binPath)
 		case *listAllFlag:
 			listAll := true //set list all true - all versions including beta and rc will be displayed
 			installOption(listAll, &binPath)
+		case fileExists(curr_rcfile):
+			readingFileMsg(rcFilename)
+			tfversion := retrieveFileContents(curr_rcfile)
+			installVersion(tfversion, custBinPath)
+		case fileExists(curr_tfvfile):
+			readingFileMsg(tfvFilename)
+			tfversion := retrieveFileContents(curr_tfvfile)
+			installVersion(tfversion, custBinPath)
+		case version != "":
+			installVersion(version, &binPath)
 		default:
 			listAll := false //set list all false - only official release will be displayed
 			installOption(listAll, &binPath)
@@ -231,9 +239,14 @@ func checkTFModuleFileExist(dir string) bool {
 
 /* parses everything in the toml file, return required version and bin path */
 func getParamsTOML(binPath string, dir string) (string, string) {
-
-	fmt.Printf("Reading configuration from %s\n", tomlFilename) //takes the default bin (defaultBin) if user does not specify bin path
-	configfileName := lib.GetFileName(tomlFilename)             //get the config file
+	path, _ := homedir.Dir()
+	if dir == path {
+		path = "home directory"
+	} else {
+		path = "current directory"
+	}
+	fmt.Printf("Reading configuration from %s\n", path+" for "+tomlFilename) //takes the default bin (defaultBin) if user does not specify bin path
+	configfileName := lib.GetFileName(tomlFilename)                          //get the config file
 	viper.SetConfigType("toml")
 	viper.SetConfigName(configfileName)
 	viper.AddConfigPath(dir)
@@ -249,6 +262,7 @@ func getParamsTOML(binPath string, dir string) (string, string) {
 	if binPath == defaultBin && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
 		binPath = os.ExpandEnv(bin.(string))
 	}
+	fmt.Println(binPath)
 	version := viper.Get("version") //attempt to get the version if it's provided in the toml
 	if version == nil {
 		version = ""
