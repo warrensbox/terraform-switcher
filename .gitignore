@@ -29,10 +29,7 @@ docs/.bundle/**
 
 .sass-cache
 
-.tfswitchrc
-
 tfswitch*
 
 build-script.sh
 
-.tfswitch.toml
