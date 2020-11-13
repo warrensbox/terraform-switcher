@@ -13,7 +13,16 @@ jobs:
       - checkout
       - run: 
           command: |    
-            set +e   
+            set +e  
+            echo "Building website" 
+            sudo apt-get install python3
+            sudo apt-get install python3-pip
+            pip3 install mkdocs-material
+            cd www
+            mkdocs gh-deploy --force
+            cd ..
+
+            echo "Building application" 
             go get -v -t -d ./...
             go vet -tests=false ./...
             go test -v ./...
@@ -51,7 +60,11 @@ workflows:
 
   build_and_test:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
       - release:
           requires:
             - build
