@@ -85,8 +85,8 @@ func main() {
 	case *helpFlag:
 		//} else if *helpFlag {
 		usageMessage()
-	/* Checks if the .tfswitch.toml file exist in home or current directory */
-	/* This block checks to see if the tfswitch toml file is provided in the current path.
+	/* Checks if the .tfswitch.toml file exist in home or current directory
+	 * This block checks to see if the tfswitch toml file is provided in the current path.
 	 * If the .tfswitch.toml file exist, it has a higher precedence than the .tfswitchrc file
 	 * You can specify the custom binary path and the version you desire
 	 * If you provide a custom binary path with the -b option, this will override the bin value in the toml file
@@ -113,11 +113,11 @@ func main() {
 		case fileExists(curr_rcfile):
 			readingFileMsg(rcFilename)
 			tfversion := retrieveFileContents(curr_rcfile)
-			installVersion(tfversion, custBinPath)
+			installVersion(tfversion, &binPath)
 		case fileExists(curr_tfvfile):
 			readingFileMsg(tfvFilename)
 			tfversion := retrieveFileContents(curr_tfvfile)
-			installVersion(tfversion, custBinPath)
+			installVersion(tfversion, &binPath)
 		case version != "":
 			installVersion(version, &binPath)
 		default:
@@ -227,16 +227,6 @@ func checkTFModuleFileExist(dir string) bool {
 	return false
 }
 
-/* valid install */
-// func simpleInstall(tfversion string, custBinPath *string) {
-// 	if lib.ValidVersionFormat(tfversion) { //check if version is correct
-// 		lib.Install(string(tfversion), *custBinPath)
-// 	} else {
-// 		fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
-// 		os.Exit(1)
-// 	}
-// }
-
 /* parses everything in the toml file, return required version and bin path */
 func getParamsTOML(binPath string, dir string) (string, string) {
 	path, _ := homedir.Dir()
@@ -262,7 +252,7 @@ func getParamsTOML(binPath string, dir string) (string, string) {
 	if binPath == defaultBin && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
 		binPath = os.ExpandEnv(bin.(string))
 	}
-	fmt.Println(binPath)
+	//fmt.Println(binPath) //uncomment this to debug
 	version := viper.Get("version") //attempt to get the version if it's provided in the toml
 	if version == nil {
 		version = ""
