@@ -103,21 +103,21 @@ func main() {
 		}
 
 		switch {
-		case checkTFModuleFileExist(dir):
-			installTFProvidedModule(dir, &binPath)
-		case len(args) == 1:
-			installVersion(args[0], &binPath)
 		case *listAllFlag:
 			listAll := true //set list all true - all versions including beta and rc will be displayed
 			installOption(listAll, &binPath)
-		case fileExists(curr_rcfile):
+		case len(args) == 1:
+			installVersion(args[0], &binPath)
+		case fileExists(curr_rcfile) && len(args) == 0:
 			readingFileMsg(rcFilename)
 			tfversion := retrieveFileContents(curr_rcfile)
 			installVersion(tfversion, &binPath)
-		case fileExists(curr_tfvfile):
+		case fileExists(curr_tfvfile) && len(args) == 0:
 			readingFileMsg(tfvFilename)
 			tfversion := retrieveFileContents(curr_tfvfile)
 			installVersion(tfversion, &binPath)
+		case checkTFModuleFileExist(dir) && len(args) == 0:
+			installTFProvidedModule(dir, &binPath)
 		case version != "":
 			installVersion(version, &binPath)
 		default:
