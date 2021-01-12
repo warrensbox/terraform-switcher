@@ -20,4 +20,5 @@ require (
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.4.0
+	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )

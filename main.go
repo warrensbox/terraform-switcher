@@ -30,36 +30,73 @@ import (
 	"github.com/Masterminds/semver"
 	"github.com/kiranjthomas/terraform-config-inspect/tfconfig"
 	"github.com/mitchellh/go-homedir"
+	"github.com/pborman/getopt"
+	"gopkg.in/alecthomas/kingpin.v2"
 
 	//	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 
 	"github.com/manifoldco/promptui"
-	"github.com/pborman/getopt"
+	//"github.com/pborman/getopt"
 	"github.com/spf13/viper"
 
 	lib "github.com/warrensbox/terraform-switcher/lib"
 )
 
-const (
-	hashiURL     = "https://releases.hashicorp.com/terraform/"
-	defaultBin   = "/usr/local/bin/terraform" //default bin installation dir
-	tfvFilename  = ".terraform-version"
-	rcFilename   = ".tfswitchrc"
-	tomlFilename = ".tfswitch.toml"
+var (
+	custBinPath *string
+	listAllFlag *bool
+	latest      *string
+	versionFlag *bool
+	helpFlag    *bool
+	arg         *string
 )
+
+const (
+	hashiURL      = "https://releases.hashicorp.com/terraform/"
+	defaultBin    = "/usr/local/bin/terraform" //default bin installation dir
+	tfvFilename   = ".terraform-version"
+	rcFilename    = ".tfswitchrc"
+	tomlFilename  = ".tfswitch.toml"
+	defaultlatest = ""
+)
+
+func init() {
+	const (
+		custBinPathDesc = "Custom binary path. For example: /Users/username/bin/terraform"
+		listAllFlagDesc = "List all versions of terraform - including beta and rc"
+		latestDesc      = "Get latest explicit version. For example: tfswitch --latest 0.13 will download 0.13.5 (latest). tfswitch --latest will download the most latest stable release"
+		argDesc         = "Pass version required"
+		helpDesc        = "Displays help message"
+	)
+
+	custBinPath = kingpin.Flag("bin", custBinPathDesc).Default(defaultBin).Short('b').String()
+	listAllFlag = kingpin.Flag("list-all", listAllFlagDesc).Short('l').Bool()
+	versionFlag = kingpin.Flag("version", listAllFlagDesc).Short('v').Bool()
+	//helpFlag = kingpin.Flag("h", helpDesc).Short('h').Bool()
+	latest = kingpin.Flag("latest", latestDesc).Default(defaultlatest).Short('a').String()
+	arg = kingpin.Arg("arg", "Supply terraform version as an argument. For example: tfswtich 0.14.0").String()
+}
 
 var version = "0.9.0\n"
 
 func main() {
 
-	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. For example: /Users/username/bin/terraform")
-	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
-	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
-	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
-	_ = versionFlag
+	// custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. For example: /Users/username/bin/terraform")
+	// listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
+	// latest := getopt.StringLong("latest", 'a', defaultlatest, "Custom binary path. For example: tfswitch --latest 0.13 will download 0.13.5 (latest). tfswitch --latest will download the most latest stable release")
+	// versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
+	// helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
+	// _ = versionFlag
 
-	getopt.Parse()
-	args := getopt.Args()
+	kingpin.CommandLine.Interspersed(false)
+	kingpin.Parse()
+
+	//os.Exit(0)
+	/* check if arg is provided; set bool = true */
+	argProvided := false
+	if *arg != "" {
+		argProvided = true
+	}
 
 	dir, err := os.Getwd() //get current directory
 	if err != nil {
@@ -82,9 +119,9 @@ func main() {
 	case *versionFlag:
 		//if *versionFlag {
 		fmt.Printf("\nVersion: %v\n", version)
-	case *helpFlag:
-		//} else if *helpFlag {
-		usageMessage()
+	// case *helpFlag:
+	// 	//} else if *helpFlag {
+	// 	usageMessage()
 	/* Checks if the .tfswitch.toml file exist in home or current directory
 	 * This block checks to see if the tfswitch toml file is provided in the current path.
 	 * If the .tfswitch.toml file exist, it has a higher precedence than the .tfswitchrc file
@@ -106,17 +143,17 @@ func main() {
 		case *listAllFlag:
 			listAll := true //set list all true - all versions including beta and rc will be displayed
 			installOption(listAll, &binPath)
-		case len(args) == 1:
-			installVersion(args[0], &binPath)
-		case fileExists(curr_rcfile) && len(args) == 0:
+		case *arg != "":
+			installVersion(*arg, &binPath)
+		case fileExists(curr_rcfile) && argProvided:
 			readingFileMsg(rcFilename)
 			tfversion := retrieveFileContents(curr_rcfile)
 			installVersion(tfversion, &binPath)
-		case fileExists(curr_tfvfile) && len(args) == 0:
+		case fileExists(curr_tfvfile) && argProvided:
 			readingFileMsg(tfvFilename)
 			tfversion := retrieveFileContents(curr_tfvfile)
 			installVersion(tfversion, &binPath)
-		case checkTFModuleFileExist(dir) && len(args) == 0:
+		case checkTFModuleFileExist(dir) && argProvided:
 			installTFProvidedModule(dir, &binPath)
 		case version != "":
 			installVersion(version, &binPath)
@@ -129,24 +166,28 @@ func main() {
 	case *listAllFlag:
 		installWithListAll(custBinPath)
 
+	case *latest != "":
+		fmt.Println(*latest)
+		installLatestVersion(*latest, custBinPath)
+
 	/* version provided on command line as arg */
-	case len(args) == 1:
-		installVersion(args[0], custBinPath)
+	case argProvided:
+		installVersion(*arg, custBinPath)
 
 	/* provide an tfswitchrc file */
-	case fileExists(curr_rcfile) && len(args) == 0:
+	case fileExists(curr_rcfile) && argProvided:
 		readingFileMsg(rcFilename)
 		tfversion := retrieveFileContents(curr_rcfile)
 		installVersion(tfversion, custBinPath)
 
 	/* if .terraform-version file found */
-	case fileExists(curr_tfvfile) && len(args) == 0:
+	case fileExists(curr_tfvfile) && argProvided:
 		readingFileMsg(tfvFilename)
 		tfversion := retrieveFileContents(curr_tfvfile)
 		installVersion(tfversion, custBinPath)
 
 	/* if versions.tf file found */
-	case checkTFModuleFileExist(dir) && len(args) == 0:
+	case checkTFModuleFileExist(dir) && argProvided:
 		installTFProvidedModule(dir, custBinPath)
 
 	// if no arg is provided
@@ -162,6 +203,31 @@ func main() {
 func installWithListAll(custBinPath *string) {
 	listAll := true //set list all true - all versions including beta and rc will be displayed
 	installOption(listAll, custBinPath)
+}
+
+// install latest with provided version as argument
+func installLatestVersion(arg string, custBinPath *string) {
+	//	if lib.ValidVersionFormat(arg) {
+	requestedVersion := arg
+	listAll := true
+	fmt.Println(requestedVersion)
+	os.Exit(0)
+	//set list all true - all versions including beta and rc will be displayed
+	tfversion, _ := lib.GetTFLatest(hashiURL, listAll, requestedVersion) //get list of versions
+	//exist := lib.VersionExist(requestedVersion, tflist)        //check if version exist before downloading it
+	fmt.Println(tfversion)
+	os.Exit(0)
+	// if exist {
+	lib.Install(tfversion, *custBinPath)
+	// } else {
+	fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
+	// }
+
+	// } else {
+	// 	printInvalidTFVersion()
+	// 	fmt.Println("Args must be a valid terraform version")
+	// 	usageMessage()
+	// }
 }
 
 // install with provided version as argument
