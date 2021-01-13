@@ -179,7 +179,7 @@ func ValidVersionFormat(version string) bool {
 func ValidMinorVersionFormat(version string) bool {
 
 	// Getting versions from body; should return match /X.X./ where X is a number
-	semverRegex := regexp.MustCompile(`^(\d+\.\d+)`)
+	semverRegex := regexp.MustCompile(`^(\d+\.\d+)$`)
 
 	return semverRegex.MatchString(version)
 }

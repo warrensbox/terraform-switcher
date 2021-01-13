@@ -49,7 +49,7 @@ const (
 	tomlFilename  = ".tfswitch.toml"
 )
 
-var version = "0.9.0\n"
+var version = "0.10.0\n"
 
 func main() {
 	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. Ex: /Users/username/bin/terraform")
@@ -233,7 +233,7 @@ func printInvalidTFVersion() {
 
 // Print invalid TF version
 func printInvalidMinorTFVersion() {
-	fmt.Println("Invalid minor terraform version format. Format should be #.# where # are numbers. For example, 0.11 is valid versions")
+	fmt.Println("Invalid minor terraform version format. Format should be #.# where # are numbers. For example, 0.11 is valid version")
 }
 
 //retrive file content of regular file
