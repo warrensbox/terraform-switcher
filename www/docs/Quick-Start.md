@@ -22,7 +22,18 @@ The most recently selected versions are presented at the top of the dropdown.
 1. Display all versions including beta, alpha and release candidates(rc). 
 2. For example, `tfswitch -l` or `tfswitch --list-all` to see all versions.
 3. Hit **Enter** to select the desired version.
-
+### Install latest version only
+1. Install the latest stable version only.
+2. Run `tfswitch -u` or `tfswitch --latest` to see all versions.
+3. Hit **Enter** to install.
+### Install latest implicit version for stable releases
+1. Install the latest implicit stable version.
+2. Ex: `tfswitch -s 0.13` or `tfswitch --latest-stable 0.13` downloads 0.13.6 (latest) version.
+3. Hit **Enter** to install.
+### Install latest implicit version for beta, alpha and release candidates(rc)
+1. Install the latest implicit pre-release version.
+2. Ex: `tfswitch -p 0.13` or `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1 (latest) version.
+3. Hit **Enter** to install.
 ### Use version.tf file  
 If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the lastest version:     
 ```
