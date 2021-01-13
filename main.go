@@ -41,19 +41,22 @@ import (
 )
 
 const (
-	hashiURL     = "https://releases.hashicorp.com/terraform/"
-	defaultBin   = "/usr/local/bin/terraform" //default bin installation dir
-	tfvFilename  = ".terraform-version"
-	rcFilename   = ".tfswitchrc"
-	tomlFilename = ".tfswitch.toml"
+	hashiURL      = "https://releases.hashicorp.com/terraform/"
+	defaultBin    = "/usr/local/bin/terraform" //default bin installation dir
+	defaultLatest = ""
+	tfvFilename   = ".terraform-version"
+	rcFilename    = ".tfswitchrc"
+	tomlFilename  = ".tfswitch.toml"
 )
 
-var version = "0.9.0\n"
+var version = "0.10.0\n"
 
 func main() {
-
-	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. For example: /Users/username/bin/terraform")
+	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. Ex: /Users/username/bin/terraform")
 	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
+	latestPre := getopt.StringLong("latest-pre", 'p', defaultLatest, "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
+	latestStable := getopt.StringLong("latest-stable", 's', defaultLatest, "Latest implicit version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest)")
+	latestFlag := getopt.BoolLong("latest", 'u', "Get latest stable version")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
 	_ = versionFlag
@@ -73,10 +76,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	curr_tfvfile := dir + fmt.Sprintf("/%s", tfvFilename)             //settings for .terraform-version file in current directory (tfenv compatible)
-	curr_rcfile := dir + fmt.Sprintf("/%s", rcFilename)               //settings for .tfswitchrc file in current directory (backward compatible purpose)
-	curr_tomlconfigfile := dir + fmt.Sprintf("/%s", tomlFilename)     //settings for .tfswitch.toml file in current directory (option to specify bin directory)
-	home_tomlconfigfile := homedir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in home directory (option to specify bin directory)
+	TFVersionFile := dir + fmt.Sprintf("/%s", tfvFilename)           //settings for .terraform-version file in current directory (tfenv compatible)
+	RCFile := dir + fmt.Sprintf("/%s", rcFilename)                   //settings for .tfswitchrc file in current directory (backward compatible purpose)
+	TOMLConfigFile := dir + fmt.Sprintf("/%s", tomlFilename)         //settings for .tfswitch.toml file in current directory (option to specify bin directory)
+	HomeTOMLConfigFile := homedir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in home directory (option to specify bin directory)
 
 	switch {
 	case *versionFlag:
@@ -92,11 +95,11 @@ func main() {
 	 * If you provide a custom binary path with the -b option, this will override the bin value in the toml file
 	 * If you provide a version on the command line, this will override the version value in the toml file
 	 */
-	case fileExists(curr_tomlconfigfile) || fileExists(home_tomlconfigfile):
+	case fileExists(TOMLConfigFile) || fileExists(HomeTOMLConfigFile):
 
 		version := ""
 		binPath := *custBinPath
-		if fileExists(curr_tomlconfigfile) { //read from toml from current directory
+		if fileExists(TOMLConfigFile) { //read from toml from current directory
 			version, binPath = getParamsTOML(binPath, dir)
 		} else { // else read from toml from home directory
 			version, binPath = getParamsTOML(binPath, homedir)
@@ -106,15 +109,23 @@ func main() {
 		case *listAllFlag:
 			listAll := true //set list all true - all versions including beta and rc will be displayed
 			installOption(listAll, &binPath)
+		case *latestPre != "":
+			preRelease := true
+			installLatestImplicitVersion(*latestPre, custBinPath, preRelease)
+		case *latestStable != "":
+			preRelease := false
+			installLatestImplicitVersion(*latestStable, custBinPath, preRelease)
+		case *latestFlag:
+			installLatestVersion(custBinPath)
 		case len(args) == 1:
 			installVersion(args[0], &binPath)
-		case fileExists(curr_rcfile) && len(args) == 0:
+		case fileExists(RCFile) && len(args) == 0:
 			readingFileMsg(rcFilename)
-			tfversion := retrieveFileContents(curr_rcfile)
+			tfversion := retrieveFileContents(RCFile)
 			installVersion(tfversion, &binPath)
-		case fileExists(curr_tfvfile) && len(args) == 0:
+		case fileExists(TFVersionFile) && len(args) == 0:
 			readingFileMsg(tfvFilename)
-			tfversion := retrieveFileContents(curr_tfvfile)
+			tfversion := retrieveFileContents(TFVersionFile)
 			installVersion(tfversion, &binPath)
 		case checkTFModuleFileExist(dir) && len(args) == 0:
 			installTFProvidedModule(dir, &binPath)
@@ -125,24 +136,38 @@ func main() {
 			installOption(listAll, &binPath)
 		}
 
-	/* list all versions, //show all terraform version including betas and RCs*/
+	/* show all terraform version including betas and RCs*/
 	case *listAllFlag:
 		installWithListAll(custBinPath)
+
+	/* latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
+	case *latestPre != "":
+		preRelease := true
+		installLatestImplicitVersion(*latestPre, custBinPath, preRelease)
+
+	/* latest implicit version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
+	case *latestStable != "":
+		preRelease := false
+		installLatestImplicitVersion(*latestStable, custBinPath, preRelease)
+
+	/* latest stable version */
+	case *latestFlag:
+		installLatestVersion(custBinPath)
 
 	/* version provided on command line as arg */
 	case len(args) == 1:
 		installVersion(args[0], custBinPath)
 
 	/* provide an tfswitchrc file */
-	case fileExists(curr_rcfile) && len(args) == 0:
+	case fileExists(RCFile) && len(args) == 0:
 		readingFileMsg(rcFilename)
-		tfversion := retrieveFileContents(curr_rcfile)
+		tfversion := retrieveFileContents(RCFile)
 		installVersion(tfversion, custBinPath)
 
 	/* if .terraform-version file found */
-	case fileExists(curr_tfvfile) && len(args) == 0:
+	case fileExists(TFVersionFile) && len(args) == 0:
 		readingFileMsg(tfvFilename)
-		tfversion := retrieveFileContents(curr_tfvfile)
+		tfversion := retrieveFileContents(TFVersionFile)
 		installVersion(tfversion, custBinPath)
 
 	/* if versions.tf file found */
@@ -162,6 +187,22 @@ func main() {
 func installWithListAll(custBinPath *string) {
 	listAll := true //set list all true - all versions including beta and rc will be displayed
 	installOption(listAll, custBinPath)
+}
+
+// install latest stable tf version
+func installLatestVersion(custBinPath *string) {
+	tfversion, _ := lib.GetTFLatest(hashiURL)
+	lib.Install(tfversion, *custBinPath)
+}
+
+// install latest - argument (version) must be provided
+func installLatestImplicitVersion(requestedVersion string, custBinPath *string, preRelease bool) {
+	if lib.ValidMinorVersionFormat(requestedVersion) {
+		tfversion, _ := lib.GetTFLatestImplicit(hashiURL, preRelease, requestedVersion)
+		lib.Install(tfversion, *custBinPath)
+	} else {
+		printInvalidMinorTFVersion()
+	}
 }
 
 // install with provided version as argument
@@ -187,7 +228,12 @@ func installVersion(arg string, custBinPath *string) {
 
 // Print invalid TF version
 func printInvalidTFVersion() {
-	fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # is numbers and @ is word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+	fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # are numbers and @ are word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+}
+
+// Print invalid TF version
+func printInvalidMinorTFVersion() {
+	fmt.Println("Invalid minor terraform version format. Format should be #.# where # are numbers. For example, 0.11 is valid version")
 }
 
 //retrive file content of regular file
@@ -295,7 +341,7 @@ func installOption(listAll bool, custBinPath *string) {
 	os.Exit(0)
 }
 
-// installation when
+// install when tf file is provided
 func installTFProvidedModule(dir string, custBinPath *string) {
 	tfversion := ""
 	module, _ := tfconfig.LoadModule(dir)
