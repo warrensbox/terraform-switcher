@@ -104,12 +104,6 @@
   revision = "9bd2f442688b66c5289262d70f537c2ecf81d7de"
 
 [[projects]]
-  branch = "v3-unstable"
-  name = "gopkg.in/alecthomas/kingpin.v3-unstable"
-  packages = ["."]
-  revision = "63abe20a23e29e80bbef8089bd3dee3ac25e5306"
-
-[[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
