@@ -24,7 +24,7 @@ The most recently selected versions are presented at the top of the dropdown.
 3. Hit **Enter** to select the desired version.
 ### Install latest version only
 1. Install the latest stable version only.
-2. Run `tfswitch -u` or `tfswitch --latest` to see all versions.
+2. Run `tfswitch -u` or `tfswitch --latest`.
 3. Hit **Enter** to install.
 ### Install latest implicit version for stable releases
 1. Install the latest implicit stable version.
