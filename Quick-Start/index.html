@@ -287,6 +287,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#install-latest-version-only" class="md-nav__link">
+    Install latest version only
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-latest-implicit-version-for-stable-releases" class="md-nav__link">
+    Install latest implicit version for stable releases
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-latest-implicit-version-for-beta-alpha-and-release-candidatesrc" class="md-nav__link">
+    Install latest implicit version for beta, alpha and release candidates(rc)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#use-versiontf-file" class="md-nav__link">
     Use version.tf file
   </a>
@@ -423,6 +444,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#install-latest-version-only" class="md-nav__link">
+    Install latest version only
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-latest-implicit-version-for-stable-releases" class="md-nav__link">
+    Install latest implicit version for stable releases
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-latest-implicit-version-for-beta-alpha-and-release-candidatesrc" class="md-nav__link">
+    Install latest implicit version for beta, alpha and release candidates(rc)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#use-versiontf-file" class="md-nav__link">
     Use version.tf file
   </a>
@@ -489,6 +531,24 @@
 <li>Display all versions including beta, alpha and release candidates(rc). </li>
 <li>For example, <code>tfswitch -l</code> or <code>tfswitch --list-all</code> to see all versions.</li>
 <li>Hit <strong>Enter</strong> to select the desired version.</li>
+</ol>
+<h3 id="install-latest-version-only">Install latest version only</h3>
+<ol>
+<li>Install the latest stable version only.</li>
+<li>Run <code>tfswitch -u</code> or <code>tfswitch --latest</code> to see all versions.</li>
+<li>Hit <strong>Enter</strong> to install.</li>
+</ol>
+<h3 id="install-latest-implicit-version-for-stable-releases">Install latest implicit version for stable releases</h3>
+<ol>
+<li>Install the latest implicit stable version.</li>
+<li>Ex: <code>tfswitch -s 0.13</code> or <code>tfswitch --latest-stable 0.13</code> downloads 0.13.6 (latest) version.</li>
+<li>Hit <strong>Enter</strong> to install.</li>
+</ol>
+<h3 id="install-latest-implicit-version-for-beta-alpha-and-release-candidatesrc">Install latest implicit version for beta, alpha and release candidates(rc)</h3>
+<ol>
+<li>Install the latest implicit pre-release version.</li>
+<li>Ex: <code>tfswitch -p 0.13</code> or <code>tfswitch --latest-pre 0.13</code> downloads 0.13.0-rc1 (latest) version.</li>
+<li>Hit <strong>Enter</strong> to install.</li>
 </ol>
 <h3 id="use-versiontf-file">Use version.tf file</h3>
 <p>If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the lastest version:     </p>
