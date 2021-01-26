@@ -27,8 +27,6 @@ parts:
     source: .
     plugin: go
     go-importpath: github.com/warrensbox/terraform-switcher
-    build-packages:
-      - gcc-multilib
     go-buildtags:
       - tfswitch
     override-build: 
