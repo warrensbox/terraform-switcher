@@ -7,7 +7,7 @@ description: |
   The installation is minimal and easy.
   Once installed, simply select the version you require from the dropdown and start using terraform.
 architectures:
-  - build-on: arm64
+  - build-on: [amd64,arm64]
     run-on: [amd64,arm64]
     build-error: ignore
 assumes: [snapd2.45]
