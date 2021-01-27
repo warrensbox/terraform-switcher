@@ -8,6 +8,7 @@ description: |
   Once installed, simply select the version you require from the dropdown and start using terraform.
 architectures:
   - build-on: arm64
+    run-on: all
 assumes: [snapd2.45]
 base: core18
  
