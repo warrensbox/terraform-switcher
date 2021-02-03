@@ -129,6 +129,8 @@ func main() {
 			installVersion(tfversion, &binPath)
 		case checkTFModuleFileExist(dir) && len(args) == 0:
 			installTFProvidedModule(dir, &binPath)
+		case checkEnvExist() && len(args) == 0 && version == "":
+			installVersion(os.Getenv("TFVERSION"), custBinPath)
 		case version != "":
 			installVersion(version, &binPath)
 		default:
@@ -173,6 +175,10 @@ func main() {
 	/* if versions.tf file found */
 	case checkTFModuleFileExist(dir) && len(args) == 0:
 		installTFProvidedModule(dir, custBinPath)
+
+	/* if TF environment variable is set */
+	case checkEnvExist() && len(args) == 0:
+		installVersion(os.Getenv("TFVERSION"), custBinPath)
 
 	// if no arg is provided
 	default:
@@ -268,6 +274,16 @@ func checkTFModuleFileExist(dir string) bool {
 
 	module, _ := tfconfig.LoadModule(dir)
 	if len(module.RequiredCore) >= 1 {
+		return true
+	}
+	return false
+}
+
+// fileExists checks if a file exists and is not a directory before we
+// try using it to prevent further errors.
+func checkEnvExist() bool {
+	tfversion := os.Getenv("TFVERSION")
+	if tfversion != "" {
 		return true
 	}
 	return false
