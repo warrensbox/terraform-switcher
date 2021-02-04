@@ -130,7 +130,9 @@ func main() {
 		case checkTFModuleFileExist(dir) && len(args) == 0:
 			installTFProvidedModule(dir, &binPath)
 		case checkEnvExist() && len(args) == 0 && version == "":
-			installVersion(os.Getenv("TFVERSION"), custBinPath)
+			tfversion := os.Getenv("TFVERSION")
+			fmt.Printf("Reading environment variable: %s\n", tfversion)
+			installVersion(tfversion, custBinPath)
 		case version != "":
 			installVersion(version, &binPath)
 		default:
@@ -178,7 +180,9 @@ func main() {
 
 	/* if TF environment variable is set */
 	case checkEnvExist() && len(args) == 0:
-		installVersion(os.Getenv("TFVERSION"), custBinPath)
+		tfversion := os.Getenv("TFVERSION")
+		fmt.Printf("Reading environment variable: %s\n", tfversion)
+		installVersion(tfversion, custBinPath)
 
 	// if no arg is provided
 	default:
