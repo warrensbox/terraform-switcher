@@ -131,7 +131,7 @@ func main() {
 			installTFProvidedModule(dir, &binPath)
 		case checkEnvExist() && len(args) == 0 && version == "":
 			tfversion := os.Getenv("TFVERSION")
-			fmt.Printf("Reading environment variable: %s\n", tfversion)
+			fmt.Printf("Terraform version environment variable: %s\n", tfversion)
 			installVersion(tfversion, custBinPath)
 		case version != "":
 			installVersion(version, &binPath)
@@ -178,10 +178,10 @@ func main() {
 	case checkTFModuleFileExist(dir) && len(args) == 0:
 		installTFProvidedModule(dir, custBinPath)
 
-	/* if TF environment variable is set */
+	/* if Terraform Version environment variable is set */
 	case checkEnvExist() && len(args) == 0:
 		tfversion := os.Getenv("TFVERSION")
-		fmt.Printf("Reading environment variable: %s\n", tfversion)
+		fmt.Printf("Terraform version environment variable: %s\n", tfversion)
 		installVersion(tfversion, custBinPath)
 
 	// if no arg is provided
