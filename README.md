@@ -70,6 +70,13 @@ The most recently selected versions are presented at the top of the dropdown.
 2. For example, `tfswitch -l` or `tfswitch --list-all` to see all versions.
 3. Hit **Enter** to select the desired version.
 
+### Use environment variables
+You can also set the `TF_VERSION` environment version to your desired terraform version. 
+For example:   
+```bash
+export TF_VERSION=0.14.4
+tfswitch #will automatically switch to terraform version 0.14.4
+```
 ### Install latest version only
 1. Install the latest stable version only.
 2. Run `tfswitch -u` or `tfswitch --latest`.
@@ -95,7 +102,6 @@ terraform {
 }
 ```
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif#1" alt="drawing" style="width: 370px;"/>
-
 
 ### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
@@ -123,7 +129,7 @@ version = "0.11.3"
 3. Run the command `tfswitch` in the same directory as your `.tfswitchrc`
 
 #### *Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
-
+## Automation
 **Automatically switch with bash**
 
 Add the following to the end of your `~/.bashrc` file:
@@ -256,7 +262,17 @@ jobs:
 
             terraform -v                    #testing version
 ```
+## Order of precedence
 
+| Order | Method |
+| --- | ----------- |
+| 1 | .tfswitch.toml |
+| 2 | .tfswitchrc |
+| 3 | .terraform-version |
+| 4 | Environment variable |
+
+With 1 being the highest precedence and 4 the lowest   
+*(If you disagree with this order of precedence, please open an issue)*
 ## How to contribute    
 An open source project becomes meaningful when people collaborate to improve the code.    
 Feel free to look at the code, critique and make suggestions. Lets make `tfswitch` better!   
