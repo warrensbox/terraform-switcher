@@ -294,8 +294,7 @@ func checkTFModuleFileExist(dir string) bool {
 	return false
 }
 
-// fileExists checks if a file exists and is not a directory before we
-// try using it to prevent further errors.
+// checkTFEnvExist - checks if the TF_VERSION environment variable is set
 func checkTFEnvExist() bool {
 	tfversion := os.Getenv("TF_VERSION")
 	if tfversion != "" {
