@@ -96,7 +96,13 @@ terraform {
 ```
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/versiontf.gif#1" alt="drawing" style="width: 370px;"/>
 
-
+### Use environment variables
+You can also set the `TF_VERSION` environment version to your desired terraform version. 
+For example:   
+```bash
+export TF_VERSION=0.14.4
+tfswitch #will automatically switch to terraform version 0.14.4
+```
 ### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
 

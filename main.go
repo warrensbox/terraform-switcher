@@ -106,33 +106,44 @@ func main() {
 		}
 
 		switch {
+		/* GIVEN A TOML FILE, */
+		/* show all terraform version including betas and RCs*/
 		case *listAllFlag:
 			listAll := true //set list all true - all versions including beta and rc will be displayed
 			installOption(listAll, &binPath)
+		/* latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
 		case *latestPre != "":
 			preRelease := true
 			installLatestImplicitVersion(*latestPre, custBinPath, preRelease)
+		/* latest implicit version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
 		case *latestStable != "":
 			preRelease := false
 			installLatestImplicitVersion(*latestStable, custBinPath, preRelease)
+		/* latest stable version */
 		case *latestFlag:
 			installLatestVersion(custBinPath)
+		/* version provided on command line as arg */
 		case len(args) == 1:
 			installVersion(args[0], &binPath)
+		/* provide an tfswitchrc file (IN ADDITION TO A TOML FILE) */
 		case fileExists(RCFile) && len(args) == 0:
 			readingFileMsg(rcFilename)
 			tfversion := retrieveFileContents(RCFile)
 			installVersion(tfversion, &binPath)
+		/* if .terraform-version file found (IN ADDITION TO A TOML FILE) */
 		case fileExists(TFVersionFile) && len(args) == 0:
 			readingFileMsg(tfvFilename)
 			tfversion := retrieveFileContents(TFVersionFile)
 			installVersion(tfversion, &binPath)
+		/* if versions.tf file found (IN ADDITION TO A TOML FILE) */
 		case checkTFModuleFileExist(dir) && len(args) == 0:
 			installTFProvidedModule(dir, &binPath)
+		/* if Terraform Version environment variable is set */
 		case checkEnvExist() && len(args) == 0 && version == "":
-			tfversion := os.Getenv("TFVERSION")
+			tfversion := os.Getenv("TF_VERSION")
 			fmt.Printf("Terraform version environment variable: %s\n", tfversion)
 			installVersion(tfversion, custBinPath)
+		// if no arg is provided - but toml file is provided
 		case version != "":
 			installVersion(version, &binPath)
 		default:
@@ -180,7 +191,7 @@ func main() {
 
 	/* if Terraform Version environment variable is set */
 	case checkEnvExist() && len(args) == 0:
-		tfversion := os.Getenv("TFVERSION")
+		tfversion := os.Getenv("TF_VERSION")
 		fmt.Printf("Terraform version environment variable: %s\n", tfversion)
 		installVersion(tfversion, custBinPath)
 
@@ -286,7 +297,7 @@ func checkTFModuleFileExist(dir string) bool {
 // fileExists checks if a file exists and is not a directory before we
 // try using it to prevent further errors.
 func checkEnvExist() bool {
-	tfversion := os.Getenv("TFVERSION")
+	tfversion := os.Getenv("TF_VERSION")
 	if tfversion != "" {
 		return true
 	}
