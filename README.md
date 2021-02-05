@@ -129,7 +129,17 @@ version = "0.11.3"
 3. Run the command `tfswitch` in the same directory as your `.tfswitchrc`
 
 #### *Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
+## Order of precedence
 
+| Order | Method |
+| --- | ----------- |
+| 1 | .tfswitch.toml |
+| 2 | .tfswitchrc |
+| 3 | .terraform-version |
+| 4 | environment variable |
+With 1 being the highest precedence and 4 the lowest
+*(If you disagree with this order of precedence, please open an issue)*
+## Automation
 **Automatically switch with bash**
 
 Add the following to the end of your `~/.bashrc` file:
