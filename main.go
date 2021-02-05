@@ -139,7 +139,7 @@ func main() {
 		case checkTFModuleFileExist(dir) && len(args) == 0:
 			installTFProvidedModule(dir, &binPath)
 		/* if Terraform Version environment variable is set */
-		case checkEnvExist() && len(args) == 0 && version == "":
+		case checkTFEnvExist() && len(args) == 0 && version == "":
 			tfversion := os.Getenv("TF_VERSION")
 			fmt.Printf("Terraform version environment variable: %s\n", tfversion)
 			installVersion(tfversion, custBinPath)
@@ -190,7 +190,7 @@ func main() {
 		installTFProvidedModule(dir, custBinPath)
 
 	/* if Terraform Version environment variable is set */
-	case checkEnvExist() && len(args) == 0:
+	case checkTFEnvExist() && len(args) == 0:
 		tfversion := os.Getenv("TF_VERSION")
 		fmt.Printf("Terraform version environment variable: %s\n", tfversion)
 		installVersion(tfversion, custBinPath)
@@ -296,7 +296,7 @@ func checkTFModuleFileExist(dir string) bool {
 
 // fileExists checks if a file exists and is not a directory before we
 // try using it to prevent further errors.
-func checkEnvExist() bool {
+func checkTFEnvExist() bool {
 	tfversion := os.Getenv("TF_VERSION")
 	if tfversion != "" {
 		return true
