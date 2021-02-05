@@ -22,9 +22,16 @@ The most recently selected versions are presented at the top of the dropdown.
 1. Display all versions including beta, alpha and release candidates(rc). 
 2. For example, `tfswitch -l` or `tfswitch --list-all` to see all versions.
 3. Hit **Enter** to select the desired version.
+### Use environment variables
+You can also set the `TF_VERSION` environment version to your desired terraform version. 
+For example:   
+```bash
+export TF_VERSION=0.14.4
+tfswitch #will automatically switch to terraform version 0.14.4
+```
 ### Install latest version only
 1. Install the latest stable version only.
-2. Run `tfswitch -u` or `tfswitch --latest` to see all versions.
+2. Run `tfswitch -u` or `tfswitch --latest`.
 3. Hit **Enter** to install.
 ### Install latest implicit version for stable releases
 1. Install the latest implicit stable version.
