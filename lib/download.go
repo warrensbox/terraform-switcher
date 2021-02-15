@@ -12,7 +12,7 @@ import (
 func DownloadFromURL(installLocation string, url string) (string, error) {
 	tokens := strings.Split(url, "/")
 	fileName := tokens[len(tokens)-1]
-	fmt.Println("Downloading", url, "to", fileName)
+	fmt.Printf("Downloading %s to %s%s\n", url, installLocation, fileName)
 	fmt.Println("Downloading ...")
 
 	response, err := http.Get(url)

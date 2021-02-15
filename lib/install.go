@@ -60,6 +60,11 @@ func getInstallLocation() string {
 
 	/* set installation location */
 	installLocation = usr.HomeDir + installPath
+	if usr.Uid == "0" {
+		// if we're root, use /usr/local/terraform
+		installLocation = "/usr/local/terraform/"
+		fmt.Printf("Running as root, installing to %s\n", installLocation)
+	}
 
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
