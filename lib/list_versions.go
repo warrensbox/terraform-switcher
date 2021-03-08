@@ -75,12 +75,13 @@ func GetTFLatestImplicit(hashiURL string, preRelease bool, version string) (stri
 	var semver string
 	if preRelease == true {
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver = fmt.Sprintf(`\/(%s{1}\.\d+\-[a-zA-z]+\d*)?\/`, version)
+		semver = fmt.Sprintf(`\/(%s{1}\.\d+\-[a-zA-z]+\d*)\/`, version)
 	} else if preRelease == false {
 		semver = fmt.Sprintf(`\/(%s{1}\.\d+)\/`, version)
 	}
 	r, _ := regexp.Compile(semver)
 	for i := range result {
+		//fmt.Println(result[i])
 		if r.MatchString(result[i]) {
 			str := r.FindString(result[i])
 			trimstr := strings.Trim(str, "/") //remove "/" from /X.X.X/
