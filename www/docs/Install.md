@@ -24,6 +24,16 @@ curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/
 sudo snap install tfswitch
 ```
 
+### Arch User Repository (AUR) packages for Arch Linux
+
+```sh
+# compiled from source
+yay tfswitch
+
+# precompiled
+yay tfswitch-bin
+```
+
 ### Install from source
 
 Alternatively, you can install the binary from the source <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">here</a>.

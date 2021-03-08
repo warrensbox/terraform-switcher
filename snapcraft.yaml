@@ -1,5 +1,5 @@
 name: tfswitch
-version: '0.10.958'
+version: '0.10.1010'
 summary: A command line tool to switch between different versions of terraform
 description: |
   The `tfswitch` command line tool lets you switch between different versions of terraform(https://www.terraform.io/).
@@ -33,4 +33,4 @@ parts:
       - tfswitch
     override-build: 
       VER=$(git ls-remote --tags git://github.com/warrensbox/terraform-switcher | awk '{print $2}'| awk -F"/" '{print $3}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n 2 | head -n1)
-      go build  -v -ldflags "-X main.version=0.10.958"  -o ../install/bin/tfswitch
+      go build  -v -ldflags "-X main.version=0.10.1010"  -o ../install/bin/tfswitch

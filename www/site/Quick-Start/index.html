@@ -287,6 +287,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#use-environment-variables" class="md-nav__link">
+    Use environment variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#install-latest-version-only" class="md-nav__link">
     Install latest version only
   </a>
@@ -444,6 +451,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#use-environment-variables" class="md-nav__link">
+    Use environment variables
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#install-latest-version-only" class="md-nav__link">
     Install latest version only
   </a>
@@ -532,6 +546,12 @@
 <li>For example, <code>tfswitch -l</code> or <code>tfswitch --list-all</code> to see all versions.</li>
 <li>Hit <strong>Enter</strong> to select the desired version.</li>
 </ol>
+<h3 id="use-environment-variables">Use environment variables</h3>
+<p>You can also set the <code>TF_VERSION</code> environment variable to your desired terraform version. 
+For example:   </p>
+<pre><code class="language-bash">export TF_VERSION=0.14.4
+tfswitch #will automatically switch to terraform version 0.14.4
+</code></pre>
 <h3 id="install-latest-version-only">Install latest version only</h3>
 <ol>
 <li>Install the latest stable version only.</li>

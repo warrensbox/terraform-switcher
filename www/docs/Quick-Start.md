@@ -23,7 +23,7 @@ The most recently selected versions are presented at the top of the dropdown.
 2. For example, `tfswitch -l` or `tfswitch --list-all` to see all versions.
 3. Hit **Enter** to select the desired version.
 ### Use environment variables
-You can also set the `TF_VERSION` environment version to your desired terraform version. 
+You can also set the `TF_VERSION` environment variable to your desired terraform version. 
 For example:   
 ```bash
 export TF_VERSION=0.14.4
