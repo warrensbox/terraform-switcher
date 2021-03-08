@@ -6,11 +6,24 @@ builds:
   - main: main.go
     binary: tfswitch
     goos:
-      - windows
       - darwin
+      - freebsd
+      - netbsd
       - linux
+      - windows
     goarch:
+      - 386
       - amd64
+      - arm
+      - arm64
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: freebsd
+        goarch: arm64
+      - goos: windows
+        goarch: arm
 checksum:
   name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_checksums.txt'
 changelog:
@@ -34,10 +47,15 @@ brew:
   # Default to project name
   name: tfswitch
 
-  # Reporitory to push the tap to.
-  github:
+  # GitHub/GitLab repository to push the formula to
+  tap:
     owner: warrensbox
     name: homebrew-tap
+
+  # Reporitory to push the tap to.
+  # github:
+  #   owner: warrensbox
+  #   name: homebrew-tap
 
   # Allows you to set a custom download strategy.
   # Default is empty.
