@@ -81,7 +81,6 @@ func GetTFLatestImplicit(hashiURL string, preRelease bool, version string) (stri
 	}
 	r, _ := regexp.Compile(semver)
 	for i := range result {
-		//fmt.Println(result[i])
 		if r.MatchString(result[i]) {
 			str := r.FindString(result[i])
 			trimstr := strings.Trim(str, "/") //remove "/" from /X.X.X/
