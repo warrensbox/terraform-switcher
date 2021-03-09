@@ -32,16 +32,17 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
-archive:
-  name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
-  replacements:
-    darwin: darwin
-    linux: linux
-    386: 386
-    amd64: amd64
-  format_overrides:
-  - goos: windows
-    format: zip
+archives:
+  -
+    name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    replacements:
+      darwin: darwin
+      linux: linux
+      386: 386
+      amd64: amd64
+    format_overrides:
+    - goos: windows
+      format: zip
 brew:
   # Name of the recipe
   # Default to project name
