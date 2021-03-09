@@ -1,9 +1,10 @@
 # This is an example goreleaser.yaml file with some sane defaults.
 # Make sure to check the documentation at http://goreleaser.com
 builds:
-  - ldflags:
-    - -s -w -X "main.version={{.Env.RELEASE_VERSION}}"
-  - main: main.go
+  -
+    ldflags:
+      - -s -w -X "main.version={{.Env.RELEASE_VERSION}}"
+    main: main.go
     binary: tfswitch
     goos:
       - darwin
@@ -47,7 +48,7 @@ brews:
   -
     # Name of the recipe
     # Default to project name
-    name: tfswitch
+    #name: tfswitch
 
   # GitHub/GitLab repository to push the formula to
     # Gitea is not supported yet, but the support coming
