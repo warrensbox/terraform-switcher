@@ -49,7 +49,7 @@ const (
 	tomlFilename  = ".tfswitch.toml"
 )
 
-var version = "0.10.0\n"
+var version = "0.11.0\n"
 
 func main() {
 	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. Ex: /Users/username/bin/terraform")
