@@ -45,7 +45,7 @@ brews:
   -
     # Name of the recipe
     # Default to project name
-    #name: tfswitch
+    name: tfswitch
 
   # GitHub/GitLab repository to push the formula to
     # Gitea is not supported yet, but the support coming
