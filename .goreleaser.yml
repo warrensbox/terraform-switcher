@@ -43,7 +43,7 @@ archives:
     format_overrides:
     - goos: windows
       format: zip
-brew:
+brews:
   -
     # Name of the recipe
     # Default to project name
