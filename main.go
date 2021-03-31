@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -47,6 +48,7 @@ const (
 	tfvFilename   = ".terraform-version"
 	rcFilename    = ".tfswitchrc"
 	tomlFilename  = ".tfswitch.toml"
+	tgHclFilename = "terragrunt.hcl"
 )
 
 var version = "0.11.0\n"
@@ -80,6 +82,7 @@ func main() {
 	RCFile := dir + fmt.Sprintf("/%s", rcFilename)                   //settings for .tfswitchrc file in current directory (backward compatible purpose)
 	TOMLConfigFile := dir + fmt.Sprintf("/%s", tomlFilename)         //settings for .tfswitch.toml file in current directory (option to specify bin directory)
 	HomeTOMLConfigFile := homedir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in home directory (option to specify bin directory)
+	TGHACLFile := dir + fmt.Sprintf("/%s", tgHclFilename)            //settings for terragrunt.hcl file in current directory (option to specify bin directory)
 
 	switch {
 	case *versionFlag:
@@ -143,6 +146,9 @@ func main() {
 			tfversion := os.Getenv("TF_VERSION")
 			fmt.Printf("Terraform version environment variable: %s\n", tfversion)
 			installVersion(tfversion, custBinPath)
+		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
+		case fileExists(TGHACLFile) && len(args) == 0:
+			installTGHclFile(&TGHACLFile, &binPath)
 		// if no arg is provided - but toml file is provided
 		case version != "":
 			installVersion(version, &binPath)
@@ -188,6 +194,10 @@ func main() {
 	/* if versions.tf file found */
 	case checkTFModuleFileExist(dir) && len(args) == 0:
 		installTFProvidedModule(dir, custBinPath)
+
+	/* if terragrunt.hcl file found */
+	case fileExists(TGHACLFile) && len(args) == 0:
+		installTGHclFile(&TGHACLFile, custBinPath)
 
 	/* if Terraform Version environment variable is set */
 	case checkTFEnvExist() && len(args) == 0:
@@ -373,14 +383,20 @@ func installOption(listAll bool, custBinPath *string) {
 
 // install when tf file is provided
 func installTFProvidedModule(dir string, custBinPath *string) {
-	tfversion := ""
+	fmt.Printf("Reading required version from terraform file")
 	module, _ := tfconfig.LoadModule(dir)
-	tfconstraint := module.RequiredCore[0]        //we skip duplicated definitions and use only first one
+	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
+	installFromConstraint(&tfconstraint, custBinPath)
+}
+
+// install using a version constraint
+func installFromConstraint(tfconstraint *string, custBinPath *string) {
+	tfversion := ""
 	listAll := true                               //set list all true - all versions including beta and rc will be displayed
 	tflist, _ := lib.GetTFList(hashiURL, listAll) //get list of versions
-	fmt.Printf("Reading required version from terraform file, constraint: %s\n", tfconstraint)
+	fmt.Printf("Reading required version from constraint: %s\n", *tfconstraint)
 
-	constrains, err := semver.NewConstraint(tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
+	constrains, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
 		fmt.Printf("Error parsing constraint: %s\nPlease check constrain syntax on terraform file.\n", err)
 		fmt.Println()
@@ -409,6 +425,26 @@ func installTFProvidedModule(dir string, custBinPath *string) {
 				printInvalidTFVersion()
 				os.Exit(1)
 			}
+		}
+	}
+
+	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
+	os.Exit(1)
+}
+
+// Install using version constraint from terragrunt file
+func installTGHclFile(tgFile *string, custBinPath *string) {
+	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
+	content := retrieveFileContents(*tgFile)
+	var constraint = ""
+
+	for _, line := range strings.Split(content, "\n") {
+		regex, _ := regexp.Compile(`^terraform_version_constraint\s+=\s+"(?P<version>.*)".*`)
+
+		if regex.MatchString(line) {
+			res := regex.FindStringSubmatch(line)
+			constraint = res[1]
+			installFromConstraint(&constraint, custBinPath)
 		}
 	}
 
