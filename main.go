@@ -436,11 +436,10 @@ func installFromConstraint(tfconstraint *string, custBinPath *string) {
 func installTGHclFile(tgFile *string, custBinPath *string) {
 	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
 	content := retrieveFileContents(*tgFile)
+	regex, _ := regexp.Compile(`^terraform_version_constraint\s+=\s+"(?P<version>.*)".*`)
 	var constraint = ""
 
 	for _, line := range strings.Split(content, "\n") {
-		regex, _ := regexp.Compile(`^terraform_version_constraint\s+=\s+"(?P<version>.*)".*`)
-
 		if regex.MatchString(line) {
 			res := regex.FindStringSubmatch(line)
 			constraint = res[1]
