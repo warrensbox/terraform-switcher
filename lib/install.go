@@ -91,6 +91,11 @@ func Install(tfversion string, binPath string) {
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
 
+	// TODO: Workaround for macos arm64 since terraform doesn't have a binary for it yet
+	if goos == "darwin" && goarch == "arm64" {
+		goarch = "amd64"
+	}
+
 	/* check if selected version already downloaded */
 	fileExist := CheckFileExist(installLocation + installVersion + tfversion)
 
