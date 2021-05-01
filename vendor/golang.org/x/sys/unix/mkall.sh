@@ -72,12 +72,12 @@ darwin_amd64)
 	;;
 darwin_arm)
 	mkerrors="$mkerrors"
-	mksysnum="./mksysnum_darwin.pl $(xcrun --show-sdk-path --sdk iphoneos)/usr/include/sys/syscall.h"
+	mksysnum="./mksysnum_darwin.pl $(xcrun --show-sdk-path --sdk macosx)/usr/include/sys/syscall.h"
 	mktypes="GOARCH=$GOARCH go tool cgo -godefs"
 	;;
 darwin_arm64)
 	mkerrors="$mkerrors -m64"
-	mksysnum="./mksysnum_darwin.pl $(xcrun --show-sdk-path --sdk iphoneos)/usr/include/sys/syscall.h"
+	mksysnum="./mksysnum_darwin.pl $(xcrun --show-sdk-path --sdk macosx)/usr/include/sys/syscall.h"
 	mktypes="GOARCH=$GOARCH go tool cgo -godefs"
 	;;
 dragonfly_amd64)
