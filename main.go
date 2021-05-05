@@ -254,6 +254,7 @@ func installVersion(arg string, custBinPath *string) {
 		printInvalidTFVersion()
 		fmt.Println("Args must be a valid terraform version")
 		usageMessage()
+		os.Exit(1)
 	}
 }
 
