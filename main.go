@@ -22,13 +22,14 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"regexp"
 	"sort"
 	"strings"
 
 	// original hashicorp upstream have broken dependencies, so using fork as workaround
 	// TODO: move back to upstream
 	"github.com/Masterminds/semver"
+	"github.com/hashicorp/hcl2/gohcl"
+	"github.com/hashicorp/hcl2/hclparse"
 	"github.com/kiranjthomas/terraform-config-inspect/tfconfig"
 	"github.com/mitchellh/go-homedir"
 
@@ -436,18 +437,17 @@ func installFromConstraint(tfconstraint *string, custBinPath *string) {
 // Install using version constraint from terragrunt file
 func installTGHclFile(tgFile *string, custBinPath *string) {
 	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
-	content := retrieveFileContents(*tgFile)
-	regex, _ := regexp.Compile(`^terraform_version_constraint\s+=\s+"(?P<version>.*)".*`)
-	var constraint = ""
-
-	for _, line := range strings.Split(content, "\n") {
-		if regex.MatchString(line) {
-			res := regex.FindStringSubmatch(line)
-			constraint = res[1]
-			installFromConstraint(&constraint, custBinPath)
-		}
+	parser := hclparse.NewParser()
+	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
+	if diags.HasErrors() {
+		fmt.Println("Unable to parse HCL file")
+		os.Exit(1)
 	}
+	var version terragruntVersionConstraints
+	gohcl.DecodeBody(file.Body, nil, &version)
+	installFromConstraint(&version.TerraformVersionConstraint, custBinPath)
+}
 
-	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
-	os.Exit(1)
+type terragruntVersionConstraints struct {
+	TerraformVersionConstraint string `hcl:"terraform_version_constraint"`
 }
