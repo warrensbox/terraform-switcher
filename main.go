@@ -1,7 +1,7 @@
 package main
 
 /*
-* Version 0.6.0
+* Version 0.12.0
 * Compatible with Mac OS X AND other LINUX OS ONLY
  */
 
@@ -52,7 +52,7 @@ const (
 	tgHclFilename = "terragrunt.hcl"
 )
 
-var version = "0.11.0\n"
+var version = "0.12.0\n"
 
 func main() {
 	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. Ex: /Users/username/bin/terraform")
