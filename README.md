@@ -139,7 +139,7 @@ version = "0.11.3"
 #### *Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
 
 ### Use terragrunt.hcl file
-If a terragrunt.hcl file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the lastest version:     
+If a terragrunt.hcl file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the lastest version 0.13:     
 ```ruby
 terragrunt_version_constraint = ">= 0.26, < 0.27"
 terraform_version_constraint  = ">= 0.13, < 0.14"
