@@ -1,7 +1,7 @@
 package main
 
 /*
-* Version 0.6.0
+* Version 0.12.0
 * Compatible with Mac OS X AND other LINUX OS ONLY
  */
 
@@ -28,6 +28,8 @@ import (
 	// original hashicorp upstream have broken dependencies, so using fork as workaround
 	// TODO: move back to upstream
 	"github.com/Masterminds/semver"
+	"github.com/hashicorp/hcl2/gohcl"
+	"github.com/hashicorp/hcl2/hclparse"
 	"github.com/kiranjthomas/terraform-config-inspect/tfconfig"
 	"github.com/mitchellh/go-homedir"
 
@@ -47,15 +49,16 @@ const (
 	tfvFilename   = ".terraform-version"
 	rcFilename    = ".tfswitchrc"
 	tomlFilename  = ".tfswitch.toml"
+	tgHclFilename = "terragrunt.hcl"
 )
 
-var version = "0.11.0\n"
+var version = "0.12.0\n"
 
 func main() {
 	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. Ex: /Users/username/bin/terraform")
 	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
 	latestPre := getopt.StringLong("latest-pre", 'p', defaultLatest, "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
-	latestStable := getopt.StringLong("latest-stable", 's', defaultLatest, "Latest implicit version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest)")
+	latestStable := getopt.StringLong("latest-stable", 's', defaultLatest, "Latest implicit version. Ex: tfswitch --latest-stable 0.13 downloads 0.13.7 (latest)")
 	latestFlag := getopt.BoolLong("latest", 'u', "Get latest stable version")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
@@ -80,6 +83,7 @@ func main() {
 	RCFile := dir + fmt.Sprintf("/%s", rcFilename)                   //settings for .tfswitchrc file in current directory (backward compatible purpose)
 	TOMLConfigFile := dir + fmt.Sprintf("/%s", tomlFilename)         //settings for .tfswitch.toml file in current directory (option to specify bin directory)
 	HomeTOMLConfigFile := homedir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in home directory (option to specify bin directory)
+	TGHACLFile := dir + fmt.Sprintf("/%s", tgHclFilename)            //settings for terragrunt.hcl file in current directory (option to specify bin directory)
 
 	switch {
 	case *versionFlag:
@@ -143,6 +147,9 @@ func main() {
 			tfversion := os.Getenv("TF_VERSION")
 			fmt.Printf("Terraform version environment variable: %s\n", tfversion)
 			installVersion(tfversion, custBinPath)
+		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
+		case fileExists(TGHACLFile) && len(args) == 0:
+			installTGHclFile(&TGHACLFile, &binPath)
 		// if no arg is provided - but toml file is provided
 		case version != "":
 			installVersion(version, &binPath)
@@ -188,6 +195,10 @@ func main() {
 	/* if versions.tf file found */
 	case checkTFModuleFileExist(dir) && len(args) == 0:
 		installTFProvidedModule(dir, custBinPath)
+
+	/* if terragrunt.hcl file found */
+	case fileExists(TGHACLFile) && len(args) == 0:
+		installTGHclFile(&TGHACLFile, custBinPath)
 
 	/* if Terraform Version environment variable is set */
 	case checkTFEnvExist() && len(args) == 0:
@@ -238,12 +249,14 @@ func installVersion(arg string, custBinPath *string) {
 			lib.Install(requestedVersion, *custBinPath)
 		} else {
 			fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
+			os.Exit(1)
 		}
 
 	} else {
 		printInvalidTFVersion()
 		fmt.Println("Args must be a valid terraform version")
 		usageMessage()
+		os.Exit(1)
 	}
 }
 
@@ -373,14 +386,20 @@ func installOption(listAll bool, custBinPath *string) {
 
 // install when tf file is provided
 func installTFProvidedModule(dir string, custBinPath *string) {
-	tfversion := ""
+	fmt.Printf("Reading required version from terraform file")
 	module, _ := tfconfig.LoadModule(dir)
-	tfconstraint := module.RequiredCore[0]        //we skip duplicated definitions and use only first one
+	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
+	installFromConstraint(&tfconstraint, custBinPath)
+}
+
+// install using a version constraint
+func installFromConstraint(tfconstraint *string, custBinPath *string) {
+	tfversion := ""
 	listAll := true                               //set list all true - all versions including beta and rc will be displayed
 	tflist, _ := lib.GetTFList(hashiURL, listAll) //get list of versions
-	fmt.Printf("Reading required version from terraform file, constraint: %s\n", tfconstraint)
+	fmt.Printf("Reading required version from constraint: %s\n", *tfconstraint)
 
-	constrains, err := semver.NewConstraint(tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
+	constrains, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
 		fmt.Printf("Error parsing constraint: %s\nPlease check constrain syntax on terraform file.\n", err)
 		fmt.Println()
@@ -414,4 +433,22 @@ func installTFProvidedModule(dir string, custBinPath *string) {
 
 	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
 	os.Exit(1)
+}
+
+// Install using version constraint from terragrunt file
+func installTGHclFile(tgFile *string, custBinPath *string) {
+	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
+	parser := hclparse.NewParser()
+	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
+	if diags.HasErrors() {
+		fmt.Println("Unable to parse HCL file")
+		os.Exit(1)
+	}
+	var version terragruntVersionConstraints
+	gohcl.DecodeBody(file.Body, nil, &version)
+	installFromConstraint(&version.TerraformVersionConstraint, custBinPath)
+}
+
+type terragruntVersionConstraints struct {
+	TerraformVersionConstraint string `hcl:"terraform_version_constraint"`
 }
