@@ -341,6 +341,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#use-terragrunthcl-file" class="md-nav__link">
+    Use terragrunt.hcl file
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -515,6 +522,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#use-terragrunthcl-file" class="md-nav__link">
+    Use terragrunt.hcl file
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -623,6 +637,12 @@ version = &quot;0.11.3&quot;
 <li>Run the command <code>tfswitch</code> in the same directory as your <code>.tfswitchrc</code></li>
 </ol>
 <p><em>Instead of a <code>.tfswitchrc</code> file, a <code>.terraform-version</code> file may be used for compatibility with <a href="https://github.com/tfutils/tfenv#terraform-version-file"><code>tfenv</code></a> and other tools which use it</em></p>
+<h3 id="use-terragrunthcl-file">Use terragrunt.hcl file</h3>
+<p>If a terragrunt.hcl file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the lastest version 0.13:     </p>
+<pre><code class="language-ruby">terragrunt_version_constraint = &quot;&gt;= 0.26, &lt; 0.27&quot;
+terraform_version_constraint  = &quot;&gt;= 0.13, &lt; 0.14&quot;
+...
+</code></pre>
 <p><strong>Automatically switch with bash</strong></p>
 <p>Add the following to the end of your <code>~/.bashrc</code> file:
 (Use either <code>.tfswitchrc</code> or <code>.tfswitch.toml</code> or <code>.terraform-version</code>)</p>
