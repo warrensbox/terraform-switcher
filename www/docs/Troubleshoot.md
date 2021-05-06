@@ -40,6 +40,10 @@ export PATH=$PATH:$HOME/.bin #Export your .bin into your path
 
 `tfswitch -b $HOME/.bin/terraform`
 
+#You can now set an alias in your `.bash_profile` to avoid typing the binary path everytime.
+
+`alias tfswitch="tfswitch -b $HOME/.local/bin/terraform"`
+
 
 ```
 
