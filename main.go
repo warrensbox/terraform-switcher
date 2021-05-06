@@ -249,6 +249,7 @@ func installVersion(arg string, custBinPath *string) {
 			lib.Install(requestedVersion, *custBinPath)
 		} else {
 			fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
+			os.Exit(1)
 		}
 
 	} else {
