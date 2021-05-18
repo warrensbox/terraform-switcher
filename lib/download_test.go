@@ -16,7 +16,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installVersion := "terraform_"
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 	macOS := "_darwin_amd64.zip"
 
 	// get current user
@@ -91,7 +91,7 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installFile := "terraform"
 	installVersion := "terraform_"
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 	macOS := "_darwin_amd64.zip"
 
 	// get current user
@@ -165,7 +165,7 @@ func TestInvalidURL(t *testing.T) {
 
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installVersion := "terraform_"
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 	macOS := "_darwin_amd64.zip"
 	invalidVersion := "0.11.7-nonexistent"
 
@@ -189,7 +189,7 @@ func TestInvalidURL(t *testing.T) {
 	}
 
 	url := hashiURL + invalidVersion + "/" + installVersion + invalidVersion + macOS
-	//expectedFile := usr.HomeDir + installPath + installVersion + invalidVersion + macOS
+	//expectedFile := usr.HomeDir + globalInstallPath + installVersion + invalidVersion + macOS
 	_, errDownload := lib.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {

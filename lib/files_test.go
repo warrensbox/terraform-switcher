@@ -22,9 +22,9 @@ import (
 // rename file, check new filename exit
 func TestRenameFile(t *testing.T) {
 
-	installFile := "terraform"
+	installFile := getInstallFile("terraform")
 	installVersion := "terraform_"
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 	version := "0.0.7"
 
 	usr, errCurr := user.Current()
@@ -68,7 +68,7 @@ func TestRenameFile(t *testing.T) {
 func TestRemoveFiles(t *testing.T) {
 
 	installFile := "terraform"
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
@@ -103,7 +103,7 @@ func TestRemoveFiles(t *testing.T) {
 // remove file, check file does not exist
 func TestUnzip(t *testing.T) {
 
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 	absPath, _ := filepath.Abs("../test-data/test-data.zip")
 
 	fmt.Println(absPath)
@@ -139,7 +139,7 @@ func TestUnzip(t *testing.T) {
 // TestCreateDirIfNotExist : Create a directory, check directory exist
 func TestCreateDirIfNotExist(t *testing.T) {
 
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
@@ -172,7 +172,7 @@ func TestCreateDirIfNotExist(t *testing.T) {
 //TestWriteLines : write to file, check readline to verify
 func TestWriteLines(t *testing.T) {
 
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 	recentFile := "RECENT"
 	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
 	//semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
@@ -181,13 +181,15 @@ func TestWriteLines(t *testing.T) {
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
+
 	installLocation := usr.HomeDir + installPath
+	recentFile = installLocation + recentFile
 
 	createDirIfNotExist(installLocation)
 
-	test_array := []string{"0.1.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
+	versionsList := []string{"0.1.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
 
-	errWrite := lib.WriteLines(test_array, installLocation+recentFile)
+	errWrite := lib.WriteLines(versionsList, recentFile)
 
 	if errWrite != nil {
 		t.Logf("Write should work %v (unexpected)", errWrite)
@@ -201,13 +203,16 @@ func TestWriteLines(t *testing.T) {
 			errOpen, errRead error
 			lines            []string
 		)
-		if file, errOpen = os.Open(installLocation + recentFile); errOpen != nil {
+
+		if file, errOpen = os.Open(recentFile); errOpen != nil {
 			log.Fatal(errOpen)
 		}
+
 		defer file.Close()
 
 		reader := bufio.NewReader(file)
 		buffer := bytes.NewBuffer(make([]byte, 0))
+
 		for {
 			if part, prefix, errRead = reader.ReadLine(); errRead != nil {
 				break
@@ -242,7 +247,7 @@ func TestWriteLines(t *testing.T) {
 
 // TestReadLines : read from file, check write to verify
 func TestReadLines(t *testing.T) {
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 	recentFile := "RECENT"
 	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
 
@@ -250,23 +255,26 @@ func TestReadLines(t *testing.T) {
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
+
 	installLocation := usr.HomeDir + installPath
+	recentFileLocation := installLocation + recentFile
 
 	createDirIfNotExist(installLocation)
 
-	test_array := []string{"0.0.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
+	versionsList := []string{"0.0.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
 
 	var (
 		file      *os.File
 		errCreate error
 	)
 
-	if file, errCreate = os.Create(installLocation + recentFile); errCreate != nil {
+	if file, errCreate = os.Create(recentFileLocation); errCreate != nil {
 		log.Fatalf("Error: %s\n", errCreate)
 	}
+
 	defer file.Close()
 
-	for _, item := range test_array {
+	for _, item := range versionsList {
 		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
 		if err != nil {
 			log.Fatalf("Error: %s\n", err)
@@ -274,7 +282,7 @@ func TestReadLines(t *testing.T) {
 		}
 	}
 
-	lines, errRead := lib.ReadLines(installLocation + recentFile)
+	lines, errRead := lib.ReadLines(recentFileLocation)
 
 	if errRead != nil {
 		log.Fatalf("Error: %s\n", errRead)
@@ -298,7 +306,7 @@ func TestIsDirEmpty(t *testing.T) {
 
 	current := time.Now()
 
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
@@ -306,16 +314,16 @@ func TestIsDirEmpty(t *testing.T) {
 	}
 	installLocation := usr.HomeDir + installPath
 
-	test_dir := current.Format("2006-01-02")
-	t.Logf("Create test dir: %v \n", test_dir)
+	testDir := current.Format("2006-01-02")
+	t.Logf("Create test dir: %v \n", testDir)
 
 	createDirIfNotExist(installLocation)
 
-	createDirIfNotExist(installLocation + "/" + test_dir)
+	createDirIfNotExist(installLocation + "/" + testDir)
 
-	empty := lib.IsDirEmpty(installLocation + "/" + test_dir)
+	empty := lib.IsDirEmpty(installLocation + "/" + testDir)
 
-	t.Logf("Expected directory to be empty %v [expected]", installLocation+"/"+test_dir)
+	t.Logf("Expected directory to be empty %v [expected]", installLocation+"/"+testDir)
 
 	if empty == true {
 		t.Logf("Directory empty")
@@ -323,7 +331,7 @@ func TestIsDirEmpty(t *testing.T) {
 		t.Error("Directory not empty")
 	}
 
-	cleanUp(installLocation + "/" + test_dir)
+	cleanUp(installLocation + "/" + testDir)
 
 	cleanUp(installLocation)
 
@@ -334,7 +342,7 @@ func TestCheckDirHasTFBin(t *testing.T) {
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
-	installPath := "/.terraform.versions_test/"
+	installPath := getInstallLocation(".terraform.versions_test")
 	installFile := "terraform"
 
 	usr, errCurr := user.Current()
@@ -363,7 +371,7 @@ func TestCheckDirHasTFBin(t *testing.T) {
 // TestPath : create file in directory, check if path exist
 func TestPath(t *testing.T) {
 
-	installPath := "/.terraform.versions_test"
+	installPath := getInstallLocation(".terraform.versions_test")
 	installFile := "terraform"
 
 	usr, errCurr := user.Current()
@@ -374,9 +382,9 @@ func TestPath(t *testing.T) {
 
 	createDirIfNotExist(installLocation)
 
-	createFile(installLocation + "/" + installFile)
+	createFile(installLocation + string(os.PathSeparator) + installFile)
 
-	path := lib.Path(installLocation + "/" + installFile)
+	path := lib.Path(installLocation + string(os.PathSeparator) + installFile)
 
 	t.Logf("Path created %s\n", installLocation+installFile)
 	t.Logf("Path expected %s\n", installLocation)

@@ -51,11 +51,7 @@ func initialize() {
 
 // get install path variable value  (windows os runtime support)
 func getInstallPath() string {
-	if runtime.GOOS == "windows" {
-		return "\\" + installPath + "\\"
-	}
-
-	return "/" + installPath + "/"
+	return string(os.PathSeparator) + installPath + string(os.PathSeparator)
 }
 
 // get versioned install filename (windows os runtime support)
