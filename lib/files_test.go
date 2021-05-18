@@ -382,9 +382,9 @@ func TestPath(t *testing.T) {
 
 	createDirIfNotExist(installLocation)
 
-	createFile(installLocation + string(os.PathSeparator) + installFile)
+	createFile(installLocation + installFile)
 
-	path := lib.Path(installLocation + string(os.PathSeparator) + installFile)
+	path := lib.Path(installLocation + installFile)
 
 	t.Logf("Path created %s\n", installLocation+installFile)
 	t.Logf("Path expected %s\n", installLocation)
