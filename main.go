@@ -278,7 +278,7 @@ func retrieveFileContents(file string) string {
 		fmt.Printf("Error: %s\n", err)
 		os.Exit(1)
 	}
-	tfversion := strings.TrimSuffix(string(fileContents), "\n")
+	tfversion := strings.TrimSpace(string(fileContents))
 	return tfversion
 }
 
