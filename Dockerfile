@@ -8,4 +8,4 @@ RUN CGO_ENABLED=1 GOOS=linux go build && mv terraform-switcher /usr/local/bin/tf
 
 # IF tfswitch command does not work, the buid will exit with non-zero and CI will stop
 FROM build as test
-RUN tfswitch
+RUN tfswitch -v
