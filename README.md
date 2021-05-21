@@ -217,6 +217,11 @@ function switch_terraform --on-event fish_postexec
 end
 ```
 
+### Dockerhub
+
+The repo in Dockerhub is setup with automated builds on mastr branch and tags:
+https://docs.docker.com/docker-hub/builds/
+
 ### Jenkins setup
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 170px;"/>
 
