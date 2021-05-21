@@ -33,3 +33,4 @@ tfswitch*
 
 build-script.sh
 
+!hooks/*
