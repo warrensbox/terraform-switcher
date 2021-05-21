@@ -1,0 +1,6 @@
+#!/bin/bash
+# https://docs.docker.com/docker-hub/builds/advanced/
+docker tag $IMAGE_NAME $DOCKER_REPO:$SOURCE_COMMIT
+docker push $DOCKER_REPO:$SOURCE_COMMIT
+docker tag $IMAGE_NAME $DOCKER_REPO:latest
+docker push $DOCKER_REPO:latest
