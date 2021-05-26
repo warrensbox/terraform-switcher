@@ -1,3 +1,4 @@
+#!/bin/bash
 # https://docs.docker.com/docker-hub/builds/advanced/
 docker tag $IMAGE_NAME $DOCKER_REPO:master
 docker push $DOCKER_REPO:master
