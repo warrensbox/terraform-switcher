@@ -1,3 +1,0 @@
-#!/bin/bash
-# https://docs.docker.com/docker-hub/builds/advanced/
-docker build --build-args SOURCE_COMMIT=$SOURCE_COMMIT -t $DOCKER_REPO:$DOCKER_TAG
