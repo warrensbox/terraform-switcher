@@ -9,6 +9,10 @@ os:
 go:
   - "1.16"
 
+addons:
+  choco:
+    - make
+
 script:
   - make test
   - make clean
