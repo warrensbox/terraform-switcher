@@ -1,11 +1,6 @@
 language: go
 install: true
 
-os: 
-  - linux
-  - osx
-  - windows
-
 go:
   - "1.16"
 
