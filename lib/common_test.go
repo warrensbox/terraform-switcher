@@ -51,7 +51,6 @@ func cleanUp(path string) {
 func removeFiles(src string) {
 	files, err := filepath.Glob(src)
 	if err != nil {
-
 		panic(err)
 	}
 	for _, f := range files {

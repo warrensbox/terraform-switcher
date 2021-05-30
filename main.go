@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -55,7 +56,7 @@ const (
 var version = "0.12.0\n"
 
 func main() {
-	custBinPath := getopt.StringLong("bin", 'b', defaultBin, "Custom binary path. Ex: /Users/username/bin/terraform")
+	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
 	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
 	latestPre := getopt.StringLong("latest-pre", 'p', defaultLatest, "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
 	latestStable := getopt.StringLong("latest-stable", 's', defaultLatest, "Latest implicit version. Ex: tfswitch --latest-stable 0.13 downloads 0.13.7 (latest)")
@@ -79,11 +80,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	TFVersionFile := dir + fmt.Sprintf("/%s", tfvFilename)           //settings for .terraform-version file in current directory (tfenv compatible)
-	RCFile := dir + fmt.Sprintf("/%s", rcFilename)                   //settings for .tfswitchrc file in current directory (backward compatible purpose)
-	TOMLConfigFile := dir + fmt.Sprintf("/%s", tomlFilename)         //settings for .tfswitch.toml file in current directory (option to specify bin directory)
-	HomeTOMLConfigFile := homedir + fmt.Sprintf("/%s", tomlFilename) //settings for .tfswitch.toml file in home directory (option to specify bin directory)
-	TGHACLFile := dir + fmt.Sprintf("/%s", tgHclFilename)            //settings for terragrunt.hcl file in current directory (option to specify bin directory)
+	TFVersionFile := filepath.Join(dir, tfvFilename)           //settings for .terraform-version file in current directory (tfenv compatible)
+	RCFile := filepath.Join(dir, rcFilename)                   //settings for .tfswitchrc file in current directory (backward compatible purpose)
+	TOMLConfigFile := filepath.Join(dir, tomlFilename)         //settings for .tfswitch.toml file in current directory (option to specify bin directory)
+	HomeTOMLConfigFile := filepath.Join(homedir, tomlFilename) //settings for .tfswitch.toml file in home directory (option to specify bin directory)
+	TGHACLFile := filepath.Join(dir, tgHclFilename)            //settings for terragrunt.hcl file in current directory (option to specify bin directory)
 
 	switch {
 	case *versionFlag:
@@ -100,7 +101,6 @@ func main() {
 	 * If you provide a version on the command line, this will override the version value in the toml file
 	 */
 	case fileExists(TOMLConfigFile) || fileExists(HomeTOMLConfigFile):
-
 		version := ""
 		binPath := *custBinPath
 		if fileExists(TOMLConfigFile) { //read from toml from current directory
@@ -337,8 +337,9 @@ func getParamsTOML(binPath string, dir string) (string, string) {
 		os.Exit(1) // exit immediately if config file provided but it is unable to read it
 	}
 
-	bin := viper.Get("bin")                  // read custom binary location
-	if binPath == defaultBin && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
+	bin := viper.Get("bin") // read custom binary location
+
+	if binPath == lib.ConvertExecutableExt(defaultBin) && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
 		binPath = os.ExpandEnv(bin.(string))
 	}
 	//fmt.Println(binPath) //uncomment this to debug
@@ -360,7 +361,6 @@ func usageMessage() {
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
 func installOption(listAll bool, custBinPath *string) {
-
 	tflist, _ := lib.GetTFList(hashiURL, listAll) //get list of versions
 	recentVersions, _ := lib.GetRecentVersions()  //get recent versions from RECENT file
 	tflist = append(recentVersions, tflist...)    //append recent versions to the top of the list

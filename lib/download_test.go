@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"os/user"
+	"path/filepath"
 	"testing"
 
 	lib "github.com/warrensbox/terraform-switcher/lib"
@@ -26,7 +27,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	}
 
 	fmt.Printf("Current user: %v \n", usr.HomeDir)
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
@@ -42,7 +43,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	lowestVersion := "0.1.0"
 
 	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
-	expectedFile := usr.HomeDir + installPath + installVersion + lowestVersion + macOS
+	expectedFile := filepath.Join(usr.HomeDir, installPath, installVersion+lowestVersion+macOS)
 	installedFile, errDownload := lib.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
@@ -64,7 +65,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	latestVersion := "0.11.7"
 
 	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
-	expectedFile = usr.HomeDir + installPath + installVersion + latestVersion + macOS
+	expectedFile = filepath.Join(usr.HomeDir, installPath, installVersion+latestVersion+macOS)
 	installedFile, errDownload = lib.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
@@ -101,7 +102,7 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 	}
 
 	fmt.Printf("Current user: %v \n", usr.HomeDir)
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
@@ -117,7 +118,7 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 	lowestVersion := "0.1.0"
 
 	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
-	expectedFile := usr.HomeDir + installPath + installVersion + lowestVersion + macOS
+	expectedFile := filepath.Join(usr.HomeDir, installPath, installVersion+lowestVersion+macOS)
 	installedFile, errDownload := lib.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
@@ -139,7 +140,7 @@ func TestDownloadFromURL_FileExist(t *testing.T) {
 	latestVersion := "0.11.7"
 
 	url = hashiURL + latestVersion + "/" + installVersion + latestVersion + macOS
-	expectedFile = usr.HomeDir + installPath + installVersion + latestVersion + macOS
+	expectedFile = filepath.Join(usr.HomeDir, installPath, installVersion+latestVersion+macOS)
 	installFile, errDownload = lib.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
@@ -176,7 +177,7 @@ func TestInvalidURL(t *testing.T) {
 	}
 
 	fmt.Printf("Current user: %v \n", usr.HomeDir)
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
@@ -189,7 +190,7 @@ func TestInvalidURL(t *testing.T) {
 	}
 
 	url := hashiURL + invalidVersion + "/" + installVersion + invalidVersion + macOS
-	//expectedFile := usr.HomeDir + installPath + installVersion + invalidVersion + macOS
+	//expectedFile :=filepath.Join(usr.HomeDir , installPath, nstallVersion + invalidVersion + macOS)
 	_, errDownload := lib.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
