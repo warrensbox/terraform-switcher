@@ -13,4 +13,4 @@ COPY --from=build /go/bin/tfswitch /usr/bin/tfswitch
 # Since the Terraform binary is less than 100b, it has a minimal effect on final image size
 # tfstich -v: this is not a good test and it does not actually check functionality 
 RUN tfswitch -u
-
+ENTRYPOINT [ "tfswitch" ]
