@@ -48,6 +48,5 @@ jobs:
                 ;;
             esac
       script:
-        - echo $SHELL
-        - make test
-        - make clean
+        - $MAKE test
+        - $MAKE clean
