@@ -195,7 +195,6 @@ func TestWriteLines(t *testing.T) {
 		t.Logf("Write should work %v (unexpected)", errWrite)
 		log.Fatal(errWrite)
 	} else {
-
 		var (
 			file             *os.File
 			part             []byte
