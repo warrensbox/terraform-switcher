@@ -337,8 +337,7 @@ func getParamsTOML(binPath string, dir string) (string, string) {
 		os.Exit(1) // exit immediately if config file provided but it is unable to read it
 	}
 
-	bin := viper.Get("bin") // read custom binary location
-
+	bin := viper.Get("bin")                                            // read custom binary location
 	if binPath == lib.ConvertExecutableExt(defaultBin) && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
 		binPath = os.ExpandEnv(bin.(string))
 	}
