@@ -190,7 +190,7 @@ func TestInvalidURL(t *testing.T) {
 	}
 
 	url := hashiURL + invalidVersion + "/" + installVersion + invalidVersion + macOS
-	//expectedFile :=filepath.Join(usr.HomeDir , installPath, nstallVersion + invalidVersion + macOS)
+	//expectedFile :=filepath.Join(usr.HomeDir, installPath, installVersion + invalidVersion + macOS)
 	_, errDownload := lib.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
