@@ -6,6 +6,7 @@ go:
 
 cache:
     directories:
+    - $HOME/go
     - $HOME/AppData/Local/Temp/chocolatey
     - /C/tools/msys64
 
