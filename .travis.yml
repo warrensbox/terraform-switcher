@@ -10,9 +10,8 @@ jobs:
         - linux
         - osx
       script:
-      - make test
-      - make clean
+        - make test
+        - make clean
     - os: windows
       script:
         - echo $SHELL
-
