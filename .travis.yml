@@ -9,10 +9,15 @@ os:
 go:
   - "1.16"
 
-addons:
-  choco:
-    - make
+jobs:
+  include:
+    - os:
+        - linux
+        - osx
+      script:
+      - make test
+      - make clean
+    - os: windows
+      script:
+        - echo $SHELL
 
-script:
-  - make test
-  - make clean
