@@ -4,23 +4,28 @@ install: true
 go:
   - "1.16"
 
-cache:
-    directories:
-    - $HOME/go
-    - $HOME/AppData/Local/Temp/chocolatey
-    - /C/tools/msys64
-
 jobs:
   include:
     - os: linux
+      cache:
+        directories:
+          - $HOME/go
       script:
         - make test
         - make clean
     - os: osx
+      cache:
+        directories:
+          - $HOME/go
       script:
         - make test
         - make clean
     - os: windows
+      cache:
+        directories:
+          - $HOME/go
+          - $HOME/AppData/Local/Temp/chocolatey
+          - /C/tools/msys64
       before_install:
         - |-
             case $TRAVIS_OS_NAME in
