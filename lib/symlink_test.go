@@ -1,5 +1,4 @@
-
-// +build !windows
+package lib_test
 
 import (
 	"log"
