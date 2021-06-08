@@ -20,6 +20,7 @@ src
 main
 build
 dist
+vendor
 
 .DS_Store
 
