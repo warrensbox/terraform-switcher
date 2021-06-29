@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -29,9 +30,10 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 		return "", fmt.Errorf("Unable to download from %s\nPlease download manually from https://releases.hashicorp.com/terraform/", url)
 	}
 
-	output, err := os.Create(installLocation + fileName)
+	zipFile := filepath.Join(installLocation, fileName)
+	output, err := os.Create(zipFile)
 	if err != nil {
-		fmt.Println("Error while creating", installLocation+fileName, "-", err)
+		fmt.Println("Error while creating", zipFile, "-", err)
 		return "", err
 	}
 	defer output.Close()
@@ -43,5 +45,5 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 	}
 
 	fmt.Println(n, "bytes downloaded.")
-	return installLocation + fileName, nil
+	return zipFile, nil
 }

@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"path/filepath"
 	"testing"
 
 	"github.com/warrensbox/terraform-switcher/lib"
@@ -21,8 +22,8 @@ func TestCreateSymlink(t *testing.T) {
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	symlinkPathSrc := usr.HomeDir + testSymlinkSrc
-	symlinkPathDest := usr.HomeDir + testSymlinkDest
+	symlinkPathSrc := filepath.Join(usr.HomeDir, testSymlinkSrc)
+	symlinkPathDest := filepath.Join(usr.HomeDir, testSymlinkDest)
 
 	ln, _ := os.Readlink(symlinkPathSrc)
 
@@ -59,8 +60,8 @@ func TestRemoveSymlink(t *testing.T) {
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	symlinkPathSrc := usr.HomeDir + testSymlinkSrc
-	symlinkPathDest := usr.HomeDir + testSymlinkDest
+	symlinkPathSrc := filepath.Join(usr.HomeDir, testSymlinkSrc)
+	symlinkPathDest := filepath.Join(usr.HomeDir, testSymlinkDest)
 
 	ln, _ := os.Readlink(symlinkPathSrc)
 
@@ -94,8 +95,8 @@ func TestCheckSymlink(t *testing.T) {
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	symlinkPathSrc := usr.HomeDir + testSymlinkSrc
-	symlinkPathDest := usr.HomeDir + testSymlinkDest
+	symlinkPathSrc := filepath.Join(usr.HomeDir, testSymlinkSrc)
+	symlinkPathDest := filepath.Join(usr.HomeDir, testSymlinkDest)
 
 	ln, _ := os.Readlink(symlinkPathSrc)
 
