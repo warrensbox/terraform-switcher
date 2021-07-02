@@ -71,6 +71,12 @@ The most recently selected versions are presented at the top of the dropdown.
 2. For example, `tfswitch 0.10.5` for version 0.10.5 of terraform.
 3. Hit **Enter** to switch.
 
+**NOTE** for windows host `tfswitch` need to be run under `Administrator` mode, and `$HOME/.tfswitch.toml` with `bin` must be defined (with a valid path) as minimum, below is an example for `$HOME/.tfswitch.toml` on windows
+
+```toml
+bin = "C:\\Users\\<%USRNAME%>\\bin\\terraform.exe"
+```
+
 ### See all versions including beta, alpha and release candidates(rc)
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v5.gif#1" alt="drawing" style="width: 370px;"/>
 

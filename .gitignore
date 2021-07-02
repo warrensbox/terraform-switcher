@@ -33,3 +33,6 @@ tfswitch*
 
 build-script.sh
 
+.idea
+
+/vendor
