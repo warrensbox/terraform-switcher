@@ -66,7 +66,7 @@ func getVersionedInstallFileName(tfversion string) string {
 // get install filename (windows os runtime support)
 func getInstallFileName() string {
 	if runtime.GOOS == "windows" {
-		return getInstallLocation() + installFile + ".exe"
+		return filepath.Join(getInstallLocation(), installFile + ".exe")
 	}
 
 	return installLocation + installFile
