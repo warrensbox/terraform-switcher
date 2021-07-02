@@ -21,8 +21,7 @@ import (
 // TestRenameFile : Create a file, check filename exist,
 // rename file, check new filename exit
 func TestRenameFile(t *testing.T) {
-
-	installFile := "terraform"
+	installFile := lib.ConvertExecutableExt("terraform")
 	installVersion := "terraform_"
 	installPath := "/.terraform.versions_test/"
 	version := "0.0.7"
@@ -31,33 +30,37 @@ func TestRenameFile(t *testing.T) {
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	createDirIfNotExist(installLocation)
 
-	createFile(installLocation + installFile)
+	installFilePath := filepath.Join(installLocation, installFile)
 
-	if exist := checkFileExist(installLocation + installFile); exist {
-		t.Logf("File exist %v", installLocation+installFile)
+	createFile(installFilePath)
+
+	if exist := checkFileExist(installFilePath); exist {
+		t.Logf("File exist %v", installFilePath)
 	} else {
-		t.Logf("File does not exist %v", installLocation+installFile)
+		t.Logf("File does not exist %v", installFilePath)
 		t.Error("Missing file")
 	}
 
-	lib.RenameFile(installLocation+installFile, installLocation+installVersion+version)
+	installVersionFilePath := lib.ConvertExecutableExt(filepath.Join(installLocation, installVersion+version))
 
-	if exist := checkFileExist(installLocation + installVersion + version); exist {
-		t.Logf("New file exist %v", installLocation+installVersion+version)
+	lib.RenameFile(installFilePath, installVersionFilePath)
+
+	if exist := checkFileExist(installVersionFilePath); exist {
+		t.Logf("New file exist %v", installVersionFilePath)
 	} else {
-		t.Logf("New file does not exist %v", installLocation+installVersion+version)
+		t.Logf("New file does not exist %v", installVersionFilePath)
 		t.Error("Missing new file")
 	}
 
-	if exist := checkFileExist(installLocation + installFile); exist {
-		t.Logf("Old file should not exist %v", installLocation+installFile)
+	if exist := checkFileExist(installFilePath); exist {
+		t.Logf("Old file should not exist %v", installFilePath)
 		t.Error("Did not rename file")
 	} else {
-		t.Logf("Old file does not exist %v", installLocation+installFile)
+		t.Logf("Old file does not exist %v", installFilePath)
 	}
 
 	cleanUp(installLocation)
@@ -66,34 +69,35 @@ func TestRenameFile(t *testing.T) {
 // TestRemoveFiles : Create a file, check file exist,
 // remove file, check file does not exist
 func TestRemoveFiles(t *testing.T) {
-
-	installFile := "terraform"
+	installFile := lib.ConvertExecutableExt("terraform")
 	installPath := "/.terraform.versions_test/"
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	createDirIfNotExist(installLocation)
 
-	createFile(installLocation + installFile)
+	installFilePath := filepath.Join(installLocation, installFile)
 
-	if exist := checkFileExist(installLocation + installFile); exist {
-		t.Logf("File exist %v", installLocation+installFile)
+	createFile(installFilePath)
+
+	if exist := checkFileExist(installFilePath); exist {
+		t.Logf("File exist %v", installFilePath)
 	} else {
-		t.Logf("File does not exist %v", installLocation+installFile)
+		t.Logf("File does not exist %v", installFilePath)
 		t.Error("Missing file")
 	}
 
-	lib.RemoveFiles(installLocation + installFile)
+	lib.RemoveFiles(installFilePath)
 
-	if exist := checkFileExist(installLocation + installFile); exist {
-		t.Logf("Old file should not exist %v", installLocation+installFile)
+	if exist := checkFileExist(installFilePath); exist {
+		t.Logf("Old file should not exist %v", installFilePath)
 		t.Error("Did not remove file")
 	} else {
-		t.Logf("Old file does not exist %v", installLocation+installFile)
+		t.Logf("Old file does not exist %v", installFilePath)
 	}
 
 	cleanUp(installLocation)
@@ -102,7 +106,6 @@ func TestRemoveFiles(t *testing.T) {
 // TestUnzip : Create a file, check file exist,
 // remove file, check file does not exist
 func TestUnzip(t *testing.T) {
-
 	installPath := "/.terraform.versions_test/"
 	absPath, _ := filepath.Abs("../test-data/test-data.zip")
 
@@ -112,7 +115,7 @@ func TestUnzip(t *testing.T) {
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	createDirIfNotExist(installLocation)
 
@@ -138,14 +141,13 @@ func TestUnzip(t *testing.T) {
 
 // TestCreateDirIfNotExist : Create a directory, check directory exist
 func TestCreateDirIfNotExist(t *testing.T) {
-
 	installPath := "/.terraform.versions_test/"
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	cleanUp(installLocation)
 
@@ -171,7 +173,6 @@ func TestCreateDirIfNotExist(t *testing.T) {
 
 //TestWriteLines : write to file, check readline to verify
 func TestWriteLines(t *testing.T) {
-
 	installPath := "/.terraform.versions_test/"
 	recentFile := "RECENT"
 	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
@@ -181,19 +182,19 @@ func TestWriteLines(t *testing.T) {
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	createDirIfNotExist(installLocation)
 
+	recentFilePath := filepath.Join(installLocation, recentFile)
 	test_array := []string{"0.1.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
 
-	errWrite := lib.WriteLines(test_array, installLocation+recentFile)
+	errWrite := lib.WriteLines(test_array, recentFilePath)
 
 	if errWrite != nil {
 		t.Logf("Write should work %v (unexpected)", errWrite)
 		log.Fatal(errWrite)
 	} else {
-
 		var (
 			file             *os.File
 			part             []byte
@@ -201,10 +202,9 @@ func TestWriteLines(t *testing.T) {
 			errOpen, errRead error
 			lines            []string
 		)
-		if file, errOpen = os.Open(installLocation + recentFile); errOpen != nil {
+		if file, errOpen = os.Open(recentFilePath); errOpen != nil {
 			log.Fatal(errOpen)
 		}
-		defer file.Close()
 
 		reader := bufio.NewReader(file)
 		buffer := bytes.NewBuffer(make([]byte, 0))
@@ -233,11 +233,11 @@ func TestWriteLines(t *testing.T) {
 			}
 		}
 
+		file.Close()
 		t.Log("Write versions exist (expected)")
 	}
 
 	cleanUp(installLocation)
-
 }
 
 // TestReadLines : read from file, check write to verify
@@ -250,10 +250,11 @@ func TestReadLines(t *testing.T) {
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	createDirIfNotExist(installLocation)
 
+	recentFilePath := filepath.Join(installLocation, recentFile)
 	test_array := []string{"0.0.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
 
 	var (
@@ -261,10 +262,9 @@ func TestReadLines(t *testing.T) {
 		errCreate error
 	)
 
-	if file, errCreate = os.Create(installLocation + recentFile); errCreate != nil {
+	if file, errCreate = os.Create(recentFilePath); errCreate != nil {
 		log.Fatalf("Error: %s\n", errCreate)
 	}
-	defer file.Close()
 
 	for _, item := range test_array {
 		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
@@ -274,7 +274,7 @@ func TestReadLines(t *testing.T) {
 		}
 	}
 
-	lines, errRead := lib.ReadLines(installLocation + recentFile)
+	lines, errRead := lib.ReadLines(recentFilePath)
 
 	if errRead != nil {
 		log.Fatalf("Error: %s\n", errRead)
@@ -287,15 +287,14 @@ func TestReadLines(t *testing.T) {
 		}
 	}
 
+	file.Close()
 	t.Log("Read versions exist (expected)")
 
 	cleanUp(installLocation)
-
 }
 
 // TestIsDirEmpty : create empty directory, check if empty
 func TestIsDirEmpty(t *testing.T) {
-
 	current := time.Now()
 
 	installPath := "/.terraform.versions_test/"
@@ -304,18 +303,19 @@ func TestIsDirEmpty(t *testing.T) {
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	test_dir := current.Format("2006-01-02")
+	test_dir_path := filepath.Join(installLocation, test_dir)
 	t.Logf("Create test dir: %v \n", test_dir)
 
 	createDirIfNotExist(installLocation)
 
-	createDirIfNotExist(installLocation + "/" + test_dir)
+	createDirIfNotExist(test_dir_path)
 
-	empty := lib.IsDirEmpty(installLocation + "/" + test_dir)
+	empty := lib.IsDirEmpty(test_dir_path)
 
-	t.Logf("Expected directory to be empty %v [expected]", installLocation+"/"+test_dir)
+	t.Logf("Expected directory to be empty %v [expected]", test_dir_path)
 
 	if empty == true {
 		t.Logf("Directory empty")
@@ -323,33 +323,31 @@ func TestIsDirEmpty(t *testing.T) {
 		t.Error("Directory not empty")
 	}
 
-	cleanUp(installLocation + "/" + test_dir)
-
+	cleanUp(test_dir_path)
 	cleanUp(installLocation)
-
 }
 
 // TestCheckDirHasTGBin : create tg file in directory, check if exist
 func TestCheckDirHasTFBin(t *testing.T) {
-
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
 	installPath := "/.terraform.versions_test/"
-	installFile := "terraform"
+	installFilePrefix := "terraform"
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	createDirIfNotExist(installLocation)
 
-	createFile(installLocation + installFile + "_" + goos + "_" + goarch)
+	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, installFilePrefix+"_"+goos+"_"+goarch))
+	createFile(installFileVersionPath)
 
-	empty := lib.CheckDirHasTGBin(installLocation, installFile)
+	empty := lib.CheckDirHasTGBin(installLocation, installFilePrefix)
 
-	t.Logf("Expected directory to have tf file %v [expected]", installLocation+installFile+"_"+goos+"_"+goarch)
+	t.Logf("Expected directory to have tf file %v [expected]", installFileVersionPath)
 
 	if empty == true {
 		t.Logf("Directory empty")
@@ -362,23 +360,23 @@ func TestCheckDirHasTFBin(t *testing.T) {
 
 // TestPath : create file in directory, check if path exist
 func TestPath(t *testing.T) {
-
 	installPath := "/.terraform.versions_test"
-	installFile := "terraform"
+	installFile := lib.ConvertExecutableExt("terraform")
 
 	usr, errCurr := user.Current()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := usr.HomeDir + installPath
+	installLocation := filepath.Join(usr.HomeDir, installPath)
 
 	createDirIfNotExist(installLocation)
 
-	createFile(installLocation + "/" + installFile)
+	installFilePath := filepath.Join(installLocation, installFile)
+	createFile(installFilePath)
 
-	path := lib.Path(installLocation + "/" + installFile)
+	path := lib.Path(installFilePath)
 
-	t.Logf("Path created %s\n", installLocation+installFile)
+	t.Logf("Path created %s\n", installFilePath)
 	t.Logf("Path expected %s\n", installLocation)
 	t.Logf("Path from library %s\n", path)
 	if path == installLocation {
@@ -391,7 +389,6 @@ func TestPath(t *testing.T) {
 }
 
 // TestGetFileName : remove file ext.  .tfswitch.config returns .tfswitch
-
 func TestGetFileName(t *testing.T) {
 
 	fileNameWithExt := "file.toml"
@@ -402,5 +399,57 @@ func TestGetFileName(t *testing.T) {
 		t.Logf("File removed extension (expected)")
 	} else {
 		t.Error("File did not remove extension (unexpected)")
+	}
+}
+
+// TestConvertExecutableExt : convert executable binary with extension
+func TestConvertExecutableExt(t *testing.T) {
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+
+	installPath := "/.terraform.versions_test/"
+	test_array := []string{
+		"terraform",
+		"terraform.exe",
+		filepath.Join(usr.HomeDir, installPath, "terraform"),
+		filepath.Join(usr.HomeDir, installPath, "terraform.exe"),
+	}
+
+	for _, fpath := range test_array {
+		fpathExt := lib.ConvertExecutableExt((fpath))
+		outputMsg := fpath + " converted to " + fpathExt + " on " + runtime.GOOS
+
+		switch runtime.GOOS {
+		case "windows":
+			if filepath.Ext(fpathExt) != ".exe" {
+				t.Error(outputMsg + " (unexpected)")
+				continue
+			}
+
+			if filepath.Ext(fpath) == ".exe" {
+				if fpathExt != fpath {
+					t.Error(outputMsg + " (unexpected)")
+				} else {
+					t.Logf(outputMsg + " (expected)")
+				}
+				continue
+			}
+
+			if fpathExt != fpath+".exe" {
+				t.Error(outputMsg + " (unexpected)")
+				continue
+			}
+
+			t.Logf(outputMsg + " (expected)")
+		default:
+			if fpath != fpathExt {
+				t.Error(outputMsg + " (unexpected)")
+				continue
+			}
+
+			t.Logf(outputMsg + " (expected)")
+		}
 	}
 }

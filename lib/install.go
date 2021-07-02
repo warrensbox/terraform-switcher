@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"path/filepath"
 	"runtime"
 )
 
@@ -82,7 +83,7 @@ func getInstallLocation() string {
 	}
 
 	/* set installation location */
-	installLocation = usr.HomeDir + getInstallPath()
+	installLocation = filepath.Join(usr.HomeDir, installPath)
 
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
@@ -120,7 +121,8 @@ func Install(tfversion string, binPath string) {
 	}
 
 	/* check if selected version already downloaded */
-	fileExist := CheckFileExist(getVersionedInstallFileName(tfversion))
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+tfversion))
+	fileExist := CheckFileExist(installFileVersionPath)
 
 	/* if selected version already exist, */
 	if fileExist {
@@ -133,7 +135,7 @@ func Install(tfversion string, binPath string) {
 		}
 
 		/* set symlink to desired version */
-		CreateSymlink(getVersionedInstallFileName(tfversion), binPath)
+		CreateSymlink(installFileVersionPath, binPath)
 		fmt.Printf("Switched terraform to version %q \n", tfversion)
 		AddRecent(tfversion) //add to recent file for faster lookup
 		os.Exit(0)
@@ -159,10 +161,11 @@ func Install(tfversion string, binPath string) {
 	}
 
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
-	RenameFile(getInstallFileName(), getVersionedInstallFileName(tfversion))
+	installFilePath := ConvertExecutableExt(filepath.Join(installLocation, installFile))
+	RenameFile(installFilePath, installFileVersionPath)
 
 	/* remove zipped file to clear clutter */
-	RemoveFiles(installLocation + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip")
+	RemoveFiles(zipFile)
 
 	/* remove current symlink if exist*/
 	symlinkExist := CheckSymlink(binPath)
@@ -172,7 +175,7 @@ func Install(tfversion string, binPath string) {
 	}
 
 	/* set symlink to desired version */
-	CreateSymlink(getVersionedInstallFileName(tfversion), binPath)
+	CreateSymlink(installFileVersionPath, binPath)
 	fmt.Printf("Switched terraform to version %q \n", tfversion)
 	AddRecent(tfversion) //add to recent file for faster lookup
 	os.Exit(0)
@@ -182,10 +185,11 @@ func Install(tfversion string, binPath string) {
 func AddRecent(requestedVersion string) {
 
 	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
+	versionFile := filepath.Join(installLocation, recentFile)
 
-	fileExist := CheckFileExist(installLocation + recentFile)
+	fileExist := CheckFileExist(versionFile)
 	if fileExist {
-		lines, errRead := ReadLines(installLocation + recentFile)
+		lines, errRead := ReadLines(versionFile)
 
 		if errRead != nil {
 			fmt.Printf("Error: %s\n", errRead)
@@ -195,7 +199,7 @@ func AddRecent(requestedVersion string) {
 		for _, line := range lines {
 			if !ValidVersionFormat(line) {
 				fmt.Println("File dirty. Recreating cache file.")
-				RemoveFiles(installLocation + recentFile)
+				RemoveFiles(versionFile)
 				CreateRecentFile(requestedVersion)
 				return
 			}
@@ -208,10 +212,10 @@ func AddRecent(requestedVersion string) {
 				_, lines = lines[len(lines)-1], lines[:len(lines)-1]
 
 				lines = append([]string{requestedVersion}, lines...)
-				WriteLines(lines, installLocation+recentFile)
+				WriteLines(lines, versionFile)
 			} else {
 				lines = append([]string{requestedVersion}, lines...)
-				WriteLines(lines, installLocation+recentFile)
+				WriteLines(lines, versionFile)
 			}
 		}
 
@@ -224,11 +228,12 @@ func AddRecent(requestedVersion string) {
 func GetRecentVersions() ([]string, error) {
 
 	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
+	versionFile := filepath.Join(installLocation, recentFile)
 
-	fileExist := CheckFileExist(installLocation + recentFile)
+	fileExist := CheckFileExist(versionFile)
 	if fileExist {
 
-		lines, errRead := ReadLines(installLocation + recentFile)
+		lines, errRead := ReadLines(versionFile)
 		outputRecent := []string{}
 
 		if errRead != nil {
@@ -242,7 +247,7 @@ func GetRecentVersions() ([]string, error) {
 			and the recent file will be removed
 			*/
 			if !ValidVersionFormat(line) {
-				RemoveFiles(installLocation + recentFile)
+				RemoveFiles(versionFile)
 				return nil, errRead
 			}
 
@@ -263,5 +268,18 @@ func CreateRecentFile(requestedVersion string) {
 
 	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
-	WriteLines([]string{requestedVersion}, installLocation+recentFile)
+	WriteLines([]string{requestedVersion}, filepath.Join(installLocation, recentFile))
+}
+
+//ConvertExecutableExt : convert excutable with local OS extension
+func ConvertExecutableExt(fpath string) string {
+	switch runtime.GOOS {
+	case "windows":
+		if filepath.Ext(fpath) == ".exe" {
+			return fpath
+		}
+		return fpath + ".exe"
+	default:
+		return fpath
+	}
 }
