@@ -53,6 +53,7 @@ func removeFiles(src string) {
 	if err != nil {
 		panic(err)
 	}
+
 	for _, f := range files {
 		if err := os.Remove(f); err != nil {
 			panic(err)

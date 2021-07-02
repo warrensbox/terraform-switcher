@@ -13,7 +13,7 @@ const (
 	hashiURL       = "https://releases.hashicorp.com/terraform/"
 	installFile    = "terraform"
 	installVersion = "terraform_"
-	installPath    = "/.terraform.versions/"
+	installPath    = ".terraform.versions"
 	recentFile     = "RECENT"
 )
 
@@ -48,6 +48,29 @@ func initialize() {
 		RemoveSymlink(installedBinPath)
 	}
 
+}
+
+// get install path variable value  (windows os runtime support)
+func getInstallPath() string {
+	return string(os.PathSeparator) + installPath + string(os.PathSeparator)
+}
+
+// get versioned install filename (windows os runtime support)
+func getVersionedInstallFileName(tfversion string) string {
+	if runtime.GOOS == "windows" {
+		return filepath.Join(getInstallLocation(), installVersion + tfversion + ".exe")
+	}
+
+	return getInstallLocation() + installVersion + tfversion
+}
+
+// get install filename (windows os runtime support)
+func getInstallFileName() string {
+	if runtime.GOOS == "windows" {
+		return filepath.Join(getInstallLocation(), installFile + ".exe")
+	}
+
+	return installLocation + installFile
 }
 
 // getInstallLocation : get location where the terraform binary will be installed,
