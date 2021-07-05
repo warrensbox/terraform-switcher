@@ -17,7 +17,7 @@ confinement: strict
 
 plugs:
   home-bin:
-    inferface: personal-files
+    interface: personal-files
     read:
     - $HOME/bin
     write:
