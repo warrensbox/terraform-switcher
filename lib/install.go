@@ -51,27 +51,27 @@ func initialize() {
 }
 
 // get install path variable value  (windows os runtime support)
-func getInstallPath() string {
-	return string(os.PathSeparator) + installPath + string(os.PathSeparator)
-}
+// func getInstallPath() string {
+// 	return string(os.PathSeparator) + installPath + string(os.PathSeparator)
+// }
 
 // get versioned install filename (windows os runtime support)
-func getVersionedInstallFileName(tfversion string) string {
-	if runtime.GOOS == "windows" {
-		return filepath.Join(getInstallLocation(), installVersion + tfversion + ".exe")
-	}
+// func getVersionedInstallFileName(tfversion string) string {
+// 	if runtime.GOOS == "windows" {
+// 		return filepath.Join(getInstallLocation(), installVersion+tfversion+".exe")
+// 	}
 
-	return getInstallLocation() + installVersion + tfversion
-}
+// 	return getInstallLocation() + installVersion + tfversion
+// }
 
 // get install filename (windows os runtime support)
-func getInstallFileName() string {
-	if runtime.GOOS == "windows" {
-		return filepath.Join(getInstallLocation(), installFile + ".exe")
-	}
+// func getInstallFileName() string {
+// 	if runtime.GOOS == "windows" {
+// 		return filepath.Join(getInstallLocation(), installFile+".exe")
+// 	}
 
-	return installLocation + installFile
-}
+// 	return installLocation + installFile
+// }
 
 // getInstallLocation : get location where the terraform binary will be installed,
 // will create a directory in the home location if it does not exist
@@ -82,8 +82,18 @@ func getInstallLocation() string {
 		log.Fatal(errCurr)
 	}
 
+	userCommon := usr.HomeDir
+
+	/* For snapcraft users, SNAP_USER_COMMON environment variable is set by default.
+	 * tfswitch does not have permission to save to $HOME/.terraform.versions for snapcraft users
+	 * tfswitch will save binaries into $SNAP_USER_COMMON/.terraform.versions */
+	if os.Getenv("SNAP_USER_COMMON") != "" {
+		userCommon = os.Getenv("SNAP_USER_COMMON")
+	}
+
 	/* set installation location */
-	installLocation = filepath.Join(usr.HomeDir, installPath)
+	installLocation = filepath.Join(userCommon, installPath)
+	fmt.Printf("installLocation: %s", installLocation)
 
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
