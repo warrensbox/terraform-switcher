@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	hashiURL       = "https://releases.hashicorp.com/terraform/"
+	//hashiURL       = "https://releases.hashicorp.com/terraform/"
 	installFile    = "terraform"
 	installVersion = "terraform_"
 	installPath    = ".terraform.versions"
@@ -50,29 +50,6 @@ func initialize() {
 
 }
 
-// get install path variable value  (windows os runtime support)
-// func getInstallPath() string {
-// 	return string(os.PathSeparator) + installPath + string(os.PathSeparator)
-// }
-
-// get versioned install filename (windows os runtime support)
-// func getVersionedInstallFileName(tfversion string) string {
-// 	if runtime.GOOS == "windows" {
-// 		return filepath.Join(getInstallLocation(), installVersion+tfversion+".exe")
-// 	}
-
-// 	return getInstallLocation() + installVersion + tfversion
-// }
-
-// get install filename (windows os runtime support)
-// func getInstallFileName() string {
-// 	if runtime.GOOS == "windows" {
-// 		return filepath.Join(getInstallLocation(), installFile+".exe")
-// 	}
-
-// 	return installLocation + installFile
-// }
-
 // getInstallLocation : get location where the terraform binary will be installed,
 // will create a directory in the home location if it does not exist
 func getInstallLocation() string {
@@ -103,7 +80,7 @@ func getInstallLocation() string {
 }
 
 //Install : Install the provided version in the argument
-func Install(tfversion string, binPath string) {
+func Install(tfversion string, binPath string, mirror string) {
 
 	if !ValidVersionFormat(tfversion) {
 		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
@@ -153,7 +130,8 @@ func Install(tfversion string, binPath string) {
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	url := hashiURL + tfversion + "/" + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip"
+	artifactMirror := mirror
+	url := artifactMirror + tfversion + "/" + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip"
 	zipFile, errDownload := DownloadFromURL(installLocation, url)
 
 	/* If unable to download file from url, exit(1) immediately */

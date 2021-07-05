@@ -15,9 +15,9 @@ type tfVersionList struct {
 }
 
 //GetTFList :  Get the list of available terraform version given the hashicorp url
-func GetTFList(hashiURL string, preRelease bool) ([]string, error) {
+func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 
-	result, error := GetTFURLBody(hashiURL)
+	result, error := GetTFURLBody(mirrorURL)
 	if error != nil {
 		return nil, error
 	}
@@ -45,9 +45,9 @@ func GetTFList(hashiURL string, preRelease bool) ([]string, error) {
 }
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
-func GetTFLatest(hashiURL string) (string, error) {
+func GetTFLatest(mirrorURL string) (string, error) {
 
-	result, error := GetTFURLBody(hashiURL)
+	result, error := GetTFURLBody(mirrorURL)
 	if error != nil {
 		return "", error
 	}
@@ -66,9 +66,9 @@ func GetTFLatest(hashiURL string) (string, error) {
 }
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
-func GetTFLatestImplicit(hashiURL string, preRelease bool, version string) (string, error) {
+func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
 
-	result, error := GetTFURLBody(hashiURL)
+	result, error := GetTFURLBody(mirrorURL)
 	if error != nil {
 		return "", error
 	}
@@ -93,14 +93,18 @@ func GetTFLatestImplicit(hashiURL string, preRelease bool, version string) (stri
 }
 
 //GetTFURLBody : Get list of terraform versions from hashicorp releases
-func GetTFURLBody(hashiURL string) ([]string, error) {
+func GetTFURLBody(mirrorURL string) ([]string, error) {
 
-	resp, errURL := http.Get(hashiURL)
+	resp, errURL := http.Get(mirrorURL)
 	if errURL != nil {
 		log.Printf("Error getting url: %v", errURL)
 		return nil, errURL
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		log.Printf("Error retrieving contents from url: %s", mirrorURL)
+	}
 
 	body, errBody := ioutil.ReadAll(resp.Body)
 	if errBody != nil {
