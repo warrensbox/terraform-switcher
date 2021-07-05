@@ -10,7 +10,6 @@ import (
 )
 
 const (
-	//hashiURL       = "https://releases.hashicorp.com/terraform/"
 	installFile    = "terraform"
 	installVersion = "terraform_"
 	installPath    = ".terraform.versions"
@@ -80,7 +79,7 @@ func getInstallLocation() string {
 }
 
 //Install : Install the provided version in the argument
-func Install(tfversion string, binPath string, mirror string) {
+func Install(tfversion string, binPath string, mirrorURL string) {
 
 	if !ValidVersionFormat(tfversion) {
 		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
@@ -130,8 +129,7 @@ func Install(tfversion string, binPath string, mirror string) {
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	artifactMirror := mirror
-	url := artifactMirror + tfversion + "/" + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip"
+	url := mirrorURL + tfversion + "/" + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip"
 	zipFile, errDownload := DownloadFromURL(installLocation, url)
 
 	/* If unable to download file from url, exit(1) immediately */
