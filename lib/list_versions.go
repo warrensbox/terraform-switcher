@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"reflect"
 	"regexp"
 	"strings"
@@ -38,6 +39,10 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 			trimstr := strings.Trim(str, "/") //remove "/" from /X.X.X/
 			tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
 		}
+	}
+
+	if len(tfVersionList.tflist) == 0 {
+		fmt.Printf("Cannot get list from mirror: %s\n", mirrorURL)
 	}
 
 	return tfVersionList.tflist, nil
@@ -95,20 +100,27 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 //GetTFURLBody : Get list of terraform versions from hashicorp releases
 func GetTFURLBody(mirrorURL string) ([]string, error) {
 
+	hasSlash := strings.HasSuffix(mirrorURL, "/")
+	if !hasSlash { //if does not have slash - append slash
+		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
+	}
 	resp, errURL := http.Get(mirrorURL)
 	if errURL != nil {
-		log.Printf("Error getting url: %v", errURL)
+		log.Printf("[Error] : Getting url: %v", errURL)
+		os.Exit(1)
 		return nil, errURL
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		log.Printf("Error retrieving contents from url: %s", mirrorURL)
+		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
+		os.Exit(1)
 	}
 
 	body, errBody := ioutil.ReadAll(resp.Body)
 	if errBody != nil {
-		log.Printf("Error reading body: %v", errBody)
+		log.Printf("[Error] : reading body: %v", errBody)
+		os.Exit(1)
 		return nil, errBody
 	}
 
