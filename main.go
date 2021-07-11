@@ -44,7 +44,7 @@ import (
 )
 
 const (
-	defaultMirror = "https://releases.hashicorp.com/terraform/"
+	defaultMirror = "https://releases.hashicorp.com/terraform"
 	defaultBin    = "/usr/local/bin/terraform" //default bin installation dir
 	defaultLatest = ""
 	tfvFilename   = ".terraform-version"
@@ -366,6 +366,10 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	tflist = append(recentVersions, tflist...)      //append recent versions to the top of the list
 	tflist = lib.RemoveDuplicateVersions(tflist)    //remove duplicate version
 
+	if len(tflist) == 0 {
+		fmt.Println("[ERROR] : List is empty")
+		os.Exit(1)
+	}
 	/* prompt user to select version of terraform */
 	prompt := promptui.Select{
 		Label: "Select Terraform version",

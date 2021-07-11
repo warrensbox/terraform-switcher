@@ -13,13 +13,11 @@ import (
 func DownloadFromURL(installLocation string, url string) (string, error) {
 	tokens := strings.Split(url, "/")
 	fileName := tokens[len(tokens)-1]
-	fmt.Println("Downloading", url, "to", fileName)
-	fmt.Println("Downloading ...")
+	fmt.Printf("Downloading to: %s\n", installLocation)
 
 	response, err := http.Get(url)
-
 	if err != nil {
-		fmt.Println("Error while downloading", url, "-", err)
+		fmt.Println("[Error] : Error while downloading", url, "-", err)
 		return "", err
 	}
 	defer response.Body.Close()
@@ -27,23 +25,23 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 	if response.StatusCode != 200 {
 		//Sometimes hashicorp terraform file names are not consistent
 		//For example 0.12.0-alpha4 naming convention in the release repo is not consistent
-		return "", fmt.Errorf("Unable to download from %s\nPlease download manually from https://releases.hashicorp.com/terraform/", url)
+		return "", fmt.Errorf("[Error] : Unable to download from %s", url)
 	}
 
 	zipFile := filepath.Join(installLocation, fileName)
 	output, err := os.Create(zipFile)
 	if err != nil {
-		fmt.Println("Error while creating", zipFile, "-", err)
+		fmt.Println("[Error] : Error while creating", zipFile, "-", err)
 		return "", err
 	}
 	defer output.Close()
 
 	n, err := io.Copy(output, response.Body)
 	if err != nil {
-		fmt.Println("Error while downloading", url, "-", err)
+		fmt.Println("[Error] : Error while downloading", url, "-", err)
 		return "", err
 	}
 
-	fmt.Println(n, "bytes downloaded.")
+	fmt.Println(n, "bytes downloaded")
 	return zipFile, nil
 }

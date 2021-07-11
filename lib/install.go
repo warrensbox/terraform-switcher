@@ -7,6 +7,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 const (
@@ -14,13 +15,14 @@ const (
 	installVersion = "terraform_"
 	installPath    = ".terraform.versions"
 	recentFile     = "RECENT"
+	defaultBin     = "/usr/local/bin/terraform" //default bin installation dir
 )
 
 var (
 	installLocation = "/tmp"
 )
 
-// initialize : removes existing symlink to terraform binary
+// initialize : removes existing symlink to terraform binary// I Don't think this is needed
 func initialize() {
 
 	/* Step 1 */
@@ -69,7 +71,6 @@ func getInstallLocation() string {
 
 	/* set installation location */
 	installLocation = filepath.Join(userCommon, installPath)
-	fmt.Printf("installLocation: %s", installLocation)
 
 	/* Create local installation directory if it does not exist */
 	CreateDirIfNotExist(installLocation)
@@ -86,14 +87,14 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 		os.Exit(1)
 	}
 
-	pathDir := Path(binPath)              //get path directory from binary path
-	binDirExist := CheckDirExist(pathDir) //check bin path exist
-
-	if !binDirExist {
-		fmt.Printf("Error - Binary path does not exist: %s\n", pathDir)
-		fmt.Printf("Create binary path: %s for terraform installation\n", pathDir)
-		os.Exit(1)
-	}
+	pathDir := Path(binPath) //get path directory from binary path
+	//binDirExist := CheckDirExist(pathDir) //check bin path exist
+	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terraform"
+	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tfswitch there
+	 * Inform user that they dont have permission to default location, therefore tfswitch was installed in $HOME/bin
+	 * Tell users to add $HOME/bin to their path
+	 */
+	binPath = InstallableBinLocation(pathDir)
 
 	initialize()                           //initialize path
 	installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
@@ -127,6 +128,12 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 		os.Exit(0)
 	}
 
+	//if does not have slash - append slash
+	hasSlash := strings.HasSuffix(mirrorURL, "/")
+	if !hasSlash {
+		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
+	}
+
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
 	url := mirrorURL + tfversion + "/" + installVersion + tfversion + "_" + goos + "_" + goarch + ".zip"
@@ -141,7 +148,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	/* unzip the downloaded zipfile */
 	_, errUnzip := Unzip(zipFile, installLocation)
 	if errUnzip != nil {
-		fmt.Println("Unable to unzip downloaded zip file")
+		fmt.Println("[Error] : Unable to unzip downloaded zip file")
 		log.Fatal(errUnzip)
 		os.Exit(1)
 	}
@@ -178,7 +185,7 @@ func AddRecent(requestedVersion string) {
 		lines, errRead := ReadLines(versionFile)
 
 		if errRead != nil {
-			fmt.Printf("Error: %s\n", errRead)
+			fmt.Printf("[Error] : %s\n", errRead)
 			return
 		}
 
@@ -268,4 +275,47 @@ func ConvertExecutableExt(fpath string) string {
 	default:
 		return fpath
 	}
+}
+
+//InstallableBinLocation : Checks if terraform is installable in the location provided by the user.
+//If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH
+//Return $HOME/bin as install location
+func InstallableBinLocation(userBin string) string {
+
+	usr, errCurr := user.Current()
+	if errCurr != nil {
+		log.Fatal(errCurr)
+	}
+
+	existDefaultBin := CheckDirExist(userBin)
+
+	if existDefaultBin { //if exist - now see if we can write to to it
+
+		writableToDefault := false
+		if runtime.GOOS != "windows" {
+			writableToDefault = CheckDirWritable(userBin) //check if is writable on ( only works on LINUX)
+		}
+
+		if !writableToDefault {
+			exisHomeBin := CheckDirExist(filepath.Join(usr.HomeDir, "bin"))
+			if exisHomeBin {
+				fmt.Printf("Installing terraform at %s\n", filepath.Join(usr.HomeDir, "bin"))
+				return filepath.Join(usr.HomeDir, "bin", "terraform")
+			}
+			PrintCreateDirStmt(userBin, filepath.Join(usr.HomeDir, "bin"))
+			CreateDirIfNotExist(filepath.Join(usr.HomeDir, "bin"))
+			return filepath.Join(usr.HomeDir, "bin", "terraform")
+		}
+		return filepath.Join(userBin, "terraform")
+	}
+	fmt.Printf("[Error] : Binary path does not exist: %s\n", userBin)
+	fmt.Printf("[Error] : Manually create bin directory at: %s and try again.\n", userBin)
+	os.Exit(1)
+	return ""
+}
+
+func PrintCreateDirStmt(unableDir string, writable string) {
+	fmt.Printf("Unable to write to: %s\n", unableDir)
+	fmt.Printf("Creating bin directory at: %s\n", writable)
+	fmt.Printf("RUN `export PATH=$PATH:%s` to append bin to $PATH\n", writable)
 }
