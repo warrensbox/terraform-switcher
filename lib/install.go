@@ -287,7 +287,7 @@ func InstallableBinLocation(userBin string) string {
 		log.Fatal(errCurr)
 	}
 
-	existDefaultBin := CheckDirExist(userBin)
+	existDefaultBin := CheckDirExist(userBin) //the default is /usr/local/bin but users can provide custom bin locations
 
 	if existDefaultBin { //if exist - now see if we can write to to it
 
