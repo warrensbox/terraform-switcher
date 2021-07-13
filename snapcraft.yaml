@@ -1,5 +1,5 @@
 name: tfswitch
-version: '0.10.1010'
+version: '0.12.02'
 summary: A command line tool to switch between different versions of terraform
 description: |
   The `tfswitch` command line tool lets you switch between different versions of terraform(https://www.terraform.io/).
@@ -14,6 +14,14 @@ base: core18
  
 grade: stable
 confinement: strict
+
+# plugs: //need snapcraft to make this work
+#   home-bin:
+#     interface: personal-files
+#     read:
+#     - $HOME/bin
+#     write:
+#     - $HOME/bin
  
 apps:
   tfswitch:
@@ -22,7 +30,8 @@ apps:
       - home
       - network
       - network-bind
-      
+    #  - home-bin //need snapcraft to make this work
+
 parts:
   tfswitch:
     source: .

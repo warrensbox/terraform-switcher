@@ -72,6 +72,13 @@ version = "0.11.3"
 ```
 4. Run `tfswitch` and it should automatically install the required terraform version in the specified binary path
 
+**NOTE** 
+1. For linux users that do not have write permission to `/usr/local/bin/`, `tfswitch` will attempt to install terraform at `$HOME/bin`. Run `export PATH=$PATH:$HOME/bin` to append bin to PATH  
+2. For windows host, `tfswitch` need to be run under `Administrator` mode, and `$HOME/.tfswitch.toml` with `bin` must be defined (with a valid path) as minimum, below is an example for `$HOME/.tfswitch.toml` on windows
+
+```toml
+bin = "C:\\Users\\<%USRNAME%>\\bin\\terraform.exe"
+```
 ### Use .tfswitchrc file
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v6.gif" alt="drawing" style="width: 600px;"/>
 

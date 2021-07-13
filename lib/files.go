@@ -11,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"golang.org/x/sys/unix"
 )
 
 // RenameFile : rename file name
@@ -103,10 +105,10 @@ func Unzip(src string, dest string) ([]string, error) {
 //CreateDirIfNotExist : create directory if directory does not exist
 func CreateDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		log.Printf("Creating directory for terraform: %v", dir)
+		fmt.Printf("Creating directory for terraform binary at: %v\n", dir)
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			fmt.Printf("Unable to create directory for terraform: %v", dir)
+			fmt.Printf("Unable to create directory for terraform binary at: %v", dir)
 			panic(err)
 		}
 	}
@@ -204,7 +206,7 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 
 //CheckDirExist : check if directory exist
 //dir=path to file
-//return path to directory
+//return bool
 func CheckDirExist(dir string) bool {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return false
@@ -220,6 +222,35 @@ func Path(value string) string {
 
 // GetFileName : remove file ext.  .tfswitch.config returns .tfswitch
 func GetFileName(configfile string) string {
-
 	return strings.TrimSuffix(configfile, filepath.Ext(configfile))
 }
+
+//Check if user has permission to directory :
+//dir=path to file
+//return bool
+func CheckDirWritable(dir string) bool {
+	return unix.Access(dir, unix.W_OK) == nil
+}
+
+// func WindowsCheckDirWritable(path string) bool {
+
+// 	info, err := os.Stat(path)
+// 	if err != nil {
+// 		fmt.Println("Path doesn't exist")
+// 		return false
+// 	}
+
+// 	err = nil
+// 	if !info.IsDir() {
+// 		fmt.Println("Path isn't a directory")
+// 		return false
+// 	}
+
+// 	// Check if the user bit is enabled in file permission
+// 	if info.Mode().Perm()&(1<<(uint(7))) == 0 {
+// 		fmt.Println("Write permission bit is not set on this file for user")
+// 		return false
+// 	}
+
+// 	return true
+// }
