@@ -11,8 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/sys/unix"
 )
 
 // RenameFile : rename file name
@@ -228,9 +226,9 @@ func GetFileName(configfile string) string {
 //Check if user has permission to directory :
 //dir=path to file
 //return bool
-func CheckDirWritable(dir string) bool {
-	return unix.Access(dir, unix.W_OK) == nil
-}
+// func CheckDirWritable(dir string) bool {
+// 	return unix.Access(dir, unix.W_OK) == nil
+// }
 
 // func WindowsCheckDirWritable(path string) bool {
 
