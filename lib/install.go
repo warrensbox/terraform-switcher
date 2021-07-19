@@ -80,7 +80,7 @@ func getInstallLocation() string {
 }
 
 //Install : Install the provided version in the argument
-func Install(tfversion string, binPath string, mirrorURL string) {
+func Install(tfversion string, binPath string, mirrorURL string) string {
 
 	if !ValidVersionFormat(tfversion) {
 		fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
@@ -125,7 +125,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 		CreateSymlink(installFileVersionPath, binPath)
 		fmt.Printf("Switched terraform to version %q \n", tfversion)
 		AddRecent(tfversion) //add to recent file for faster lookup
-		os.Exit(0)
+		return installFileVersionPath
 	}
 
 	//if does not have slash - append slash
@@ -171,7 +171,8 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	CreateSymlink(installFileVersionPath, binPath)
 	fmt.Printf("Switched terraform to version %q \n", tfversion)
 	AddRecent(tfversion) //add to recent file for faster lookup
-	os.Exit(0)
+
+	return installFileVersionPath
 }
 
 // AddRecent : add to recent file
