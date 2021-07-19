@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -51,6 +52,7 @@ const (
 	rcFilename    = ".tfswitchrc"
 	tomlFilename  = ".tfswitch.toml"
 	tgHclFilename = "terragrunt.hcl"
+	runFlag       = false
 )
 
 var (
@@ -68,6 +70,7 @@ func main() {
 	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote other than the default. Default: https://releases.hashicorp.com/terraform")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
+	runFlag := getopt.BoolLong("run", 'r', "Call terraform with selected version")
 	_ = versionFlag
 
 	getopt.Parse()
@@ -215,6 +218,10 @@ func main() {
 	default:
 		listAll := false //set list all false - only official release will be displayed
 		installOption(listAll, custBinPath, mirrorURL)
+	}
+
+	if *runFlag {
+		runTerraform(args...)
 	}
 
 	os.Exit(0)
@@ -481,4 +488,14 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 		return false
 	}
 	return true
+}
+
+func runTerraform(args ...string) {
+	cmd := exec.Command(terraformBinaryPath, args...)
+	cmd.Env = os.Environ()
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	_ = cmd.Run()
 }
