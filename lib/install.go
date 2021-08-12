@@ -288,12 +288,14 @@ func InstallableBinLocation(userBin string) string {
 	}
 
 	/* Setup for SNAPCRAFT Users */
-	SNAP := os.Getenv("SNAP_USER_COMMON")
+	SNAP := os.Getenv("SNAP_REAL_HOME")
 	if SNAP != "" { //if SNAP_USER_COMMON env is set, install
-		CreateDirIfNotExist(filepath.Join(usr.HomeDir, "bin"))
-		fmt.Printf("Installing terraform at %s\n", filepath.Join(usr.HomeDir, "bin"))
-		fmt.Printf("RUN `export PATH=$PATH:%s` to append bin to $PATH\n", filepath.Join(usr.HomeDir, "bin"))
-		return filepath.Join(usr.HomeDir, "bin", "terraform")
+		snapHomePath := filepath.Join(SNAP, "bin")
+		fmt.Println(snapHomePath)
+		CreateDirIfNotExist(snapHomePath)
+		fmt.Printf("Installing terraform at %s\n", snapHomePath)
+		fmt.Printf("RUN `export PATH=$PATH:%s` to append bin to $PATH\n", snapHomePath)
+		return filepath.Join(snapHomePath, "terraform")
 	}
 
 	existDefaultBin := CheckDirExist(userBin) //the default is /usr/local/bin but users can provide custom bin locations
