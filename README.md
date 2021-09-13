@@ -36,6 +36,7 @@ curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/
 
 ### Snapcraft for CentOS, Ubuntu, Linux Mint, RHEL, Debian, Fedora
 
+Support for snap will be removed on Set 16, 2021
 ```sh
 sudo snap install tfswitch
 ```
