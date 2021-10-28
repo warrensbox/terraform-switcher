@@ -1,6 +1,7 @@
 EXE  := tfswitch
 PKG  := github.com/warrensbox/terraform-switcher
-VER := $(shell git ls-remote --tags . | awk '{print $$2}'| awk -F"/" '{print $$3}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n 2 | head -n1)
+#VER := $(shell git ls-remote --tags . | awk '{print $$2}'| awk -F"/" '{print $$3}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n 2 | head -n1)
+VER := $(shell git ls-remote --tags . | awk '{print $$2}'| awk -F"/" '{print $$3}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n 1)
 PATH := build:$(PATH)
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
