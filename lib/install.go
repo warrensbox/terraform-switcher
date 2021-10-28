@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"github.com/hashicorp/go-version"
 )
 
 const (
@@ -16,6 +17,7 @@ const (
 	installPath    = ".terraform.versions"
 	recentFile     = "RECENT"
 	defaultBin     = "/usr/local/bin/terraform" //default bin installation dir
+	tfDarwinArm64  = "1.0.2"
 )
 
 var (
@@ -102,8 +104,10 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
 
-	// TODO: Workaround for macos arm64 since terraform doesn't have a binary for it yet
-	if goos == "darwin" && goarch == "arm64" {
+	// Terraform darwin arm64 comes with 1.0.2 and next version
+	tfver, _ := version.NewVersion(tfversion)
+	tf102, _ := version.NewVersion(tfDarwinArm64)
+	if goos == "darwin" && goarch == "arm64" && tfver.LessThan(tf102)  {
 		goarch = "amd64"
 	}
 
