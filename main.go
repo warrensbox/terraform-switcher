@@ -57,6 +57,7 @@ var version = "0.12.0\n"
 
 func main() {
 	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
+	chDirPath := getopt.StringLong("chdir", 'c', "Switch to a different working directory before executing the given command.")
 	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
 	latestPre := getopt.StringLong("latest-pre", 'p', defaultLatest, "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
 	showLatestPre := getopt.StringLong("show-latest-pre", 'P', defaultLatest, "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
@@ -76,6 +77,10 @@ func main() {
 	if err != nil {
 		log.Printf("Failed to get current directory %v\n", err)
 		os.Exit(1)
+	}
+
+	if *chDirPath != "" {
+		dir = dir + "/" + *chDirPath
 	}
 
 	homedir, errHome := homedir.Dir()
