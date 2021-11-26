@@ -17,7 +17,7 @@ const (
 	installPath    = ".terraform.versions"
 	recentFile     = "RECENT"
 	defaultBin     = "/usr/local/bin/terraform" //default bin installation dir
-	tfDarwinArm64  = "1.0.2"
+	tfDarwinArm64StartVersion  = "1.0.2"
 )
 
 var (
