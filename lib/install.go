@@ -106,7 +106,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	// Terraform darwin arm64 comes with 1.0.2 and next version
 	tfver, _ := version.NewVersion(tfversion)
-	tf102, _ := version.NewVersion(tfDarwinArm64)
+	tf102, _ := version.NewVersion(tfDarwinArm64StartVersion)
 	if goos == "darwin" && goarch == "arm64" && tfver.LessThan(tf102)  {
 		goarch = "amd64"
 	}
