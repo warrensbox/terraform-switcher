@@ -18,12 +18,6 @@ Installation for Linux operation systems.
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 ```
 
-### Snapcraft for CentOS, Ubuntu, Linux Mint, RHEL, Debian, Fedora
-
-```sh
-sudo snap install tfswitch
-```
-
 ### Arch User Repository (AUR) packages for Arch Linux
 
 ```sh

@@ -34,13 +34,6 @@ Installation for other linux operation systems.
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 ```
 
-### Snapcraft for CentOS, Ubuntu, Linux Mint, RHEL, Debian, Fedora
-
-Support for snap will be removed on Set 16, 2021
-```sh
-sudo snap install tfswitch
-```
-
 ### Arch User Repository (AUR) packages for Arch Linux
 
 ```sh
@@ -166,10 +159,10 @@ terraform_version_constraint  = ">= 0.13, < 0.14"
 ...
 ```
 
-### Gather the version from a subdirectory
+### Get the version from a subdirectory
 ```bash
-tfswitch --chdir terraform
-tfswitch -c terraform
+tfswitch --chdir terraform_dir
+tfswitch -c terraform_dir
 ```
 
 ### Use custom mirror 
