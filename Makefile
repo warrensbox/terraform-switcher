@@ -24,6 +24,11 @@ test: $(EXE)
 	mv $(EXE) build
 	go test -v ./...
 
+.PHONY: install
+install: $(EXE)
+	mkdir -p ~/bin
+	mv $(EXE) ~/bin
+
 .PHONY: docs
 docs:
 	cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..

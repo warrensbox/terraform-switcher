@@ -34,12 +34,6 @@ Installation for other linux operation systems.
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 ```
 
-### Snapcraft for CentOS, Ubuntu, Linux Mint, RHEL, Debian, Fedora
-
-```sh
-sudo snap install tfswitch
-```
-
 ### Arch User Repository (AUR) packages for Arch Linux
 
 ```sh
@@ -74,12 +68,12 @@ The most recently selected versions are presented at the top of the dropdown.
 ### See all versions including beta, alpha and release candidates(rc)
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v5.gif#1" alt="drawing" style="width: 370px;"/>
 
-1. Display all versions including beta, alpha and release candidates(rc). 
+1. Display all versions including beta, alpha and release candidates(rc).
 2. For example, `tfswitch -l` or `tfswitch --list-all` to see all versions.
 3. Hit **Enter** to select the desired version.
 
 ### Use environment variable
-You can also set the `TF_VERSION` environment variable to your desired terraform version. 
+You can also set the `TF_VERSION` environment variable to your desired terraform version.
 For example:   
 ```bash
 export TF_VERSION=0.14.4
@@ -97,8 +91,20 @@ tfswitch #will automatically switch to terraform version 0.14.4
 1. Install the latest implicit pre-release version.
 2. Ex: `tfswitch -p 0.13` or `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1 (latest) version.
 3. Hit **Enter** to install.
-### Use version.tf file  
-If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the lastest version:     
+### Show latest version only
+1. Just show what the latest version is.
+2. Run `tfswitch -U` or `tfswitch --show-latest`
+3. Hit **Enter** to show.
+### Show latest implicit version for stable releases
+1. Show the latest implicit stable version.
+2. Ex: `tfswitch -S 0.13` or `tfswitch --show-latest-stable 0.13` shows 0.13.6 (latest) version.
+3. Hit **Enter** to show.
+### Show latest implicit version for beta, alpha and release candidates(rc)
+1. Show the latest implicit pre-release version.
+2. Ex: `tfswitch -P 0.13` or `tfswitch --show-latest-pre 0.13` shows 0.13.0-rc1 (latest) version.
+3. Hit **Enter** to show.
+### Use version.tf file
+If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the latest version:
 ```ruby
 terraform {
   required_version = ">= 0.12.9"
@@ -114,7 +120,7 @@ terraform {
 ### Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)
 This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation
 
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif#1" alt="drawing" style="width: 370px;"/>     
+<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif#1" alt="drawing" style="width: 370px;"/>
 
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v8.gif#1" alt="drawing" style="width: 370px;"/>
 
@@ -146,12 +152,22 @@ bin = "C:\\Users\\<%USRNAME%>\\bin\\terraform.exe"
 #### *Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
 
 ### Use terragrunt.hcl file
-If a terragrunt.hcl file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the lastest version 0.13:     
+If a terragrunt.hcl file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the latest version 0.13:
 ```ruby
 terragrunt_version_constraint = ">= 0.26, < 0.27"
 terraform_version_constraint  = ">= 0.13, < 0.14"
 ...
 ```
+
+### Get the version from a subdirectory
+```bash
+tfswitch --chdir terraform_dir
+tfswitch -c terraform_dir
+```
+
+### Use custom mirror 
+To install from a remote mirror other than the default(https://releases.hashicorp.com/terraform). Use the `-m` or `--mirror` parameter.    
+Ex: `tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp`
 
 ## Automation
 **Automatically switch with bash**

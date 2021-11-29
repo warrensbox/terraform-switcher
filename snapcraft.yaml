@@ -1,5 +1,5 @@
 name: tfswitch
-version: '0.12.02'
+version: '0.12.04'
 summary: A command line tool to switch between different versions of terraform
 description: |
   The `tfswitch` command line tool lets you switch between different versions of terraform(https://www.terraform.io/).
