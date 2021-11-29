@@ -51,6 +51,7 @@ const (
 	rcFilename    = ".tfswitchrc"
 	tomlFilename  = ".tfswitch.toml"
 	tgHclFilename = "terragrunt.hcl"
+	versionPrefix = "terraform_"
 )
 
 var version = "0.12.0\n"
@@ -285,6 +286,19 @@ func showLatestImplicitVersion(requestedVersion string, custBinPath, mirrorURL *
 func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 	if lib.ValidVersionFormat(arg) {
 		requestedVersion := arg
+
+		//check to see if the requested version has been downloaded before
+		installLocation := lib.GetInstallLocation()
+		installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+requestedVersion))
+		recentDownloadFile := lib.CheckFileExist(installFileVersionPath)
+		if recentDownloadFile {
+			lib.ChangeSymlink(installFileVersionPath, *custBinPath)
+			fmt.Printf("Switched terraform to version %q \n", requestedVersion)
+			lib.AddRecent(requestedVersion) //add to recent file for faster lookup
+			os.Exit(0)
+		}
+
+		//if the requested version had not been downloaded before
 		listAll := true                                     //set list all true - all versions including beta and rc will be displayed
 		tflist, _ := lib.GetTFList(*mirrorURL, listAll)     //get list of versions
 		exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it

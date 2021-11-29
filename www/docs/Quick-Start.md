@@ -96,6 +96,12 @@ terraform_version_constraint  = ">= 0.13, < 0.14"
 ...
 ```
 
+### Get the version from a subdirectory
+```bash
+tfswitch --chdir terraform_dir
+tfswitch -c terraform_dir
+```
+
 ### Use custom mirror 
 To install from a remote mirror other than the default(https://releases.hashicorp.com/terraform). Use the `-m` or `--mirror` parameter.    
 Ex: `tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp`

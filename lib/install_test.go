@@ -9,7 +9,7 @@ import (
 
 // TestAddRecent : Create a file, check filename exist,
 // rename file, check new filename exit
-func getInstallLocation(installPath string) string {
+func GetInstallLocation(installPath string) string {
 	return string(os.PathSeparator) + installPath + string(os.PathSeparator)
 }
 
