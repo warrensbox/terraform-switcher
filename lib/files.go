@@ -11,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // RenameFile : rename file name
@@ -223,32 +225,25 @@ func GetFileName(configfile string) string {
 	return strings.TrimSuffix(configfile, filepath.Ext(configfile))
 }
 
-//Check if user has permission to directory :
-//dir=path to file
-//return bool
-// func CheckDirWritable(dir string) bool {
-// 	return unix.Access(dir, unix.W_OK) == nil
-// }
+// GetCurrentDirectory : return the current directory
+func GetCurrentDirectory() string {
 
-// func WindowsCheckDirWritable(path string) bool {
+	dir, err := os.Getwd() //get current directory
+	if err != nil {
+		log.Printf("Failed to get current directory %v\n", err)
+		os.Exit(1)
+	}
+	return dir
+}
 
-// 	info, err := os.Stat(path)
-// 	if err != nil {
-// 		fmt.Println("Path doesn't exist")
-// 		return false
-// 	}
+// GetHomeDirectory : return the home directory
+func GetHomeDirectory() string {
 
-// 	err = nil
-// 	if !info.IsDir() {
-// 		fmt.Println("Path isn't a directory")
-// 		return false
-// 	}
+	homedir, errHome := homedir.Dir()
+	if errHome != nil {
+		log.Printf("Failed to get home directory %v\n", errHome)
+		os.Exit(1)
+	}
 
-// 	// Check if the user bit is enabled in file permission
-// 	if info.Mode().Perm()&(1<<(uint(7))) == 0 {
-// 		fmt.Println("Write permission bit is not set on this file for user")
-// 		return false
-// 	}
-
-// 	return true
-// }
+	return homedir
+}

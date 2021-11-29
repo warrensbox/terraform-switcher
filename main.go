@@ -32,7 +32,6 @@ import (
 	"github.com/hashicorp/hcl2/gohcl"
 	"github.com/hashicorp/hcl2/hclparse"
 	"github.com/kiranjthomas/terraform-config-inspect/tfconfig"
-	"github.com/mitchellh/go-homedir"
 
 	//	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 
@@ -57,8 +56,7 @@ const (
 var version = "0.12.0\n"
 
 func main() {
-	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
-	chDirPath := getopt.StringLong("chdir", 'c', "Switch to a different working directory before executing the given command.")
+	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
 	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
 	latestPre := getopt.StringLong("latest-pre", 'p', defaultLatest, "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
 	showLatestPre := getopt.StringLong("show-latest-pre", 'P', defaultLatest, "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
@@ -67,6 +65,7 @@ func main() {
 	latestFlag := getopt.BoolLong("latest", 'u', "Get latest stable version")
 	showLatestFlag := getopt.BoolLong("show-latest", 'U', "Show latest stable version")
 	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote other than the default. Default: https://releases.hashicorp.com/terraform")
+	chDirPath := getopt.StringLong("chdir", 'c', "", "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
 	_ = versionFlag
@@ -74,20 +73,11 @@ func main() {
 	getopt.Parse()
 	args := getopt.Args()
 
-	dir, err := os.Getwd() //get current directory
-	if err != nil {
-		log.Printf("Failed to get current directory %v\n", err)
-		os.Exit(1)
-	}
+	dir := lib.GetCurrentDirectory()
+	homedir := lib.GetHomeDirectory()
 
 	if *chDirPath != "" {
 		dir = dir + "/" + *chDirPath
-	}
-
-	homedir, errHome := homedir.Dir()
-	if errHome != nil {
-		log.Printf("Failed to get home directory %v\n", errHome)
-		os.Exit(1)
 	}
 
 	TFVersionFile := filepath.Join(dir, tfvFilename)           //settings for .terraform-version file in current directory (tfenv compatible)
@@ -376,7 +366,7 @@ func checkTFEnvExist() bool {
 
 /* parses everything in the toml file, return required version and bin path */
 func getParamsTOML(binPath string, dir string) (string, string) {
-	path, _ := homedir.Dir()
+	path := lib.GetHomeDirectory()
 	if dir == path {
 		path = "home directory"
 	} else {

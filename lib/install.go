@@ -119,7 +119,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
-		fmt.Printf("Switched1 terraform to version %q \n", tfversion)
+		fmt.Printf("Switched terraform to version %q \n", tfversion)
 		AddRecent(tfversion) //add to recent file for faster lookup
 		os.Exit(0)
 	}
@@ -311,7 +311,7 @@ func InstallableBinLocation(userBinPath string) string {
 		}
 	}
 	fmt.Printf("[Error] : Binary path does not exist: %s\n", userBinPath)
-	fmt.Printf("[Error] : Manually create bin directory at: %s and try again.\n", userBinPath)
+	fmt.Printf("[Error] : Manually create bin directory at: %s and try again.\n", binDir)
 	os.Exit(1)
 	return ""
 }
