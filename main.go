@@ -26,14 +26,10 @@ import (
 	"sort"
 	"strings"
 
-	// original hashicorp upstream have broken dependencies, so using fork as workaround
-	// TODO: move back to upstream
-	"github.com/Masterminds/semver"
+	semver "github.com/hashicorp/go-version"
 	"github.com/hashicorp/hcl2/gohcl"
 	"github.com/hashicorp/hcl2/hclparse"
-	"github.com/kiranjthomas/terraform-config-inspect/tfconfig"
-
-	//	"github.com/hashicorp/terraform-config-inspect/tfconfig"
+	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
@@ -440,6 +436,7 @@ func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
 	fmt.Printf("Reading required version from terraform file\n")
 	module, _ := tfconfig.LoadModule(dir)
 	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
+	fmt.Println("tfconstraint", tfconstraint)
 	installFromConstraint(&tfconstraint, custBinPath, mirrorURL)
 }
 
@@ -450,7 +447,7 @@ func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string)
 	tflist, _ := lib.GetTFList(*mirrorURL, listAll) //get list of versions
 	fmt.Printf("Reading required version from constraint: %s\n", *tfconstraint)
 
-	constrains, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
+	constraints, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
 		fmt.Printf("Error parsing constraint: %s\nPlease check constrain syntax on terraform file.\n", err)
 		fmt.Println()
@@ -470,7 +467,7 @@ func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string)
 	sort.Sort(sort.Reverse(semver.Collection(versions)))
 
 	for _, element := range versions {
-		if constrains.Check(element) { // Validate a version against a constraint
+		if constraints.Check(element) { // Validate a version against a constraint
 			tfversion = element.String()
 			fmt.Printf("Matched version: %s\n", tfversion)
 			if lib.ValidVersionFormat(tfversion) { //check if version format is correct
