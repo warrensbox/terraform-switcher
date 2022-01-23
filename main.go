@@ -424,7 +424,6 @@ func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
 	fmt.Printf("Reading required version from terraform file\n")
 	module, _ := tfconfig.LoadModule(dir)
 	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
-	fmt.Println("tfconstraint", tfconstraint)
 	installFromConstraint(&tfconstraint, custBinPath, mirrorURL)
 }
 
