@@ -25,6 +25,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	semver "github.com/hashicorp/go-version"
 	"github.com/hashicorp/hcl2/gohcl"
 	"github.com/hashicorp/hcl2/hclparse"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
@@ -243,12 +244,17 @@ func showLatestVersion(custBinPath, mirrorURL *string) {
 
 // install latest - argument (version) must be provided
 func installLatestImplicitVersion(requestedVersion string, custBinPath, mirrorURL *string, preRelease bool) {
-	if lib.ValidMinorVersionFormat(requestedVersion) {
-		tfversion, _ := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
-		lib.Install(tfversion, *custBinPath, *mirrorURL)
-	} else {
-		lib.PrintInvalidMinorTFVersion()
+	_, err := semver.NewConstraint(requestedVersion)
+	if err != nil {
+		fmt.Printf("error parsing constraint: %s\n", err)
 	}
+	//if lib.ValidMinorVersionFormat(requestedVersion) {
+	tfversion, err := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
+	if err == nil && tfversion != "" {
+		lib.Install(tfversion, *custBinPath, *mirrorURL)
+	}
+	fmt.Printf("Error parsing constraint: %s\n", err)
+	lib.PrintInvalidMinorTFVersion()
 }
 
 // show latest - argument (version) must be provided

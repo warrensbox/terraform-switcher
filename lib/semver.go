@@ -22,7 +22,7 @@ func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 	tfversion := ""
 	constraints, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
-		return "", fmt.Errorf("error parsing constraint: %s", *tfconstraint)
+		return "", fmt.Errorf("error parsing constraint: %s", err)
 	}
 	versions := make([]*semver.Version, len(tflist))
 	//put tfversion into semver object
