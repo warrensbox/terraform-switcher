@@ -41,6 +41,18 @@ tfswitch #will automatically switch to terraform version 0.14.4
 1. Install the latest implicit pre-release version.
 2. Ex: `tfswitch -p 0.13` or `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1 (latest) version.
 3. Hit **Enter** to install.
+### Show latest version only
+1. Just show what the latest version is.
+2. Run `tfswitch -U` or `tfswitch --show-latest`
+3. Hit **Enter** to show.
+### Show latest implicit version for stable releases
+1. Show the latest implicit stable version.
+2. Ex: `tfswitch -S 0.13` or `tfswitch --show-latest-stable 0.13` shows 0.13.6 (latest) version.
+3. Hit **Enter** to show.
+### Show latest implicit version for beta, alpha and release candidates(rc)
+1. Show the latest implicit pre-release version.
+2. Ex: `tfswitch -P 0.13` or `tfswitch --show-latest-pre 0.13` shows 0.13.0-rc1 (latest) version.
+3. Hit **Enter** to show.
 ### Use version.tf file  
 If a .tf file with the terraform constrain is included in the current directory, it should automatically download or switch to that terraform version. For example, the following should automatically switch terraform to the lastest version:     
 ```

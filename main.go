@@ -23,17 +23,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
-	// original hashicorp upstream have broken dependencies, so using fork as workaround
-	// TODO: move back to upstream
-	"github.com/Masterminds/semver"
+	semver "github.com/hashicorp/go-version"
 	"github.com/hashicorp/hcl2/gohcl"
 	"github.com/hashicorp/hcl2/hclparse"
-	"github.com/kiranjthomas/terraform-config-inspect/tfconfig"
-
-	//	"github.com/hashicorp/terraform-config-inspect/tfconfig"
+	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
@@ -249,12 +244,17 @@ func showLatestVersion(custBinPath, mirrorURL *string) {
 
 // install latest - argument (version) must be provided
 func installLatestImplicitVersion(requestedVersion string, custBinPath, mirrorURL *string, preRelease bool) {
-	if lib.ValidMinorVersionFormat(requestedVersion) {
-		tfversion, _ := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
-		lib.Install(tfversion, *custBinPath, *mirrorURL)
-	} else {
-		printInvalidMinorTFVersion()
+	_, err := semver.NewConstraint(requestedVersion)
+	if err != nil {
+		fmt.Printf("error parsing constraint: %s\n", err)
 	}
+	//if lib.ValidMinorVersionFormat(requestedVersion) {
+	tfversion, err := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
+	if err == nil && tfversion != "" {
+		lib.Install(tfversion, *custBinPath, *mirrorURL)
+	}
+	fmt.Printf("Error parsing constraint: %s\n", err)
+	lib.PrintInvalidMinorTFVersion()
 }
 
 // show latest - argument (version) must be provided
@@ -268,7 +268,7 @@ func showLatestImplicitVersion(requestedVersion string, custBinPath, mirrorURL *
 			os.Exit(1)
 		}
 	} else {
-		printInvalidMinorTFVersion()
+		lib.PrintInvalidMinorTFVersion()
 	}
 }
 
@@ -301,21 +301,11 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 		}
 
 	} else {
-		printInvalidTFVersion()
+		lib.PrintInvalidTFVersion()
 		fmt.Println("Args must be a valid terraform version")
 		usageMessage()
 		os.Exit(1)
 	}
-}
-
-// Print invalid TF version
-func printInvalidTFVersion() {
-	fmt.Println("Invalid terraform version format. Format should be #.#.# or #.#.#-@# where # are numbers and @ are word characters. For example, 0.11.7 and 0.11.9-beta1 are valid versions")
-}
-
-// Print invalid TF version
-func printInvalidMinorTFVersion() {
-	fmt.Println("Invalid minor terraform version format. Format should be #.# where # are numbers. For example, 0.11 is valid version")
 }
 
 //retrive file content of regular file
@@ -445,43 +435,12 @@ func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
 
 // install using a version constraint
 func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string) {
-	tfversion := ""
-	listAll := true                                 //set list all true - all versions including beta and rc will be displayed
-	tflist, _ := lib.GetTFList(*mirrorURL, listAll) //get list of versions
-	fmt.Printf("Reading required version from constraint: %s\n", *tfconstraint)
 
-	constrains, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
-	if err != nil {
-		fmt.Printf("Error parsing constraint: %s\nPlease check constrain syntax on terraform file.\n", err)
-		fmt.Println()
-		os.Exit(1)
+	tfversion, err := lib.GetSemver(tfconstraint, mirrorURL)
+	if err == nil {
+		lib.Install(tfversion, *custBinPath, *mirrorURL)
 	}
-	versions := make([]*semver.Version, len(tflist))
-	for i, tfvals := range tflist {
-		version, err := semver.NewVersion(tfvals) //NewVersion parses a given version and returns an instance of Version or an error if unable to parse the version.
-		if err != nil {
-			fmt.Printf("Error parsing version: %s", err)
-			os.Exit(1)
-		}
-
-		versions[i] = version
-	}
-
-	sort.Sort(sort.Reverse(semver.Collection(versions)))
-
-	for _, element := range versions {
-		if constrains.Check(element) { // Validate a version against a constraint
-			tfversion = element.String()
-			fmt.Printf("Matched version: %s\n", tfversion)
-			if lib.ValidVersionFormat(tfversion) { //check if version format is correct
-				lib.Install(tfversion, *custBinPath, *mirrorURL)
-			} else {
-				printInvalidTFVersion()
-				os.Exit(1)
-			}
-		}
-	}
-
+	fmt.Println(err)
 	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
 	os.Exit(1)
 }

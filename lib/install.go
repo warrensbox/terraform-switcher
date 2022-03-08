@@ -315,8 +315,3 @@ func InstallableBinLocation(userBinPath string) string {
 	os.Exit(1)
 	return ""
 }
-
-// func PrintCreateDirStmt(unableDir string, writable string) {
-// 	fmt.Printf("Creating bin directory at: %s\n", writable)
-// 	fmt.Printf("RUN `export PATH=$PATH:%s` to append bin to $PATH\n", writable)
-// }

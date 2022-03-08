@@ -73,28 +73,36 @@ func GetTFLatest(mirrorURL string) (string, error) {
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
 
-	result, error := GetTFURLBody(mirrorURL)
-	if error != nil {
-		return "", error
-	}
-	var semver string
 	if preRelease == true {
-		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver = fmt.Sprintf(`\/(%s{1}\.\d+\-[a-zA-z]+\d*)\/`, version)
-	} else if preRelease == false {
-		semver = fmt.Sprintf(`\/(%s{1}\.\d+)\/`, version)
-	}
-	r, _ := regexp.Compile(semver)
-	for i := range result {
-		if r.MatchString(result[i]) {
-			str := r.FindString(result[i])
-			trimstr := strings.Trim(str, "/") //remove "/" from /X.X.X/
-			return trimstr, nil
+		//TODO: use GetTFList() instead of GetTFURLBody
+		versions, error := GetTFURLBody(mirrorURL)
+		if error != nil {
+			return "", error
 		}
+		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
+		semver := fmt.Sprintf(`\/(%s{1}\.\d+\-[a-zA-z]+\d*)\/`, version)
+		r, err := regexp.Compile(semver)
+		if err != nil {
+			return "", err
+		}
+		for i := range versions {
+			if r.MatchString(versions[i]) {
+				str := r.FindString(versions[i])
+				trimstr := strings.Trim(str, "/") //remove "/" from /X.X.X/
+				return trimstr, nil
+			}
+		}
+	} else if preRelease == false {
+		listAll := false
+		tflist, _ := GetTFList(mirrorURL, listAll) //get list of versions
+		version = fmt.Sprintf("~> %v", version)
+		semv, err := SemVerParser(&version, tflist)
+		if err != nil {
+			return "", err
+		}
+		return semv, nil
 	}
-
 	return "", nil
-
 }
 
 //GetTFURLBody : Get list of terraform versions from hashicorp releases
