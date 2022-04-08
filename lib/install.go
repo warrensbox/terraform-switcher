@@ -104,7 +104,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	}
 
 	/* check if selected version already downloaded */
-	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+tfversion))
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+tfversion+"-"+goarch))
 	fileExist := CheckFileExist(installFileVersionPath)
 
 	/* if selected version already exist, */
