@@ -76,7 +76,7 @@ func GetInstallLocation() string {
 }
 
 //Install : Install the provided version in the argument
-func Install(tfversion string, binPath string, mirrorURL string) {
+func Install(tfArch *string, tfversion string, binPath string, mirrorURL string) {
 
 	// if !ValidVersionFormat(tfversion) {
 	// 	fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
@@ -101,6 +101,8 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	tf102, _ := version.NewVersion(tfDarwinArm64StartVersion)
 	if goos == "darwin" && goarch == "arm64" && tfver.LessThan(tf102) {
 		goarch = "amd64"
+	} else {
+		goarch = *tfArch
 	}
 
 	/* check if selected version already downloaded */
@@ -120,7 +122,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
 		fmt.Printf("Switched terraform to version %q \n", tfversion)
-		AddRecent(tfversion) //add to recent file for faster lookup
+		AddRecent(tfversion + "-" + goarch) //add to recent file for faster lookup
 		os.Exit(0)
 	}
 
@@ -166,7 +168,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
 	fmt.Printf("Switched terraform to version %q \n", tfversion)
-	AddRecent(tfversion) //add to recent file for faster lookup
+	AddRecent(tfversion + "-" + goarch) //add to recent file for faster lookup
 	os.Exit(0)
 }
 
