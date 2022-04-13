@@ -121,7 +121,7 @@ func Install(tfArch *string, tfversion string, binPath string, mirrorURL string)
 
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
-		fmt.Printf("Switched terraform to version %q \n", tfversion)
+		fmt.Printf("Switched terraform to version %q (%s)\n", tfversion, goarch)
 		AddRecent(tfversion + "-" + goarch) //add to recent file for faster lookup
 		os.Exit(0)
 	}
@@ -167,7 +167,7 @@ func Install(tfArch *string, tfversion string, binPath string, mirrorURL string)
 
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
-	fmt.Printf("Switched terraform to version %q \n", tfversion)
+	fmt.Printf("Switched terraform to version %q (%s)\n", tfversion, goarch)
 	AddRecent(tfversion + "-" + goarch) //add to recent file for faster lookup
 	os.Exit(0)
 }

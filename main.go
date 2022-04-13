@@ -289,7 +289,7 @@ func installVersion(tfArch *string, arg string, custBinPath *string, mirrorURL *
 		recentDownloadFile := lib.CheckFileExist(installFileVersionPath)
 		if recentDownloadFile {
 			lib.ChangeSymlink(installFileVersionPath, *custBinPath)
-			fmt.Printf("Switched terraform to version %q \n", requestedVersion)
+			fmt.Printf("Switched terraform to version %q (%s)\n", requestedVersion, *tfArch)
 			lib.AddRecent(requestedVersion + "-" + *tfArch) //add to recent file for faster lookup
 			os.Exit(0)
 		}
