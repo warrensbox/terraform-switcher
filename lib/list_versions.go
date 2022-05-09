@@ -27,17 +27,17 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	var semver string
 	if preRelease == true {
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver = `\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?"`
+		semver = `\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?\"`
 	} else if preRelease == false {
 		// Getting versions from body; should return match /X.X.X/ where X is a number
 		// without the ending '"' pre-release folders would be tried and break.
-		semver = `\/(\d+\.\d+\.\d+)\/?"`
+		semver = `\/(\d+\.\d+\.\d+)\"`
 	}
 	r, _ := regexp.Compile(semver)
 	for i := range result {
 		if r.MatchString(result[i]) {
 			str := r.FindString(result[i])
-			trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
+			trimstr := strings.Trim(str, "/\"") //remove "/" from /X.X.X/
 			tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
 		}
 	}
