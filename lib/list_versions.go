@@ -58,12 +58,12 @@ func GetTFLatest(mirrorURL string) (string, error) {
 		return "", error
 	}
 	// Getting versions from body; should return match /X.X.X/ where X is a number
-	semver := `\/(\d+\.\d+\.\d+)\/`
+	semver := `\/(\d+\.\d+\.\d+)\/?"`
 	r, _ := regexp.Compile(semver)
 	for i := range result {
 		if r.MatchString(result[i]) {
 			str := r.FindString(result[i])
-			trimstr := strings.Trim(str, "/") //remove "/" from /X.X.X/
+			trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
 			return trimstr, nil
 		}
 	}
@@ -81,7 +81,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 			return "", error
 		}
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver := fmt.Sprintf(`\/(%s{1}\.\d+\-[a-zA-z]+\d*)\/`, version)
+		semver := fmt.Sprintf(`\/(%s{1}\.\d+\-[a-zA-z]+\d*)\/?"`, version)
 		r, err := regexp.Compile(semver)
 		if err != nil {
 			return "", err
@@ -89,7 +89,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 		for i := range versions {
 			if r.MatchString(versions[i]) {
 				str := r.FindString(versions[i])
-				trimstr := strings.Trim(str, "/") //remove "/" from /X.X.X/
+				trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
 				return trimstr, nil
 			}
 		}
