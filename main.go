@@ -38,7 +38,7 @@ import (
 )
 
 const (
-	defaultMirror = "https://releases.hashicorp.com/terraform"
+	defaultMirror = "https://api.releases.hashicorp.com/v1/releases/terraform"
 	defaultBin    = "/usr/local/bin/terraform" //default bin installation dir
 	defaultLatest = ""
 	tfvFilename   = ".terraform-version"
