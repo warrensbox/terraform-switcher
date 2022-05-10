@@ -1,18 +1,41 @@
 package lib
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"reflect"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type tfVersionList struct {
 	tflist []string
+}
+type Releases struct {
+	Builds []struct {
+		Arch string `json:"arch"`
+		Os   string `json:"os"`
+		Url  string `json:"url"`
+	} `json:"builds"`
+	IsPrerelease bool   `json:"is_prerelease"`
+	LicenseClass string `json:"license_class"`
+	Name         string `json:"name"`
+	Status       struct {
+		State            string    `json:"state"`
+		TimestampUpdated time.Time `json:"timestamp_updated"`
+	} `json:"status"`
+	TimestampCreated     time.Time `json:"timestamp_created"`
+	TimestampUpdated     time.Time `json:"timestamp_updated"`
+	UrlShasums           string    `json:"url_shasums"`
+	UrlShasumsSignatures []string  `json:"url_shasums_signatures"`
+	UrlSourceRepository  string    `json:"url_source_repository"`
+	Version              string    `json:"version"`
 }
 
 //GetTFList :  Get the list of available terraform version given the hashicorp url
@@ -27,11 +50,11 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	var semver string
 	if preRelease == true {
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver = `\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?\"`
+		semver = `(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?`
 	} else if preRelease == false {
 		// Getting versions from body; should return match /X.X.X/ where X is a number
 		// without the ending '"' pre-release folders would be tried and break.
-		semver = `\/(\d+\.\d+\.\d+)\"`
+		semver = `(\d+\.\d+\.\d+)`
 	}
 	r, _ := regexp.Compile(semver)
 	for i := range result {
@@ -109,10 +132,9 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 //GetTFURLBody : Get list of terraform versions from hashicorp releases
 func GetTFURLBody(mirrorURL string) ([]string, error) {
 
-	hasSlash := strings.HasSuffix(mirrorURL, "/")
-	if !hasSlash { //if does not have slash - append slash
-		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
-	}
+	var releases []Releases
+	var versions []string
+
 	resp, errURL := http.Get(mirrorURL)
 	if errURL != nil {
 		log.Printf("[Error] : Getting url: %v", errURL)
@@ -126,17 +148,18 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 		os.Exit(1)
 	}
 
-	body, errBody := ioutil.ReadAll(resp.Body)
-	if errBody != nil {
-		log.Printf("[Error] : reading body: %v", errBody)
-		os.Exit(1)
-		return nil, errBody
+	body := new(bytes.Buffer)
+	if _, err := io.Copy(body, resp.Body); err != nil {
+		log.Fatal(err)
+	}
+	if err := json.Unmarshal(body.Bytes(), &releases); err != nil {
+		log.Fatalf("%s: %s", err, body.String())
+	}
+	for i := range releases {
+		versions = append(versions, releases[i].Version)
 	}
 
-	bodyString := string(body)
-	result := strings.Split(bodyString, "\n")
-
-	return result, nil
+	return versions, nil
 }
 
 //VersionExist : check if requested version exist
