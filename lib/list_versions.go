@@ -19,25 +19,11 @@ import (
 type tfVersionList struct {
 	tflist []string
 }
+
 type Release struct {
-	Builds []struct {
-		Arch string `json:"arch"`
-		Os   string `json:"os"`
-		Url  string `json:"url"`
-	} `json:"builds"`
-	IsPrerelease bool   `json:"is_prerelease"`
-	LicenseClass string `json:"license_class"`
-	Name         string `json:"name"`
-	Status       struct {
-		State            string          `json:"state"`
-		TimestampUpdated strfmt.DateTime `json:"timestamp_updated"`
-	} `json:"status"`
-	TimestampCreated     strfmt.DateTime `json:"timestamp_created"`
-	TimestampUpdated     strfmt.DateTime `json:"timestamp_updated"`
-	UrlShasums           string          `json:"url_shasums"`
-	UrlShasumsSignatures []string        `json:"url_shasums_signatures"`
-	UrlSourceRepository  string          `json:"url_source_repository"`
-	Version              string          `json:"version"`
+	IsPrerelease     bool            `json:"is_prerelease"`
+	TimestampCreated strfmt.DateTime `json:"timestamp_created"`
+	Version          string          `json:"version"`
 }
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
