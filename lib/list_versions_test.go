@@ -1,6 +1,7 @@
 package lib_test
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 	"testing"
@@ -9,16 +10,16 @@ import (
 )
 
 const (
-	hashiURL = "https://releases.hashicorp.com/terraform/"
+	hashiURL = "https://api.releases.hashicorp.com/v1/releases/terraform"
 )
 
 // TestGetTFList : Get list from hashicorp
 func TestGetTFList(t *testing.T) {
 
 	listAll := true
-	list, _ := lib.GetTFList(hashiURL, listAll)
-
-	val := "0.1.0"
+	list, _ := lib.GetTFReleases(hashiURL, listAll)
+	fmt.Println(list[0])
+	val := &lib.Release{Version: "0.1.0"}
 	var exists bool
 
 	switch reflect.TypeOf(list).Kind() {
@@ -33,7 +34,7 @@ func TestGetTFList(t *testing.T) {
 	}
 
 	if !exists {
-		log.Fatalf("Not able to find version: %s\n", val)
+		log.Fatalf("Not able to find version: %s\n", val.Version)
 	} else {
 		t.Log("Write versions exist (expected)")
 	}
