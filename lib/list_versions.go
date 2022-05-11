@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/go-openapi/strfmt"
 	"io"
 	"log"
 	"net/http"
@@ -28,15 +29,15 @@ type Release struct {
 	LicenseClass string `json:"license_class"`
 	Name         string `json:"name"`
 	Status       struct {
-		State            string    `json:"state"`
-		TimestampUpdated time.Time `json:"timestamp_updated"`
+		State            string          `json:"state"`
+		TimestampUpdated strfmt.DateTime `json:"timestamp_updated"`
 	} `json:"status"`
-	TimestampCreated     time.Time `json:"timestamp_created"`
-	TimestampUpdated     time.Time `json:"timestamp_updated"`
-	UrlShasums           string    `json:"url_shasums"`
-	UrlShasumsSignatures []string  `json:"url_shasums_signatures"`
-	UrlSourceRepository  string    `json:"url_source_repository"`
-	Version              string    `json:"version"`
+	TimestampCreated     strfmt.DateTime `json:"timestamp_created"`
+	TimestampUpdated     strfmt.DateTime `json:"timestamp_updated"`
+	UrlShasums           string          `json:"url_shasums"`
+	UrlShasumsSignatures []string        `json:"url_shasums_signatures"`
+	UrlSourceRepository  string          `json:"url_source_repository"`
+	Version              string          `json:"version"`
 }
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
@@ -88,7 +89,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 	return "", nil
 }
 
-func httpGet(url, limit string, timestamp time.Time) (*http.Response, error) {
+func httpGet(url, limit string, timestamp strfmt.DateTime) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -112,7 +113,7 @@ func httpGet(url, limit string, timestamp time.Time) (*http.Response, error) {
 	return res, nil
 }
 
-func getReleases(mirrorURL, limit string, timestamp time.Time) ([]*Release, error) {
+func getReleases(mirrorURL, limit string, timestamp strfmt.DateTime) ([]*Release, error) {
 	var releases []*Release
 	resp, errURL := httpGet(mirrorURL, limit, timestamp)
 	if errURL != nil {
@@ -140,18 +141,18 @@ func getReleases(mirrorURL, limit string, timestamp time.Time) ([]*Release, erro
 func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	// temp testing
 	limit := "20"
-	tmpTime, _ := time.Parse(time.RFC3339, time.RFC3339)
+	t, _ := time.Parse(time.RFC3339, time.RFC3339)
+	tmpTime := strfmt.DateTime(t)
 
 	rel, _ := getReleases(mirrorURL, limit, tmpTime)
 
 	// this is ugly
 	lastTimestamp := tmpTime
-	currentTimestamp := time.Now()
+	currentTimestamp := strfmt.NewDateTime()
 
 	var releases []*Release
 
 	for lastTimestamp != currentTimestamp {
-		fmt.Println("got here")
 		rel, _ = getReleases(mirrorURL, limit, rel[len(rel)-1].TimestampCreated)
 		currentTimestamp = rel[len(rel)-1].TimestampCreated
 		if len(releases) > 0 {
