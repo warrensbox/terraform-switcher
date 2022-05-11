@@ -3,6 +3,7 @@ package lib
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -76,7 +77,6 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 			}
 		}
 	} else if preRelease == false {
-		//tflist, _ := GetTFList(mirrorURL, preRelease) //get list of versions
 		tflist, err := GetTFReleases(mirrorURL, preRelease)
 		version = fmt.Sprintf("~> %v", version)
 		semv, err := SemVerParser(&version, tflist)
@@ -88,12 +88,33 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 	return "", nil
 }
 
-//GetTFReleases : Get list of terraform rele from hashicorp releases
-func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
+func httpGet(url, limit string, timestamp time.Time) (*http.Response, error) {
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	q := req.URL.Query()
+	q.Add("limit", limit)
+	if timestamp.String() != time.RFC3339 {
+		q.Add("after", timestamp.String())
+	}
+	req.URL.RawQuery = q.Encode()
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != http.StatusOK {
+		// should clean this up
+		return nil, errors.New("issue during request")
+	}
+	return res, nil
+}
+
+func getReleases(mirrorURL, limit string, timestamp time.Time) ([]*Release, error) {
 	var releases []*Release
-
-	resp, errURL := http.Get(mirrorURL)
+	resp, errURL := httpGet(mirrorURL, limit, timestamp)
 	if errURL != nil {
 		log.Printf("[Error] : Getting url: %v", errURL)
 		os.Exit(1)
@@ -113,6 +134,32 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	if err := json.Unmarshal(body.Bytes(), &releases); err != nil {
 		log.Fatalf("%s: %s", err, body.String())
 	}
+	return releases, nil
+}
+
+func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
+	// temp testing
+	limit := "20"
+	tmpTime, _ := time.Parse(time.RFC3339, time.RFC3339)
+
+	rel, _ := getReleases(mirrorURL, limit, tmpTime)
+
+	// this is ugly
+	lastTimestamp := tmpTime
+	currentTimestamp := time.Now()
+
+	var releases []*Release
+
+	for lastTimestamp != currentTimestamp {
+		fmt.Println("got here")
+		rel, _ = getReleases(mirrorURL, limit, rel[len(rel)-1].TimestampCreated)
+		currentTimestamp = rel[len(rel)-1].TimestampCreated
+		if len(releases) > 0 {
+			lastTimestamp = releases[len(releases)-1].TimestampCreated
+		}
+		releases = append(releases, rel...)
+	}
+
 	if !preRelease {
 		for i, r := range releases {
 			if r.IsPrerelease {
@@ -120,7 +167,6 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 			}
 		}
 	}
-
 	return releases, nil
 }
 
