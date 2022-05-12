@@ -44,26 +44,18 @@ func GetTFLatest(mirrorURL string, preRelease bool) (Release, error) {
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (Release, error) {
-	if preRelease == true {
-		releases, error := GetTFReleases(mirrorURL, preRelease)
-		if error != nil {
-			return Release{}, error
-		}
-		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver := fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
-		r, err := regexp.Compile(semver)
+	if preRelease {
+		releases, err := GetTFReleases(mirrorURL, preRelease)
+		version := fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
+		semv, err := SemVerParser(&version, releases)
 		if err != nil {
 			return Release{}, err
 		}
-		for i := range releases {
-			if r.MatchString(releases[i].Version) {
-				return releases[i], nil
-			}
-		}
-	} else if preRelease == false {
-		tflist, err := GetTFReleases(mirrorURL, preRelease)
+		return semv, nil
+	} else if !preRelease {
+		releases, err := GetTFReleases(mirrorURL, preRelease)
 		version = fmt.Sprintf("~> %v", version)
-		semv, err := SemVerParser(&version, tflist)
+		semv, err := SemVerParser(&version, releases)
 		if err != nil {
 			return Release{}, err
 		}
@@ -122,15 +114,15 @@ func getReleases(mirrorURL string, queryParams map[string]string) ([]Release, er
 
 func GetTFReleases(mirrorURL string, preRelease bool) ([]Release, error) {
 	queryParams := map[string]string{"limit": "20"}
-	rel, _ := getReleases(mirrorURL, queryParams)
+	releaseSet, _ := getReleases(mirrorURL, queryParams)
 
 	var releases []Release
-	rel, _ = getReleases(mirrorURL, queryParams)
-	releases = append(releases, rel...)
-	for len(rel) == 20 {
-		queryParams["after"] = rel[len(rel)-1].TimestampCreated.String()
-		rel, _ = getReleases(mirrorURL, queryParams)
-		releases = append(releases, rel...)
+	releaseSet, _ = getReleases(mirrorURL, queryParams)
+	releases = append(releases, releaseSet...)
+	for len(releaseSet) == 20 {
+		queryParams["after"] = releaseSet[len(releaseSet)-1].TimestampCreated.String()
+		releaseSet, _ = getReleases(mirrorURL, queryParams)
+		releases = append(releases, releaseSet...)
 	}
 
 	if !preRelease {

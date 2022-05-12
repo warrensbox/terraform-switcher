@@ -165,7 +165,7 @@ func main() {
 	/* show latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
 	case *showLatestPre != "":
 		preRelease := true
-		showLatestImplicitVersion(*showLatestPre, custBinPath, mirrorURL, preRelease)
+		showLatestImplicitVersion(*showLatestPre, mirrorURL, preRelease)
 
 	/* latest implicit version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
 	case *latestStable != "":
@@ -175,7 +175,7 @@ func main() {
 	/* show latest implicit stable version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
 	case *showLatestStable != "":
 		preRelease := false
-		showLatestImplicitVersion(*showLatestStable, custBinPath, mirrorURL, preRelease)
+		showLatestImplicitVersion(*showLatestStable, mirrorURL, preRelease)
 
 	/* latest stable version */
 	case *latestFlag:
@@ -249,16 +249,16 @@ func installLatestImplicitVersion(requestedVersion string, custBinPath, mirrorUR
 		fmt.Printf("error parsing constraint: %s\n", err)
 	}
 	//if lib.ValidMinorVersionFormat(requestedVersion) {
-	tfversion, err := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
-	if err == nil && tfversion.Version != "" {
-		lib.Install(tfversion, *custBinPath, *mirrorURL)
+	tfRelease, err := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
+	if err == nil && tfRelease.Version != "" {
+		lib.Install(tfRelease, *custBinPath, *mirrorURL)
 	}
 	fmt.Printf("Error parsing constraint: %s\n", err)
 	lib.PrintInvalidMinorTFVersion()
 }
 
 // show latest - argument (version) must be provided
-func showLatestImplicitVersion(requestedVersion string, custBinPath, mirrorURL *string, preRelease bool) {
+func showLatestImplicitVersion(requestedVersion string, mirrorURL *string, preRelease bool) {
 	if lib.ValidMinorVersionFormat(requestedVersion) {
 		tfversion, _ := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
 		if len(tfversion.Version) > 0 {
