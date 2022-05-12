@@ -45,23 +45,17 @@ func GetTFLatest(mirrorURL string, preRelease bool) (Release, error) {
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (Release, error) {
 	if preRelease {
-		releases, err := GetTFReleases(mirrorURL, preRelease)
-		version := fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
-		semv, err := SemVerParser(&version, releases)
-		if err != nil {
-			return Release{}, err
-		}
-		return semv, nil
+		version = fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
 	} else if !preRelease {
-		releases, err := GetTFReleases(mirrorURL, preRelease)
 		version = fmt.Sprintf("~> %v", version)
-		semv, err := SemVerParser(&version, releases)
-		if err != nil {
-			return Release{}, err
-		}
-		return semv, nil
 	}
-	return Release{}, nil
+	releases, err := GetTFReleases(mirrorURL, preRelease)
+	//version := fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
+	semv, err := SemVerParser(&version, releases)
+	if err != nil {
+		return Release{}, err
+	}
+	return semv, nil
 }
 
 func httpGet(url string, queryParams map[string]string) (*http.Response, error) {
@@ -81,7 +75,6 @@ func httpGet(url string, queryParams map[string]string) (*http.Response, error) 
 		return nil, err
 	}
 	if res.StatusCode != http.StatusOK {
-		// should clean this up
 		return nil, errors.New("issue during request")
 	}
 	return res, nil
