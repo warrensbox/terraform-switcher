@@ -76,10 +76,10 @@ func GetInstallLocation() string {
 }
 
 //Install : Install the provided version in the argument
-func Install(tfversion string, binPath string, mirrorURL string) {
+func Install(tfRelease Release, binPath string, mirrorURL string) {
 
-	// if !ValidVersionFormat(tfversion) {
-	// 	fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
+	// if !ValidVersionFormat(tfRelease) {
+	// 	fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfRelease)
 	// 	os.Exit(1)
 	// }
 
@@ -97,14 +97,14 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	goos := runtime.GOOS
 
 	// Terraform darwin arm64 comes with 1.0.2 and next version
-	tfver, _ := version.NewVersion(tfversion)
+	tfver, _ := version.NewVersion(tfRelease.Version)
 	tf102, _ := version.NewVersion(tfDarwinArm64StartVersion)
 	if goos == "darwin" && goarch == "arm64" && tfver.LessThan(tf102) {
 		goarch = "amd64"
 	}
 
 	/* check if selected version already downloaded */
-	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+tfversion))
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+tfRelease.Version))
 	fileExist := CheckFileExist(installFileVersionPath)
 
 	/* if selected version already exist, */
@@ -119,8 +119,8 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
-		fmt.Printf("Switched terraform to version %q \n", tfversion)
-		AddRecent(tfversion) //add to recent file for faster lookup
+		fmt.Printf("Switched terraform to version %q \n", tfRelease.Version)
+		AddRecent(tfRelease.Version) //add to recent file for faster lookup
 		os.Exit(0)
 	}
 
@@ -132,7 +132,16 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	url := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
+	//url := mirrorURL + tfRelease + "/" + versionPrefix + tfRelease + "_" + goos + "_" + goarch + ".zip"
+	url := ""
+	for _, build := range tfRelease.Builds {
+		if build.Os == goos && build.Arch == goarch {
+			url = build.Url
+		}
+	}
+	if url == "" {
+		log.Fatalln("Couldn't determine download url from release")
+	}
 	zipFile, errDownload := DownloadFromURL(installLocation, url)
 
 	/* If unable to download file from url, exit(1) immediately */
@@ -165,8 +174,8 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
-	fmt.Printf("Switched terraform to version %q \n", tfversion)
-	AddRecent(tfversion) //add to recent file for faster lookup
+	fmt.Printf("Switched terraform to version %q \n", tfRelease.Version)
+	AddRecent(tfRelease.Version) //add to recent file for faster lookup
 	os.Exit(0)
 }
 

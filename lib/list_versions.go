@@ -11,16 +11,18 @@ import (
 	"os"
 	"reflect"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/go-openapi/strfmt"
 )
 
-type tfVersionList struct {
-	tflist []string
-}
-
 type Release struct {
+	Builds []struct {
+		Arch string `json:"arch"`
+		Os   string `json:"os"`
+		Url  string `json:"url"`
+	} `json:"builds"`
 	IsPrerelease     bool            `json:"is_prerelease"`
 	TimestampCreated strfmt.DateTime `json:"timestamp_created"`
 	Version          string          `json:"version"`
@@ -28,7 +30,6 @@ type Release struct {
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
 func GetTFLatest(mirrorURL string, preRelease bool) (Release, error) {
-
 	result, error := GetTFReleases(mirrorURL, preRelease)
 	if error != nil {
 		return Release{}, error
@@ -38,29 +39,25 @@ func GetTFLatest(mirrorURL string, preRelease bool) (Release, error) {
 			return result[i], nil
 		}
 	}
-
 	return Release{}, nil
 }
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
-func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
-
+func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (Release, error) {
 	if preRelease == true {
-		//TODO: use GetTFList() instead of GetTFURLBody
 		releases, error := GetTFReleases(mirrorURL, preRelease)
 		if error != nil {
-			return "", error
+			return Release{}, error
 		}
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
 		semver := fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
 		r, err := regexp.Compile(semver)
 		if err != nil {
-			return "", err
+			return Release{}, err
 		}
 		for i := range releases {
 			if r.MatchString(releases[i].Version) {
-				str := r.FindString(releases[i].Version)
-				return str, nil
+				return releases[i], nil
 			}
 		}
 	} else if preRelease == false {
@@ -68,11 +65,11 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 		version = fmt.Sprintf("~> %v", version)
 		semv, err := SemVerParser(&version, tflist)
 		if err != nil {
-			return "", err
+			return Release{}, err
 		}
 		return semv, nil
 	}
-	return "", nil
+	return Release{}, nil
 }
 
 func httpGet(url string, queryParams map[string]string) (*http.Response, error) {
@@ -144,7 +141,36 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]Release, error) {
 			}
 		}
 	}
+	sort.Slice(releases, func(i, j int) bool {
+		return releases[i].Version > releases[j].Version
+	})
 	return releases, nil
+}
+
+func GetTFRelease(mirrorURL, requestedVersion string) (Release, error) {
+	resp, errURL := httpGet(mirrorURL+"/"+requestedVersion, nil)
+	if errURL != nil {
+		log.Printf("[Error] : Getting url: %v", errURL)
+		os.Exit(1)
+		return Release{}, errURL
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
+		os.Exit(1)
+	}
+
+	body := new(bytes.Buffer)
+	if _, err := io.Copy(body, resp.Body); err != nil {
+		log.Fatal(err)
+	}
+	var release Release
+	if err := json.Unmarshal(body.Bytes(), &release); err != nil {
+		log.Fatalf("%s: %s", err, body.String())
+	}
+	return release, nil
+
 }
 
 func removePreReleases(slice []Release, s int) []Release {

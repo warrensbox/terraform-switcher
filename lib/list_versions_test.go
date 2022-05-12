@@ -2,7 +2,6 @@ package lib_test
 
 import (
 	"log"
-	"reflect"
 	"testing"
 
 	"github.com/warrensbox/terraform-switcher/lib"
@@ -14,6 +13,7 @@ const (
 
 // TestGetTFList : Get list from hashicorp
 
+/*
 func TestGetTFList(t *testing.T) {
 
 	listAll := true
@@ -39,6 +39,7 @@ func TestGetTFList(t *testing.T) {
 	}
 
 }
+*/
 
 //TestRemoveDuplicateVersions :  test to removed duplicate
 func TestRemoveDuplicateVersions(t *testing.T) {

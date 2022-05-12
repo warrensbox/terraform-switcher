@@ -38,15 +38,14 @@ import (
 )
 
 const (
-	defaultMirror         = "https://api.releases.hashicorp.com/v1/releases/terraform"
-	defaultDownloadMirror = "https://releases.hashicorp.com/terraform"
-	defaultBin            = "/usr/local/bin/terraform" //default bin installation dir
-	defaultLatest         = ""
-	tfvFilename           = ".terraform-version"
-	rcFilename            = ".tfswitchrc"
-	tomlFilename          = ".tfswitch.toml"
-	tgHclFilename         = "terragrunt.hcl"
-	versionPrefix         = "terraform_"
+	defaultMirror = "https://api.releases.hashicorp.com/v1/releases/terraform"
+	defaultBin    = "/usr/local/bin/terraform" //default bin installation dir
+	defaultLatest = ""
+	tfvFilename   = ".terraform-version"
+	rcFilename    = ".tfswitchrc"
+	tomlFilename  = ".tfswitch.toml"
+	tgHclFilename = "terragrunt.hcl"
+	versionPrefix = "terraform_"
 )
 
 var version = "0.12.0\n"
@@ -60,8 +59,7 @@ func main() {
 	showLatestStable := getopt.StringLong("show-latest-stable", 'S', defaultLatest, "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
 	latestFlag := getopt.BoolLong("latest", 'u', "Get latest stable version")
 	showLatestFlag := getopt.BoolLong("show-latest", 'U', "Show latest stable version")
-	mirrorURL := getopt.StringLong("api-mirror", 'm', defaultMirror, "Install from a remote other than the default. Default: https://releases.hashicorp.com/terraform")
-	downloadURL := getopt.StringLong("download-mirror", 'd', defaultDownloadMirror, "Install from a remote other than default. Default: https://releases.hashicorp.com/terraform")
+	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote other than the default. Default: https://releases.hashicorp.com/terraform")
 	chDirPath := getopt.StringLong("chdir", 'c', "", "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
@@ -111,58 +109,58 @@ func main() {
 		/* show all terraform version including betas and RCs*/
 		case *listAllFlag:
 			listAll := true //set list all true - all versions including beta and rc will be displayed
-			installOption(listAll, &binPath, mirrorURL, downloadURL)
+			installOption(listAll, &binPath, mirrorURL)
 		/* latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
 		case *latestPre != "":
 			preRelease := true
-			installLatestImplicitVersion(*latestPre, custBinPath, mirrorURL, downloadURL, preRelease)
+			installLatestImplicitVersion(*latestPre, custBinPath, mirrorURL, preRelease)
 		/* latest implicit version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
 		case *latestStable != "":
 			preRelease := false
-			installLatestImplicitVersion(*latestStable, custBinPath, mirrorURL, downloadURL, preRelease)
+			installLatestImplicitVersion(*latestStable, custBinPath, mirrorURL, preRelease)
 		/* latest stable version */
 		case *latestFlag:
-			installLatestVersion(custBinPath, mirrorURL, downloadURL)
+			installLatestVersion(custBinPath, mirrorURL)
 		/* version provided on command line as arg */
 		case len(args) == 1:
-			installVersion(args[0], &binPath, mirrorURL, downloadURL)
+			installVersion(args[0], &binPath, mirrorURL)
 		/* provide an tfswitchrc file (IN ADDITION TO A TOML FILE) */
 		case fileExists(RCFile) && len(args) == 0:
 			readingFileMsg(rcFilename)
 			tfversion := retrieveFileContents(RCFile)
-			installVersion(tfversion, &binPath, mirrorURL, downloadURL)
+			installVersion(tfversion, &binPath, mirrorURL)
 		/* if .terraform-version file found (IN ADDITION TO A TOML FILE) */
 		case fileExists(TFVersionFile) && len(args) == 0:
 			readingFileMsg(tfvFilename)
 			tfversion := retrieveFileContents(TFVersionFile)
-			installVersion(tfversion, &binPath, mirrorURL, downloadURL)
+			installVersion(tfversion, &binPath, mirrorURL)
 		/* if versions.tf file found (IN ADDITION TO A TOML FILE) */
 		case checkTFModuleFileExist(dir) && len(args) == 0:
-			installTFProvidedModule(dir, &binPath, mirrorURL, downloadURL)
+			installTFProvidedModule(dir, &binPath, mirrorURL)
 		/* if Terraform Version environment variable is set */
 		case checkTFEnvExist() && len(args) == 0 && version == "":
 			tfversion := os.Getenv("TF_VERSION")
 			fmt.Printf("Terraform version environment variable: %s\n", tfversion)
-			installVersion(tfversion, custBinPath, mirrorURL, downloadURL)
+			installVersion(tfversion, custBinPath, mirrorURL)
 		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
 		case fileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-			installTGHclFile(&TGHACLFile, &binPath, mirrorURL, downloadURL)
+			installTGHclFile(&TGHACLFile, &binPath, mirrorURL)
 		// if no arg is provided - but toml file is provided
 		case version != "":
-			installVersion(version, &binPath, mirrorURL, downloadURL)
+			installVersion(version, &binPath, mirrorURL)
 		default:
 			listAll := false //set list all false - only official release will be displayed
-			installOption(listAll, &binPath, mirrorURL, downloadURL)
+			installOption(listAll, &binPath, mirrorURL)
 		}
 
 	/* show all terraform version including betas and RCs*/
 	case *listAllFlag:
-		installWithListAll(custBinPath, mirrorURL, downloadURL)
+		installWithListAll(custBinPath, mirrorURL)
 
 	/* latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
 	case *latestPre != "":
 		preRelease := true
-		installLatestImplicitVersion(*latestPre, custBinPath, mirrorURL, downloadURL, preRelease)
+		installLatestImplicitVersion(*latestPre, custBinPath, mirrorURL, preRelease)
 
 	/* show latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
 	case *showLatestPre != "":
@@ -172,7 +170,7 @@ func main() {
 	/* latest implicit version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
 	case *latestStable != "":
 		preRelease := false
-		installLatestImplicitVersion(*latestStable, custBinPath, mirrorURL, downloadURL, preRelease)
+		installLatestImplicitVersion(*latestStable, custBinPath, mirrorURL, preRelease)
 
 	/* show latest implicit stable version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
 	case *showLatestStable != "":
@@ -181,79 +179,79 @@ func main() {
 
 	/* latest stable version */
 	case *latestFlag:
-		installLatestVersion(custBinPath, mirrorURL, downloadURL)
+		installLatestVersion(custBinPath, mirrorURL)
 
 	/* show latest stable version */
 	case *showLatestFlag:
-		showLatestVersion(custBinPath, mirrorURL)
+		showLatestVersion(mirrorURL)
 
 	/* version provided on command line as arg */
 	case len(args) == 1:
-		installVersion(args[0], custBinPath, mirrorURL, downloadURL)
+		installVersion(args[0], custBinPath, mirrorURL)
 
 	/* provide an tfswitchrc file */
 	case fileExists(RCFile) && len(args) == 0:
 		readingFileMsg(rcFilename)
 		tfversion := retrieveFileContents(RCFile)
-		installVersion(tfversion, custBinPath, mirrorURL, downloadURL)
+		installVersion(tfversion, custBinPath, mirrorURL)
 
 	/* if .terraform-version file found */
 	case fileExists(TFVersionFile) && len(args) == 0:
 		readingFileMsg(tfvFilename)
 		tfversion := retrieveFileContents(TFVersionFile)
-		installVersion(tfversion, custBinPath, mirrorURL, downloadURL)
+		installVersion(tfversion, custBinPath, mirrorURL)
 
 	/* if versions.tf file found */
 	case checkTFModuleFileExist(dir) && len(args) == 0:
-		installTFProvidedModule(dir, custBinPath, mirrorURL, downloadURL)
+		installTFProvidedModule(dir, custBinPath, mirrorURL)
 
 	/* if terragrunt.hcl file found */
 	case fileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-		installTGHclFile(&TGHACLFile, custBinPath, mirrorURL, downloadURL)
+		installTGHclFile(&TGHACLFile, custBinPath, mirrorURL)
 
 	/* if Terraform Version environment variable is set */
 	case checkTFEnvExist() && len(args) == 0:
 		tfversion := os.Getenv("TF_VERSION")
 		fmt.Printf("Terraform version environment variable: %s\n", tfversion)
-		installVersion(tfversion, custBinPath, mirrorURL, downloadURL)
+		installVersion(tfversion, custBinPath, mirrorURL)
 
 	// if no arg is provided
 	default:
 		listAll := false //set list all false - only official release will be displayed
-		installOption(listAll, custBinPath, mirrorURL, downloadURL)
+		installOption(listAll, custBinPath, mirrorURL)
 	}
 }
 
 /* Helper functions */
 
 // install with all possible versions, including beta and rc
-func installWithListAll(custBinPath, mirrorURL, downloadURL *string) {
+func installWithListAll(custBinPath, mirrorURL *string) {
 	listAll := true //set list all true - all versions including beta and rc will be displayed
-	installOption(listAll, custBinPath, mirrorURL, downloadURL)
+	installOption(listAll, custBinPath, mirrorURL)
 }
 
 // install latest stable tf version
-func installLatestVersion(custBinPath, mirrorURL, downloadURL *string) {
+func installLatestVersion(custBinPath, mirrorURL *string) {
 	tfRelease, _ := lib.GetTFLatest(*mirrorURL, false)
-	lib.Install(tfRelease.Version, *custBinPath, *downloadURL)
+	lib.Install(tfRelease, *custBinPath, *mirrorURL)
 }
 
 // show install latest stable tf version
-func showLatestVersion(custBinPath, mirrorURL *string) {
+func showLatestVersion(mirrorURL *string) {
 	tfRelease, _ := lib.GetTFLatest(*mirrorURL, false)
 	fmt.Printf("%s\n", tfRelease.Version)
 }
 
 // install latest - argument (version) must be provided
-func installLatestImplicitVersion(requestedVersion string, custBinPath, mirrorURL *string, downloadURL *string, preRelease bool) {
+func installLatestImplicitVersion(requestedVersion string, custBinPath, mirrorURL *string, preRelease bool) {
 	_, err := semver.NewConstraint(requestedVersion)
 	if err != nil {
 		fmt.Printf("error parsing constraint: %s\n", err)
 	}
 	//if lib.ValidMinorVersionFormat(requestedVersion) {
 	tfversion, err := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
-	if err == nil && tfversion != "" {
-		lib.Install(tfversion, *custBinPath, *downloadURL)
+	if err == nil && tfversion.Version != "" {
+		lib.Install(tfversion, *custBinPath, *mirrorURL)
 	}
 	fmt.Printf("Error parsing constraint: %s\n", err)
 	lib.PrintInvalidMinorTFVersion()
@@ -263,8 +261,8 @@ func installLatestImplicitVersion(requestedVersion string, custBinPath, mirrorUR
 func showLatestImplicitVersion(requestedVersion string, custBinPath, mirrorURL *string, preRelease bool) {
 	if lib.ValidMinorVersionFormat(requestedVersion) {
 		tfversion, _ := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
-		if len(tfversion) > 0 {
-			fmt.Printf("%s\n", tfversion)
+		if len(tfversion.Version) > 0 {
+			fmt.Printf("%s\n", tfversion.Version)
 		} else {
 			fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
 			os.Exit(1)
@@ -275,7 +273,7 @@ func showLatestImplicitVersion(requestedVersion string, custBinPath, mirrorURL *
 }
 
 // install with provided version as argument
-func installVersion(arg string, custBinPath *string, mirrorURL *string, downloadURL *string) {
+func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 	if lib.ValidVersionFormat(arg) {
 		requestedVersion := arg
 
@@ -291,11 +289,12 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string, download
 		}
 
 		//if the requested version had not been downloaded before
-		tflist, _ := lib.GetTFReleases(*mirrorURL, true)    //get list of versions
-		exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
+		//tflist, _ := lib.GetTFReleases(*mirrorURL, true)    //get list of versions
+		tfRelease, _ := lib.GetTFRelease(*mirrorURL, requestedVersion)
+		exist := lib.VersionExist(requestedVersion, tfRelease) //check if version exist before downloading it
 
 		if exist {
-			lib.Install(requestedVersion, *custBinPath, *downloadURL)
+			lib.Install(tfRelease, *custBinPath, *mirrorURL)
 		} else {
 			fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
 			os.Exit(1)
@@ -398,7 +397,7 @@ func usageMessage() {
 /* installOption : displays & installs tf version */
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
-func installOption(listAll bool, custBinPath, mirrorURL *string, downloadURL *string) {
+func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	tflist, _ := lib.GetTFReleases(*mirrorURL, listAll) //get list of versions
 	recentVersions, _ := lib.GetRecentVersions()        //get recent versions from RECENT file
 	//tflist = append(recentVersions, tflist...) //append recent versions to the top of the list
@@ -426,25 +425,26 @@ func installOption(listAll bool, custBinPath, mirrorURL *string, downloadURL *st
 		log.Printf("Prompt failed %v\n", errPrompt)
 		os.Exit(1)
 	}
+	rel, _ := lib.GetTFRelease(*mirrorURL, tfversion)
 
-	lib.Install(tfversion, *custBinPath, *downloadURL)
+	lib.Install(rel, *custBinPath, *mirrorURL)
 	os.Exit(0)
 }
 
 // install when tf file is provided
-func installTFProvidedModule(dir string, custBinPath, mirrorURL *string, downloadURL *string) {
+func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
 	fmt.Printf("Reading required version from terraform file\n")
 	module, _ := tfconfig.LoadModule(dir)
 	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
-	installFromConstraint(&tfconstraint, custBinPath, mirrorURL, downloadURL)
+	installFromConstraint(&tfconstraint, custBinPath, mirrorURL)
 }
 
 // install using a version constraint
-func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string, downloadURL *string) {
+func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string) {
 
 	tfversion, err := lib.GetSemver(tfconstraint, mirrorURL)
 	if err == nil {
-		lib.Install(tfversion, *custBinPath, *downloadURL)
+		lib.Install(tfversion, *custBinPath, *mirrorURL)
 	}
 	fmt.Println(err)
 	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
@@ -452,7 +452,7 @@ func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string,
 }
 
 // Install using version constraint from terragrunt file
-func installTGHclFile(tgFile *string, custBinPath, mirrorURL, downloadURL *string) {
+func installTGHclFile(tgFile *string, custBinPath, mirrorURL *string) {
 	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
 	parser := hclparse.NewParser()
 	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
@@ -462,7 +462,7 @@ func installTGHclFile(tgFile *string, custBinPath, mirrorURL, downloadURL *strin
 	}
 	var version terragruntVersionConstraints
 	gohcl.DecodeBody(file.Body, nil, &version)
-	installFromConstraint(&version.TerraformVersionConstraint, custBinPath, mirrorURL, downloadURL)
+	installFromConstraint(&version.TerraformVersionConstraint, custBinPath, mirrorURL)
 }
 
 type terragruntVersionConstraints struct {
