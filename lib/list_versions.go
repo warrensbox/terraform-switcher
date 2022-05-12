@@ -3,7 +3,6 @@ package lib
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -77,7 +76,7 @@ func httpGet(url string, queryParams map[string]string) (*http.Response, error) 
 	}
 	if res.StatusCode != http.StatusOK {
 		err := fmt.Errorf("issue during request (%d: %q)", res.StatusCode, res.Status)
-		return nil, errors.New(err)
+		return nil, err
 	}
 	return res, nil
 }
