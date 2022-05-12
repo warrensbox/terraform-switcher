@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/go-openapi/strfmt"
@@ -91,7 +92,7 @@ func getReleases(mirrorURL string, queryParams map[string]string) ([]Release, er
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
 		os.Exit(1)
 	}
@@ -107,13 +108,14 @@ func getReleases(mirrorURL string, queryParams map[string]string) ([]Release, er
 }
 
 func GetTFReleases(mirrorURL string, preRelease bool) ([]Release, error) {
-	queryParams := map[string]string{"limit": "20"}
+	limit := 20
+	queryParams := map[string]string{"limit": strconv.Itoa(limit)}
 	releaseSet, _ := getReleases(mirrorURL, queryParams)
 
 	var releases []Release
 	releaseSet, _ = getReleases(mirrorURL, queryParams)
 	releases = append(releases, releaseSet...)
-	for len(releaseSet) == 20 {
+	for len(releaseSet) == limit {
 		queryParams["after"] = releaseSet[len(releaseSet)-1].TimestampCreated.String()
 		releaseSet, _ = getReleases(mirrorURL, queryParams)
 		releases = append(releases, releaseSet...)
@@ -141,7 +143,7 @@ func GetTFRelease(mirrorURL, requestedVersion string) (Release, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
 		os.Exit(1)
 	}
