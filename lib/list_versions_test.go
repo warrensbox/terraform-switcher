@@ -2,6 +2,7 @@ package lib_test
 
 import (
 	"log"
+	"reflect"
 	"testing"
 
 	"github.com/warrensbox/terraform-switcher/lib"
@@ -13,7 +14,6 @@ const (
 
 // TestGetTFList : Get list from hashicorp
 
-/*
 func TestGetTFList(t *testing.T) {
 
 	listAll := true
@@ -26,12 +26,11 @@ func TestGetTFList(t *testing.T) {
 		s := reflect.ValueOf(list)
 
 		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
+			if reflect.DeepEqual(val.Version, s.Index(i).FieldByName("Version").String()) == true {
 				exists = true
 			}
 		}
 	}
-
 	if !exists {
 		log.Fatalf("Not able to find version: %s\n", val.Version)
 	} else {
@@ -39,7 +38,6 @@ func TestGetTFList(t *testing.T) {
 	}
 
 }
-*/
 
 //TestRemoveDuplicateVersions :  test to removed duplicate
 func TestRemoveDuplicateVersions(t *testing.T) {
