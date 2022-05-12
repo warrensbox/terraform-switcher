@@ -75,7 +75,8 @@ func httpGet(url string, queryParams map[string]string) (*http.Response, error) 
 		return nil, err
 	}
 	if res.StatusCode != http.StatusOK {
-		return nil, errors.New("issue during request")
+		err := fmt.Errorf("issue during request (%d: %q)", res.StatusCode, res.Status)
+		return nil, errors.New(err)
 	}
 	return res, nil
 }
