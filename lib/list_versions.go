@@ -30,13 +30,13 @@ type Release struct {
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
 func GetTFLatest(mirrorURL string, preRelease bool) (Release, error) {
-	result, error := GetTFReleases(mirrorURL, preRelease)
+	releases, error := GetTFReleases(mirrorURL, preRelease)
 	if error != nil {
 		return Release{}, error
 	}
-	for i := range result {
-		if !result[i].IsPrerelease {
-			return result[i], nil
+	for i := range releases {
+		if !releases[i].IsPrerelease {
+			return releases[i], nil
 		}
 	}
 	return Release{}, nil
@@ -121,7 +121,6 @@ func getReleases(mirrorURL string, queryParams map[string]string) ([]Release, er
 }
 
 func GetTFReleases(mirrorURL string, preRelease bool) ([]Release, error) {
-	// temp testing
 	queryParams := map[string]string{"limit": "20"}
 	rel, _ := getReleases(mirrorURL, queryParams)
 
