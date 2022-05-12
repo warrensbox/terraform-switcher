@@ -2,14 +2,12 @@ package lib
 
 import (
 	"fmt"
+	"github.com/hashicorp/go-version"
 	"log"
 	"os"
 	"os/user"
 	"path/filepath"
 	"runtime"
-	"strings"
-
-	"github.com/hashicorp/go-version"
 )
 
 const (
@@ -124,15 +122,8 @@ func Install(tfRelease Release, binPath string, mirrorURL string) {
 		os.Exit(0)
 	}
 
-	//if does not have slash - append slash
-	hasSlash := strings.HasSuffix(mirrorURL, "/")
-	if !hasSlash {
-		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
-	}
-
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	//url := mirrorURL + tfRelease + "/" + versionPrefix + tfRelease + "_" + goos + "_" + goarch + ".zip"
 	url := ""
 	for _, build := range tfRelease.Builds {
 		if build.Os == goos && build.Arch == goarch {

@@ -288,9 +288,8 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 		}
 
 		//if the requested version had not been downloaded before
-		//tflist, _ := lib.GetTFReleases(*mirrorURL, true)    //get list of versions
-		tfRelease, _ := lib.GetTFRelease(*mirrorURL, requestedVersion)
-		exist := lib.VersionExist(requestedVersion, tfRelease) //check if version exist before downloading it
+		tfRelease, _ := lib.GetTFRelease(*mirrorURL, requestedVersion) //get list of versions
+		exist := lib.VersionExist(requestedVersion, tfRelease)         //check if version exist before downloading it
 
 		if exist {
 			lib.Install(tfRelease, *custBinPath, *mirrorURL)
@@ -395,7 +394,6 @@ func usageMessage() {
 func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	tflist, _ := lib.GetTFReleases(*mirrorURL, listAll) //get list of versions
 	recentVersions, _ := lib.GetRecentVersions()        //get recent versions from RECENT file
-	//tflist = append(recentVersions, tflist...) //append recent versions to the top of the list
 	var versions []string
 	for _, r := range tflist {
 		versions = append(versions, r.Version)

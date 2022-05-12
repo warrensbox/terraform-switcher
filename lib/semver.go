@@ -10,8 +10,6 @@ import (
 // GetSemver : returns version that will be installed based on server constaint provided
 func GetSemver(tfconstraint *string, mirrorURL *string) (Release, error) {
 
-	//listAll := true
-	//tflist, _ := GetTFList(*mirrorURL, listAll) //get list of versions
 	tflist, _ := GetTFReleases(*mirrorURL, true)
 	fmt.Printf("Reading required version from constraint: %s\n", *tfconstraint)
 	tfversion, err := SemVerParser(tfconstraint, tflist)
@@ -30,7 +28,6 @@ func SemVerParser(tfconstraint *string, tflist []Release) (Release, error) {
 	if err != nil {
 		return Release{}, fmt.Errorf("error parsing constraint: %s", err)
 	}
-	//versions := make([]*semver.Version, len(tflist))
 	//put tfversion into semver object
 	for _, tfvals := range tflist {
 		version, err := semver.NewVersion(tfvals.Version)
