@@ -8,7 +8,7 @@ import (
 )
 
 // GetSemver : returns version that will be installed based on server constaint provided
-func GetSemver(tfconstraint *string, mirrorURL *string) (string, error) {
+func GetSemver(tfconstraint *string, mirrorURL *string) (Release, error) {
 
 	//listAll := true
 	//tflist, _ := GetTFList(*mirrorURL, listAll) //get list of versions
@@ -19,36 +19,33 @@ func GetSemver(tfconstraint *string, mirrorURL *string) (string, error) {
 }
 
 // ValidateSemVer : Goes through the list of terraform version, return a valid tf version for contraint provided
-func SemVerParser(tfconstraint *string, tflist []Release) (string, error) {
-	tfversion := ""
+func SemVerParser(tfconstraint *string, tflist []Release) (Release, error) {
+
+	sort.Slice(tflist, func(i, j int) bool {
+		return tflist[i].Version > tflist[j].Version
+	})
 	constraints, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
-		return "", fmt.Errorf("error parsing constraint: %s", err)
+		return Release{}, fmt.Errorf("error parsing constraint: %s", err)
 	}
-	versions := make([]*semver.Version, len(tflist))
+	//versions := make([]*semver.Version, len(tflist))
 	//put tfversion into semver object
-	for i, tfvals := range tflist {
-		version, err := semver.NewVersion(tfvals.Version) //NewVersion parses a given version and returns an instance of Version or an error if unable to parse the version.
+	for _, tfvals := range tflist {
+		version, err := semver.NewVersion(tfvals.Version)
 		if err != nil {
-			return "", fmt.Errorf("error parsing constraint: %s", err)
+			return Release{}, fmt.Errorf("error parsing constraint: %s", err)
 		}
-		versions[i] = version
-	}
-
-	sort.Sort(sort.Reverse(semver.Collection(versions)))
-
-	for _, element := range versions {
-		if constraints.Check(element) { // Validate a version against a constraint
-			tfversion = element.String()
-			fmt.Printf("Matched version: %s\n", tfversion)
-			if ValidVersionFormat(tfversion) { //check if version format is correct
-				return tfversion, nil
+		tfvals.Version = version.String()
+		if constraints.Check(version) {
+			fmt.Printf("Matched version: %s\n", tfvals.Version)
+			if ValidVersionFormat(version.String()) {
+				return tfvals, nil
 			}
 		}
 	}
 
 	PrintInvalidTFVersion()
-	return "", fmt.Errorf("error parsing constraint: %s", *tfconstraint)
+	return Release{}, fmt.Errorf("error parsing constraint: %s", *tfconstraint)
 }
 
 // Print invalid TF version

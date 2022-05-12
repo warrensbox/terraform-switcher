@@ -25,7 +25,7 @@ func TestSemverParserCase1(t *testing.T) {
 	tfconstraint := "1.1"
 	tfversion, _ := lib.SemVerParser(&tfconstraint, releasesRaw)
 	expected := "1.1.0"
-	if tfversion == expected {
+	if tfversion.Version == expected {
 		t.Logf("Version exist in list %v [expected]", expected)
 	} else {
 		t.Logf("Version does not exist in list %v [unexpected]", tfconstraint)
@@ -40,7 +40,7 @@ func TestSemverParserCase2(t *testing.T) {
 	tfconstraint := "~> 1.1.0"
 	tfversion, _ := lib.SemVerParser(&tfconstraint, releasesRaw)
 	expected := "1.1.4"
-	if tfversion == expected {
+	if tfversion.Version == expected {
 		t.Logf("Version exist in list %v [expected]", expected)
 	} else {
 		t.Logf("Version does not exist in list %v [unexpected]", tfconstraint)
@@ -68,7 +68,7 @@ func TestSemverParserCase4(t *testing.T) {
 	tfconstraint := ">= 1.0, < 1.4"
 	tfversion, _ := lib.SemVerParser(&tfconstraint, releasesRaw)
 	expected := "1.3.0"
-	if tfversion == expected {
+	if tfversion.Version == expected {
 		t.Logf("Version exist in list %v [expected]", expected)
 	} else {
 		t.Logf("Version does not exist in list %v [unexpected]", tfconstraint)
@@ -83,7 +83,7 @@ func TestSemverParserCase5(t *testing.T) {
 	tfconstraint := ">= 1.0"
 	tfversion, _ := lib.SemVerParser(&tfconstraint, releasesRaw)
 	expected := "2.0.0"
-	if tfversion == expected {
+	if tfversion.Version == expected {
 		t.Logf("Version exist in list %v [expected]", expected)
 	} else {
 		t.Logf("Version does not exist in list %v [unexpected]", tfconstraint)
