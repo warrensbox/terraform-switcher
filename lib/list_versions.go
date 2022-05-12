@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-openapi/strfmt"
 	"io"
 	"log"
 	"net/http"
@@ -13,7 +12,8 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
-	"time"
+
+	"github.com/go-openapi/strfmt"
 )
 
 type tfVersionList struct {
@@ -27,11 +27,11 @@ type Release struct {
 }
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
-func GetTFLatest(mirrorURL string, preRelease bool) (*Release, error) {
+func GetTFLatest(mirrorURL string, preRelease bool) (Release, error) {
 
 	result, error := GetTFReleases(mirrorURL, preRelease)
 	if error != nil {
-		return nil, error
+		return Release{}, error
 	}
 	for i := range result {
 		if !result[i].IsPrerelease {
@@ -39,7 +39,7 @@ func GetTFLatest(mirrorURL string, preRelease bool) (*Release, error) {
 		}
 	}
 
-	return nil, nil
+	return Release{}, nil
 }
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
@@ -52,7 +52,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 			return "", error
 		}
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver := fmt.Sprintf(`\/(%s{1}\.\d+\-[a-zA-z]+\d*)\/?"`, version)
+		semver := fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
 		r, err := regexp.Compile(semver)
 		if err != nil {
 			return "", err
@@ -75,16 +75,15 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 	return "", nil
 }
 
-func httpGet(url, limit string, timestamp strfmt.DateTime) (*http.Response, error) {
+func httpGet(url string, queryParams map[string]string) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	q := req.URL.Query()
-	q.Add("limit", limit)
-	if timestamp.String() != time.RFC3339 {
-		q.Add("after", timestamp.String())
+	for k, v := range queryParams {
+		q.Add(k, v)
 	}
 	req.URL.RawQuery = q.Encode()
 	client := &http.Client{}
@@ -99,9 +98,9 @@ func httpGet(url, limit string, timestamp strfmt.DateTime) (*http.Response, erro
 	return res, nil
 }
 
-func getReleases(mirrorURL, limit string, timestamp strfmt.DateTime) ([]*Release, error) {
-	var releases []*Release
-	resp, errURL := httpGet(mirrorURL, limit, timestamp)
+func getReleases(mirrorURL string, queryParams map[string]string) ([]Release, error) {
+	var releases []Release
+	resp, errURL := httpGet(mirrorURL, queryParams)
 	if errURL != nil {
 		log.Printf("[Error] : Getting url: %v", errURL)
 		os.Exit(1)
@@ -124,26 +123,17 @@ func getReleases(mirrorURL, limit string, timestamp strfmt.DateTime) ([]*Release
 	return releases, nil
 }
 
-func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
+func GetTFReleases(mirrorURL string, preRelease bool) ([]Release, error) {
 	// temp testing
-	limit := "20"
-	t, _ := time.Parse(time.RFC3339, time.RFC3339)
-	tmpTime := strfmt.DateTime(t)
+	queryParams := map[string]string{"limit": "20"}
+	rel, _ := getReleases(mirrorURL, queryParams)
 
-	rel, _ := getReleases(mirrorURL, limit, tmpTime)
-
-	// this is ugly
-	lastTimestamp := tmpTime
-	currentTimestamp := strfmt.NewDateTime()
-
-	var releases []*Release
-
-	for lastTimestamp != currentTimestamp {
-		rel, _ = getReleases(mirrorURL, limit, rel[len(rel)-1].TimestampCreated)
-		currentTimestamp = rel[len(rel)-1].TimestampCreated
-		if len(releases) > 0 {
-			lastTimestamp = releases[len(releases)-1].TimestampCreated
-		}
+	var releases []Release
+	rel, _ = getReleases(mirrorURL, queryParams)
+	releases = append(releases, rel...)
+	for len(rel) == 20 {
+		queryParams["after"] = rel[len(rel)-1].TimestampCreated.String()
+		rel, _ = getReleases(mirrorURL, queryParams)
 		releases = append(releases, rel...)
 	}
 
@@ -157,7 +147,7 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	return releases, nil
 }
 
-func removePreReleases(slice []*Release, s int) []*Release {
+func removePreReleases(slice []Release, s int) []Release {
 	return append(slice[:s], slice[s+1:]...)
 }
 

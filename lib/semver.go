@@ -19,7 +19,7 @@ func GetSemver(tfconstraint *string, mirrorURL *string) (string, error) {
 }
 
 // ValidateSemVer : Goes through the list of terraform version, return a valid tf version for contraint provided
-func SemVerParser(tfconstraint *string, tflist []*Release) (string, error) {
+func SemVerParser(tfconstraint *string, tflist []Release) (string, error) {
 	tfversion := ""
 	constraints, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
