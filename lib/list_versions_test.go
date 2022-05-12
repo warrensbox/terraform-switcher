@@ -14,7 +14,7 @@ const (
 
 // TestGetTFList : Get list from hashicorp
 
-func TestGetTFList(t *testing.T) {
+func TestGetTFReleases(t *testing.T) {
 
 	listAll := true
 	list, _ := lib.GetTFReleases(hashiURL, listAll)
