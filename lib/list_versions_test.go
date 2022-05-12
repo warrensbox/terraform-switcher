@@ -1,7 +1,6 @@
 package lib_test
 
 import (
-	"fmt"
 	"log"
 	"reflect"
 	"testing"
@@ -14,11 +13,11 @@ const (
 )
 
 // TestGetTFList : Get list from hashicorp
+
 func TestGetTFList(t *testing.T) {
 
 	listAll := true
 	list, _ := lib.GetTFReleases(hashiURL, listAll)
-	fmt.Println(list[0])
 	val := &lib.Release{Version: "0.1.0"}
 	var exists bool
 
