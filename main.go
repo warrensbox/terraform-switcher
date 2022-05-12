@@ -264,8 +264,7 @@ func showLatestImplicitVersion(requestedVersion string, mirrorURL *string, preRe
 		if len(tfversion.Version) > 0 {
 			fmt.Printf("%s\n", tfversion.Version)
 		} else {
-			fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
-			os.Exit(1)
+			log.Fatalln("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
 		}
 	} else {
 		lib.PrintInvalidMinorTFVersion()
@@ -296,15 +295,13 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 		if exist {
 			lib.Install(tfRelease, *custBinPath, *mirrorURL)
 		} else {
-			fmt.Println("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
-			os.Exit(1)
+			log.Fatalf("The provided terraform version - %s - does not exist. Try `tfswitch -l` to see all available versions.\n", requestedVersion)
 		}
 
 	} else {
 		lib.PrintInvalidTFVersion()
-		fmt.Println("Args must be a valid terraform version")
 		usageMessage()
-		os.Exit(1)
+		log.Fatalln("Args must be a valid terraform version")
 	}
 }
 
@@ -312,9 +309,8 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 func retrieveFileContents(file string) string {
 	fileContents, err := ioutil.ReadFile(file)
 	if err != nil {
-		fmt.Printf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", tfvFilename)
-		fmt.Printf("Error: %s\n", err)
-		os.Exit(1)
+		fmt.Errorf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", tfvFilename)
+		log.Fatalf("Error: %s\n", err)
 	}
 	tfversion := strings.TrimSuffix(string(fileContents), "\n")
 	return tfversion
@@ -370,9 +366,8 @@ func getParamsTOML(binPath string, dir string) (string, string) {
 
 	errs := viper.ReadInConfig() // Find and read the config file
 	if errs != nil {
-		fmt.Printf("Unable to read %s provided\n", tomlFilename) // Handle errors reading the config file
-		fmt.Println(errs)
-		os.Exit(1) // exit immediately if config file provided but it is unable to read it
+		fmt.Errorf("Unable to read %s provided\n", tomlFilename) // Handle errors reading the config file
+		log.Fatalln(errs)
 	}
 
 	bin := viper.Get("bin")                                            // read custom binary location
@@ -409,8 +404,7 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	versions = lib.RemoveDuplicateVersions(versions) //remove duplicate version
 
 	if len(tflist) == 0 {
-		fmt.Println("[ERROR] : List is empty")
-		os.Exit(1)
+		log.Fatalln("[ERROR] : List is empty")
 	}
 	/* prompt user to select version of terraform */
 	prompt := promptui.Select{
@@ -422,8 +416,7 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	tfversion = strings.Trim(tfversion, " *recent") //trim versions with the string " *recent" appended
 
 	if errPrompt != nil {
-		log.Printf("Prompt failed %v\n", errPrompt)
-		os.Exit(1)
+		log.Fatalf("Prompt failed %v\n", errPrompt)
 	}
 	rel, _ := lib.GetTFRelease(*mirrorURL, tfversion)
 
@@ -446,9 +439,8 @@ func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string)
 	if err == nil {
 		lib.Install(tfversion, *custBinPath, *mirrorURL)
 	}
-	fmt.Println(err)
-	fmt.Println("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
-	os.Exit(1)
+	fmt.Errorf("Error: %s\n", err)
+	log.Fatalln("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
 }
 
 // Install using version constraint from terragrunt file
@@ -457,8 +449,7 @@ func installTGHclFile(tgFile *string, custBinPath, mirrorURL *string) {
 	parser := hclparse.NewParser()
 	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
 	if diags.HasErrors() {
-		fmt.Println("Unable to parse HCL file")
-		os.Exit(1)
+		log.Fatalln("Unable to parse HCL file")
 	}
 	var version terragruntVersionConstraints
 	gohcl.DecodeBody(file.Body, nil, &version)
@@ -474,8 +465,7 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 	parser := hclparse.NewParser()
 	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
 	if diags.HasErrors() {
-		fmt.Println("Unable to parse HCL file")
-		os.Exit(1)
+		log.Fatalln("Unable to parse HCL file")
 	}
 	var version terragruntVersionConstraints
 	gohcl.DecodeBody(file.Body, nil, &version)
