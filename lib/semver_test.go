@@ -1,8 +1,9 @@
 package lib_test
 
 import (
-	"github.com/warrensbox/terraform-switcher/lib"
 	"testing"
+
+	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 var releasesRaw = []*lib.Release{

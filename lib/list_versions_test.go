@@ -2,10 +2,11 @@ package lib_test
 
 import (
 	"encoding/json"
-	"github.com/warrensbox/terraform-switcher/lib"
 	"log"
 	"reflect"
 	"testing"
+
+	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 const (
