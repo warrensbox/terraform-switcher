@@ -232,13 +232,19 @@ func installWithListAll(custBinPath, mirrorURL *string) {
 
 // install latest stable tf version
 func installLatestVersion(custBinPath, mirrorURL *string) {
-	tfRelease, _ := lib.GetTFLatest(*mirrorURL, false)
+	tfRelease, err := lib.GetTFLatest(*mirrorURL, false)
+	if err != nil {
+		log.Fatalf("Error during install: %v", err)
+	}
 	lib.Install(tfRelease, *custBinPath)
 }
 
 // show install latest stable tf version
 func showLatestVersion(mirrorURL *string) {
-	tfRelease, _ := lib.GetTFLatest(*mirrorURL, false)
+	tfRelease, err := lib.GetTFLatest(*mirrorURL, false)
+	if err != nil {
+		log.Fatalf("Error getting latest version: %v", err)
+	}
 	fmt.Printf("%s\n", tfRelease.Version)
 }
 
