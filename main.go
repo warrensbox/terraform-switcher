@@ -233,7 +233,7 @@ func installWithListAll(custBinPath, mirrorURL *string) {
 // install latest stable tf version
 func installLatestVersion(custBinPath, mirrorURL *string) {
 	tfRelease, _ := lib.GetTFLatest(*mirrorURL, false)
-	lib.Install(tfRelease, *custBinPath, *mirrorURL)
+	lib.Install(tfRelease, *custBinPath)
 }
 
 // show install latest stable tf version
@@ -251,7 +251,7 @@ func installLatestImplicitVersion(requestedVersion string, custBinPath, mirrorUR
 	//if lib.ValidMinorVersionFormat(requestedVersion) {
 	tfRelease, err := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
 	if err == nil && tfRelease.Version != "" {
-		lib.Install(tfRelease, *custBinPath, *mirrorURL)
+		lib.Install(tfRelease, *custBinPath)
 	}
 	fmt.Printf("Error parsing constraint: %s\n", err)
 	lib.PrintInvalidMinorTFVersion()
@@ -292,7 +292,7 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 		exist := lib.VersionExist(requestedVersion, tfRelease)         //check if version exist before downloading it
 
 		if exist {
-			lib.Install(tfRelease, *custBinPath, *mirrorURL)
+			lib.Install(tfRelease, *custBinPath)
 		} else {
 			log.Fatalf("The provided terraform version - %s - does not exist. Try `tfswitch -l` to see all available versions.\n", requestedVersion)
 		}
@@ -418,7 +418,7 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	}
 	rel, _ := lib.GetTFRelease(*mirrorURL, tfversion)
 
-	lib.Install(rel, *custBinPath, *mirrorURL)
+	lib.Install(rel, *custBinPath)
 	os.Exit(0)
 }
 
@@ -435,7 +435,7 @@ func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string)
 
 	tfversion, err := lib.GetSemver(tfconstraint, mirrorURL)
 	if err == nil {
-		lib.Install(tfversion, *custBinPath, *mirrorURL)
+		lib.Install(tfversion, *custBinPath)
 	}
 	fmt.Errorf("Error: %s\n", err)
 	log.Fatalln("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
