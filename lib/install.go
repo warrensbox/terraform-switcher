@@ -131,8 +131,8 @@ func Install(tfRelease *Release, binPath string) {
 	/* proceed to download it from the hashicorp release page */
 	url := ""
 	for _, build := range tfRelease.Builds {
-		if build.Os == goos && build.Arch == goarch {
-			url = build.Url
+		if build.OS == goos && build.Arch == goarch {
+			url = build.URL
 		}
 	}
 	if url == "" {

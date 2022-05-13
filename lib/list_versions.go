@@ -18,8 +18,8 @@ import (
 type Release struct {
 	Builds []struct {
 		Arch string `json:"arch"`
-		Os   string `json:"os"`
-		Url  string `json:"url"`
+		OS   string `json:"os"`
+		URL  string `json:"url"`
 	} `json:"builds"`
 	IsPrerelease     bool            `json:"is_prerelease"`
 	TimestampCreated strfmt.DateTime `json:"timestamp_created"`
