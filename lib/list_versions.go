@@ -70,8 +70,7 @@ func httpGet(url string, queryParams map[string]string) (*http.Response, error) 
 		q.Add(k, v)
 	}
 	req.URL.RawQuery = q.Encode()
-	client := &http.Client{}
-	res, err := client.Do(req)
+	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
