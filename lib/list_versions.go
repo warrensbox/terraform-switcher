@@ -145,7 +145,7 @@ func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
 		return nil, err
 	}
 	var release *Release
-	if err := json.Unmarshal(body.Bytes(), &release); err != nil {
+	if err := json.Unmarshal(body.Bytes(), release); err != nil {
 		return nil, fmt.Errorf("%s: %s", err, body)
 	}
 	return release, nil
