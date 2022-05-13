@@ -18,7 +18,7 @@ func TestGetTFReleases(t *testing.T) {
 
 	listAll := true
 	list, _ := lib.GetTFReleases(hashiURL, listAll)
-	val := &lib.Release{Version: "0.1.0"}
+	val := lib.Release{Version: "0.1.0"}
 	var exists bool
 
 	switch reflect.TypeOf(list).Kind() {
@@ -26,7 +26,7 @@ func TestGetTFReleases(t *testing.T) {
 		s := reflect.ValueOf(list)
 
 		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val.Version, s.Index(i).FieldByName("Version").String()) == true {
+			if reflect.DeepEqual(&val.Version, s.Index(i).FieldByName("Version").String()) == true {
 				exists = true
 			}
 		}

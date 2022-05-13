@@ -8,7 +8,7 @@ import (
 )
 
 // GetSemver : returns version that will be installed based on server constaint provided
-func GetSemver(tfconstraint *string, mirrorURL *string) (Release, error) {
+func GetSemver(tfconstraint *string, mirrorURL *string) (*Release, error) {
 
 	tflist, _ := GetTFReleases(*mirrorURL, true)
 	fmt.Printf("Reading required version from constraint: %s\n", *tfconstraint)
@@ -17,7 +17,7 @@ func GetSemver(tfconstraint *string, mirrorURL *string) (Release, error) {
 }
 
 // ValidateSemVer : Goes through the list of terraform version, return a valid tf version for contraint provided
-func SemVerParser(tfconstraint *string, tflist []Release) (Release, error) {
+func SemVerParser(tfconstraint *string, tflist []*Release) (*Release, error) {
 
 	// TO-DO: remove this, List should already be sorted in GetTFReleases but tests need updating
 	sort.Slice(tflist, func(i, j int) bool {
@@ -26,13 +26,13 @@ func SemVerParser(tfconstraint *string, tflist []Release) (Release, error) {
 
 	constraints, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
-		return Release{}, fmt.Errorf("error parsing constraint: %s", err)
+		return nil, fmt.Errorf("error parsing constraint: %s", err)
 	}
 	//put tfversion into semver object
 	for _, tfvals := range tflist {
 		version, err := semver.NewVersion(tfvals.Version)
 		if err != nil {
-			return Release{}, fmt.Errorf("error parsing constraint: %s", err)
+			return nil, fmt.Errorf("error parsing constraint: %s", err)
 		}
 		tfvals.Version = version.String()
 		if constraints.Check(version) {
@@ -44,7 +44,7 @@ func SemVerParser(tfconstraint *string, tflist []Release) (Release, error) {
 	}
 
 	PrintInvalidTFVersion()
-	return Release{}, fmt.Errorf("error parsing constraint: %s", *tfconstraint)
+	return nil, fmt.Errorf("error parsing constraint: %s", *tfconstraint)
 }
 
 // Print invalid TF version

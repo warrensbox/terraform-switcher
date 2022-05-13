@@ -74,7 +74,7 @@ func GetInstallLocation() string {
 }
 
 //Install : Install the provided version in the argument
-func Install(tfRelease Release, binPath string, mirrorURL string) {
+func Install(tfRelease *Release, binPath string, mirrorURL string) {
 
 	// if !ValidVersionFormat(tfRelease) {
 	// 	fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfRelease)
