@@ -5,9 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
-	"os"
 	"reflect"
 	"regexp"
 	"sort"
@@ -50,7 +48,6 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 		version = fmt.Sprintf("~> %v", version)
 	}
 	releases, err := GetTFReleases(mirrorURL, preRelease)
-	//version := fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
 	semv, err := SemVerParser(&version, releases)
 	if err != nil {
 		return nil, err
@@ -143,15 +140,12 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
 	resp, errURL := httpGet(mirrorURL+"/"+requestedVersion, nil)
 	if errURL != nil {
-		log.Printf("[Error] : Getting url: %v", errURL)
-		os.Exit(1)
-		return nil, errURL
+		return nil, fmt.Errorf("[Error] : Getting url: %v", errURL)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
-		os.Exit(1)
+		return nil, fmt.Errorf("[Error] : Retrieving contents from url: %s", mirrorURL)
 	}
 
 	body := new(bytes.Buffer)
