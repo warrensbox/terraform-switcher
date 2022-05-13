@@ -34,10 +34,6 @@ func TestPathList(t *testing.T) {
 	}
 }
 
-type Command struct {
-	name string
-}
-
 // TestFind : check common "cd" command exist
 // This is assuming that Windows and linux has the "cd" command
 func TestFind(t *testing.T) {
