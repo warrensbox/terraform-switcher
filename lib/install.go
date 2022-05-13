@@ -74,7 +74,7 @@ func GetInstallLocation() string {
 }
 
 //Install : Install the provided version in the argument
-func Install(tfRelease *Release, binPath string, mirrorURL string) {
+func Install(tfRelease *Release, binPath string) {
 
 	// if !ValidVersionFormat(tfRelease) {
 	// 	fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfRelease)
@@ -95,8 +95,14 @@ func Install(tfRelease *Release, binPath string, mirrorURL string) {
 	goos := runtime.GOOS
 
 	// Terraform darwin arm64 comes with 1.0.2 and next version
-	tfver, _ := version.NewVersion(tfRelease.Version)
-	tf102, _ := version.NewVersion(tfDarwinArm64StartVersion)
+	tfver, err := version.NewVersion(tfRelease.Version)
+	if err != nil {
+		log.Fatalf("Error generating terraform version: %s", err)
+	}
+	tf102, err := version.NewVersion(tfDarwinArm64StartVersion)
+	if err != nil {
+		log.Fatalf("Error generating terraform version: %s", err)
+	}
 	if goos == "darwin" && goarch == "arm64" && tfver.LessThan(tf102) {
 		goarch = "amd64"
 	}
