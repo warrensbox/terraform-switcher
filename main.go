@@ -437,7 +437,10 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 // install when tf file is provided
 func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
 	fmt.Printf("Reading required version from terraform file\n")
-	module, _ := tfconfig.LoadModule(dir)
+	module, diag := tfconfig.LoadModule(dir)
+	if diag.Err() != nil {
+		log.Fatalf("Error loading Terraform module at: %s\nError: %v", dir, diag.Err())
+	}
 	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
 	installFromConstraint(&tfconstraint, custBinPath, mirrorURL)
 }
