@@ -308,8 +308,7 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 func retrieveFileContents(file string) string {
 	fileContents, err := ioutil.ReadFile(file)
 	if err != nil {
-		fmt.Errorf("Failed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", tfvFilename)
-		log.Fatalf("Error: %s\n", err)
+		log.Fatalf("Error: %s\nFailed to read %s file. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\n", err, tfvFilename)
 	}
 	tfversion := strings.TrimSuffix(string(fileContents), "\n")
 	return tfversion
@@ -334,19 +333,13 @@ func fileExists(filename string) bool {
 func checkTFModuleFileExist(dir string) bool {
 
 	module, _ := tfconfig.LoadModule(dir)
-	if len(module.RequiredCore) >= 1 {
-		return true
-	}
-	return false
+	return len(module.RequiredCore) >= 1
 }
 
 // checkTFEnvExist - checks if the TF_VERSION environment variable is set
 func checkTFEnvExist() bool {
 	tfversion := os.Getenv("TF_VERSION")
-	if tfversion != "" {
-		return true
-	}
-	return false
+	return tfversion != ""
 }
 
 /* parses everything in the toml file, return required version and bin path */
@@ -365,8 +358,7 @@ func getParamsTOML(binPath string, dir string) (string, string) {
 
 	errs := viper.ReadInConfig() // Find and read the config file
 	if errs != nil {
-		fmt.Errorf("Unable to read %s provided\n", tomlFilename) // Handle errors reading the config file
-		log.Fatalln(errs)
+		log.Fatalf("Error: %s\nUnable to read %s provided\n", errs, tomlFilename) // Handle errors reading the config file
 	}
 
 	bin := viper.Get("bin")                                            // read custom binary location
@@ -437,8 +429,7 @@ func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string)
 	if err == nil {
 		lib.Install(tfversion, *custBinPath)
 	}
-	fmt.Errorf("Error: %s\n", err)
-	log.Fatalln("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md")
+	log.Fatalf("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\nError: %s\n", err)
 }
 
 // Install using version constraint from terragrunt file
@@ -467,8 +458,5 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 	}
 	var version terragruntVersionConstraints
 	gohcl.DecodeBody(file.Body, nil, &version)
-	if version == (terragruntVersionConstraints{}) {
-		return false
-	}
-	return true
+	return version != (terragruntVersionConstraints{})
 }

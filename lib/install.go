@@ -290,7 +290,7 @@ func InstallableBinLocation(userBinPath string) string {
 	binDir := Path(userBinPath)           //get path directory from binary path
 	binPathExist := CheckDirExist(binDir) //the default is /usr/local/bin but users can provide custom bin locations
 
-	if binPathExist == true { //if bin path exist - check if we can write to to it
+	if binPathExist { //if bin path exist - check if we can write to to it
 
 		binPathWritable := false //assume bin path is not writable
 		if runtime.GOOS != "windows" {
@@ -298,7 +298,7 @@ func InstallableBinLocation(userBinPath string) string {
 		}
 
 		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terraform at the ~/bin location. See ELSE
-		if binPathWritable == false {
+		if !binPathWritable {
 
 			homeBinExist := CheckDirExist(filepath.Join(usr.HomeDir, "bin")) //check to see if ~/bin exist
 			if homeBinExist {                                                //if ~/bin exist, install at ~/bin/terraform

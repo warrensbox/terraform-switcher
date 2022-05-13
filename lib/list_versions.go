@@ -48,6 +48,9 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 		version = fmt.Sprintf("~> %v", version)
 	}
 	releases, err := GetTFReleases(mirrorURL, preRelease)
+	if err != nil {
+		return nil, err
+	}
 	semv, err := SemVerParser(&version, releases)
 	if err != nil {
 		return nil, err
@@ -108,12 +111,7 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	var releases []*Release
-	releaseSet, err = getReleases(mirrorURL, queryParams)
-	if err != nil {
-		return nil, err
-	}
 	releases = append(releases, releaseSet...)
 	for len(releaseSet) == limit {
 		queryParams["after"] = releaseSet[len(releaseSet)-1].TimestampCreated.String()
@@ -173,7 +171,7 @@ func VersionExist(val interface{}, array interface{}) (exists bool) {
 		s := reflect.ValueOf(array)
 
 		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
+			if reflect.DeepEqual(val, s.Index(i).Interface()) {
 				exists = true
 				return exists
 			}
@@ -191,7 +189,7 @@ func RemoveDuplicateVersions(elements []string) []string {
 
 	for _, val := range elements {
 		versionOnly := strings.Trim(val, " *recent")
-		if encountered[versionOnly] == true {
+		if encountered[versionOnly] {
 			// Do not add duplicate.
 		} else {
 			// Record this element as an encountered element.
