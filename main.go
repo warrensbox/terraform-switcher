@@ -399,38 +399,35 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	if err != nil {
 		log.Fatalf("Encountered error while getting list of releases\nError: %v", err)
 	}
+
 	recentVersions, err := lib.GetRecentVersions() //get recent versions from RECENT file
 	if err != nil {
 		log.Fatalf("Error while reading local versions file: %v", err)
 	}
-	var versions []string
-	for _, r := range tflist {
-		versions = append(versions, r.Version)
-	}
-	versions = append(recentVersions, versions...)
-	versions = lib.RemoveDuplicateVersions(versions) //remove duplicate version
+	tflist = append(recentVersions, tflist...)
+	tflist = lib.RemoveDuplicateVersions(tflist)
 
-	if len(tflist) == 0 {
-		log.Fatalln("[ERROR] : List is empty")
+	templates := promptui.SelectTemplates{
+		Active:   `> {{ .Version | green | bold }}`,
+		Inactive: `{{ .Version | cyan }}`,
+		Selected: `{{ "✔" | green | bold }} {{ .Version | cyan }}`,
 	}
-	/* prompt user to select version of terraform */
 	prompt := promptui.Select{
-		Label: "Select Terraform version",
-		Items: versions,
+		Label:     "Select Terraform version",
+		Items:     tflist,
+		Templates: &templates,
 	}
 
-	_, tfversion, errPrompt := prompt.Run()
-	tfversion = strings.Trim(tfversion, " *recent") //trim versions with the string " *recent" appended
+	i, _, errPrompt := prompt.Run()
+	tfRelease := tflist[i]
+
+	tfRelease.Version = strings.Trim(tfRelease.Version, " *recent") //trim versions with the string " *recent" appended
 
 	if errPrompt != nil {
 		log.Fatalf("Prompt failed %v\n", errPrompt)
 	}
-	rel, err := lib.GetTFRelease(*mirrorURL, tfversion)
-	if err != nil {
-		log.Fatalf("Encountered error while downloading version %s\nError: %v", tfversion, err)
-	}
 
-	lib.Install(rel, *custBinPath)
+	lib.Install(tfRelease, *custBinPath)
 	os.Exit(0)
 }
 

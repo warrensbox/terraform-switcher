@@ -221,7 +221,7 @@ func AddRecent(requestedVersion string) {
 }
 
 // GetRecentVersions : get recent version from file
-func GetRecentVersions() ([]string, error) {
+func GetRecentVersions() ([]*Release, error) {
 
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
 	versionFile := filepath.Join(installLocation, recentFile)
@@ -230,7 +230,7 @@ func GetRecentVersions() ([]string, error) {
 	if fileExist {
 
 		lines, errRead := ReadLines(versionFile)
-		outputRecent := []string{}
+		outputRecent := []*Release{}
 
 		if errRead != nil {
 			fmt.Printf("Error: %s\n", errRead)
@@ -250,7 +250,8 @@ func GetRecentVersions() ([]string, error) {
 			/* 	output can be confusing since it displays the 3 most recent used terraform version
 			append the string *recent to the output to make it more user friendly
 			*/
-			outputRecent = append(outputRecent, fmt.Sprintf("%s *recent", line))
+			recentReleaseStub := Release{Version: fmt.Sprintf("%s *recent", line)}
+			outputRecent = append(outputRecent, &recentReleaseStub)
 		}
 
 		return outputRecent, nil
