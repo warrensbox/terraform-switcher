@@ -61,7 +61,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 func httpGet(url string, queryParams map[string]string) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	q := req.URL.Query()
@@ -85,24 +85,21 @@ func getReleases(mirrorURL string, queryParams map[string]string) ([]*Release, e
 	var releases []*Release
 	resp, errURL := httpGet(mirrorURL, queryParams)
 	if errURL != nil {
-		log.Printf("[Error] : Getting url: %v", errURL)
-		os.Exit(1)
-		return nil, errURL
+		return nil, fmt.Errorf("[Error] : Getting url: %v", errURL)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
-		os.Exit(1)
+		return nil, fmt.Errorf("[Error] : Retrieving contents from url: %s", mirrorURL)
 	}
 
 	body := new(bytes.Buffer)
 	if _, err := io.Copy(body, resp.Body); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	if err := json.Unmarshal(body.Bytes(), &releases); err != nil {
-		log.Fatalf("%s: %s", err, body.String())
+		return nil, fmt.Errorf("%s: %s", err, body.String())
 	}
 	return releases, nil
 }
@@ -110,14 +107,23 @@ func getReleases(mirrorURL string, queryParams map[string]string) ([]*Release, e
 func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	limit := 20
 	queryParams := map[string]string{"limit": strconv.Itoa(limit)}
-	releaseSet, _ := getReleases(mirrorURL, queryParams)
+	releaseSet, err := getReleases(mirrorURL, queryParams)
+	if err != nil {
+		return nil, err
+	}
 
 	var releases []*Release
-	releaseSet, _ = getReleases(mirrorURL, queryParams)
+	releaseSet, err = getReleases(mirrorURL, queryParams)
+	if err != nil {
+		return nil, err
+	}
 	releases = append(releases, releaseSet...)
 	for len(releaseSet) == limit {
 		queryParams["after"] = releaseSet[len(releaseSet)-1].TimestampCreated.String()
-		releaseSet, _ = getReleases(mirrorURL, queryParams)
+		releaseSet, err = getReleases(mirrorURL, queryParams)
+		if err != nil {
+			return nil, err
+		}
 		releases = append(releases, releaseSet...)
 	}
 
@@ -150,11 +156,11 @@ func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
 
 	body := new(bytes.Buffer)
 	if _, err := io.Copy(body, resp.Body); err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	var release *Release
 	if err := json.Unmarshal(body.Bytes(), &release); err != nil {
-		log.Fatalf("%s: %s", err, body.String())
+		return nil, fmt.Errorf("%s: %s", err, body.String())
 	}
 	return release, nil
 
