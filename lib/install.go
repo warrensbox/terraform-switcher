@@ -76,11 +76,6 @@ func GetInstallLocation() string {
 //Install : Install the provided version in the argument
 func Install(tfRelease *Release, binPath string) {
 
-	// if !ValidVersionFormat(tfRelease) {
-	// 	fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfRelease)
-	// 	os.Exit(1)
-	// }
-
 	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terraform"
 	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tfswitch there
 	 * Inform user that they dont have permission to default location, therefore tfswitch was installed in $HOME/bin
