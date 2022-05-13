@@ -2,8 +2,6 @@ package lib
 
 import (
 	"fmt"
-	"sort"
-
 	semver "github.com/hashicorp/go-version"
 )
 
@@ -21,12 +19,6 @@ func GetSemver(tfconstraint *string, mirrorURL *string) (*Release, error) {
 
 // ValidateSemVer : Goes through the list of terraform version, return a valid tf version for contraint provided
 func SemVerParser(tfconstraint *string, tflist []*Release) (*Release, error) {
-
-	// TO-DO: remove this, List should already be sorted in GetTFReleases but tests need updating
-	sort.Slice(tflist, func(i, j int) bool {
-		return tflist[i].Version > tflist[j].Version
-	})
-
 	constraints, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
 		return nil, fmt.Errorf("error parsing constraint: %s", err)

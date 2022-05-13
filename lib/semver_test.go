@@ -6,16 +6,16 @@ import (
 )
 
 var releasesRaw = []*lib.Release{
-	{Version: "1.1"},
-	{Version: "1.2.1"},
-	{Version: "1.2.2"},
-	{Version: "1.2.3"},
-	{Version: "1.3"},
-	{Version: "1.1.4"},
-	{Version: "0.7.1"},
+	{Version: "2"},
 	{Version: "1.4-beta"},
 	{Version: "1.4"},
-	{Version: "2"},
+	{Version: "1.3"},
+	{Version: "1.2.3"},
+	{Version: "1.2.2"},
+	{Version: "1.2.1"},
+	{Version: "1.1.4"},
+	{Version: "1.1"},
+	{Version: "0.7.1"},
 }
 
 // TestSemverParser1 : Test to see if SemVerParser parses valid version
