@@ -2,12 +2,13 @@ package lib
 
 import (
 	"fmt"
-	"github.com/hashicorp/go-version"
 	"log"
 	"os"
 	"os/user"
 	"path/filepath"
 	"runtime"
+
+	"github.com/hashicorp/go-version"
 )
 
 const (

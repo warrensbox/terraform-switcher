@@ -2,6 +2,7 @@ package lib
 
 import (
 	"fmt"
+
 	semver "github.com/hashicorp/go-version"
 )
 
