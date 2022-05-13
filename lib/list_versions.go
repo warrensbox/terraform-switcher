@@ -29,21 +29,21 @@ type Release struct {
 }
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
-func GetTFLatest(mirrorURL string, preRelease bool) (Release, error) {
+func GetTFLatest(mirrorURL string, preRelease bool) (*Release, error) {
 	releases, error := GetTFReleases(mirrorURL, preRelease)
 	if error != nil {
-		return Release{}, error
+		return nil, error
 	}
 	for i := range releases {
 		if !releases[i].IsPrerelease {
 			return releases[i], nil
 		}
 	}
-	return Release{}, nil
+	return nil, nil
 }
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
-func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (Release, error) {
+func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Release, error) {
 	if preRelease {
 		version = fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
 	} else if !preRelease {
@@ -53,7 +53,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (Rel
 	//version := fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
 	semv, err := SemVerParser(&version, releases)
 	if err != nil {
-		return Release{}, err
+		return nil, err
 	}
 	return semv, nil
 }
@@ -81,8 +81,8 @@ func httpGet(url string, queryParams map[string]string) (*http.Response, error) 
 	return res, nil
 }
 
-func getReleases(mirrorURL string, queryParams map[string]string) ([]Release, error) {
-	var releases []Release
+func getReleases(mirrorURL string, queryParams map[string]string) ([]*Release, error) {
+	var releases []*Release
 	resp, errURL := httpGet(mirrorURL, queryParams)
 	if errURL != nil {
 		log.Printf("[Error] : Getting url: %v", errURL)
@@ -100,18 +100,19 @@ func getReleases(mirrorURL string, queryParams map[string]string) ([]Release, er
 	if _, err := io.Copy(body, resp.Body); err != nil {
 		log.Fatal(err)
 	}
+
 	if err := json.Unmarshal(body.Bytes(), &releases); err != nil {
 		log.Fatalf("%s: %s", err, body.String())
 	}
 	return releases, nil
 }
 
-func GetTFReleases(mirrorURL string, preRelease bool) ([]Release, error) {
+func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	limit := 20
 	queryParams := map[string]string{"limit": strconv.Itoa(limit)}
 	releaseSet, _ := getReleases(mirrorURL, queryParams)
 
-	var releases []Release
+	var releases []*Release
 	releaseSet, _ = getReleases(mirrorURL, queryParams)
 	releases = append(releases, releaseSet...)
 	for len(releaseSet) == limit {
@@ -133,12 +134,12 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]Release, error) {
 	return releases, nil
 }
 
-func GetTFRelease(mirrorURL, requestedVersion string) (Release, error) {
+func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
 	resp, errURL := httpGet(mirrorURL+"/"+requestedVersion, nil)
 	if errURL != nil {
 		log.Printf("[Error] : Getting url: %v", errURL)
 		os.Exit(1)
-		return Release{}, errURL
+		return nil, errURL
 	}
 	defer resp.Body.Close()
 
@@ -151,7 +152,7 @@ func GetTFRelease(mirrorURL, requestedVersion string) (Release, error) {
 	if _, err := io.Copy(body, resp.Body); err != nil {
 		log.Fatal(err)
 	}
-	var release Release
+	var release *Release
 	if err := json.Unmarshal(body.Bytes(), &release); err != nil {
 		log.Fatalf("%s: %s", err, body.String())
 	}
@@ -159,7 +160,7 @@ func GetTFRelease(mirrorURL, requestedVersion string) (Release, error) {
 
 }
 
-func removePreReleases(slice []Release, s int) []Release {
+func removePreReleases(slice []*Release, s int) []*Release {
 	return append(slice[:s], slice[s+1:]...)
 }
 
