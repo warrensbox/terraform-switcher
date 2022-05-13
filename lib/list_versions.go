@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"reflect"
 	"regexp"
 	"sort"
 	"strconv"
@@ -142,7 +141,7 @@ func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
 		return nil, err
 	}
 	var release *Release
-	if err := json.Unmarshal(body.Bytes(), release); err != nil {
+	if err := json.Unmarshal(body.Bytes(), &release); err != nil {
 		return nil, fmt.Errorf("%s: %s", err, body)
 	}
 	return release, nil
@@ -161,22 +160,13 @@ func removePreReleases(releases []*Release) []*Release {
 }
 
 //VersionExist : check if requested version exist
-func VersionExist(val interface{}, array interface{}) (exists bool) {
-
-	exists = false
-	switch reflect.TypeOf(array).Kind() {
-	case reflect.Slice:
-		s := reflect.ValueOf(array)
-
-		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) {
-				exists = true
-				return exists
-			}
+func VersionExist(rel *Release, releases []*Release) bool {
+	for _, r := range releases {
+		if rel == r {
+			return true
 		}
 	}
-
-	return exists
+	return false
 }
 
 //RemoveDuplicateVersions : remove duplicate version
