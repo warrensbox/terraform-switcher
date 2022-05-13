@@ -56,12 +56,12 @@ func TestGetTFReleases(t *testing.T) {
 //TestRemoveDuplicateVersions :  test to removed duplicate
 func TestRemoveDuplicateVersions(t *testing.T) {
 
-	test_array := []string{"0.0.1", "0.0.2", "0.0.3", "0.0.1", "0.12.0-beta1", "0.12.0-beta1"}
+	test_array := []*lib.Release{{Version: "0.0.1"}, {Version: "0.0.2"}, {Version: "0.0.3"}, {Version: "0.0.1"}, {Version: "0.12.0-beta1"}, {Version: "0.12.0-beta1"}}
 
 	list := lib.RemoveDuplicateVersions(test_array)
 
 	if len(list) == len(test_array) {
-		log.Fatalf("Not able to remove duplicate: %s\n", test_array)
+		log.Fatalf("Not able to remove duplicate: %v\n", test_array)
 	} else {
 		t.Log("Write versions exist (expected)")
 	}
