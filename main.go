@@ -441,7 +441,11 @@ func installTGHclFile(tgFile *string, custBinPath, mirrorURL *string) {
 		log.Fatalln("Unable to parse HCL file")
 	}
 	var version terragruntVersionConstraints
-	gohcl.DecodeBody(file.Body, nil, &version)
+	err := gohcl.DecodeBody(file.Body, nil, &version)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	installFromConstraint(&version.TerraformVersionConstraint, custBinPath, mirrorURL)
 }
 
@@ -457,6 +461,9 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 		log.Fatalln("Unable to parse HCL file")
 	}
 	var version terragruntVersionConstraints
-	gohcl.DecodeBody(file.Body, nil, &version)
+	err := gohcl.DecodeBody(file.Body, nil, &version)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	return version != (terragruntVersionConstraints{})
 }
