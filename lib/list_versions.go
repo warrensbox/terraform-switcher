@@ -52,10 +52,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 		return nil, err
 	}
 	semv, err := SemVerParser(&version, releases)
-	if err != nil {
-		return nil, err
-	}
-	return semv, nil
+	return semv, err
 }
 
 // httpGet : generic http get client for the given url and query parameters.
