@@ -115,12 +115,12 @@ func CreateDirIfNotExist(dir string) {
 }
 
 //WriteLines : writes into file
-func WriteLines(lines []string, path string) (err error) {
+func WriteLines(lines []string, path string) error {
 	var (
 		file *os.File
 	)
-
-	if file, err = os.Create(path); err != nil {
+	file, err := os.Create(path)
+	if err != nil {
 		return err
 	}
 	defer file.Close()
@@ -132,7 +132,6 @@ func WriteLines(lines []string, path string) (err error) {
 			break
 		}
 	}
-
 	return nil
 }
 
