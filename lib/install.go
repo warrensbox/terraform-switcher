@@ -119,7 +119,7 @@ func Install(tfRelease *Release, binPath string) {
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
 		fmt.Printf("Switched terraform to version %q \n", tfRelease.Version)
-		AddRecent(tfRelease.Version) //add to recent file for faster lookup
+		AddRecent(tfRelease) //add to recent file for faster lookup
 		os.Exit(0)
 	}
 
@@ -167,48 +167,48 @@ func Install(tfRelease *Release, binPath string) {
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
 	fmt.Printf("Switched terraform to version %q \n", tfRelease.Version)
-	AddRecent(tfRelease.Version) //add to recent file for faster lookup
+	AddRecent(tfRelease) //add to recent file for faster lookup
 	os.Exit(0)
 }
 
 // AddRecent : add to recent file
-func AddRecent(requestedVersion string) {
+func AddRecent(requestedRelease *Release) {
 
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
 	versionFile := filepath.Join(installLocation, recentFile)
 
 	fileExist := CheckFileExist(versionFile)
 	if fileExist {
-		lines, errRead := ReadLines(versionFile)
+		releases, errRead := ReadLines(versionFile)
 
 		if errRead != nil {
 			fmt.Printf("[Error] : %s\n", errRead)
 			return
 		}
 
-		for _, line := range lines {
-			if !ValidVersionFormat(line) {
+		for _, rel := range releases {
+			if !ValidVersionFormat(rel.Version) {
 				fmt.Println("File dirty. Recreating cache file.")
 				RemoveFiles(versionFile)
-				CreateRecentFile(requestedVersion)
+				CreateRecentFile(requestedRelease)
 				return
 			}
 		}
 
-		versionExist := VersionExist(requestedVersion, lines)
+		versionExist := VersionExist(requestedRelease, releases)
 
 		if !versionExist {
-			if len(lines) >= 3 {
-				_, lines = lines[len(lines)-1], lines[:len(lines)-1]
+			if len(releases) >= 3 {
+				_, releases = releases[len(releases)-1], releases[:len(releases)-1]
 
-				lines = append([]string{requestedVersion}, lines...)
-				err := WriteLines(lines, versionFile)
+				releases = append([]*Release{requestedRelease}, releases...)
+				err := WriteLines(releases, versionFile)
 				if err != nil {
 					log.Fatalf("Encountered error while updating versions file: %s\n", err)
 				}
 			} else {
-				lines = append([]string{requestedVersion}, lines...)
-				err := WriteLines(lines, versionFile)
+				releases = append([]*Release{requestedRelease}, releases...)
+				err := WriteLines(releases, versionFile)
 				if err != nil {
 					log.Fatalf("Encountered error while updating versions file: %s\n", err)
 				}
@@ -216,12 +216,12 @@ func AddRecent(requestedVersion string) {
 		}
 
 	} else {
-		CreateRecentFile(requestedVersion)
+		CreateRecentFile(requestedRelease)
 	}
 }
 
 // GetRecentVersions : get recent version from file
-func GetRecentVersions() ([]*Release, error) {
+func GetRecentVersions(mirrorURL string) ([]*Release, error) {
 
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
 	versionFile := filepath.Join(installLocation, recentFile)
@@ -229,7 +229,7 @@ func GetRecentVersions() ([]*Release, error) {
 	fileExist := CheckFileExist(versionFile)
 	if fileExist {
 
-		lines, errRead := ReadLines(versionFile)
+		localReleases, errRead := ReadLines(versionFile)
 		outputRecent := []*Release{}
 
 		if errRead != nil {
@@ -237,12 +237,12 @@ func GetRecentVersions() ([]*Release, error) {
 			return nil, errRead
 		}
 
-		for _, line := range lines {
+		for _, release := range localReleases {
 			/* 	checks if versions in the recent file are valid.
 			If any version is invalid, it will be consider dirty
 			and the recent file will be removed
 			*/
-			if !ValidVersionFormat(line) {
+			if !ValidVersionFormat(release.Version) {
 				RemoveFiles(versionFile)
 				return nil, errRead
 			}
@@ -250,8 +250,13 @@ func GetRecentVersions() ([]*Release, error) {
 			/* 	output can be confusing since it displays the 3 most recent used terraform version
 			append the string *recent to the output to make it more user friendly
 			*/
-			recentReleaseStub := Release{Version: fmt.Sprintf("%s *recent", line)}
-			outputRecent = append(outputRecent, &recentReleaseStub)
+			//recentReleaseStub := Release{Version: fmt.Sprintf("%s *recent", release)}
+			/*recentRelease, err := GetTFRelease(mirrorURL, release)
+			if err != nil {
+				return nil, fmt.Errorf("Error: %s\n\nLine: %s", err, release)
+			}*/
+			release.Version = fmt.Sprintf("%s *recent", release.Version)
+			outputRecent = append(outputRecent, release)
 		}
 
 		return outputRecent, nil
@@ -261,11 +266,11 @@ func GetRecentVersions() ([]*Release, error) {
 }
 
 //CreateRecentFile : create a recent file
-func CreateRecentFile(requestedVersion string) {
+func CreateRecentFile(requestedVersion *Release) {
 
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
-	err := WriteLines([]string{requestedVersion}, filepath.Join(installLocation, recentFile))
+	err := WriteLines([]*Release{requestedVersion}, filepath.Join(installLocation, recentFile))
 	if err != nil {
 		log.Fatalf("Encountered error while updating versions file: %s\n", err)
 	}

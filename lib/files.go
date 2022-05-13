@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -115,7 +116,7 @@ func CreateDirIfNotExist(dir string) {
 }
 
 //WriteLines : writes into file
-func WriteLines(lines []string, path string) error {
+func WriteLines(releases []*Release, path string) error {
 	var (
 		file *os.File
 	)
@@ -125,8 +126,20 @@ func WriteLines(lines []string, path string) error {
 	}
 	defer file.Close()
 
-	for _, item := range lines {
-		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
+	for _, item := range releases {
+
+		b, err := json.Marshal(item)
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		_, err = file.Write(b)
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		_, err = file.WriteString("\n")
 		if err != nil {
 			fmt.Println(err)
 			break
@@ -136,7 +149,7 @@ func WriteLines(lines []string, path string) error {
 }
 
 // ReadLines : Read a whole file into the memory and store it as array of lines
-func ReadLines(path string) (lines []string, err error) {
+func ReadLines(path string) (lines []*Release, err error) {
 	var (
 		file   *os.File
 		part   []byte
@@ -155,7 +168,11 @@ func ReadLines(path string) (lines []string, err error) {
 		}
 		buffer.Write(part)
 		if !prefix {
-			lines = append(lines, buffer.String())
+			var release *Release
+			if err := json.Unmarshal(buffer.Bytes(), &release); err != nil {
+				return nil, fmt.Errorf("%s: %s", err, buffer.Bytes())
+			}
+			lines = append(lines, release)
 			buffer.Reset()
 		}
 	}

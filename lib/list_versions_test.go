@@ -56,7 +56,17 @@ func TestGetTFReleases(t *testing.T) {
 //TestRemoveDuplicateVersions :  test to removed duplicate
 func TestRemoveDuplicateVersions(t *testing.T) {
 
-	test_array := []*lib.Release{{Version: "0.0.1"}, {Version: "0.0.2"}, {Version: "0.0.3"}, {Version: "0.0.1"}, {Version: "0.12.0-beta1"}, {Version: "0.12.0-beta1"}}
+	jSON := []byte(`{
+	  "builds":[{"arch":"amd64","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_darwin_amd64.zip"},{"arch":"386","os":"linux","url":"https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_linux_386.zip"},{"arch":"amd64","os":"linux","url":"https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_linux_amd64.zip"},{"arch":"386","os":"windows","url":"https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_windows_386.zip"}],
+	  "timestamp_created": "2017-07-12T06:41:24.000Z",
+	  "version": "0.1.0"
+	}`)
+	var val lib.Release
+	if err := json.Unmarshal(jSON, &val); err != nil {
+		log.Fatalf("%s: %s", err, jSON)
+	}
+
+	test_array := []*lib.Release{&val, {Version: "0.0.1"}, {Version: "0.0.2"}, {Version: "0.0.3"}, {Version: "0.0.1"}, {Version: "0.1.0"}, {Version: "0.12.0-beta1"}, {Version: "0.12.0-beta1"}}
 
 	list := lib.RemoveDuplicateVersions(test_array)
 
