@@ -180,13 +180,13 @@ func VersionExist(val interface{}, array interface{}) (exists bool) {
 }
 
 //RemoveDuplicateVersions : remove duplicate version
-func RemoveDuplicateVersions(elements []string) []string {
+func RemoveDuplicateVersions(elements []*Release) []*Release {
 	// Use map to record duplicates as we find them.
 	encountered := map[string]bool{}
-	result := []string{}
+	result := []*Release{}
 
 	for _, val := range elements {
-		versionOnly := strings.Trim(val, " *recent")
+		versionOnly := strings.Trim(val.Version, " *recent")
 		if encountered[versionOnly] {
 			// Do not add duplicate.
 		} else {
