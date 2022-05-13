@@ -58,6 +58,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 	return semv, nil
 }
 
+// httpGet : generic http get client for the given url and query parameters.
 func httpGet(url string, queryParams map[string]string) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -81,6 +82,7 @@ func httpGet(url string, queryParams map[string]string) (*http.Response, error) 
 	return res, nil
 }
 
+// getReleases : subfunc for GetTFReleases, used in a loop to get all terraform releases given the hashicorp url
 func getReleases(mirrorURL string, queryParams map[string]string) ([]*Release, error) {
 	var releases []*Release
 	resp, errURL := httpGet(mirrorURL, queryParams)
@@ -104,6 +106,7 @@ func getReleases(mirrorURL string, queryParams map[string]string) ([]*Release, e
 	return releases, nil
 }
 
+//GetTFReleases :  Get all terraform releases given the hashicorp url
 func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	limit := 20
 	queryParams := map[string]string{"limit": strconv.Itoa(limit)}
@@ -123,11 +126,7 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	}
 
 	if !preRelease {
-		for i, r := range releases {
-			if r.IsPrerelease {
-				releases = removePreReleases(releases, i)
-			}
-		}
+		releases = removePreReleases(releases)
 	}
 	sort.Slice(releases, func(i, j int) bool {
 		return releases[i].Version > releases[j].Version
@@ -135,16 +134,13 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	return releases, nil
 }
 
+//GetTFRelease :  Get the requested terraform release given the hashicorp url
 func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
 	resp, errURL := httpGet(mirrorURL+"/"+requestedVersion, nil)
 	if errURL != nil {
 		return nil, fmt.Errorf("[Error] : Getting url: %v", errURL)
 	}
 	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("[Error] : Retrieving contents from url: %s", mirrorURL)
-	}
 
 	body := new(bytes.Buffer)
 	if _, err := io.Copy(body, resp.Body); err != nil {
@@ -158,8 +154,14 @@ func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
 
 }
 
-func removePreReleases(slice []*Release, s int) []*Release {
-	return append(slice[:s], slice[s+1:]...)
+//removePreReleases : Removes any prerelease versions from a given slice of Release.
+func removePreReleases(releases []*Release) []*Release {
+	for i, r := range releases {
+		if r.IsPrerelease {
+			releases = append(releases[:i], releases[i+1:]...)
+		}
+	}
+	return releases
 }
 
 //VersionExist : check if requested version exist
