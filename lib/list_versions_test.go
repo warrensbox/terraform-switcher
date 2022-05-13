@@ -1,11 +1,11 @@
 package lib_test
 
 import (
+	"github.com/go-openapi/strfmt"
+	"github.com/warrensbox/terraform-switcher/lib"
 	"log"
 	"reflect"
 	"testing"
-
-	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 const (
@@ -18,15 +18,52 @@ func TestGetTFReleases(t *testing.T) {
 
 	listAll := true
 	list, _ := lib.GetTFReleases(hashiURL, listAll)
-	val := lib.Release{Version: "0.1.0"}
+
+	//val := lib.Release{Version: "0.1.0"}
+	time, parseErr := strfmt.ParseDateTime("2017-07-12T06:41:24.000Z")
+	if parseErr != nil {
+		log.Fatalf(parseErr.Error())
+	}
+	val := lib.Release{
+		Builds: []lib.Builds{
+			{
+				Arch: "amd64",
+				Os:   "darwin",
+				Url:  "https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_darwin_amd64.zip",
+			},
+			{
+				Arch: "386",
+				Os:   "linux",
+				Url:  "https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_linux_386.zip",
+			},
+			{
+				Arch: "amd64",
+				Os:   "linux",
+				Url:  "https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_linux_amd64.zip",
+			},
+			{
+				Arch: "386",
+				Os:   "windows",
+				Url:  "https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_windows_386.zip",
+			},
+		},
+		TimestampCreated: time,
+		Version:          "0.1.0",
+	}
 	var exists bool
 
+	s := reflect.ValueOf(list)
+	if s.Kind() == reflect.Ptr {
+		s = s.Elem()
+	}
 	switch reflect.TypeOf(list).Kind() {
 	case reflect.Slice:
 		s := reflect.ValueOf(list)
-
+		if s.Kind() == reflect.Ptr {
+			s = s.Elem()
+		}
 		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(&val.Version, s.Index(i).FieldByName("Version").String()) == true {
+			if reflect.DeepEqual(val, s.Index(i)) == true {
 				exists = true
 			}
 		}
