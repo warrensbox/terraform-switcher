@@ -41,10 +41,7 @@ func RemoveFiles(src string) {
 // CheckFileExist : check if file exist in directory
 func CheckFileExist(file string) bool {
 	_, err := os.Stat(file)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 // Unzip will decompress a zip archive, moving all files and folders
@@ -74,7 +71,10 @@ func Unzip(src string, dest string) ([]string, error) {
 		if f.FileInfo().IsDir() {
 
 			// Make Folder
-			os.MkdirAll(fpath, os.ModePerm)
+			err := os.MkdirAll(fpath, os.ModePerm)
+			if err != nil {
+				return nil, err
+			}
 
 		} else {
 
@@ -188,16 +188,12 @@ func IsDirEmpty(name string) bool {
 func CheckDirHasTGBin(dir, prefix string) bool {
 
 	exist := false
-
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)
-		//return exist, err
 	}
-	res := []string{}
 	for _, f := range files {
 		if !f.IsDir() && strings.HasPrefix(f.Name(), prefix) {
-			res = append(res, filepath.Join(dir, f.Name()))
 			exist = true
 		}
 	}
