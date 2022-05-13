@@ -154,12 +154,13 @@ func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
 
 //removePreReleases : Removes any prerelease versions from a given slice of Release.
 func removePreReleases(releases []*Release) []*Release {
+	realReleases := []*Release{}
 	for i, r := range releases {
-		if r.IsPrerelease {
-			releases = append(releases[:i], releases[i+1:]...)
+		if !r.IsPrerelease {
+			realReleases = append(realReleases, releases[i])
 		}
 	}
-	return releases
+	return realReleases
 }
 
 //VersionExist : check if requested version exist
