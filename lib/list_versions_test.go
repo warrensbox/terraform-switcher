@@ -52,18 +52,11 @@ func TestGetTFReleases(t *testing.T) {
 	}
 	var exists bool
 
-	s := reflect.ValueOf(list)
-	if s.Kind() == reflect.Ptr {
-		s = s.Elem()
-	}
 	switch reflect.TypeOf(list).Kind() {
 	case reflect.Slice:
 		s := reflect.ValueOf(list)
-		if s.Kind() == reflect.Ptr {
-			s = s.Elem()
-		}
 		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i)) == true {
+			if reflect.DeepEqual(&val, s.Index(i).Interface()) == true {
 				exists = true
 			}
 		}
