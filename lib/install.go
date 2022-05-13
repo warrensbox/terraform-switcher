@@ -206,10 +206,16 @@ func AddRecent(requestedVersion string) {
 				_, lines = lines[len(lines)-1], lines[:len(lines)-1]
 
 				lines = append([]string{requestedVersion}, lines...)
-				WriteLines(lines, versionFile)
+				err := WriteLines(lines, versionFile)
+				if err != nil {
+					log.Fatalf("Encountered error while updating versions file: %s\n", err)
+				}
 			} else {
 				lines = append([]string{requestedVersion}, lines...)
-				WriteLines(lines, versionFile)
+				err := WriteLines(lines, versionFile)
+				if err != nil {
+					log.Fatalf("Encountered error while updating versions file: %s\n", err)
+				}
 			}
 		}
 
@@ -262,7 +268,10 @@ func CreateRecentFile(requestedVersion string) {
 
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
-	WriteLines([]string{requestedVersion}, filepath.Join(installLocation, recentFile))
+	err := WriteLines([]string{requestedVersion}, filepath.Join(installLocation, recentFile))
+	if err != nil {
+		log.Fatalf("Encountered error while updating versions file: %s\n", err)
+	}
 }
 
 //ConvertExecutableExt : convert excutable with local OS extension
