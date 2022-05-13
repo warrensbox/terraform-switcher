@@ -266,7 +266,10 @@ func installLatestImplicitVersion(requestedVersion string, custBinPath, mirrorUR
 // show latest - argument (version) must be provided
 func showLatestImplicitVersion(requestedVersion string, mirrorURL *string, preRelease bool) {
 	if lib.ValidMinorVersionFormat(requestedVersion) {
-		tfversion, _ := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
+		tfversion, err := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
+		if err != nil {
+			fmt.Errorf("Couldn't get version %s\nError: %v", requestedVersion, err)
+		}
 		if len(tfversion.Version) > 0 {
 			fmt.Printf("%s\n", tfversion.Version)
 		} else {
@@ -294,8 +297,11 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 		}
 
 		//if the requested version had not been downloaded before
-		tfRelease, _ := lib.GetTFRelease(*mirrorURL, requestedVersion) //get list of versions
-		exist := lib.VersionExist(requestedVersion, tfRelease)         //check if version exist before downloading it
+		tfRelease, err := lib.GetTFRelease(*mirrorURL, requestedVersion) //get requested Terraform Release
+		if err != nil {
+			log.Fatalf("Encountered error while downloading version %s\nError: %v", requestedVersion, err)
+		}
+		exist := lib.VersionExist(requestedVersion, tfRelease) //check if version exist before downloading it
 
 		if exist {
 			lib.Install(tfRelease, *custBinPath)
@@ -344,8 +350,7 @@ func checkTFModuleFileExist(dir string) bool {
 
 // checkTFEnvExist - checks if the TF_VERSION environment variable is set
 func checkTFEnvExist() bool {
-	tfversion := os.Getenv("TF_VERSION")
-	return tfversion != ""
+	return os.Getenv("TF_VERSION") != ""
 }
 
 /* parses everything in the toml file, return required version and bin path */
@@ -390,8 +395,14 @@ func usageMessage() {
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
 func installOption(listAll bool, custBinPath, mirrorURL *string) {
-	tflist, _ := lib.GetTFReleases(*mirrorURL, listAll) //get list of versions
-	recentVersions, _ := lib.GetRecentVersions()        //get recent versions from RECENT file
+	tflist, err := lib.GetTFReleases(*mirrorURL, listAll) //get list of versions
+	if err != nil {
+		log.Fatalf("Encountered error while getting list of releases\nError: %v", err)
+	}
+	recentVersions, err := lib.GetRecentVersions() //get recent versions from RECENT file
+	if err != nil {
+		log.Fatalf("Error while reading local versions file: %v", err)
+	}
 	var versions []string
 	for _, r := range tflist {
 		versions = append(versions, r.Version)
@@ -414,7 +425,10 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	if errPrompt != nil {
 		log.Fatalf("Prompt failed %v\n", errPrompt)
 	}
-	rel, _ := lib.GetTFRelease(*mirrorURL, tfversion)
+	rel, err := lib.GetTFRelease(*mirrorURL, tfversion)
+	if err != nil {
+		log.Fatalf("Encountered error while downloading version %s\nError: %v", tfversion, err)
+	}
 
 	lib.Install(rel, *custBinPath)
 	os.Exit(0)
