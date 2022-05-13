@@ -96,11 +96,11 @@ func Install(tfRelease *Release, binPath string) {
 	// Terraform darwin arm64 comes with 1.0.2 and next version
 	tfver, err := version.NewVersion(tfRelease.Version)
 	if err != nil {
-		log.Fatalf("Error generating terraform version: %s", err)
+		log.Fatalf("Error generating terraform version for %q: %s", tfRelease.Version, err)
 	}
 	tf102, err := version.NewVersion(tfDarwinArm64StartVersion)
 	if err != nil {
-		log.Fatalf("Error generating terraform version: %s", err)
+		log.Fatalf("Error generating terraform version for %q: %s", tfDarwinArm64StartVersion, err)
 	}
 	if goos == "darwin" && goarch == "arm64" && tfver.LessThan(tf102) {
 		goarch = "amd64"
