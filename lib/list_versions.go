@@ -16,16 +16,14 @@ import (
 )
 
 type Release struct {
-	Builds           []Builds        `json:"builds"`
+	Builds []struct {
+		Arch string `json:"arch"`
+		Os   string `json:"os"`
+		Url  string `json:"url"`
+	} `json:"builds"`
 	IsPrerelease     bool            `json:"is_prerelease"`
 	TimestampCreated strfmt.DateTime `json:"timestamp_created"`
 	Version          string          `json:"version"`
-}
-
-type Builds struct {
-	Arch string `json:"arch"`
-	Os   string `json:"os"`
-	Url  string `json:"url"`
 }
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url

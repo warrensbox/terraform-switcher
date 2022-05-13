@@ -1,7 +1,7 @@
 package lib_test
 
 import (
-	"github.com/go-openapi/strfmt"
+	"encoding/json"
 	"github.com/warrensbox/terraform-switcher/lib"
 	"log"
 	"reflect"
@@ -17,38 +17,21 @@ const (
 func TestGetTFReleases(t *testing.T) {
 
 	listAll := true
-	list, _ := lib.GetTFReleases(hashiURL, listAll)
-
-	//val := lib.Release{Version: "0.1.0"}
-	time, parseErr := strfmt.ParseDateTime("2017-07-12T06:41:24.000Z")
-	if parseErr != nil {
-		log.Fatalf(parseErr.Error())
+	list, err := lib.GetTFReleases(hashiURL, listAll)
+	if err != nil {
+		log.Fatalln(err)
 	}
-	val := lib.Release{
-		Builds: []lib.Builds{
-			{
-				Arch: "amd64",
-				Os:   "darwin",
-				Url:  "https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_darwin_amd64.zip",
-			},
-			{
-				Arch: "386",
-				Os:   "linux",
-				Url:  "https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_linux_386.zip",
-			},
-			{
-				Arch: "amd64",
-				Os:   "linux",
-				Url:  "https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_linux_amd64.zip",
-			},
-			{
-				Arch: "386",
-				Os:   "windows",
-				Url:  "https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_windows_386.zip",
-			},
-		},
-		TimestampCreated: time,
-		Version:          "0.1.0",
+
+	// Release metadata from https://releases.hashicorp.com/terraform/0.1.0
+	// All fields besides the 3 used in lib.Release have been stripped out
+	jSON := []byte(`{
+	  "builds":[{"arch":"amd64","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_darwin_amd64.zip"},{"arch":"386","os":"linux","url":"https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_linux_386.zip"},{"arch":"amd64","os":"linux","url":"https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_linux_amd64.zip"},{"arch":"386","os":"windows","url":"https://releases.hashicorp.com/terraform/0.1.0/terraform_0.1.0_windows_386.zip"}],
+	  "timestamp_created": "2017-07-12T06:41:24.000Z",
+	  "version": "0.1.0"
+	}`)
+	var val lib.Release
+	if err := json.Unmarshal(jSON, &val); err != nil {
+		log.Fatalf("%s: %s", err, jSON)
 	}
 	var exists bool
 
@@ -62,7 +45,7 @@ func TestGetTFReleases(t *testing.T) {
 		}
 	}
 	if !exists {
-		log.Fatalf("Not able to find version: %s\n", val.Version)
+		log.Fatalf("Not able to find Release version: %s\n", val.Version)
 	} else {
 		t.Log("Write versions exist (expected)")
 	}
