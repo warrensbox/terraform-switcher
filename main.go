@@ -292,7 +292,11 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 		if recentDownloadFile {
 			lib.ChangeSymlink(installFileVersionPath, *custBinPath)
 			fmt.Printf("Switched terraform to version %q \n", requestedVersion)
-			lib.AddRecent(requestedVersion) //add to recent file for faster lookup
+			requestedRelease, err := lib.GetTFRelease(*mirrorURL, requestedVersion)
+			if err != nil {
+				log.Fatalf("Error while getting release metadata for: %v\nError: %s", requestedVersion, err)
+			}
+			lib.AddRecent(requestedRelease) //add to recent file for faster lookup
 			os.Exit(0)
 		}
 
@@ -301,7 +305,11 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 		if err != nil {
 			log.Fatalf("Encountered error while downloading version %s\nError: %v", requestedVersion, err)
 		}
-		exist := lib.VersionExist(requestedVersion, tfRelease) //check if version exist before downloading it
+		recents, err := lib.GetRecentVersions(*mirrorURL)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		exist := lib.VersionExist(tfRelease, recents) //check if version exist before downloading it
 
 		if exist {
 			lib.Install(tfRelease, *custBinPath)
@@ -400,7 +408,7 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 		log.Fatalf("Encountered error while getting list of releases\nError: %v", err)
 	}
 
-	recentVersions, err := lib.GetRecentVersions() //get recent versions from RECENT file
+	recentVersions, err := lib.GetRecentVersions(*mirrorURL) //get recent versions from RECENT file
 	if err != nil {
 		log.Fatalf("Error while reading local versions file: %v", err)
 	}
