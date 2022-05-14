@@ -105,7 +105,7 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 		return nil, fmt.Errorf("[Error] : parsing url: %s", err)
 	}
 	values := u.Query()
-	values.Add("limit", strconv.Itoa(limit))
+	values.Set("limit", strconv.Itoa(limit))
 	releaseSet, err := getReleases(u, values)
 	if err != nil {
 		return nil, err
