@@ -181,7 +181,7 @@ func RemoveDuplicateVersions(elements []*Release) []*Release {
 	result := []*Release{}
 
 	for _, val := range elements {
-		versionOnly := strings.Trim(val.Version, " *recent")
+		versionOnly := strings.TrimSuffix(val.Version, " *recent")
 		if encountered[versionOnly] {
 			// Do not add duplicate.
 		} else {
