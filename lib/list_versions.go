@@ -102,7 +102,7 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	limit := 20
 	u, err := url.Parse(mirrorURL)
 	if err != nil {
-		return nil, fmt.Errorf("Error parsing url: %s", err)
+		return nil, fmt.Errorf("[Error] : parsing url: %s", err)
 	}
 	values := u.Query()
 	values.Add("limit", strconv.Itoa(limit))
@@ -133,7 +133,7 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
 	url, err := url.Parse(mirrorURL + "/" + requestedVersion)
 	if err != nil {
-		return nil, fmt.Errorf("[Error] : parsing URL: %v", err)
+		return nil, fmt.Errorf("[Error] : parsing URL: %s", err)
 	}
 	resp, errURL := httpGet(url, nil)
 	if errURL != nil {
