@@ -59,12 +59,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 func httpGet(url *url.URL, values url.Values) (*http.Response, error) {
 	url.RawQuery = values.Encode()
 
-	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := http.DefaultClient.Do(req)
+	res, err := http.Get(url.String())
 	if err != nil {
 		return nil, err
 	}
