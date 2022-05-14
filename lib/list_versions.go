@@ -113,7 +113,7 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	var releases []*Release
 	releases = append(releases, releaseSet...)
 	for len(releaseSet) == limit {
-		values.Add("after", releaseSet[len(releaseSet)-1].TimestampCreated.String())
+		values.Set("after", releaseSet[len(releaseSet)-1].TimestampCreated.String())
 		releaseSet, err = getReleases(u, values)
 		if err != nil {
 			return nil, err
