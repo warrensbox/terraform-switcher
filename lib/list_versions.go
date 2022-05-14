@@ -42,17 +42,27 @@ func GetTFLatest(mirrorURL string, preRelease bool) (*Release, error) {
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Release, error) {
-	if preRelease {
-		version = fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
-	} else if !preRelease {
-		version = fmt.Sprintf("~> %v", version)
-	}
 	releases, err := GetTFReleases(mirrorURL, preRelease)
 	if err != nil {
 		return nil, err
 	}
-	semv, err := SemVerParser(&version, releases)
-	return semv, err
+	if preRelease {
+		semver := fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
+		r, err := regexp.Compile(semver)
+		if err != nil {
+			return nil, err
+		}
+		for _, release:= range releases {
+			if r.MatchString(release.Version) {
+				return release, nil
+			}
+		}
+		retun nil,fmt.Errorf("Error: no matching version found for given semver %s", version) 
+	} else {
+		version = fmt.Sprintf("~> %v", version)
+		semv, err := SemVerParser(&version, releases)
+		return semv, err
+	}
 }
 
 // httpGet : generic http get client for the given url and query parameters.
