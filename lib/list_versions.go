@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"regexp"
 	"sort"
 	"strconv"
@@ -55,17 +56,14 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 }
 
 // httpGet : generic http get client for the given url and query parameters.
-func httpGet(url string, queryParams map[string]string) (*http.Response, error) {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+func httpGet(url *url.URL, values url.Values) (*http.Response, error) {
+	url.RawQuery = values.Encode()
+
+	req, err := http.NewRequest(http.MethodGet, url.String(), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	q := req.URL.Query()
-	for k, v := range queryParams {
-		q.Add(k, v)
-	}
-	req.URL.RawQuery = q.Encode()
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -77,23 +75,22 @@ func httpGet(url string, queryParams map[string]string) (*http.Response, error) 
 }
 
 // getReleases : subfunc for GetTFReleases, used in a loop to get all terraform releases given the hashicorp url
-func getReleases(mirrorURL string, queryParams map[string]string) ([]*Release, error) {
+func getReleases(url *url.URL, values url.Values) ([]*Release, error) {
 	var releases []*Release
-	resp, errURL := httpGet(mirrorURL, queryParams)
+	resp, errURL := httpGet(url, values)
 	if errURL != nil {
 		return nil, fmt.Errorf("[Error] : Getting url: %v", errURL)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("[Error] : Retrieving contents from url: %s", mirrorURL)
+		return nil, fmt.Errorf("[Error] : Retrieving contents from url: %s", url)
 	}
 
 	body := new(bytes.Buffer)
 	if _, err := io.Copy(body, resp.Body); err != nil {
 		return nil, err
 	}
-
 	if err := json.Unmarshal(body.Bytes(), &releases); err != nil {
 		return nil, fmt.Errorf("%s: %s", err, body.String())
 	}
@@ -103,22 +100,26 @@ func getReleases(mirrorURL string, queryParams map[string]string) ([]*Release, e
 //GetTFReleases :  Get all terraform releases given the hashicorp url
 func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	limit := 20
-	queryParams := map[string]string{"limit": strconv.Itoa(limit)}
-	releaseSet, err := getReleases(mirrorURL, queryParams)
+	u, err := url.Parse(mirrorURL)
+	if err != nil {
+		return nil, fmt.Errorf("Error parsing url: %s", err)
+	}
+	values := u.Query()
+	values.Add("limit", strconv.Itoa(limit))
+	releaseSet, err := getReleases(u, values)
 	if err != nil {
 		return nil, err
 	}
 	var releases []*Release
 	releases = append(releases, releaseSet...)
 	for len(releaseSet) == limit {
-		queryParams["after"] = releaseSet[len(releaseSet)-1].TimestampCreated.String()
-		releaseSet, err = getReleases(mirrorURL, queryParams)
+		values.Add("after", releaseSet[len(releaseSet)-1].TimestampCreated.String())
+		releaseSet, err = getReleases(u, values)
 		if err != nil {
 			return nil, err
 		}
 		releases = append(releases, releaseSet...)
 	}
-
 	if !preRelease {
 		releases = removePreReleases(releases)
 	}
@@ -130,7 +131,11 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 
 //GetTFRelease :  Get the requested terraform release given the hashicorp url
 func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
-	resp, errURL := httpGet(mirrorURL+"/"+requestedVersion, nil)
+	url, err := url.Parse(mirrorURL + "/" + requestedVersion)
+	if err != nil {
+		return nil, fmt.Errorf("[Error] : parsing URL: %v", err)
+	}
+	resp, errURL := httpGet(url, nil)
 	if errURL != nil {
 		return nil, fmt.Errorf("[Error] : Getting url: %v", errURL)
 	}
