@@ -268,7 +268,7 @@ func showLatestImplicitVersion(requestedVersion string, mirrorURL *string, preRe
 	if lib.ValidMinorVersionFormat(requestedVersion) {
 		tfversion, err := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
 		if err != nil {
-			fmt.Errorf("Couldn't get version %s\nError: %v", requestedVersion, err)
+			log.Fatalf("Couldn't get version %s\nError: %v", requestedVersion, err)
 		}
 		if len(tfversion.Version) > 0 {
 			fmt.Printf("%s\n", tfversion.Version)
