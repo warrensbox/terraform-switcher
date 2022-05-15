@@ -52,12 +52,13 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 		if err != nil {
 			return nil, err
 		}
-		for _, release:= range releases {
+		for _, release := range releases {
 			if r.MatchString(release.Version) {
+				fmt.Printf("Matched version: %s\n", release.Version)
 				return release, nil
 			}
 		}
-		retun nil,fmt.Errorf("Error: no matching version found for given semver %s", version) 
+		return nil, fmt.Errorf("Error: no match for requested version: %s", version)
 	} else {
 		version = fmt.Sprintf("~> %v", version)
 		semv, err := SemVerParser(&version, releases)
