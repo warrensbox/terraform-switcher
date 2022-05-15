@@ -182,17 +182,11 @@ func AddRecent(requestedRelease *Release) {
 		releases, errRead := ReadLines(versionFile)
 
 		if errRead != nil {
+			fmt.Println("File dirty or encountered issue while parsing Release metadata. Recreating cache file.")
+			RemoveFiles(versionFile)
+			CreateRecentFile(requestedRelease)
 			fmt.Printf("[Error] : %s\n", errRead)
 			return
-		}
-
-		for _, rel := range releases {
-			if !ValidVersionFormat(rel.Version) {
-				fmt.Println("File dirty. Recreating cache file.")
-				RemoveFiles(versionFile)
-				CreateRecentFile(requestedRelease)
-				return
-			}
 		}
 
 		versionExist := VersionExist(requestedRelease, releases)
