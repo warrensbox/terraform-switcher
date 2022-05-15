@@ -172,6 +172,10 @@ func ReadLines(path string) (lines []*Release, err error) {
 			if err := json.Unmarshal(buffer.Bytes(), &release); err != nil {
 				return nil, fmt.Errorf("%s: %s", err, buffer.Bytes())
 			}
+			if !ValidVersionFormat(release.Version) {
+				return nil, nil
+				return nil, fmt.Errorf("Invalid version parsed: %s", release.Version)
+			}
 			lines = append(lines, release)
 			buffer.Reset()
 		}
