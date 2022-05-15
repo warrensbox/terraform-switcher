@@ -416,9 +416,9 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	tflist = lib.RemoveDuplicateVersions(tflist)
 
 	templates := promptui.SelectTemplates{
-		Active:   `> {{ .Version | green | bold }}`,
+		Active:   `»{{ .Version | green | bold }}`,
 		Inactive: `{{ .Version | cyan }}`,
-		Selected: `{{ "✔" | green | bold }} {{ .Version | cyan }}`,
+		Selected: `{{ "»" | green | bold }} {{ .Version | green }}`,
 	}
 	prompt := promptui.Select{
 		Label:     "Select Terraform version",
