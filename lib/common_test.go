@@ -41,7 +41,10 @@ func createDirIfNotExist(dir string) {
 }
 
 func cleanUp(path string) {
-	removeContents(path)
+	err := removeContents(path)
+	if err != nil {
+		log.Fatalf("Error during cleanup")
+	}
 	removeFiles(path)
 }
 

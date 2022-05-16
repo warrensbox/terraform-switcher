@@ -429,7 +429,7 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	i, _, errPrompt := prompt.Run()
 	tfRelease := tflist[i]
 
-	tfRelease.Version = strings.Trim(tfRelease.Version, " *recent") //trim versions with the string " *recent" appended
+	tfRelease.Version = strings.TrimSuffix(tfRelease.Version, " *recent") //trim versions with the suffix " *recent"
 
 	if errPrompt != nil {
 		log.Fatalf("Prompt failed %v\n", errPrompt)
