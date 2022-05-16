@@ -6,7 +6,6 @@ jobs:
   build:
     docker:
       - image: cimg/go:1.18
-
     working_directory: /go/src/github.com/warrensbox/terraform-switcher
 
     steps:
@@ -33,7 +32,6 @@ jobs:
   release:
     docker:
       - image: cimg/go:1.18
-
     working_directory: /go/src/github.com/warrensbox/terraform-switcher
 
     steps:
