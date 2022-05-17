@@ -2,7 +2,6 @@ package lib
 
 import (
 	"fmt"
-
 	semver "github.com/hashicorp/go-version"
 )
 
@@ -22,13 +21,13 @@ func GetSemver(tfconstraint *string, mirrorURL *string) (*Release, error) {
 func SemVerParser(tfconstraint *string, tflist []*Release) (*Release, error) {
 	constraints, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
 	if err != nil {
-		return nil, fmt.Errorf("error parsing constraint: %s", err)
+		return nil, fmt.Errorf("error parsing constraint: %q", err)
 	}
 	//put tfversion into semver object
 	for _, tfvals := range tflist {
 		version, err := semver.NewVersion(tfvals.Version)
 		if err != nil {
-			return nil, fmt.Errorf("error parsing constraint: %s", err)
+			return nil, fmt.Errorf("error parsing constraint: %q", err)
 		}
 		tfvals.Version = version.String()
 		if constraints.Check(version) {

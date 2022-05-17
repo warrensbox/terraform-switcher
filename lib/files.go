@@ -170,7 +170,7 @@ func ReadLines(path string) (lines []*Release, err error) {
 		if !prefix {
 			var release *Release
 			if err := json.Unmarshal(buffer.Bytes(), &release); err != nil {
-				return nil, fmt.Errorf("%s: %s", err, buffer.Bytes())
+				return nil, fmt.Errorf("%q: %s", err, buffer.Bytes())
 			}
 			if !ValidVersionFormat(release.Version) {
 				return nil, fmt.Errorf("Invalid version parsed: %s", release.Version)

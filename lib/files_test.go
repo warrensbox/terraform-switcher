@@ -217,7 +217,7 @@ func TestWriteLines(t *testing.T) {
 			if !prefix {
 				var release *lib.Release
 				if err := json.Unmarshal(buffer.Bytes(), &release); err != nil {
-					log.Fatalf("%s: %s", err, buffer.Bytes())
+					log.Fatalf("%q: %s", err, buffer.Bytes())
 				}
 				localReleases = append(localReleases, release)
 				buffer.Reset()
@@ -264,7 +264,7 @@ func TestReadLines(t *testing.T) {
 	test_array := []*lib.Release{{Version: "0.1.1"}, {Version: "0.0.2"}, {Version: "0.0.3"}, {Version: "0.12.0-rc1"}, {Version: "0.12.0-beta1"}}
 	err := lib.WriteLines(test_array, recentFilePath)
 	if err != nil {
-		log.Fatalf("Error writing releases: %s", err)
+		log.Fatalf("Error writing releases: %q", err)
 	}
 
 	localReleases, errRead := lib.ReadLines(recentFilePath)
