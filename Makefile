@@ -1,6 +1,6 @@
 EXE  := tfswitch
 PKG  := github.com/warrensbox/terraform-switcher
-VER := $(shell git ls-remote --tags git://github.com/warrensbox/terraform-switcher | awk '{print $$2}'| awk -F"/" '{print $$3}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n 2 | head -n1)
+VER := $(shell git ls-remote --tags https://github.com/warrensbox/terraform-switcher | awk '{print $$2}'| awk -F"/" '{print $$3}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -n 2 | head -n1)
 PATH := build:$(PATH)
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
@@ -11,7 +11,7 @@ $(EXE): go.mod *.go lib/*.go
 .PHONY: release
 release: $(EXE) darwin linux
 
-.PHONY: darwin linux 
+.PHONY: darwin linux
 darwin linux:
 	GOOS=$@ go build -ldflags "-X main.version=$(VER)" -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
 
@@ -32,4 +32,3 @@ install: $(EXE)
 .PHONY: docs
 docs:
 	cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
-

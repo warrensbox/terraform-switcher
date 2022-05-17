@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"reflect"
 	"regexp"
 	"strings"
 )
@@ -140,22 +139,14 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 }
 
 //VersionExist : check if requested version exist
-func VersionExist(val interface{}, array interface{}) (exists bool) {
-
-	exists = false
-	switch reflect.TypeOf(array).Kind() {
-	case reflect.Slice:
-		s := reflect.ValueOf(array)
-
-		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
-				exists = true
-				return exists
-			}
+func VersionExist(val string, array []string) (exists bool) {
+	for _, v := range array {
+		if v == val {
+			return true
 		}
 	}
 
-	return exists
+	return false
 }
 
 //RemoveDuplicateVersions : remove duplicate version
