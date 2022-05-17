@@ -72,10 +72,11 @@ func httpGet(url *url.URL, values url.Values) (*http.Response, error) {
 
 	res, err := http.Get(url.String())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("[Error] : Retrieving contents from url %s\n: %q", url, err)
+
 	}
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("issue during request (%d: %q)", res.StatusCode, res.Status)
+		return nil, fmt.Errorf("[Error] : non-200 response code during request: %d: Http status: %s", res.StatusCode, res.Status)
 	}
 	return res, nil
 }
@@ -85,12 +86,11 @@ func getReleases(url *url.URL, values url.Values) ([]*Release, error) {
 	var releases []*Release
 	resp, errURL := httpGet(url, values)
 	if errURL != nil {
-		return nil, fmt.Errorf("[Error] : Getting url: %v", errURL)
+		return nil, fmt.Errorf("[Error] : Getting url: %q", errURL)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("[Error] : Retrieving contents from url: %s", url)
 	}
 
 	body := new(bytes.Buffer)
@@ -98,7 +98,7 @@ func getReleases(url *url.URL, values url.Values) ([]*Release, error) {
 		return nil, err
 	}
 	if err := json.Unmarshal(body.Bytes(), &releases); err != nil {
-		return nil, fmt.Errorf("%s: %s", err, body.String())
+		return nil, fmt.Errorf("%q: %s", err, body.String())
 	}
 	return releases, nil
 }
@@ -108,7 +108,7 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 	limit := 20
 	u, err := url.Parse(mirrorURL)
 	if err != nil {
-		return nil, fmt.Errorf("[Error] : parsing url: %s", err)
+		return nil, fmt.Errorf("[Error] : parsing url: %q", err)
 	}
 	values := u.Query()
 	values.Set("limit", strconv.Itoa(limit))
@@ -139,21 +139,21 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
 	url, err := url.Parse(mirrorURL + "/" + requestedVersion)
 	if err != nil {
-		return nil, fmt.Errorf("[Error] : parsing URL: %s", err)
+		return nil, fmt.Errorf("[Error] : parsing URL: %q", err)
 	}
 	resp, errURL := httpGet(url, nil)
 	if errURL != nil {
-		return nil, fmt.Errorf("[Error] : Getting url: %v", errURL)
+		return nil, fmt.Errorf("[Error] : Getting url: %q", errURL)
 	}
 	defer resp.Body.Close()
 
 	body := new(bytes.Buffer)
 	if _, err := io.Copy(body, resp.Body); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("[Error]: parsing http response body: %q", err)
 	}
 	var release *Release
 	if err := json.Unmarshal(body.Bytes(), &release); err != nil {
-		return nil, fmt.Errorf("%s: %s", err, body)
+		return nil, fmt.Errorf("%q: %s", err, body)
 	}
 	return release, nil
 
