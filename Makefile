@@ -11,7 +11,7 @@ $(EXE): go.mod *.go lib/*.go
 .PHONY: release
 release: $(EXE) darwin linux
 
-.PHONY: darwin linux 
+.PHONY: darwin linux
 darwin linux:
 	GOOS=$@ go build -ldflags "-X main.version=$(VER)" -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
 
@@ -32,4 +32,3 @@ install: $(EXE)
 .PHONY: docs
 docs:
 	cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
-
