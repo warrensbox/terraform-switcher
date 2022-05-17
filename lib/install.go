@@ -244,11 +244,6 @@ func GetRecentVersions(mirrorURL string) ([]*Release, error) {
 			/* 	output can be confusing since it displays the 3 most recent used terraform version
 			append the string *recent to the output to make it more user friendly
 			*/
-			//recentReleaseStub := Release{Version: fmt.Sprintf("%s *recent", release)}
-			/*recentRelease, err := GetTFRelease(mirrorURL, release)
-			if err != nil {
-				return nil, fmt.Errorf("Error: %s\n\nLine: %s", err, release)
-			}*/
 			release.Version = fmt.Sprintf("%s *recent", release.Version)
 			outputRecent = append(outputRecent, release)
 		}
