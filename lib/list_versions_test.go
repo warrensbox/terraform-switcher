@@ -66,7 +66,16 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 		log.Fatalf("%s: %s", err, jSON)
 	}
 
-	test_array := []*lib.Release{&val, {Version: "0.0.1"}, {Version: "0.0.2"}, {Version: "0.0.3"}, {Version: "0.0.1"}, {Version: "0.1.0"}, {Version: "0.12.0-beta1"}, {Version: "0.12.0-beta1"}}
+	var tmp lib.Release
+	var test_array = []*lib.Release{
+		tmp.NewRelease("0.0.1"),
+		tmp.NewRelease("0.0.2"),
+		tmp.NewRelease("0.0.3"),
+		tmp.NewRelease("0.0.1"),
+		tmp.NewRelease("0.1.0"),
+		tmp.NewRelease("0.12.0-beta1"),
+		tmp.NewRelease("0.12.0-beta1"),
+	}
 
 	list := lib.RemoveDuplicateVersions(test_array)
 
