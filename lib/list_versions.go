@@ -181,15 +181,15 @@ func VersionExist(rel *Release, releases []*Release) bool {
 //RemoveDuplicateVersions : remove duplicate version
 func RemoveDuplicateVersions(elements []*Release) []*Release {
 	// Use map to record duplicates as we find them.
-	encountered := map[*semver.Version]bool{}
+	encountered := map[string]bool{}
 	result := []*Release{}
 
 	for _, val := range elements {
-		if encountered[val.Version] {
+		if encountered[val.Version.String()] {
 			// Do not add duplicate.
 		} else {
 			// Record this element as an encountered element.
-			encountered[val.Version] = true
+			encountered[val.Version.String()] = true
 			// Append to result slice.
 			result = append(result, val)
 		}
