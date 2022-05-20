@@ -10,9 +10,9 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
-	"strings"
 
 	"github.com/go-openapi/strfmt"
+	semver "github.com/hashicorp/go-version"
 )
 
 type Release struct {
@@ -21,9 +21,10 @@ type Release struct {
 		OS   string `json:"os"`
 		URL  string `json:"url"`
 	} `json:"builds"`
-	IsPrerelease     bool            `json:"is_prerelease"`
+	IsPrerelease     bool `json:"is_prerelease"`
+	LocalCacheTag    string
 	TimestampCreated strfmt.DateTime `json:"timestamp_created"`
-	Version          string          `json:"version"`
+	Version          *semver.Version `json:"version"`
 }
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
@@ -53,7 +54,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 			return nil, err
 		}
 		for _, release := range releases {
-			if r.MatchString(release.Version) {
+			if r.MatchString(release.Version.String()) {
 				fmt.Printf("Matched version: %s\n", release.Version)
 				return release, nil
 			}
@@ -130,7 +131,7 @@ func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
 		releases = removePreReleases(releases)
 	}
 	sort.Slice(releases, func(i, j int) bool {
-		return releases[i].Version > releases[j].Version
+		return releases[i].Version.GreaterThan(releases[j].Version)
 	})
 	return releases, nil
 }
@@ -183,16 +184,15 @@ func VersionExist(rel *Release, releases []*Release) bool {
 //RemoveDuplicateVersions : remove duplicate version
 func RemoveDuplicateVersions(elements []*Release) []*Release {
 	// Use map to record duplicates as we find them.
-	encountered := map[string]bool{}
+	encountered := map[*semver.Version]bool{}
 	result := []*Release{}
 
 	for _, val := range elements {
-		versionOnly := strings.TrimSuffix(val.Version, " *recent")
-		if encountered[versionOnly] {
+		if encountered[val.Version] {
 			// Do not add duplicate.
 		} else {
 			// Record this element as an encountered element.
-			encountered[versionOnly] = true
+			encountered[val.Version] = true
 			// Append to result slice.
 			result = append(result, val)
 		}
