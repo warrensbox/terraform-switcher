@@ -90,20 +90,16 @@ func Install(tfRelease *Release, binPath string) {
 	goos := runtime.GOOS
 
 	// Terraform darwin arm64 comes with 1.0.2 and next version
-	tfver, err := version.NewVersion(tfRelease.Version)
-	if err != nil {
-		log.Fatalf("Error generating terraform version for %q: %s", tfRelease.Version, err)
-	}
 	tf102, err := version.NewVersion(tfDarwinArm64StartVersion)
 	if err != nil {
 		log.Fatalf("Error generating terraform version for %q: %s", tfDarwinArm64StartVersion, err)
 	}
-	if goos == "darwin" && goarch == "arm64" && tfver.LessThan(tf102) {
+	if goos == "darwin" && goarch == "arm64" && tfRelease.Version.LessThan(tf102) {
 		goarch = "amd64"
 	}
 
 	/* check if selected version already downloaded */
-	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+tfRelease.Version))
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+tfRelease.Version.String()))
 	fileExist := CheckFileExist(installFileVersionPath)
 
 	/* if selected version already exist, */
@@ -227,8 +223,9 @@ func GetRecentVersions(mirrorURL string) ([]*Release, error) {
 		outputRecent := []*Release{}
 
 		if errRead != nil {
-			fmt.Printf("Error: %s\n", errRead)
-			return nil, errRead
+			fmt.Println("File dirty or encountered issue while parsing Release metadata. Deleting cache file.")
+			RemoveFiles(versionFile)
+			return nil, fmt.Errorf("Error: %s\n", errRead)
 		}
 
 		for _, release := range localReleases {
@@ -236,7 +233,8 @@ func GetRecentVersions(mirrorURL string) ([]*Release, error) {
 			If any version is invalid, it will be consider dirty
 			and the recent file will be removed
 			*/
-			if !ValidVersionFormat(release.Version) {
+
+			if !ValidVersionFormat(release.Version.String()) {
 				RemoveFiles(versionFile)
 				return nil, errRead
 			}
@@ -244,7 +242,7 @@ func GetRecentVersions(mirrorURL string) ([]*Release, error) {
 			/* 	output can be confusing since it displays the 3 most recent used terraform version
 			append the string *recent to the output to make it more user friendly
 			*/
-			release.Version = fmt.Sprintf("%s *recent", release.Version)
+			release.LocalCacheTag = fmt.Sprintf("*recent")
 			outputRecent = append(outputRecent, release)
 		}
 
