@@ -256,7 +256,7 @@ func installLatestImplicitVersion(requestedVersion string, custBinPath, mirrorUR
 	}
 	//if lib.ValidMinorVersionFormat(requestedVersion) {
 	tfRelease, err := lib.GetTFLatestImplicit(*mirrorURL, preRelease, requestedVersion)
-	if err == nil && tfRelease.Version != "" {
+	if err == nil && tfRelease.Version != nil {
 		lib.Install(tfRelease, *custBinPath)
 	}
 	fmt.Printf("Error parsing constraint: %s\n", err)
@@ -270,7 +270,7 @@ func showLatestImplicitVersion(requestedVersion string, mirrorURL *string, preRe
 		if err != nil {
 			log.Fatalf("Couldn't get version %s\nError: %v", requestedVersion, err)
 		}
-		if len(tfversion.Version) > 0 {
+		if tfversion.Version != nil {
 			fmt.Printf("%s\n", tfversion.Version)
 		} else {
 			log.Fatalln("The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
@@ -416,9 +416,9 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	tflist = lib.RemoveDuplicateVersions(tflist)
 
 	templates := promptui.SelectTemplates{
-		Active:   `{{ "»" | green | bold }} {{ .Version | green | bold }}`,
-		Inactive: ` {{ .Version | cyan }}`,
-		Selected: `{{ "»" | green | bold }} {{ .Version | green }}`,
+		Active:   `{{ "»" | green | bold }} {{ .Version | green | bold }} {{ .LocalCacheTag | green | bold }}`,
+		Inactive: ` {{ .Version | cyan }} {{ .LocalCacheTag | green | bold }}`,
+		Selected: `{{ "»" | green | bold }} {{ .Version | green }} {{ .LocalCacheTag | green | bold }}`,
 	}
 	prompt := promptui.Select{
 		Label:     "Select Terraform version",
@@ -428,8 +428,6 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 
 	i, _, errPrompt := prompt.Run()
 	tfRelease := tflist[i]
-
-	tfRelease.Version = strings.TrimSuffix(tfRelease.Version, " *recent") //trim versions with the suffix " *recent"
 
 	if errPrompt != nil {
 		log.Fatalf("Prompt failed %v\n", errPrompt)
