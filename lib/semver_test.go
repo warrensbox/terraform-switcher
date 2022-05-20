@@ -1,7 +1,6 @@
 package lib_test
 
 import (
-	"fmt"
 	"testing"
 
 	semver "github.com/hashicorp/go-version"
@@ -46,7 +45,7 @@ func TestSemverParserCase1(t *testing.T) {
 // TestSemverParserCase2 : Test to see if SemVerParser parses valid version
 // Test version ~> 1.1 should return  1.1.4
 func TestSemverParserCase2(t *testing.T) {
-	tfconstraint := fmt.Sprintf("~> 1.1.0")
+	tfconstraint := "~> 1.1.0"
 	tfversion, err := lib.SemVerParser(&tfconstraint, releasesRaw)
 	if err != nil {
 		t.Fatalf("%q", err)
