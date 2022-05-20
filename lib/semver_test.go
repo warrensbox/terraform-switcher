@@ -9,26 +9,24 @@ import (
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
-var tmp lib.Release
-
 var releasesRaw = []*lib.Release{
-	tmp.NewRelease("2"),
-	tmp.NewRelease("1.4-beta"),
-	tmp.NewRelease("1.4"),
-	tmp.NewRelease("1.3"),
-	tmp.NewRelease("1.2.3"),
-	tmp.NewRelease("1.2.2"),
-	tmp.NewRelease("1.2.1"),
-	tmp.NewRelease("1.1.4"),
-	tmp.NewRelease("1.1"),
-	tmp.NewRelease("0.7.1"),
+	ReleaseConstructor("2"),
+	ReleaseConstructor("1.4-beta"),
+	ReleaseConstructor("1.4"),
+	ReleaseConstructor("1.3"),
+	ReleaseConstructor("1.2.3"),
+	ReleaseConstructor("1.2.2"),
+	ReleaseConstructor("1.2.1"),
+	ReleaseConstructor("1.1.4"),
+	ReleaseConstructor("1.1"),
+	ReleaseConstructor("0.7.1"),
 }
 
 // TestSemverParser1 : Test to see if SemVerParser parses valid version
 // Test version 1.1
 func TestSemverParserCase1(t *testing.T) {
 	tfconstraint := "1.1"
-	tfversion, err := lib.SemVerParser(&tfconstraint, nil)
+	tfversion, err := lib.SemVerParser(&tfconstraint, releasesRaw)
 	if err != nil {
 		t.Fatalf("%q", err)
 	}
@@ -36,7 +34,8 @@ func TestSemverParserCase1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("%q", err)
 	}
-	if tfversion.Version == expected {
+	if tfversion.Version.Equal(expected) {
+
 		t.Logf("Version exist in list %v [expected]", expected)
 	} else {
 		t.Logf("Version does not exist in list %v [unexpected]", tfconstraint)
@@ -56,7 +55,7 @@ func TestSemverParserCase2(t *testing.T) {
 	if err != nil {
 		t.Fatalf("%q", err)
 	}
-	if tfversion.Version == expected {
+	if tfversion.Version.Equal(expected) {
 		t.Logf("Version exist in list %v [expected]", expected)
 	} else {
 		t.Logf("Version does not exist in list %v [unexpected]", tfconstraint)
@@ -90,7 +89,7 @@ func TestSemverParserCase4(t *testing.T) {
 	if err != nil {
 		t.Fatalf("%q", err)
 	}
-	if tfversion.Version == expected {
+	if tfversion.Version.Equal(expected) {
 		t.Logf("Version exist in list %v [expected]", expected)
 	} else {
 		t.Logf("Version does not exist in list %v [unexpected]", tfconstraint)
@@ -103,12 +102,15 @@ func TestSemverParserCase4(t *testing.T) {
 func TestSemverParserCase5(t *testing.T) {
 
 	tfconstraint := ">= 1.0"
-	tfversion, _ := lib.SemVerParser(&tfconstraint, releasesRaw)
+	tfversion, err := lib.SemVerParser(&tfconstraint, releasesRaw)
+	if err != nil {
+		t.Fatalf("%q", err)
+	}
 	expected, err := semver.NewVersion("2.0.0")
 	if err != nil {
 		t.Fatalf("%q", err)
 	}
-	if tfversion.Version == expected {
+	if tfversion.Version.Equal(expected) {
 		t.Logf("Version exist in list %v [expected]", expected)
 	} else {
 		t.Logf("Version does not exist in list %v [unexpected]", tfconstraint)
