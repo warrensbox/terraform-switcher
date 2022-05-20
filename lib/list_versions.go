@@ -89,11 +89,8 @@ func getReleases(url *url.URL, values url.Values) ([]*Release, error) {
 	if errURL != nil {
 		return nil, fmt.Errorf("[Error] : Getting url: %q", errURL)
 	}
+
 	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-	}
-
 	body := new(bytes.Buffer)
 	if _, err := io.Copy(body, resp.Body); err != nil {
 		return nil, err
