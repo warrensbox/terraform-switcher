@@ -188,7 +188,14 @@ func TestWriteLines(t *testing.T) {
 	createDirIfNotExist(installLocation)
 
 	recentFilePath := filepath.Join(installLocation, recentFile)
-	test_array := []*lib.Release{{Version: "0.1.1"}, {Version: "0.0.2"}, {Version: "0.0.3"}, {Version: "0.12.0-rc1"}, {Version: "0.12.0-beta1"}}
+	var tmp lib.Release
+	var test_array = []*lib.Release{
+		tmp.NewRelease("0.1.1"),
+		tmp.NewRelease("0.0.2"),
+		tmp.NewRelease("0.0.3"),
+		tmp.NewRelease("0.12.0-rc1"),
+		tmp.NewRelease("0.12.0-beta1"),
+	}
 
 	errWrite := lib.WriteLines(test_array, recentFilePath)
 
@@ -232,7 +239,7 @@ func TestWriteLines(t *testing.T) {
 		}
 
 		for _, release := range localReleases {
-			if !semverRegex.MatchString(release.Version) {
+			if !semverRegex.MatchString(release.Version.String()) {
 				fmt.Println(release.Version)
 				log.Fatalf("Write to file is not invalid: %v\n", release)
 				break
@@ -261,7 +268,14 @@ func TestReadLines(t *testing.T) {
 	createDirIfNotExist(installLocation)
 
 	recentFilePath := filepath.Join(installLocation, recentFile)
-	test_array := []*lib.Release{{Version: "0.1.1"}, {Version: "0.0.2"}, {Version: "0.0.3"}, {Version: "0.12.0-rc1"}, {Version: "0.12.0-beta1"}}
+	var tmp lib.Release
+	var test_array = []*lib.Release{
+		tmp.NewRelease("0.1.1"),
+		tmp.NewRelease("0.0.2"),
+		tmp.NewRelease("0.0.3"),
+		tmp.NewRelease("0.12.0-rc1"),
+		tmp.NewRelease("0.12.0-beta1"),
+	}
 	err := lib.WriteLines(test_array, recentFilePath)
 	if err != nil {
 		log.Fatalf("Error writing releases: %q", err)
@@ -274,7 +288,7 @@ func TestReadLines(t *testing.T) {
 	}
 
 	for _, release := range localReleases {
-		if !semverRegex.MatchString(release.Version) {
+		if !semverRegex.MatchString(release.Version.String()) {
 			fmt.Println(release.Version)
 			log.Fatalf("Write to file is not invalid: %v\n", release)
 			break
