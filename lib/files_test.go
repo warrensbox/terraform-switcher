@@ -188,13 +188,12 @@ func TestWriteLines(t *testing.T) {
 	createDirIfNotExist(installLocation)
 
 	recentFilePath := filepath.Join(installLocation, recentFile)
-	var tmp lib.Release
 	var test_array = []*lib.Release{
-		tmp.NewRelease("0.1.1"),
-		tmp.NewRelease("0.0.2"),
-		tmp.NewRelease("0.0.3"),
-		tmp.NewRelease("0.12.0-rc1"),
-		tmp.NewRelease("0.12.0-beta1"),
+		ReleaseConstructor("0.1.1"),
+		ReleaseConstructor("0.0.2"),
+		ReleaseConstructor("0.0.3"),
+		ReleaseConstructor("0.12.0-rc1"),
+		ReleaseConstructor("0.12.0-beta1"),
 	}
 
 	errWrite := lib.WriteLines(test_array, recentFilePath)
@@ -268,13 +267,12 @@ func TestReadLines(t *testing.T) {
 	createDirIfNotExist(installLocation)
 
 	recentFilePath := filepath.Join(installLocation, recentFile)
-	var tmp lib.Release
 	var test_array = []*lib.Release{
-		tmp.NewRelease("0.1.1"),
-		tmp.NewRelease("0.0.2"),
-		tmp.NewRelease("0.0.3"),
-		tmp.NewRelease("0.12.0-rc1"),
-		tmp.NewRelease("0.12.0-beta1"),
+		ReleaseConstructor("0.1.1"),
+		ReleaseConstructor("0.0.2"),
+		ReleaseConstructor("0.0.3"),
+		ReleaseConstructor("0.12.0-rc1"),
+		ReleaseConstructor("0.12.0-beta1"),
 	}
 	err := lib.WriteLines(test_array, recentFilePath)
 	if err != nil {

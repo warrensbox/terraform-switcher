@@ -2,6 +2,8 @@ package lib_test
 
 import (
 	"encoding/json"
+	"fmt"
+	semver "github.com/hashicorp/go-version"
 	"log"
 	"reflect"
 	"testing"
@@ -12,6 +14,16 @@ import (
 const (
 	hashiURL = "https://api.releases.hashicorp.com/v1/releases/terraform"
 )
+
+// Used for constructing dummy release during tests
+func ReleaseConstructor(s string) *lib.Release {
+	v, err := semver.NewVersion(s)
+	if err != nil {
+		fmt.Println("Got here errorR")
+		log.Fatalln(err)
+	}
+	return &lib.Release{Version: v}
+}
 
 // TestGetTFList : Get list from hashicorp
 
@@ -66,20 +78,20 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 		log.Fatalf("%s: %s", err, jSON)
 	}
 
-	var tmp lib.Release
 	var test_array = []*lib.Release{
-		tmp.NewRelease("0.0.1"),
-		tmp.NewRelease("0.0.2"),
-		tmp.NewRelease("0.0.3"),
-		tmp.NewRelease("0.0.1"),
-		tmp.NewRelease("0.1.0"),
-		tmp.NewRelease("0.12.0-beta1"),
-		tmp.NewRelease("0.12.0-beta1"),
+		ReleaseConstructor("0.0.1"),
+		ReleaseConstructor("0.0.2"),
+		ReleaseConstructor("0.0.3"),
+		ReleaseConstructor("0.0.1"),
+		ReleaseConstructor("0.1.0"),
+		ReleaseConstructor("0.12.0-beta1"),
+		ReleaseConstructor("0.12.0-beta1"),
 	}
 
 	list := lib.RemoveDuplicateVersions(test_array)
 
 	if len(list) == len(test_array) {
+		fmt.Println(test_array[0].Version.Equal(test_array[3].Version))
 		log.Fatalf("Not able to remove duplicate: %v\n", test_array)
 	} else {
 		t.Log("Write versions exist (expected)")
