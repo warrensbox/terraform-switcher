@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -25,6 +26,16 @@ type Release struct {
 	LocalCacheTag    string
 	TimestampCreated strfmt.DateTime `json:"timestamp_created"`
 	Version          *semver.Version `json:"version"`
+}
+
+// Only here for testing and stubbing out releases
+func (r *Release) NewRelease(s string) *Release {
+	v, err := semver.NewVersion(s)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	r.Version = v
+	return r
 }
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
