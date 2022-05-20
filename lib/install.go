@@ -211,7 +211,7 @@ func AddRecent(requestedRelease *Release) {
 }
 
 // GetRecentVersions : get recent version from file
-func GetRecentVersions(mirrorURL string) ([]*Release, error) {
+func GetRecentVersions() ([]*Release, error) {
 
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
 	versionFile := filepath.Join(installLocation, recentFile)
@@ -242,7 +242,7 @@ func GetRecentVersions(mirrorURL string) ([]*Release, error) {
 			/* 	output can be confusing since it displays the 3 most recent used terraform version
 			append the string *recent to the output to make it more user friendly
 			*/
-			release.LocalCacheTag = fmt.Sprintf("*recent")
+			release.LocalCacheTag = "*recent"
 			outputRecent = append(outputRecent, release)
 		}
 

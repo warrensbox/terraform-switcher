@@ -59,7 +59,7 @@ func main() {
 	showLatestStable := getopt.StringLong("show-latest-stable", 'S', defaultLatest, "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
 	latestFlag := getopt.BoolLong("latest", 'u', "Get latest stable version")
 	showLatestFlag := getopt.BoolLong("show-latest", 'U', "Show latest stable version")
-	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote other than the default. Default: https://releases.hashicorp.com/terraform")
+	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote API other than the default. Default: https://api.releases.hashicorp.com/v1/releases/terraform")
 	chDirPath := getopt.StringLong("chdir", 'c', "", "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
@@ -305,7 +305,7 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 		if err != nil {
 			log.Fatalf("Encountered error while downloading version %s\nError: %v", requestedVersion, err)
 		}
-		recents, err := lib.GetRecentVersions(*mirrorURL)
+		recents, err := lib.GetRecentVersions()
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -408,7 +408,7 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 		log.Fatalf("Encountered error while getting list of releases\nError: %v", err)
 	}
 
-	recentVersions, err := lib.GetRecentVersions(*mirrorURL) //get recent versions from RECENT file
+	recentVersions, err := lib.GetRecentVersions() //get recent versions from RECENT file
 	if err != nil {
 		log.Fatalf("Error while reading local versions file: %v", err)
 	}

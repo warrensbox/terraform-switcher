@@ -3,10 +3,11 @@ package lib_test
 import (
 	"encoding/json"
 	"fmt"
-	semver "github.com/hashicorp/go-version"
 	"log"
 	"reflect"
 	"testing"
+
+	semver "github.com/hashicorp/go-version"
 
 	"github.com/warrensbox/terraform-switcher/lib"
 )
