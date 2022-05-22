@@ -171,7 +171,7 @@ func removePreReleases(releases []*Release) []*Release {
 //VersionExist : check if requested version exist
 func VersionExist(rel *Release, releases []*Release) bool {
 	for _, r := range releases {
-		if rel == r {
+		if rel.Version.Equal(r.Version) {
 			return true
 		}
 	}
