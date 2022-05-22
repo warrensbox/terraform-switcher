@@ -9,16 +9,16 @@ import (
 )
 
 var releasesRaw = []*lib.Release{
-	ReleaseConstructor("2"),
-	ReleaseConstructor("1.4-beta"),
-	ReleaseConstructor("1.4"),
-	ReleaseConstructor("1.3"),
-	ReleaseConstructor("1.2.3"),
-	ReleaseConstructor("1.2.2"),
-	ReleaseConstructor("1.2.1"),
-	ReleaseConstructor("1.1.4"),
-	ReleaseConstructor("1.1"),
-	ReleaseConstructor("0.7.1"),
+	NewRelease("2"),
+	NewRelease("1.4-beta"),
+	NewRelease("1.4"),
+	NewRelease("1.3"),
+	NewRelease("1.2.3"),
+	NewRelease("1.2.2"),
+	NewRelease("1.2.1"),
+	NewRelease("1.1.4"),
+	NewRelease("1.1"),
+	NewRelease("0.7.1"),
 }
 
 // TestSemverParser1 : Test to see if SemVerParser parses valid version
