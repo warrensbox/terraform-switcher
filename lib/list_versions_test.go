@@ -17,7 +17,7 @@ const (
 )
 
 // Used for constructing dummy release during tests
-func ReleaseConstructor(s string) *lib.Release {
+func NewRelease(s string) *lib.Release {
 	v, err := semver.NewVersion(s)
 	if err != nil {
 		fmt.Println("Got here errorR")
@@ -80,13 +80,13 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 	}
 
 	var test_array = []*lib.Release{
-		ReleaseConstructor("0.0.1"),
-		ReleaseConstructor("0.0.2"),
-		ReleaseConstructor("0.0.3"),
-		ReleaseConstructor("0.0.1"),
-		ReleaseConstructor("0.1.0"),
-		ReleaseConstructor("0.12.0-beta1"),
-		ReleaseConstructor("0.12.0-beta1"),
+		NewRelease("0.0.1"),
+		NewRelease("0.0.2"),
+		NewRelease("0.0.3"),
+		NewRelease("0.0.1"),
+		NewRelease("0.1.0"),
+		NewRelease("0.12.0-beta1"),
+		NewRelease("0.12.0-beta1"),
 	}
 
 	list := lib.RemoveDuplicateVersions(test_array)
