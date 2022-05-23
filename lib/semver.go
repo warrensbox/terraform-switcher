@@ -6,7 +6,7 @@ import (
 	semver "github.com/hashicorp/go-version"
 )
 
-// GetSemver : returns version that will be installed based on server constaint provided
+// GetSemver : returns version that will be installed based on server constraint provided
 func GetSemver(tfconstraint *string, mirrorURL *string) (*Release, error) {
 
 	tfReleases, err := GetTFReleases(*mirrorURL, true)
