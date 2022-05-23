@@ -59,7 +59,7 @@ func main() {
 	showLatestStable := getopt.StringLong("show-latest-stable", 'S', defaultLatest, "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
 	latestFlag := getopt.BoolLong("latest", 'u', "Get latest stable version")
 	showLatestFlag := getopt.BoolLong("show-latest", 'U', "Show latest stable version")
-	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote API other than the default. Default: https://api.releases.hashicorp.com/v1/releases/terraform")
+	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote API other than the default. Default: "+defaultMirror)
 	chDirPath := getopt.StringLong("chdir", 'c', "", "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
