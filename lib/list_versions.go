@@ -28,22 +28,17 @@ type Release struct {
 }
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
-func GetTFLatest(mirrorURL string, preRelease bool) (*Release, error) {
-	releases, error := GetTFReleases(mirrorURL, preRelease)
+func GetTFLatest(mirrorURL string) (*Release, error) {
+	tfReleases, error := GetTFReleases(mirrorURL, false)
 	if error != nil {
 		return nil, error
 	}
-	for i := range releases {
-		if !releases[i].IsPrerelease {
-			return releases[i], nil
-		}
-	}
-	return nil, nil
+	return tfReleases[0], nil
 }
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Release, error) {
-	releases, err := GetTFReleases(mirrorURL, preRelease)
+	tfReleases, err := GetTFReleases(mirrorURL, preRelease)
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +48,8 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 		if err != nil {
 			return nil, err
 		}
-		for _, release := range releases {
-			if r.MatchString(release.Version.String()) {
+		for _, release := range tfReleases {
+			if release.IsPrerelease && r.MatchString(release.Version.String()) {
 				fmt.Printf("Matched version: %s\n", release.Version)
 				return release, nil
 			}
@@ -62,7 +57,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Re
 		return nil, fmt.Errorf("Error: no match for requested version: %s", version)
 	} else {
 		version = fmt.Sprintf("~> %v", version)
-		semv, err := SemVerParser(&version, releases)
+		semv, err := SemVerParser(&version, tfReleases)
 		return semv, err
 	}
 }
@@ -179,19 +174,19 @@ func VersionExist(rel *Release, releases []*Release) bool {
 }
 
 //RemoveDuplicateVersions : remove duplicate version
-func RemoveDuplicateVersions(elements []*Release) []*Release {
+func RemoveDuplicateVersions(tfReleases []*Release) []*Release {
 	// Use map to record duplicates as we find them.
 	encountered := map[string]bool{}
 	result := []*Release{}
 
-	for _, val := range elements {
-		if encountered[val.Version.String()] {
+	for _, release := range tfReleases {
+		if encountered[release.Version.String()] {
 			// Do not add duplicate.
 		} else {
 			// Record this element as an encountered element.
-			encountered[val.Version.String()] = true
+			encountered[release.Version.String()] = true
 			// Append to result slice.
-			result = append(result, val)
+			result = append(result, release)
 		}
 	}
 	// Return the new slice.

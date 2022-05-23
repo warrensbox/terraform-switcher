@@ -232,7 +232,7 @@ func installWithListAll(custBinPath, mirrorURL *string) {
 
 // install latest stable tf version
 func installLatestVersion(custBinPath, mirrorURL *string) {
-	tfRelease, err := lib.GetTFLatest(*mirrorURL, false)
+	tfRelease, err := lib.GetTFLatest(*mirrorURL)
 	if err != nil {
 		log.Fatalf("Error during install: %v\n", err)
 	}
@@ -241,7 +241,7 @@ func installLatestVersion(custBinPath, mirrorURL *string) {
 
 // show install latest stable tf version
 func showLatestVersion(mirrorURL *string) {
-	tfRelease, err := lib.GetTFLatest(*mirrorURL, false)
+	tfRelease, err := lib.GetTFLatest(*mirrorURL)
 	if err != nil {
 		log.Fatalf("Error getting latest version: %v\n", err)
 	}
@@ -393,7 +393,7 @@ func usageMessage() {
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
 func installOption(listAll bool, custBinPath, mirrorURL *string) {
-	tflist, err := lib.GetTFReleases(*mirrorURL, listAll) //get list of versions
+	tfReleases, err := lib.GetTFReleases(*mirrorURL, listAll) //get list of versions
 	if err != nil {
 		log.Fatalf("Encountered error while getting list of releases\nError: %v\n", err)
 	}
@@ -402,8 +402,8 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	if err != nil {
 		log.Fatalf("Error while reading local versions file: %v\n", err)
 	}
-	tflist = append(recentVersions, tflist...)
-	tflist = lib.RemoveDuplicateVersions(tflist)
+	tfReleases = append(recentVersions, tfReleases...)
+	tfReleases = lib.RemoveDuplicateVersions(tfReleases)
 
 	templates := promptui.SelectTemplates{
 		Active:   `{{ "»" | green | bold }} {{ .Version | green | bold }} {{ .LocalCacheTag | green | bold }}`,
@@ -412,18 +412,18 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	}
 	prompt := promptui.Select{
 		Label:     "Select Terraform version",
-		Items:     tflist,
+		Items:     tfReleases,
 		Templates: &templates,
 	}
 
 	i, _, errPrompt := prompt.Run()
-	tfRelease := tflist[i]
+	release := tfReleases[i]
 
 	if errPrompt != nil {
 		log.Fatalf("Prompt failed %v\n", errPrompt)
 	}
 
-	lib.Install(tfRelease, *custBinPath)
+	lib.Install(release, *custBinPath)
 	os.Exit(0)
 }
 
@@ -441,9 +441,9 @@ func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
 // install using a version constraint
 func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string) {
 
-	tfversion, err := lib.GetSemver(tfconstraint, mirrorURL)
+	tfRelease, err := lib.GetSemver(tfconstraint, mirrorURL)
 	if err == nil {
-		lib.Install(tfversion, *custBinPath)
+		lib.Install(tfRelease, *custBinPath)
 	}
 	log.Fatalf("No version found to match constraint. Follow the README.md instructions for setup. https://github.com/warrensbox/terraform-switcher/blob/master/README.md\nError: %s\n", err)
 }
