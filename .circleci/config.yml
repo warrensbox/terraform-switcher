@@ -28,7 +28,6 @@ jobs:
             go test -v ./...
             mkdir -p build
             go build -v -o build/tfswitch
-            find ./test-data/* -type d | xargs -n 1 ./build/tfswitch -c
 
   release:
     docker:
