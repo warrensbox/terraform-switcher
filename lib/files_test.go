@@ -239,7 +239,6 @@ func TestWriteLines(t *testing.T) {
 
 		for _, release := range localReleases {
 			if !semverRegex.MatchString(release.Version.String()) {
-				fmt.Println(release.Version)
 				log.Fatalf("Write to file is not invalid: %v\n", release)
 				break
 			}
