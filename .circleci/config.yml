@@ -7,7 +7,7 @@ jobs:
     docker:
       - image: cimg/go:1.18
 
-    working_directory: /go/src/github.com/warrensbox/terraform-switcher
+    working_directory: /home/circleci/go/src/github.com/warrensbox/terraform-switcher
 
     steps:
       - checkout
@@ -34,7 +34,7 @@ jobs:
     docker:
       - image: cimg/go:1.18
 
-    working_directory: /go/src/github.com/warrensbox/terraform-switcher
+    working_directory: /home/circleci/go/src/github.com/warrensbox/terraform-switcher
 
     steps:
       - checkout
