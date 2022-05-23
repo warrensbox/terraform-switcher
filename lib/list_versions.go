@@ -33,7 +33,10 @@ func GetTFLatest(mirrorURL string) (*Release, error) {
 	if error != nil {
 		return nil, error
 	}
-	return tfReleases[0], nil
+	if len(tfReleases) > 0 {
+		return tfReleases[0], nil
+	}
+	return nil, fmt.Errorf("list of releases returned from API was empty")
 }
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
