@@ -1,2 +1,2 @@
-bin = "/Users/warrenveerasingam/bin/terraform"
+bin = "/usr/local/bin/terraform"
 version = "0.11.3"
