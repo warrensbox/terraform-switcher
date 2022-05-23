@@ -116,7 +116,7 @@ func CreateDirIfNotExist(dir string) {
 }
 
 //WriteLines : writes into file
-func WriteLines(releases []*Release, path string) error {
+func WriteLines(tfReleases []*Release, path string) error {
 	var (
 		file *os.File
 	)
@@ -126,9 +126,9 @@ func WriteLines(releases []*Release, path string) error {
 	}
 	defer file.Close()
 
-	for _, item := range releases {
+	for _, release := range tfReleases {
 
-		b, err := json.Marshal(item)
+		b, err := json.Marshal(release)
 		if err != nil {
 			fmt.Println(err)
 			break
@@ -148,8 +148,8 @@ func WriteLines(releases []*Release, path string) error {
 	return nil
 }
 
-// ReadLines : Read a whole file into the memory and store it as array of lines
-func ReadLines(path string) (lines []*Release, err error) {
+// ReadLines : Read a whole file into the memory and store it as slice of Release's
+func ReadLines(path string) (tfReleases []*Release, err error) {
 	var (
 		file   *os.File
 		part   []byte
@@ -172,7 +172,7 @@ func ReadLines(path string) (lines []*Release, err error) {
 			if err := json.Unmarshal(buffer.Bytes(), &release); err != nil {
 				return nil, fmt.Errorf("%q: %s", err, buffer.Bytes())
 			}
-			lines = append(lines, release)
+			tfReleases = append(tfReleases, release)
 			buffer.Reset()
 		}
 	}
