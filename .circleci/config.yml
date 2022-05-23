@@ -5,7 +5,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.16
+      - image: cimg/go:1.18
 
     working_directory: /go/src/github.com/warrensbox/terraform-switcher
 
@@ -14,9 +14,9 @@ jobs:
       - run: 
           command: |    
             set +e  
-            echo "Building website" 
-            sudo apt-get install python3
-            sudo apt-get install python3-pip
+            echo "Building website"
+            sudo apt-get update
+            sudo apt-get install python3 python3-pip
             pip3 install mkdocs-material
             cd www
             mkdocs gh-deploy --force
@@ -32,7 +32,7 @@ jobs:
 
   release:
     docker:
-      - image: circleci/golang:1.16
+      - image: cimg/go:1.18
 
     working_directory: /go/src/github.com/warrensbox/terraform-switcher
 
