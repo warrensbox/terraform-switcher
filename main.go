@@ -51,6 +51,7 @@ const (
 var version = "0.12.0\n"
 
 func main() {
+	dir := lib.GetCurrentDirectory()
 	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
 	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
 	latestPre := getopt.StringLong("latest-pre", 'p', defaultLatest, "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
@@ -60,7 +61,7 @@ func main() {
 	latestFlag := getopt.BoolLong("latest", 'u', "Get latest stable version")
 	showLatestFlag := getopt.BoolLong("show-latest", 'U', "Show latest stable version")
 	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote API other than the default. Default: "+defaultMirror)
-	chDirPath := getopt.StringLong("chdir", 'c', "", "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
+	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
 	_ = versionFlag
@@ -68,18 +69,13 @@ func main() {
 	getopt.Parse()
 	args := getopt.Args()
 
-	dir := lib.GetCurrentDirectory()
 	homedir := lib.GetHomeDirectory()
 
-	if *chDirPath != "" {
-		dir = dir + "/" + *chDirPath
-	}
-
-	TFVersionFile := filepath.Join(dir, tfvFilename)           //settings for .terraform-version file in current directory (tfenv compatible)
-	RCFile := filepath.Join(dir, rcFilename)                   //settings for .tfswitchrc file in current directory (backward compatible purpose)
-	TOMLConfigFile := filepath.Join(dir, tomlFilename)         //settings for .tfswitch.toml file in current directory (option to specify bin directory)
+	TFVersionFile := filepath.Join(*chDirPath, tfvFilename)    //settings for .terraform-version file in current directory (tfenv compatible)
+	RCFile := filepath.Join(*chDirPath, rcFilename)            //settings for .tfswitchrc file in current directory (backward compatible purpose)
+	TOMLConfigFile := filepath.Join(*chDirPath, tomlFilename)  //settings for .tfswitch.toml file in current directory (option to specify bin directory)
 	HomeTOMLConfigFile := filepath.Join(homedir, tomlFilename) //settings for .tfswitch.toml file in home directory (option to specify bin directory)
-	TGHACLFile := filepath.Join(dir, tgHclFilename)            //settings for terragrunt.hcl file in current directory (option to specify bin directory)
+	TGHACLFile := filepath.Join(*chDirPath, tgHclFilename)     //settings for terragrunt.hcl file in current directory (option to specify bin directory)
 
 	switch {
 	case *versionFlag:
@@ -99,7 +95,7 @@ func main() {
 		version := ""
 		binPath := *custBinPath
 		if fileExists(TOMLConfigFile) { //read from toml from current directory
-			version, binPath = getParamsTOML(binPath, dir)
+			version, binPath = getParamsTOML(binPath, *chDirPath)
 		} else { // else read from toml from home directory
 			version, binPath = getParamsTOML(binPath, homedir)
 		}
@@ -135,8 +131,8 @@ func main() {
 			tfversion := retrieveFileContents(TFVersionFile)
 			installVersion(tfversion, &binPath, mirrorURL)
 		/* if versions.tf file found (IN ADDITION TO A TOML FILE) */
-		case checkTFModuleFileExist(dir) && len(args) == 0:
-			installTFProvidedModule(dir, &binPath, mirrorURL)
+		case checkTFModuleFileExist(*chDirPath) && len(args) == 0:
+			installTFProvidedModule(*chDirPath, &binPath, mirrorURL)
 		/* if Terraform Version environment variable is set */
 		case checkTFEnvExist() && len(args) == 0 && version == "":
 			tfversion := os.Getenv("TF_VERSION")
@@ -202,8 +198,8 @@ func main() {
 		installVersion(tfversion, custBinPath, mirrorURL)
 
 	/* if versions.tf file found */
-	case checkTFModuleFileExist(dir) && len(args) == 0:
-		installTFProvidedModule(dir, custBinPath, mirrorURL)
+	case checkTFModuleFileExist(*chDirPath) && len(args) == 0:
+		installTFProvidedModule(*chDirPath, custBinPath, mirrorURL)
 
 	/* if terragrunt.hcl file found */
 	case fileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
