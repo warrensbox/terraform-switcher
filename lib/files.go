@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -41,10 +42,7 @@ func RemoveFiles(src string) {
 // CheckFileExist : check if file exist in directory
 func CheckFileExist(file string) bool {
 	_, err := os.Stat(file)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 // Unzip will decompress a zip archive, moving all files and folders
@@ -74,7 +72,10 @@ func Unzip(src string, dest string) ([]string, error) {
 		if f.FileInfo().IsDir() {
 
 			// Make Folder
-			os.MkdirAll(fpath, os.ModePerm)
+			err := os.MkdirAll(fpath, os.ModePerm)
+			if err != nil {
+				return nil, err
+			}
 
 		} else {
 
@@ -115,29 +116,40 @@ func CreateDirIfNotExist(dir string) {
 }
 
 //WriteLines : writes into file
-func WriteLines(lines []string, path string) (err error) {
+func WriteLines(tfReleases []*Release, path string) error {
 	var (
 		file *os.File
 	)
-
-	if file, err = os.Create(path); err != nil {
+	file, err := os.Create(path)
+	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	for _, item := range lines {
-		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
+	for _, release := range tfReleases {
+
+		b, err := json.Marshal(release)
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		_, err = file.Write(b)
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+
+		_, err = file.WriteString("\n")
 		if err != nil {
 			fmt.Println(err)
 			break
 		}
 	}
-
 	return nil
 }
 
-// ReadLines : Read a whole file into the memory and store it as array of lines
-func ReadLines(path string) (lines []string, err error) {
+// ReadLines : Read a whole file into the memory and store it as slice of Release's
+func ReadLines(path string) (tfReleases []*Release, err error) {
 	var (
 		file   *os.File
 		part   []byte
@@ -156,7 +168,11 @@ func ReadLines(path string) (lines []string, err error) {
 		}
 		buffer.Write(part)
 		if !prefix {
-			lines = append(lines, buffer.String())
+			var release *Release
+			if err := json.Unmarshal(buffer.Bytes(), &release); err != nil {
+				return nil, fmt.Errorf("%q: %s", err, buffer.Bytes())
+			}
+			tfReleases = append(tfReleases, release)
 			buffer.Reset()
 		}
 	}
@@ -188,16 +204,12 @@ func IsDirEmpty(name string) bool {
 func CheckDirHasTGBin(dir, prefix string) bool {
 
 	exist := false
-
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)
-		//return exist, err
 	}
-	res := []string{}
 	for _, f := range files {
 		if !f.IsDir() && strings.HasPrefix(f.Name(), prefix) {
-			res = append(res, filepath.Join(dir, f.Name()))
 			exist = true
 		}
 	}

@@ -1,178 +1,195 @@
 package lib
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
+	"io"
 	"net/http"
-	"os"
-	"reflect"
+	"net/url"
 	"regexp"
-	"strings"
+	"sort"
+	"strconv"
+
+	"github.com/go-openapi/strfmt"
+	semver "github.com/hashicorp/go-version"
 )
 
-type tfVersionList struct {
-	tflist []string
-}
-
-//GetTFList :  Get the list of available terraform version given the hashicorp url
-func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
-
-	result, error := GetTFURLBody(mirrorURL)
-	if error != nil {
-		return nil, error
-	}
-
-	var tfVersionList tfVersionList
-	var semver string
-	if preRelease == true {
-		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver = `\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?"`
-	} else if preRelease == false {
-		// Getting versions from body; should return match /X.X.X/ where X is a number
-		// without the ending '"' pre-release folders would be tried and break.
-		semver = `\/(\d+\.\d+\.\d+)\/?"`
-	}
-	r, _ := regexp.Compile(semver)
-	for i := range result {
-		if r.MatchString(result[i]) {
-			str := r.FindString(result[i])
-			trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
-			tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
-		}
-	}
-
-	if len(tfVersionList.tflist) == 0 {
-		fmt.Printf("Cannot get list from mirror: %s\n", mirrorURL)
-	}
-
-	return tfVersionList.tflist, nil
-
+type Release struct {
+	Builds []struct {
+		Arch string `json:"arch"`
+		OS   string `json:"os"`
+		URL  string `json:"url"`
+	} `json:"builds"`
+	IsPrerelease     bool `json:"is_prerelease"`
+	LocalCacheTag    string
+	TimestampCreated strfmt.DateTime `json:"timestamp_created"`
+	Version          *semver.Version `json:"version"`
 }
 
 //GetTFLatest :  Get the latest terraform version given the hashicorp url
-func GetTFLatest(mirrorURL string) (string, error) {
-
-	result, error := GetTFURLBody(mirrorURL)
+func GetTFLatest(mirrorURL string) (*Release, error) {
+	tfReleases, error := GetTFReleases(mirrorURL, false)
 	if error != nil {
-		return "", error
+		return nil, error
 	}
-	// Getting versions from body; should return match /X.X.X/ where X is a number
-	semver := `\/(\d+\.\d+\.\d+)\/?"`
-	r, _ := regexp.Compile(semver)
-	for i := range result {
-		if r.MatchString(result[i]) {
-			str := r.FindString(result[i])
-			trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
-			return trimstr, nil
-		}
+	if len(tfReleases) > 0 {
+		return tfReleases[0], nil
 	}
-
-	return "", nil
+	return nil, fmt.Errorf("list of releases returned from API was empty")
 }
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
-func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
-
-	if preRelease == true {
-		//TODO: use GetTFList() instead of GetTFURLBody
-		versions, error := GetTFURLBody(mirrorURL)
-		if error != nil {
-			return "", error
-		}
-		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver := fmt.Sprintf(`\/(%s{1}\.\d+\-[a-zA-z]+\d*)\/?"`, version)
+func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (*Release, error) {
+	tfReleases, err := GetTFReleases(mirrorURL, preRelease)
+	if err != nil {
+		return nil, err
+	}
+	if preRelease {
+		semver := fmt.Sprintf(`%s{1}\.\d+\-[a-zA-z]+\d*`, version)
 		r, err := regexp.Compile(semver)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
-		for i := range versions {
-			if r.MatchString(versions[i]) {
-				str := r.FindString(versions[i])
-				trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
-				return trimstr, nil
+		for _, release := range tfReleases {
+			if release.IsPrerelease && r.MatchString(release.Version.String()) {
+				fmt.Printf("Matched version: %s\n", release.Version)
+				return release, nil
 			}
 		}
-	} else if preRelease == false {
-		listAll := false
-		tflist, _ := GetTFList(mirrorURL, listAll) //get list of versions
+		return nil, fmt.Errorf("Error: no match for requested version: %s", version)
+	} else {
 		version = fmt.Sprintf("~> %v", version)
-		semv, err := SemVerParser(&version, tflist)
-		if err != nil {
-			return "", err
-		}
-		return semv, nil
+		semv, err := SemVerParser(&version, tfReleases)
+		return semv, err
 	}
-	return "", nil
 }
 
-//GetTFURLBody : Get list of terraform versions from hashicorp releases
-func GetTFURLBody(mirrorURL string) ([]string, error) {
+// httpGet : generic http get client for the given url and query parameters.
+func httpGet(url *url.URL, values url.Values) (*http.Response, error) {
+	url.RawQuery = values.Encode()
 
-	hasSlash := strings.HasSuffix(mirrorURL, "/")
-	if !hasSlash { //if does not have slash - append slash
-		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
+	res, err := http.Get(url.String())
+	if err != nil {
+		return nil, fmt.Errorf("[Error] : Retrieving contents from url %s\n: %q", url, err)
+
 	}
-	resp, errURL := http.Get(mirrorURL)
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("[Error] : non-200 response code during request: %d: Http status: %s", res.StatusCode, res.Status)
+	}
+	return res, nil
+}
+
+// getReleases : subfunc for GetTFReleases, used in a loop to get all terraform releases given the hashicorp url
+func getReleases(url *url.URL, values url.Values) ([]*Release, error) {
+	var releases []*Release
+	resp, errURL := httpGet(url, values)
 	if errURL != nil {
-		log.Printf("[Error] : Getting url: %v", errURL)
-		os.Exit(1)
-		return nil, errURL
+		return nil, fmt.Errorf("[Error] : Getting url: %q", errURL)
+	}
+
+	defer resp.Body.Close()
+	body := new(bytes.Buffer)
+	if _, err := io.Copy(body, resp.Body); err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(body.Bytes(), &releases); err != nil {
+		return nil, fmt.Errorf("%q: %s", err, body.String())
+	}
+	return releases, nil
+}
+
+//GetTFReleases :  Get all terraform releases given the hashicorp url
+func GetTFReleases(mirrorURL string, preRelease bool) ([]*Release, error) {
+	limit := 20
+	u, err := url.Parse(mirrorURL)
+	if err != nil {
+		return nil, fmt.Errorf("[Error] : parsing url: %q", err)
+	}
+	values := u.Query()
+	values.Set("limit", strconv.Itoa(limit))
+	releaseSet, err := getReleases(u, values)
+	if err != nil {
+		return nil, err
+	}
+	var releases []*Release
+	releases = append(releases, releaseSet...)
+	for len(releaseSet) == limit {
+		values.Set("after", releaseSet[len(releaseSet)-1].TimestampCreated.String())
+		releaseSet, err = getReleases(u, values)
+		if err != nil {
+			return nil, err
+		}
+		releases = append(releases, releaseSet...)
+	}
+	if !preRelease {
+		releases = removePreReleases(releases)
+	}
+	sort.Slice(releases, func(i, j int) bool {
+		return releases[i].Version.GreaterThan(releases[j].Version)
+	})
+	return releases, nil
+}
+
+//GetTFRelease :  Get the requested terraform release given the hashicorp url
+func GetTFRelease(mirrorURL, requestedVersion string) (*Release, error) {
+	url, err := url.Parse(mirrorURL + "/" + requestedVersion)
+	if err != nil {
+		return nil, fmt.Errorf("[Error] : parsing URL: %q", err)
+	}
+	resp, errURL := httpGet(url, nil)
+	if errURL != nil {
+		return nil, fmt.Errorf("[Error] : Getting url: %q", errURL)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
-		os.Exit(1)
+	body := new(bytes.Buffer)
+	if _, err := io.Copy(body, resp.Body); err != nil {
+		return nil, fmt.Errorf("[Error]: parsing http response body: %q", err)
 	}
-
-	body, errBody := ioutil.ReadAll(resp.Body)
-	if errBody != nil {
-		log.Printf("[Error] : reading body: %v", errBody)
-		os.Exit(1)
-		return nil, errBody
+	var release *Release
+	if err := json.Unmarshal(body.Bytes(), &release); err != nil {
+		return nil, fmt.Errorf("%q: %s", err, body)
 	}
+	return release, nil
 
-	bodyString := string(body)
-	result := strings.Split(bodyString, "\n")
+}
 
-	return result, nil
+//removePreReleases : Removes any prerelease versions from a given slice of Release.
+func removePreReleases(releases []*Release) []*Release {
+	realReleases := []*Release{}
+	for i, r := range releases {
+		if !r.IsPrerelease {
+			realReleases = append(realReleases, releases[i])
+		}
+	}
+	return realReleases
 }
 
 //VersionExist : check if requested version exist
-func VersionExist(val interface{}, array interface{}) (exists bool) {
-
-	exists = false
-	switch reflect.TypeOf(array).Kind() {
-	case reflect.Slice:
-		s := reflect.ValueOf(array)
-
-		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
-				exists = true
-				return exists
-			}
+func VersionExist(rel *Release, releases []*Release) bool {
+	for _, r := range releases {
+		if rel.Version.Equal(r.Version) {
+			return true
 		}
 	}
-
-	return exists
+	return false
 }
 
 //RemoveDuplicateVersions : remove duplicate version
-func RemoveDuplicateVersions(elements []string) []string {
+func RemoveDuplicateVersions(tfReleases []*Release) []*Release {
 	// Use map to record duplicates as we find them.
 	encountered := map[string]bool{}
-	result := []string{}
+	result := []*Release{}
 
-	for _, val := range elements {
-		versionOnly := strings.Trim(val, " *recent")
-		if encountered[versionOnly] == true {
+	for _, release := range tfReleases {
+		if encountered[release.Version.String()] {
 			// Do not add duplicate.
 		} else {
 			// Record this element as an encountered element.
-			encountered[versionOnly] = true
+			encountered[release.Version.String()] = true
 			// Append to result slice.
-			result = append(result, val)
+			result = append(result, release)
 		}
 	}
 	// Return the new slice.
