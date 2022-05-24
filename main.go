@@ -72,7 +72,7 @@ func main() {
 	homedir := lib.GetHomeDirectory()
 
 	if *chDirPath != "" {
-		dir = dir + "/" + *chDirPath
+		dir = *chDirPath
 	}
 
 	TFVersionFile := filepath.Join(dir, tfvFilename)           //settings for .terraform-version file in current directory (tfenv compatible)
