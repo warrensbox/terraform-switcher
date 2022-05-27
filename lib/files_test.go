@@ -3,6 +3,7 @@ package lib_test
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -187,7 +188,13 @@ func TestWriteLines(t *testing.T) {
 	createDirIfNotExist(installLocation)
 
 	recentFilePath := filepath.Join(installLocation, recentFile)
-	test_array := []string{"0.1.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
+	var test_array = []*lib.Release{
+		NewRelease("0.1.1"),
+		NewRelease("0.0.2"),
+		NewRelease("0.0.3"),
+		NewRelease("0.12.0-rc1"),
+		NewRelease("0.12.0-beta1"),
+	}
 
 	errWrite := lib.WriteLines(test_array, recentFilePath)
 
@@ -200,7 +207,7 @@ func TestWriteLines(t *testing.T) {
 			part             []byte
 			prefix           bool
 			errOpen, errRead error
-			lines            []string
+			localReleases    []*lib.Release
 		)
 		if file, errOpen = os.Open(recentFilePath); errOpen != nil {
 			log.Fatal(errOpen)
@@ -214,7 +221,11 @@ func TestWriteLines(t *testing.T) {
 			}
 			buffer.Write(part)
 			if !prefix {
-				lines = append(lines, buffer.String())
+				var release *lib.Release
+				if err := json.Unmarshal(buffer.Bytes(), &release); err != nil {
+					log.Fatalf("%q: %s", err, buffer.Bytes())
+				}
+				localReleases = append(localReleases, release)
 				buffer.Reset()
 			}
 		}
@@ -226,9 +237,9 @@ func TestWriteLines(t *testing.T) {
 			log.Fatalf("Error: %s\n", errRead)
 		}
 
-		for _, line := range lines {
-			if !semverRegex.MatchString(line) {
-				log.Fatalf("Write to file is not invalid: %s\n", line)
+		for _, release := range localReleases {
+			if !semverRegex.MatchString(release.Version.String()) {
+				log.Fatalf("Write to file is not invalid: %v\n", release)
 				break
 			}
 		}
@@ -255,39 +266,32 @@ func TestReadLines(t *testing.T) {
 	createDirIfNotExist(installLocation)
 
 	recentFilePath := filepath.Join(installLocation, recentFile)
-	test_array := []string{"0.0.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
-
-	var (
-		file      *os.File
-		errCreate error
-	)
-
-	if file, errCreate = os.Create(recentFilePath); errCreate != nil {
-		log.Fatalf("Error: %s\n", errCreate)
+	var test_array = []*lib.Release{
+		NewRelease("0.1.1"),
+		NewRelease("0.0.2"),
+		NewRelease("0.0.3"),
+		NewRelease("0.12.0-rc1"),
+		NewRelease("0.12.0-beta1"),
+	}
+	err := lib.WriteLines(test_array, recentFilePath)
+	if err != nil {
+		log.Fatalf("Error writing releases: %q", err)
 	}
 
-	for _, item := range test_array {
-		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
-		if err != nil {
-			log.Fatalf("Error: %s\n", err)
-			break
-		}
-	}
-
-	lines, errRead := lib.ReadLines(recentFilePath)
+	localReleases, errRead := lib.ReadLines(recentFilePath)
 
 	if errRead != nil {
-		log.Fatalf("Error: %s\n", errRead)
+		log.Fatalf("Error reading Releases from file: %s\n", errRead)
 	}
 
-	for _, line := range lines {
-		if !semverRegex.MatchString(line) {
-			log.Fatalf("Write to file is not invalid: %s\n", line)
+	for _, release := range localReleases {
+		if !semverRegex.MatchString(release.Version.String()) {
+			fmt.Println(release.Version)
+			log.Fatalf("Write to file is not invalid: %v\n", release)
 			break
 		}
 	}
 
-	file.Close()
 	t.Log("Read versions exist (expected)")
 
 	cleanUp(installLocation)
