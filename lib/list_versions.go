@@ -73,7 +73,6 @@ func GetTFLatest(mirrorURL string) (string, error) {
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
-
 	if preRelease == true {
 		//TODO: use GetTFList() instead of GetTFURLBody
 		versions, error := GetTFURLBody(mirrorURL)
@@ -94,6 +93,9 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 			}
 		}
 	} else if preRelease == false {
+		if strings.Count(version, string(".")) == 1 {
+			version += ".0"
+		}
 		listAll := false
 		tflist, _ := GetTFList(mirrorURL, listAll) //get list of versions
 		version = fmt.Sprintf("~> %v", version)
