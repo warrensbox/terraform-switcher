@@ -93,9 +93,6 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 			}
 		}
 	} else if preRelease == false {
-		if strings.Count(version, string(".")) == 1 {
-			version += ".0"
-		}
 		listAll := false
 		tflist, _ := GetTFList(mirrorURL, listAll) //get list of versions
 		version = fmt.Sprintf("~> %v", version)
