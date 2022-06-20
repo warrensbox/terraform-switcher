@@ -27,7 +27,7 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	var semver string
 	if preRelease == true {
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver = `\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?"`
+		semver = `\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?/?"`
 	} else if preRelease == false {
 		// Getting versions from body; should return match /X.X.X/ where X is a number
 		// without the ending '"' pre-release folders would be tried and break.
@@ -73,7 +73,6 @@ func GetTFLatest(mirrorURL string) (string, error) {
 
 //GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
-
 	if preRelease == true {
 		//TODO: use GetTFList() instead of GetTFURLBody
 		versions, error := GetTFURLBody(mirrorURL)
