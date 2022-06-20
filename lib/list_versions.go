@@ -27,7 +27,7 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	var semver string
 	if preRelease == true {
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver = `\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?"`
+		semver = `\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?/?"`
 	} else if preRelease == false {
 		// Getting versions from body; should return match /X.X.X/ where X is a number
 		// without the ending '"' pre-release folders would be tried and break.
