@@ -54,10 +54,10 @@ func main() {
 	dir := lib.GetCurrentDirectory()
 	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
 	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
-	latestPre := getopt.StringLong("latest-pre", 'p', defaultLatest, "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
-	showLatestPre := getopt.StringLong("show-latest-pre", 'P', defaultLatest, "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
-	latestStable := getopt.StringLong("latest-stable", 's', defaultLatest, "Latest implicit version based on a constraint. Ex: tfswitch --latest-stable 0.13.0 downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
-	showLatestStable := getopt.StringLong("show-latest-stable", 'S', defaultLatest, "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
+	latestPre := getopt.StringLong("latest-pre", 'p', defaultLatest, "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1")
+	showLatestPre := getopt.StringLong("show-latest-pre", 'P', defaultLatest, "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1")
+	latestStable := getopt.StringLong("latest-stable", 's', defaultLatest, "Latest implicit version based on a constraint. Ex: tfswitch --latest-stable 0.13.0 downloads 0.13.7 and 0.13 downloads 0.15.5")
+	showLatestStable := getopt.StringLong("show-latest-stable", 'S', defaultLatest, "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.15.5")
 	latestFlag := getopt.BoolLong("latest", 'u', "Get latest stable version")
 	showLatestFlag := getopt.BoolLong("show-latest", 'U', "Show latest stable version")
 	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote API other than the default. Default: "+defaultMirror)
@@ -102,7 +102,7 @@ func main() {
 
 		switch {
 		/* GIVEN A TOML FILE, */
-		/* show all terraform version including betas and RCs*/
+		/* show all terraform version including betas and RCs */
 		case *listAllFlag:
 			listAll := true //set list all true - all versions including beta and rc will be displayed
 			installOption(listAll, &binPath, mirrorURL)
@@ -110,7 +110,7 @@ func main() {
 		case *latestPre != "":
 			preRelease := true
 			installLatestImplicitVersion(*latestPre, &binPath, mirrorURL, preRelease)
-			/* show latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1  */
+		/* show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1  */
 		case *showLatestPre != "":
 			preRelease := true
 			showLatestImplicitVersion(*showLatestPre, &binPath, mirrorURL, preRelease)
@@ -166,7 +166,7 @@ func main() {
 		preRelease := true
 		installLatestImplicitVersion(*latestPre, custBinPath, mirrorURL, preRelease)
 
-	/* show latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 */
+	/* show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 */
 	case *showLatestPre != "":
 		preRelease := true
 		showLatestImplicitVersion(*showLatestPre, custBinPath, mirrorURL, preRelease)
