@@ -141,14 +141,14 @@ func main() {
 		/* if versions.tf file found (IN ADDITION TO A TOML FILE) */
 		case checkTFModuleFileExist(*chDirPath) && len(args) == 0:
 			installTFProvidedModule(*chDirPath, &binPath, mirrorURL)
+		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
+		case fileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
+			installTGHclFile(&TGHACLFile, &binPath, mirrorURL)
 		/* if Terraform Version environment variable is set */
 		case checkTFEnvExist() && len(args) == 0 && version == "":
 			tfversion := os.Getenv("TF_VERSION")
 			fmt.Printf("Terraform version environment variable: %s\n", tfversion)
 			installVersion(tfversion, &binPath, mirrorURL)
-		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
-		case fileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-			installTGHclFile(&TGHACLFile, &binPath, mirrorURL)
 		// if no arg is provided - but toml file is provided
 		case version != "":
 			installVersion(version, &binPath, mirrorURL)
