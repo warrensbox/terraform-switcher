@@ -25,6 +25,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/chzyer/readline"
 	semver "github.com/hashicorp/go-version"
 	"github.com/hashicorp/hcl2/gohcl"
 	"github.com/hashicorp/hcl2/hclparse"
@@ -407,6 +408,25 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	prompt := promptui.Select{
 		Label: "Select Terraform version",
 		Items: tflist,
+			IsVimMode: false,
+			Keys: &promptui.SelectKeys{
+				Next: promptui.Key{
+					Code:    readline.CharNext,
+					Display: "↓",
+				},
+				Prev: promptui.Key{
+					Code:    readline.CharPrev,
+					Display: "↑",
+				},
+				PageUp: promptui.Key{
+					Code:    readline.CharForward,
+					Display: "→",
+				},
+				PageDown: promptui.Key{
+					Code:    readline.CharBackward,
+					Display: "←",
+				},
+			},
 	}
 
 	_, tfversion, errPrompt := prompt.Run()

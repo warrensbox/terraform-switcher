@@ -88,7 +88,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	 * Inform user that they dont have permission to default location, therefore tfswitch was installed in $HOME/bin
 	 * Tell users to add $HOME/bin to their path
 	 */
-	binPath = InstallableBinLocation(binPath)
+	binPath = ConvertExecutableExt(InstallableBinLocation(binPath))
 
 	initialize()                           //initialize path
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
