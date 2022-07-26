@@ -5,7 +5,13 @@
 version: 2
 updates:
   - package-ecosystem: gomod
-    directory: "/"
+    directory: /
     schedule:
       interval: daily
-    open-pull-requests-limit: 10
+      # Check for updates at 7am UTC.
+      time: "07:00"
+    commit-message:
+      prefix: "go:"
+    labels:
+      - c:deps
+      - golang
