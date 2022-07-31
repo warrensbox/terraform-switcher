@@ -63,6 +63,8 @@ is_supported_platform() {
     darwin/arm64) found=0 ;;
     linux/amd64) found=0 ;;
     linux/arm64) found=0 ;;
+    linux/armv6) found=0 ;;
+    linux/armv7) found=0 ;;
   esac
   return $found
 }
