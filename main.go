@@ -25,10 +25,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/gruntwork-io/terragrunt/config"
+	"github.com/gruntwork-io/terragrunt/options"
 	semver "github.com/hashicorp/go-version"
-	"github.com/hashicorp/hcl2/gohcl"
-	"github.com/hashicorp/hcl2/hclparse"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
+	"github.com/sirupsen/logrus"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
@@ -444,33 +445,30 @@ func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string)
 // Install using version constraint from terragrunt file
 func installTGHclFile(tgFile *string, custBinPath, mirrorURL *string) {
 	fmt.Printf("Terragrunt file found: %s\n", *tgFile)
-	parser := hclparse.NewParser()
-	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
-	if diags.HasErrors() {
-		fmt.Println("Unable to parse HCL file")
-		os.Exit(1)
-	}
-	var version terragruntVersionConstraints
-	gohcl.DecodeBody(file.Body, nil, &version)
-	installFromConstraint(&version.TerraformVersionConstraint, custBinPath, mirrorURL)
-}
 
-type terragruntVersionConstraints struct {
-	TerraformVersionConstraint string `hcl:"terraform_version_constraint"`
+	version := getVersionFromHCL(tgFile)
+	installFromConstraint(&version, custBinPath, mirrorURL)
 }
 
 // check if version is defined in hcl file /* lazy-emergency fix - will improve later */
 func checkVersionDefinedHCL(tgFile *string) bool {
-	parser := hclparse.NewParser()
-	file, diags := parser.ParseHCLFile(*tgFile) //use hcl parser to parse HCL file
-	if diags.HasErrors() {
-		fmt.Println("Unable to parse HCL file")
+	version := getVersionFromHCL(tgFile)
+	return version != ""
+}
+
+// Retrieves the version by resolving the config files using terragrunt resolver (that resolves includes as well)
+func getVersionFromHCL(tgFile *string) string {
+	l := logrus.StandardLogger()
+	tgConfig, err := config.PartialParseConfigFile(*tgFile, &options.TerragruntOptions{
+		TerragruntConfigPath: *tgFile,
+		MaxFoldersToCheck:    10,
+		Logger:               logrus.NewEntry(l),
+	}, nil, []config.PartialDecodeSectionType{config.TerragruntVersionConstraints})
+
+	if err != nil {
+		fmt.Println("Unable to parse HCL file", err)
 		os.Exit(1)
 	}
-	var version terragruntVersionConstraints
-	gohcl.DecodeBody(file.Body, nil, &version)
-	if version == (terragruntVersionConstraints{}) {
-		return false
-	}
-	return true
+
+	return tgConfig.TerraformVersionConstraint
 }
