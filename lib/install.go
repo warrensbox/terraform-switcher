@@ -287,10 +287,8 @@ func InstallableBinLocation(userBinPath string) string {
 
 	if binPathExist == true { //if bin path exist - check if we can write to to it
 
-		binPathWritable := false //assume bin path is not writable
-		if runtime.GOOS != "windows" {
-			binPathWritable = CheckDirWritable(binDir) //check if is writable on ( only works on LINUX)
-		}
+		binPathWritable := false                   //assume bin path is not writable
+		binPathWritable = CheckDirWritable(binDir) //check if is writable on
 
 		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terraform at the ~/bin location. See ELSE
 		if binPathWritable == false {
