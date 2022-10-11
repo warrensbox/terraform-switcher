@@ -63,6 +63,7 @@ func main() {
 	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote API other than the default. Default: "+defaultMirror)
 	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
+	defaultVersion := getopt.StringLong("default", 'd', defaultLatest, "Default to version to pick up. Ex: tfswitch --default 1.2.4")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
 	_ = versionFlag
 
@@ -210,6 +211,10 @@ func main() {
 		tfversion := os.Getenv("TF_VERSION")
 		fmt.Printf("Terraform version environment variable: %s\n", tfversion)
 		installVersion(tfversion, custBinPath, mirrorURL)
+
+	/* if default version is provided - Pick this instead of going for prompt */
+	case *defaultVersion != "":
+		installVersion(*defaultVersion, custBinPath, mirrorURL)
 
 	// if no arg is provided
 	default:
