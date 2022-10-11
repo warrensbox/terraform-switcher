@@ -45,14 +45,12 @@ yay tfswitch-bin
 
 ### Scoop for Windows
 
-Installation for Windows via [`scoop`](https://scoop.sh/), but currently unstable[^win-unstable]
+Installation for Windows via [`scoop`](https://scoop.sh/), but currently unstable
 
 ```sh
 scoop bucket add main
 scoop install terraform-switcher
 ```
-[^win-unstable]: Complete windows support is dependant on [#267](https://github.com/warrensbox/terraform-switcher/pull/267) and [#262](https://github.com/warrensbox/terraform-switcher/pull/262)
-
 
 ### Install from source
 
