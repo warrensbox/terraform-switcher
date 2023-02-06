@@ -118,6 +118,11 @@ tfswitch -c terraform_dir
 To install from a remote mirror other than the default(https://releases.hashicorp.com/terraform). Use the `-m` or `--mirror` parameter.    
 Ex: `tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp`
 
+### Set a default TF version for CICD pipeline
+1. When using a CICD pipeline, you may want a default or fallback version to avoid the pipeline from hanging.
+2. Ex: `tfswitch -d 1.2.3` or `tfswitch --default 1.2.3` installs version `1.2.3` when no other versions could be detected.
+[Also, see CICD example](../continuous-integration)
+
 **Automatically switch with bash**
 
 Add the following to the end of your `~/.bashrc` file:

@@ -170,9 +170,8 @@ To install from a remote mirror other than the default(https://releases.hashicor
 Ex: `tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp`
 
 ### Set a default TF version for CICD pipeline
-1. When using a CICD pipeline, you may want a default or fallback version to avoid the pipe from hanging.
+1. When using a CICD pipeline, you may want a default or fallback version to avoid the pipeline from hanging.
 2. Ex: `tfswitch -d 1.2.3` or `tfswitch --default 1.2.3` installs version `1.2.3` when no other versions could be detected.
-3. Hit **Enter** to install.
 [Also, see CICD example](#cicd)
 
 ## Automation
