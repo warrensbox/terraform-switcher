@@ -391,6 +391,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#set-a-default-tf-version-for-cicd-pipeline" class="md-nav__link">
+    Set a default TF version for CICD pipeline
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -608,6 +615,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#set-a-default-tf-version-for-cicd-pipeline" class="md-nav__link">
+    Set a default TF version for CICD pipeline
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -754,6 +768,12 @@ tfswitch -c terraform_dir
 <h3 id="use-custom-mirror">Use custom mirror</h3>
 <p>To install from a remote mirror other than the default(https://releases.hashicorp.com/terraform). Use the <code>-m</code> or <code>--mirror</code> parameter.  <br />
 Ex: <code>tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp</code></p>
+<h3 id="set-a-default-tf-version-for-cicd-pipeline">Set a default TF version for CICD pipeline</h3>
+<ol>
+<li>When using a CICD pipeline, you may want a default or fallback version to avoid the pipeline from hanging.</li>
+<li>Ex: <code>tfswitch -d 1.2.3</code> or <code>tfswitch --default 1.2.3</code> installs version <code>1.2.3</code> when no other versions could be detected.
+<a href="../continuous-integration">Also, see CICD example</a></li>
+</ol>
 <p><strong>Automatically switch with bash</strong></p>
 <p>Add the following to the end of your <code>~/.bashrc</code> file:
 (Use either <code>.tfswitchrc</code> or <code>.tfswitch.toml</code> or <code>.terraform-version</code>)</p>
