@@ -17,6 +17,9 @@ export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
 $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
 
+#OR 
+$CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
+
 terraform -v                    #testing version
 ```
 
@@ -57,6 +60,9 @@ jobs:
             export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
             $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
+            
+            #OR 
+            $CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
 
             terraform -v                    #testing version
 ```
