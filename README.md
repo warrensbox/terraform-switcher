@@ -169,6 +169,11 @@ tfswitch -c terraform_dir
 To install from a remote mirror other than the default(https://releases.hashicorp.com/terraform). Use the `-m` or `--mirror` parameter.    
 Ex: `tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp`
 
+### Set a default TF version for CICD pipeline
+1. When using a CICD pipeline, you may want a default or fallback version to avoid the pipeline from hanging.
+2. Ex: `tfswitch -d 1.2.3` or `tfswitch --default 1.2.3` installs version `1.2.3` when no other versions could be detected.
+[Also, see CICD example](#cicd)
+
 ## Automation
 **Automatically switch with bash**
 
@@ -239,7 +244,7 @@ function switch_terraform --on-event fish_postexec
     end
 end
 ```
-
+## CICD
 ### Jenkins setup
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 170px;"/>
 
@@ -258,6 +263,10 @@ CUSTOMBIN=`pwd`/.bin            #set custom bin path
 export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
 $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
+
+#OR 
+
+$CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
 
 terraform -v                    #testing version
 ```
@@ -300,6 +309,9 @@ jobs:
 
             $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
 
+            #OR
+            $CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
+            
             terraform -v                    #testing version
 ```
 ## Order of precedence
