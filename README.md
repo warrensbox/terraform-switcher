@@ -42,6 +42,16 @@ yay tfswitch
 # precompiled
 yay tfswitch-bin
 ```
+
+### Scoop for Windows
+
+Installation for Windows via [`scoop`](https://scoop.sh/), but currently unstable
+
+```sh
+scoop bucket add main
+scoop install terraform-switcher
+```
+
 ### Install from source
 
 Alternatively, you can install the binary from source [here](https://github.com/warrensbox/terraform-switcher/releases)
