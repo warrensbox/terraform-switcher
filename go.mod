@@ -10,7 +10,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pborman/getopt v1.1.0
 	github.com/spf13/viper v1.12.0
-	golang.org/x/sys v0.0.0-20220627191245-f75cf1eec38b
+	golang.org/x/sys v0.5.0
 )
 
 require (
