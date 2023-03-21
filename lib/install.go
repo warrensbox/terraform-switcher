@@ -25,7 +25,7 @@ var (
 	installLocation = "/tmp"
 )
 
-// initialize : removes existing symlink to terraform binary// I Don't think this is needed
+// initialize : removes existing symlink to terraform binary based on provided binPath
 func initialize(binPath string) {
 
 	/* Step 1 */
