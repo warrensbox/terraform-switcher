@@ -26,16 +26,16 @@ var (
 )
 
 // initialize : removes existing symlink to terraform binary// I Don't think this is needed
-func initialize() {
+func initialize(binPath string) {
 
 	/* Step 1 */
 	/* initilize default binary path for terraform */
 	/* assumes that terraform is installed here */
 	/* we will find the terraform path instalation later and replace this variable with the correct installed bin path */
-	installedBinPath := "/usr/local/bin/terraform"
+	installedBinPath := binPath + "terraform"
 
 	/* find terraform binary location if terraform is already installed*/
-	cmd := NewCommand("terraform")
+	cmd := NewCommand(installedBinPath)
 	next := cmd.Find()
 
 	/* overrride installation default binary path if terraform is already installed */
@@ -75,7 +75,7 @@ func GetInstallLocation() string {
 
 }
 
-//Install : Install the provided version in the argument
+// Install : Install the provided version in the argument
 func Install(tfversion string, binPath string, mirrorURL string) {
 
 	// if !ValidVersionFormat(tfversion) {
@@ -90,7 +90,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	 */
 	binPath = InstallableBinLocation(binPath)
 
-	initialize()                           //initialize path
+	initialize(binPath)                    //initialize path
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
 	goarch := runtime.GOARCH
@@ -252,7 +252,7 @@ func GetRecentVersions() ([]string, error) {
 	return nil, nil
 }
 
-//CreateRecentFile : create a recent file
+// CreateRecentFile : create a recent file
 func CreateRecentFile(requestedVersion string) {
 
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
@@ -260,7 +260,7 @@ func CreateRecentFile(requestedVersion string) {
 	WriteLines([]string{requestedVersion}, filepath.Join(installLocation, recentFile))
 }
 
-//ConvertExecutableExt : convert excutable with local OS extension
+// ConvertExecutableExt : convert excutable with local OS extension
 func ConvertExecutableExt(fpath string) string {
 	switch runtime.GOOS {
 	case "windows":
@@ -273,8 +273,8 @@ func ConvertExecutableExt(fpath string) string {
 	}
 }
 
-//InstallableBinLocation : Checks if terraform is installable in the location provided by the user.
-//If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
+// InstallableBinLocation : Checks if terraform is installable in the location provided by the user.
+// If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
 func InstallableBinLocation(userBinPath string) string {
 
 	usr, errCurr := user.Current()
