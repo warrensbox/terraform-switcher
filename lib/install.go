@@ -28,28 +28,22 @@ var (
 // initialize : removes existing symlink to terraform binary based on provided binPath
 func initialize(binPath string) {
 
-	/* Step 1 */
-	/* initilize default binary path for terraform */
-	/* assumes that terraform is installed here */
-	/* we will find the terraform path instalation later and replace this variable with the correct installed bin path */
-	installedBinPath := binPath + "terraform"
-
 	/* find terraform binary location if terraform is already installed*/
-	cmd := NewCommand(installedBinPath)
+	cmd := NewCommand(binPath)
 	next := cmd.Find()
 
 	/* overrride installation default binary path if terraform is already installed */
 	/* find the last bin path */
 	for path := next(); len(path) > 0; path = next() {
-		installedBinPath = path
+		binPath = path
 	}
 
 	/* check if current symlink to terraform binary exist */
-	symlinkExist := CheckSymlink(installedBinPath)
+	symlinkExist := CheckSymlink(binPath)
 
 	/* remove current symlink if exist*/
 	if symlinkExist {
-		RemoveSymlink(installedBinPath)
+		RemoveSymlink(binPath)
 	}
 
 }
