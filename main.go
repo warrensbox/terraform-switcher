@@ -456,7 +456,7 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
 	fmt.Println("Reading required version from terraform file")
 	module, _ := tfconfig.LoadModule(dir)
-	if len(module.RequiredCore) >= 1 {
+	if len(module.RequiredCore) == 0 {
 		fmt.Println("The provided directory does not have required terraform version constraint.")
 		os.Exit(1)
 	}
