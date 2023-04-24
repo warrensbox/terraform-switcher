@@ -378,10 +378,7 @@ func checkTFModuleFileExist(dir string) bool {
 // checkTFEnvExist - checks if the TF_VERSION environment variable is set
 func checkTFEnvExist() bool {
 	tfversion := os.Getenv("TF_VERSION")
-	if tfversion != "" {
-		return true
-	}
-	return false
+	return tfversion != ""
 }
 
 /* parses everything in the toml file, return required version and bin path */
@@ -444,7 +441,7 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	}
 
 	_, tfversion, errPrompt := prompt.Run()
-	tfversion = strings.Trim(tfversion, " *recent") //trim versions with the string " *recent" appended
+	tfversion = strings.TrimPrefix(tfversion, lib.RecentSuffix) // trim versions with the string " *recent" appended
 
 	if errPrompt != nil {
 		log.Printf("Prompt failed %v\n", errPrompt)
@@ -506,8 +503,5 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 	}
 	var version terragruntVersionConstraints
 	gohcl.DecodeBody(file.Body, nil, &version)
-	if version == (terragruntVersionConstraints{}) {
-		return false
-	}
-	return true
+	return version != (terragruntVersionConstraints{})
 }
