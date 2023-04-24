@@ -294,7 +294,7 @@ func showLatestRequiredVersion(dir string, custBinPath, mirrorURL *string) {
 		fmt.Fprintln(os.Stderr, "The provided directory does not have required terraform version constraint.")
 		os.Exit(1)
 	}
-	tfconstraint := strings.Join(module.RequiredCore, ", ")
+	tfconstraint := module.RequiredCore[0] // we skip duplicated definitions and use only first one
 	tfversion, err := lib.GetSemver(&tfconstraint, mirrorURL)
 	if err == nil {
 		fmt.Printf("%s\n", tfversion)
@@ -365,11 +365,14 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-// fileExists checks if a file exists and is not a directory before we
+// checkTFModuleFileExist checks if a file exists and is not a directory before we
 // try using it to prevent further errors.
 func checkTFModuleFileExist(dir string) bool {
-	module, _ := tfconfig.LoadModule(dir)
-	return len(module.RequiredCore) >= 1
+	if tfconfig.IsModuleDir(dir) {
+		module, _ := tfconfig.LoadModule(dir)
+		return len(module.RequiredCore) > 0
+	}
+	return false
 }
 
 // checkTFEnvExist - checks if the TF_VERSION environment variable is set
@@ -460,7 +463,7 @@ func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
 		fmt.Println("The provided directory does not have required terraform version constraint.")
 		os.Exit(1)
 	}
-	tfconstraint := strings.Join(module.RequiredCore, ", ")
+	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
 	installFromConstraint(&tfconstraint, custBinPath, mirrorURL)
 }
 
