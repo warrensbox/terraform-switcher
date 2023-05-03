@@ -33,7 +33,7 @@ Installation for other linux operation systems.
 ```sh
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 ```
-By default installer script will try to download tfswitch binary into /usr/local/bin
+By default installer script will try to download `tfswitch` binary into `/usr/local/bin`  
 To install at custom path use below:
 ```sh
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash -s -- -b  $HOME/.local/bin latest
