@@ -169,6 +169,23 @@ tfswitch -c terraform_dir
 To install from a remote mirror other than the default(https://releases.hashicorp.com/terraform). Use the `-m` or `--mirror` parameter.    
 Ex: `tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp`
 
+### Install to non-default location
+
+By default `tfswitch` will download the Terraform binary to the user home directory under this path: `/Users/warrenveerasingam/.terraform.versions`
+
+If you want to install the binaries outside of the home directory then you can provide the `-i` or `--install` to install Terraform binaries to a non-standard path. Useful if you want to install versions of Terraform that can be shared with multiple users.
+
+The Terraform binaries will then be placed in the folder `.terraform.versions` under the custom install path e.g. `/opt/terraform/.terraform.versions`
+
+```bash
+tfswitch -i /opt/terraform/
+```
+
+**NOTE**
+
+* The folder must exists before you run `tfswitch`
+* The folder passed in `-i`/`--install` must be created before running `tfswtich`
+
 ### Set a default TF version for CICD pipeline
 1. When using a CICD pipeline, you may want a default or fallback version to avoid the pipeline from hanging.
 2. Ex: `tfswitch -d 1.2.3` or `tfswitch --default 1.2.3` installs version `1.2.3` when no other versions could be detected.
