@@ -91,7 +91,6 @@ func CheckSymlink(symlinkPath string) bool {
 // ChangeSymlink : move symlink to existing binary
 func ChangeSymlink(binVersionPath string, binPath string) {
 
-	//installLocation = getInstallLocation() //get installation location -  this is where we will put our terraform binary file
 	binPath = installableBinLocation(binPath)
 
 	/* remove current symlink if exist*/

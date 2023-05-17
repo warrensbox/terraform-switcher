@@ -24,10 +24,10 @@ func getTFList(mirrorURL string, preRelease bool) ([]string, error) {
 
 	var tfVersionList tfVersionList
 	var semver string
-	if preRelease == true {
+	if preRelease {
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
 		semver = `\/?(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?/?"`
-	} else if preRelease == false {
+	} else if !preRelease {
 		// Getting versions from body; should return match /X.X.X/ where X is a number
 		// without the ending '"' pre-release folders would be tried and break.
 		semver = `\/?(\d+\.\d+\.\d+)\/?"`
@@ -68,7 +68,7 @@ func getTFLatest(mirrorURL string) (string, error) {
 
 // getTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
-	if preRelease == true {
+	if preRelease {
 		//TODO: use getTFList() instead of getTFURLBody
 		versions, error := getTFURLBody(mirrorURL)
 		if error != nil {
@@ -87,7 +87,7 @@ func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 				return trimstr, nil
 			}
 		}
-	} else if preRelease == false {
+	} else if !preRelease {
 		listAll := false
 		tflist, _ := getTFList(mirrorURL, listAll) //get list of versions
 		version = fmt.Sprintf("~> %v", version)
@@ -137,7 +137,7 @@ func versionExist(val interface{}, array interface{}) (exists bool) {
 		s := reflect.ValueOf(array)
 
 		for i := 0; i < s.Len(); i++ {
-			if reflect.DeepEqual(val, s.Index(i).Interface()) == true {
+			if reflect.DeepEqual(val, s.Index(i).Interface()) {
 				exists = true
 				return exists
 			}
@@ -156,7 +156,7 @@ func removeDuplicateVersions(elements []string) []string {
 
 	for _, val := range elements {
 		versionOnly := strings.Trim(val, " *recent")
-		if encountered[versionOnly] == true {
+		if encountered[versionOnly] {
 			// Do not add duplicate.
 		} else {
 			// Record this element as an encountered element.
