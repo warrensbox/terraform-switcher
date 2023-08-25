@@ -3,7 +3,6 @@ package lib_test
 import (
 	"log"
 	"os"
-	"os/user"
 	"path/filepath"
 	"testing"
 
@@ -18,12 +17,12 @@ func TestCreateSymlink(t *testing.T) {
 
 	testSymlinkDest := "/test-tfswitcher-dest"
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := os.UserHomeDir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	symlinkPathSrc := filepath.Join(usr.HomeDir, testSymlinkSrc)
-	symlinkPathDest := filepath.Join(usr.HomeDir, testSymlinkDest)
+	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
+	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
 
 	ln, _ := os.Readlink(symlinkPathSrc)
 
@@ -56,12 +55,12 @@ func TestRemoveSymlink(t *testing.T) {
 
 	testSymlinkDest := "/test-tfswitcher-dest"
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := os.UserHomeDir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	symlinkPathSrc := filepath.Join(usr.HomeDir, testSymlinkSrc)
-	symlinkPathDest := filepath.Join(usr.HomeDir, testSymlinkDest)
+	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
+	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
 
 	ln, _ := os.Readlink(symlinkPathSrc)
 
@@ -91,12 +90,12 @@ func TestCheckSymlink(t *testing.T) {
 
 	testSymlinkDest := "/test-tgshifter-dest"
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := os.UserHomeDir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	symlinkPathSrc := filepath.Join(usr.HomeDir, testSymlinkSrc)
-	symlinkPathDest := filepath.Join(usr.HomeDir, testSymlinkDest)
+	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
+	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
 
 	ln, _ := os.Readlink(symlinkPathSrc)
 

@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"os/user"
 	"path/filepath"
 	"testing"
 
@@ -22,13 +21,13 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	macOS := "_darwin_amd64.zip"
 
 	// get current user
-	usr, errCurr := user.Current()
+	homedir, errCurr := os.UserHomeDir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
 
-	fmt.Printf("Current user: %v \n", usr.HomeDir)
-	installLocation := filepath.Join(usr.HomeDir, installPath)
+	fmt.Printf("Current home directory: %v \n", homedir)
+	installLocation := filepath.Join(homedir, installPath)
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
@@ -44,7 +43,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	lowestVersion := "0.11.0"
 
 	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
-	expectedFile := filepath.Join(usr.HomeDir, installPath, installVersion+lowestVersion+macOS)
+	expectedFile := filepath.Join(homedir, installPath, installVersion+lowestVersion+macOS)
 	installedFile, errDownload := lib.DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {

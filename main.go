@@ -70,7 +70,11 @@ func main() {
 	getopt.Parse()
 	args := getopt.Args()
 
-	homedir := lib.GetHomeDirectory()
+	homedir, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Printf("Unable to get user's home directory")
+		os.Exit(1)
+	}
 
 	TFVersionFile := filepath.Join(*chDirPath, tfvFilename)    //settings for .terraform-version file in current directory (tfenv compatible)
 	RCFile := filepath.Join(*chDirPath, rcFilename)            //settings for .tfswitchrc file in current directory (backward compatible purpose)
@@ -309,7 +313,7 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 	}
 }
 
-//retrive file content of regular file
+// retrive file content of regular file
 func retrieveFileContents(file string) string {
 	fileContents, err := ioutil.ReadFile(file)
 	if err != nil {
