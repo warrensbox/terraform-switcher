@@ -29,6 +29,7 @@ import (
 	"github.com/hashicorp/hcl2/gohcl"
 	"github.com/hashicorp/hcl2/hclparse"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
+	"github.com/mitchellh/go-homedir"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
@@ -70,7 +71,7 @@ func main() {
 	getopt.Parse()
 	args := getopt.Args()
 
-	homedir, err := os.UserHomeDir()
+	homedir, err := homedir.Dir()
 	if err != nil {
 		fmt.Printf("Unable to get user's home directory")
 		os.Exit(1)

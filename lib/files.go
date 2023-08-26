@@ -11,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // RenameFile : rename file name
@@ -237,7 +239,7 @@ func GetCurrentDirectory() string {
 // GetHomeDirectory : return the home directory
 func GetHomeDirectory() string {
 
-	homedir, errHome := os.UserHomeDir()
+	homedir, errHome := homedir.Dir()
 	if errHome != nil {
 		log.Printf("Failed to get home directory %v\n", errHome)
 		os.Exit(1)

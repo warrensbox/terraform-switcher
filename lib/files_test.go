@@ -14,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
@@ -25,7 +26,7 @@ func TestRenameFile(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 	version := "0.0.7"
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -71,7 +72,7 @@ func TestRemoveFiles(t *testing.T) {
 	installFile := lib.ConvertExecutableExt("terraform")
 	installPath := "/.terraform.versions_test/"
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -110,7 +111,7 @@ func TestUnzip(t *testing.T) {
 
 	fmt.Println(absPath)
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -142,7 +143,7 @@ func TestUnzip(t *testing.T) {
 func TestCreateDirIfNotExist(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -177,7 +178,7 @@ func TestWriteLines(t *testing.T) {
 	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
 	//semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -245,7 +246,7 @@ func TestReadLines(t *testing.T) {
 	recentFile := "RECENT"
 	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -298,7 +299,7 @@ func TestIsDirEmpty(t *testing.T) {
 
 	installPath := "/.terraform.versions_test/"
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -333,7 +334,7 @@ func TestCheckDirHasTFBin(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 	installFilePrefix := "terraform"
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -362,7 +363,7 @@ func TestPath(t *testing.T) {
 	installPath := "/.terraform.versions_test"
 	installFile := lib.ConvertExecutableExt("terraform")
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -403,7 +404,7 @@ func TestGetFileName(t *testing.T) {
 
 // TestConvertExecutableExt : convert executable binary with extension
 func TestConvertExecutableExt(t *testing.T) {
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}

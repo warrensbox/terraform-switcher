@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-version"
+	"github.com/mitchellh/go-homedir"
 )
 
 const (
@@ -57,7 +58,7 @@ func initialize() {
 // will create a directory in the home location if it does not exist
 func GetInstallLocation() string {
 	/* get current user */
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -276,7 +277,7 @@ func ConvertExecutableExt(fpath string) string {
 // If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
 func InstallableBinLocation(userBinPath string) string {
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}

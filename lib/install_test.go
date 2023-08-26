@@ -5,6 +5,8 @@ import (
 	"os/user"
 	"runtime"
 	"testing"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // TestAddRecent : Create a file, check filename exist,
@@ -30,7 +32,7 @@ func TestInstall(t *testing.T) {
 				t.Errorf("Unable to get user %v [unexpected]", errCurr)
 			}
 
-			_, errCurr = os.UserHomeDir()
+			_, errCurr = homedir.Dir()
 			if errCurr != nil {
 				t.Errorf("Unable to get user home directory: %v [unexpected]", errCurr)
 			}

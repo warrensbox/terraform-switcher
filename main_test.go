@@ -1,9 +1,10 @@
 package main_test
 
 import (
-	"os"
 	"os/user"
 	"testing"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // TestMain : check to see if user exist
@@ -15,7 +16,7 @@ func TestMain(t *testing.T) {
 			if errCurr != nil {
 				t.Errorf("Unable to get user %v [unexpected]", errCurr)
 			}
-			_, errCurr = os.UserHomeDir()
+			_, errCurr = homedir.Dir()
 			if errCurr != nil {
 				t.Errorf("Unable to get user home directory: %v [unexpected]", errCurr)
 			}

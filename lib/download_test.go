@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
@@ -21,7 +22,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	macOS := "_darwin_amd64.zip"
 
 	// get current user
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}

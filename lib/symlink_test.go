@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
@@ -17,7 +18,7 @@ func TestCreateSymlink(t *testing.T) {
 
 	testSymlinkDest := "/test-tfswitcher-dest"
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -55,7 +56,7 @@ func TestRemoveSymlink(t *testing.T) {
 
 	testSymlinkDest := "/test-tfswitcher-dest"
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -90,7 +91,7 @@ func TestCheckSymlink(t *testing.T) {
 
 	testSymlinkDest := "/test-tgshifter-dest"
 
-	homedir, errCurr := os.UserHomeDir()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
