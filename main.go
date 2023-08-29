@@ -73,7 +73,7 @@ func main() {
 
 	homedir, err := homedir.Dir()
 	if err != nil {
-		fmt.Printf("Unable to get user's home directory")
+		fmt.Printf("Unable to get home directory: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -362,7 +362,13 @@ func checkTFEnvExist() bool {
 
 /* parses everything in the toml file, return required version and bin path */
 func getParamsTOML(binPath string, dir string) (string, string) {
-	path := lib.GetHomeDirectory()
+	path, err := homedir.Dir()
+
+	if err != nil {
+		fmt.Printf("Unable to get home directory: %v\n", err)
+		os.Exit(1)
+	}
+
 	if dir == path {
 		path = "home directory"
 	} else {
