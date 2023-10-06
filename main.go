@@ -23,6 +23,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	semver "github.com/hashicorp/go-version"
@@ -62,6 +63,7 @@ func main() {
 	showLatestFlag := getopt.BoolLong("show-latest", 'U', "Show latest stable version")
 	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote API other than the default. Default: "+defaultMirror)
 	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
+	wslFlag := getopt.BoolLong("wsl", 'w', "Exclude Windows paths. Useful to run faster in WSL.")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	defaultVersion := getopt.StringLong("default", 'd', defaultLatest, "Default to this version in case no other versions could be detected. Ex: tfswitch --default 1.2.4")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
@@ -71,6 +73,10 @@ func main() {
 	args := getopt.Args()
 
 	homedir := lib.GetHomeDirectory()
+
+	if *wslFlag {
+		wslRemoveWindowsPath()
+	}
 
 	TFVersionFile := filepath.Join(*chDirPath, tfvFilename)    //settings for .terraform-version file in current directory (tfenv compatible)
 	RCFile := filepath.Join(*chDirPath, rcFilename)            //settings for .tfswitchrc file in current directory (backward compatible purpose)
@@ -309,7 +315,7 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 	}
 }
 
-//retrive file content of regular file
+// retrive file content of regular file
 func retrieveFileContents(file string) string {
 	fileContents, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -478,4 +484,14 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 		return false
 	}
 	return true
+}
+
+// Remove Windows paths from PATH environment variable
+func wslRemoveWindowsPath() {
+	regex := `:?/mnt/[cd]/.*?(:|$)`
+	re := regexp.MustCompile(regex)
+
+	path := os.Getenv("PATH")
+	path = re.ReplaceAllString(path, "")
+	os.Setenv("PATH", path)
 }
