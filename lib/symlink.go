@@ -7,10 +7,10 @@ import (
 	"os"
 )
 
-// CopyFile copies a file from src to dst. If src and dst files exist, and are
+// copyFile copies a file from src to dst. If src and dst files exist, and are
 // the same, then return success. Otherise, attempt to create a hard link
 // between the two files. If that fail, copy the file contents from src to dst.
-func CopyFile(src, dst string) (err error) {
+func copyFile(src, dst string) (err error) {
 	sfi, err := os.Stat(src)
 	if err != nil {
 		return
@@ -18,7 +18,7 @@ func CopyFile(src, dst string) (err error) {
 	if !sfi.Mode().IsRegular() {
 		// cannot copy non-regular files (e.g., directories,
 		// symlinks, devices, etc.)
-		return fmt.Errorf("CopyFile: non-regular source file %s (%q)", sfi.Name(), sfi.Mode().String())
+		return fmt.Errorf("copyFile: non-regular source file %s (%q)", sfi.Name(), sfi.Mode().String())
 	}
 	dfi, err := os.Stat(dst)
 	if err != nil {
@@ -27,7 +27,7 @@ func CopyFile(src, dst string) (err error) {
 		}
 	} else {
 		if !(dfi.Mode().IsRegular()) {
-			return fmt.Errorf("CopyFile: non-regular destination file %s (%q)", dfi.Name(), dfi.Mode().String())
+			return fmt.Errorf("copyFile: non-regular destination file %s (%q)", dfi.Name(), dfi.Mode().String())
 		}
 		if os.SameFile(sfi, dfi) {
 			return
@@ -74,7 +74,7 @@ func CreateSymlink(cwd string, dir string) {
 	if err != nil {
 		log.Println("Unable to create symlink. Trying to copy file (os without symlink permissions)")
 
-		err := CopyFile(cwd, dir)
+		err := copyFile(cwd, dir)
 		if err != nil {
 			log.Fatalf(`
 			Unable to create new symlink or copy file.
@@ -138,7 +138,6 @@ func CheckSymlink(symlinkPath string) bool {
 
 // ChangeSymlink : move symlink to existing binary
 func ChangeSymlink(binVersionPath string, binPath string) {
-	fmt.Println("ca passe la - ChangeSymlink")
 	//installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
 	binPath = InstallableBinLocation(binPath)
 
