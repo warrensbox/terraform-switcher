@@ -75,8 +75,8 @@ func GetInstallLocation() string {
 
 }
 
-//Install : Install the provided version in the argument
-func Install(tfversion string, binPath string, mirrorURL string) {
+// Install : Install the provided version in the argument
+func Install(tfversion, binPath, mirrorURL string) {
 
 	// if !ValidVersionFormat(tfversion) {
 	// 	fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
@@ -252,7 +252,7 @@ func GetRecentVersions() ([]string, error) {
 	return nil, nil
 }
 
-//CreateRecentFile : create a recent file
+// CreateRecentFile : create a recent file
 func CreateRecentFile(requestedVersion string) {
 
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
@@ -260,7 +260,7 @@ func CreateRecentFile(requestedVersion string) {
 	WriteLines([]string{requestedVersion}, filepath.Join(installLocation, recentFile))
 }
 
-//ConvertExecutableExt : convert excutable with local OS extension
+// ConvertExecutableExt : convert excutable with local OS extension
 func ConvertExecutableExt(fpath string) string {
 	switch runtime.GOOS {
 	case "windows":
@@ -273,8 +273,8 @@ func ConvertExecutableExt(fpath string) string {
 	}
 }
 
-//InstallableBinLocation : Checks if terraform is installable in the location provided by the user.
-//If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
+// InstallableBinLocation : Checks if terraform is installable in the location provided by the user.
+// If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
 func InstallableBinLocation(userBinPath string) string {
 
 	usr, errCurr := user.Current()
