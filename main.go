@@ -41,11 +41,11 @@ const (
 	defaultMirror = "https://releases.hashicorp.com/terraform"
 	defaultBin    = "/usr/local/bin/terraform" //default bin installation dir
 	defaultLatest = ""
+	defaultPrefix = "terraform_"
 	tfvFilename   = ".terraform-version"
 	rcFilename    = ".tfswitchrc"
 	tomlFilename  = ".tfswitch.toml"
 	tgHclFilename = "terragrunt.hcl"
-	versionPrefix = "terraform_"
 )
 
 var version = "0.12.0\n"
@@ -64,6 +64,7 @@ func main() {
 	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	defaultVersion := getopt.StringLong("default", 'd', defaultLatest, "Default to this version in case no other versions could be detected. Ex: tfswitch --default 1.2.4")
+	versionPrefix := getopt.StringLong("version-prefix", 'V', defaultPrefix, "Default version prefix used in the mirror")
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
 	_ = versionFlag
 
