@@ -5,7 +5,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/go:1.18
+      - image: cimg/go:1.22
 
     working_directory: /home/circleci/go/src/github.com/warrensbox/terraform-switcher
 
@@ -34,7 +34,7 @@ jobs:
 
   release:
     docker:
-      - image: cimg/go:1.18
+      - image: cimg/go:1.22
 
     working_directory: /home/circleci/go/src/github.com/warrensbox/terraform-switcher
 
