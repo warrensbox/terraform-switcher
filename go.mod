@@ -1,6 +1,6 @@
 module github.com/warrensbox/terraform-switcher
 
-go 1.18
+go 1.22
 
 require (
 	github.com/hashicorp/go-version v1.6.0
