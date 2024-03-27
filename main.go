@@ -26,8 +26,8 @@ import (
 	"strings"
 
 	semver "github.com/hashicorp/go-version"
-	"github.com/hashicorp/hcl2/gohcl"
-	"github.com/hashicorp/hcl2/hclparse"
+	"github.com/hashicorp/hcl/v2/gohcl"
+	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 
 	"github.com/manifoldco/promptui"
