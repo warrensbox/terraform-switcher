@@ -120,8 +120,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	url := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
-	zipFile, errDownload := DownloadFromURL(installLocation, url)
+	zipFile, errDownload := DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch)
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
