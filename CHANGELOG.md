@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+### Added
+- added verification of the checksums for downloaded terraform files.
+
 ## [0.13.1201] - 2021-11-28
 ### Bug fixes
 - No matter what users pass to --bin or -b, the local binary is called terraform. User can resume old behavior where -b is custom
