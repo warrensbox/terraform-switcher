@@ -61,6 +61,8 @@ func main() {
 	showLatestStable := getopt.StringLong("show-latest-stable", 'S', defaultLatest, "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
 	latestFlag := getopt.BoolLong("latest", 'u', "Get latest stable version")
 	showLatestFlag := getopt.BoolLong("show-latest", 'U', "Show latest stable version")
+	latestRequiredFlag := getopt.BoolLong("latest-required", 'r', "Get latest required by module version")
+	showLatestRequiredFlag := getopt.BoolLong("show-latest-required", 'R', "Show latest required by module version")
 	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote API other than the default. Default: "+defaultMirror)
 	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
@@ -123,6 +125,9 @@ func main() {
 		/* latest stable version */
 		case *latestFlag:
 			installLatestVersion(custBinPath, mirrorURL)
+		/* latest version required by module */
+		case *latestRequiredFlag:
+			installTFProvidedModule(*chDirPath, custBinPath, mirrorURL)
 		/* version provided on command line as arg */
 		case len(args) == 1:
 			installVersion(args[0], &binPath, mirrorURL)
@@ -186,6 +191,14 @@ func main() {
 	/* show latest stable version */
 	case *showLatestFlag:
 		showLatestVersion(custBinPath, mirrorURL)
+
+	/* latest required by module version */
+	case *latestRequiredFlag:
+		installTFProvidedModule(*chDirPath, custBinPath, mirrorURL)
+
+	/* show latest required by module version */
+	case *showLatestRequiredFlag:
+		showLatestRequiredVersion(*chDirPath, custBinPath, mirrorURL)
 
 	/* version provided on command line as arg */
 	case len(args) == 1:
@@ -278,6 +291,23 @@ func showLatestImplicitVersion(requestedVersion string, custBinPath, mirrorURL *
 	}
 }
 
+// show latest required by module version to install when tf file is provided
+func showLatestRequiredVersion(dir string, custBinPath, mirrorURL *string) {
+	fmt.Fprintln(os.Stderr, "Reading required version from terraform file")
+	module, _ := tfconfig.LoadModule(dir)
+	if len(module.RequiredCore) == 0 {
+		fmt.Fprintln(os.Stderr, "The provided directory does not have required terraform version constraint.")
+		os.Exit(1)
+	}
+	tfconstraint := module.RequiredCore[0] // we skip duplicated definitions and use only first one
+	tfversion, err := lib.GetSemver(&tfconstraint, mirrorURL)
+	if err == nil {
+		fmt.Printf("%s\n", tfversion)
+	} else {
+		fmt.Fprintln(os.Stderr, "The provided terraform version does not exist. Try `tfswitch -l` to see all available versions.")
+	}
+}
+
 // install with provided version as argument
 func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 	if lib.ValidVersionFormat(arg) {
@@ -340,13 +370,12 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-// fileExists checks if a file exists and is not a directory before we
+// checkTFModuleFileExist checks if a file exists and is not a directory before we
 // try using it to prevent further errors.
 func checkTFModuleFileExist(dir string) bool {
-
-	module, _ := tfconfig.LoadModule(dir)
-	if len(module.RequiredCore) >= 1 {
-		return true
+	if tfconfig.IsModuleDir(dir) {
+		module, _ := tfconfig.LoadModule(dir)
+		return len(module.RequiredCore) > 0
 	}
 	return false
 }
@@ -354,10 +383,7 @@ func checkTFModuleFileExist(dir string) bool {
 // checkTFEnvExist - checks if the TF_VERSION environment variable is set
 func checkTFEnvExist() bool {
 	tfversion := os.Getenv("TF_VERSION")
-	if tfversion != "" {
-		return true
-	}
-	return false
+	return tfversion != ""
 }
 
 /* parses everything in the toml file, return required version and bin path */
@@ -426,7 +452,7 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 	}
 
 	_, tfversion, errPrompt := prompt.Run()
-	tfversion = strings.Trim(tfversion, " *recent") //trim versions with the string " *recent" appended
+	tfversion = strings.TrimPrefix(tfversion, lib.RecentSuffix) // trim versions with the string " *recent" appended
 
 	if errPrompt != nil {
 		log.Printf("Prompt failed %v\n", errPrompt)
@@ -439,15 +465,18 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 
 // install when tf file is provided
 func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
-	fmt.Printf("Reading required version from terraform file\n")
+	fmt.Println("Reading required version from terraform file")
 	module, _ := tfconfig.LoadModule(dir)
+	if len(module.RequiredCore) == 0 {
+		fmt.Println("The provided directory does not have required terraform version constraint.")
+		os.Exit(1)
+	}
 	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
 	installFromConstraint(&tfconstraint, custBinPath, mirrorURL)
 }
 
 // install using a version constraint
 func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string) {
-
 	tfversion, err := lib.GetSemver(tfconstraint, mirrorURL)
 	if err == nil {
 		lib.Install(tfversion, *custBinPath, *mirrorURL)
@@ -485,8 +514,5 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 	}
 	var version terragruntVersionConstraints
 	gohcl.DecodeBody(file.Body, nil, &version)
-	if version == (terragruntVersionConstraints{}) {
-		return false
-	}
-	return true
+	return version != (terragruntVersionConstraints{})
 }

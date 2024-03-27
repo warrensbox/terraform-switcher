@@ -13,6 +13,10 @@ import (
 )
 
 const (
+	RecentSuffix = " *recent"
+)
+
+const (
 	installFile               = "terraform"
 	versionPrefix             = "terraform_"
 	installPath               = ".terraform.versions"
@@ -243,7 +247,7 @@ func GetRecentVersions() ([]string, error) {
 			/* 	output can be confusing since it displays the 3 most recent used terraform version
 			append the string *recent to the output to make it more user friendly
 			*/
-			outputRecent = append(outputRecent, fmt.Sprintf("%s *recent", line))
+			outputRecent = append(outputRecent, fmt.Sprintf("%s%s", line, RecentSuffix))
 		}
 
 		return outputRecent, nil
