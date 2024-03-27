@@ -29,6 +29,7 @@ import (
 	"github.com/hashicorp/hcl2/gohcl"
 	"github.com/hashicorp/hcl2/hclparse"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
+	"github.com/mitchellh/go-homedir"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
@@ -70,7 +71,11 @@ func main() {
 	getopt.Parse()
 	args := getopt.Args()
 
-	homedir := lib.GetHomeDirectory()
+	homedir, err := homedir.Dir()
+	if err != nil {
+		fmt.Printf("Unable to get home directory: %v\n", err)
+		os.Exit(1)
+	}
 
 	TFVersionFile := filepath.Join(*chDirPath, tfvFilename)    //settings for .terraform-version file in current directory (tfenv compatible)
 	RCFile := filepath.Join(*chDirPath, rcFilename)            //settings for .tfswitchrc file in current directory (backward compatible purpose)
@@ -309,7 +314,7 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 	}
 }
 
-//retrive file content of regular file
+// retrive file content of regular file
 func retrieveFileContents(file string) string {
 	fileContents, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -357,7 +362,13 @@ func checkTFEnvExist() bool {
 
 /* parses everything in the toml file, return required version and bin path */
 func getParamsTOML(binPath string, dir string) (string, string) {
-	path := lib.GetHomeDirectory()
+	path, err := homedir.Dir()
+
+	if err != nil {
+		fmt.Printf("Unable to get home directory: %v\n", err)
+		os.Exit(1)
+	}
+
 	if dir == path {
 		path = "home directory"
 	} else {

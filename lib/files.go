@@ -11,8 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/mitchellh/go-homedir"
 )
 
 // RenameFile : rename file name
@@ -102,7 +100,7 @@ func Unzip(src string, dest string) ([]string, error) {
 	return filenames, nil
 }
 
-//CreateDirIfNotExist : create directory if directory does not exist
+// CreateDirIfNotExist : create directory if directory does not exist
 func CreateDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		fmt.Printf("Creating directory for terraform binary at: %v\n", dir)
@@ -114,7 +112,7 @@ func CreateDirIfNotExist(dir string) {
 	}
 }
 
-//WriteLines : writes into file
+// WriteLines : writes into file
 func WriteLines(lines []string, path string) (err error) {
 	var (
 		file *os.File
@@ -166,7 +164,7 @@ func ReadLines(path string) (lines []string, err error) {
 	return
 }
 
-//IsDirEmpty : check if directory is empty (TODO UNIT TEST)
+// IsDirEmpty : check if directory is empty (TODO UNIT TEST)
 func IsDirEmpty(name string) bool {
 
 	exist := false
@@ -184,7 +182,7 @@ func IsDirEmpty(name string) bool {
 	return exist // Either not empty or error, suits both cases
 }
 
-//CheckDirHasTGBin : // check binary exist (TODO UNIT TEST)
+// CheckDirHasTGBin : // check binary exist (TODO UNIT TEST)
 func CheckDirHasTGBin(dir, prefix string) bool {
 
 	exist := false
@@ -204,9 +202,9 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 	return exist
 }
 
-//CheckDirExist : check if directory exist
-//dir=path to file
-//return bool
+// CheckDirExist : check if directory exist
+// dir=path to file
+// return bool
 func CheckDirExist(dir string) bool {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return false
@@ -234,16 +232,4 @@ func GetCurrentDirectory() string {
 		os.Exit(1)
 	}
 	return dir
-}
-
-// GetHomeDirectory : return the home directory
-func GetHomeDirectory() string {
-
-	homedir, errHome := homedir.Dir()
-	if errHome != nil {
-		log.Printf("Failed to get home directory %v\n", errHome)
-		os.Exit(1)
-	}
-
-	return homedir
 }

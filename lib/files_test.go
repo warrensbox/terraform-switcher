@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"os/user"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -15,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
@@ -26,11 +26,11 @@ func TestRenameFile(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 	version := "0.0.7"
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
+	installLocation := filepath.Join(homedir, installPath)
 
 	createDirIfNotExist(installLocation)
 
@@ -72,11 +72,11 @@ func TestRemoveFiles(t *testing.T) {
 	installFile := lib.ConvertExecutableExt("terraform")
 	installPath := "/.terraform.versions_test/"
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
+	installLocation := filepath.Join(homedir, installPath)
 
 	createDirIfNotExist(installLocation)
 
@@ -111,11 +111,11 @@ func TestUnzip(t *testing.T) {
 
 	fmt.Println(absPath)
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
+	installLocation := filepath.Join(homedir, installPath)
 
 	createDirIfNotExist(installLocation)
 
@@ -143,11 +143,11 @@ func TestUnzip(t *testing.T) {
 func TestCreateDirIfNotExist(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
+	installLocation := filepath.Join(homedir, installPath)
 
 	cleanUp(installLocation)
 
@@ -171,18 +171,18 @@ func TestCreateDirIfNotExist(t *testing.T) {
 	cleanUp(installLocation)
 }
 
-//TestWriteLines : write to file, check readline to verify
+// TestWriteLines : write to file, check readline to verify
 func TestWriteLines(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 	recentFile := "RECENT"
 	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
 	//semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
+	installLocation := filepath.Join(homedir, installPath)
 
 	createDirIfNotExist(installLocation)
 
@@ -246,11 +246,11 @@ func TestReadLines(t *testing.T) {
 	recentFile := "RECENT"
 	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
+	installLocation := filepath.Join(homedir, installPath)
 
 	createDirIfNotExist(installLocation)
 
@@ -299,11 +299,11 @@ func TestIsDirEmpty(t *testing.T) {
 
 	installPath := "/.terraform.versions_test/"
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
+	installLocation := filepath.Join(homedir, installPath)
 
 	test_dir := current.Format("2006-01-02")
 	test_dir_path := filepath.Join(installLocation, test_dir)
@@ -334,11 +334,11 @@ func TestCheckDirHasTFBin(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 	installFilePrefix := "terraform"
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
+	installLocation := filepath.Join(homedir, installPath)
 
 	createDirIfNotExist(installLocation)
 
@@ -363,11 +363,11 @@ func TestPath(t *testing.T) {
 	installPath := "/.terraform.versions_test"
 	installFile := lib.ConvertExecutableExt("terraform")
 
-	usr, errCurr := user.Current()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
-	installLocation := filepath.Join(usr.HomeDir, installPath)
+	installLocation := filepath.Join(homedir, installPath)
 
 	createDirIfNotExist(installLocation)
 
@@ -404,7 +404,7 @@ func TestGetFileName(t *testing.T) {
 
 // TestConvertExecutableExt : convert executable binary with extension
 func TestConvertExecutableExt(t *testing.T) {
-	usr, errCurr := user.Current()
+	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
@@ -413,8 +413,8 @@ func TestConvertExecutableExt(t *testing.T) {
 	test_array := []string{
 		"terraform",
 		"terraform.exe",
-		filepath.Join(usr.HomeDir, installPath, "terraform"),
-		filepath.Join(usr.HomeDir, installPath, "terraform.exe"),
+		filepath.Join(homedir, installPath, "terraform"),
+		filepath.Join(homedir, installPath, "terraform.exe"),
 	}
 
 	for _, fpath := range test_array {
