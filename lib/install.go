@@ -25,31 +25,25 @@ var (
 	installLocation = "/tmp"
 )
 
-// initialize : removes existing symlink to terraform binary// I Don't think this is needed
-func initialize() {
-
-	/* Step 1 */
-	/* initilize default binary path for terraform */
-	/* assumes that terraform is installed here */
-	/* we will find the terraform path instalation later and replace this variable with the correct installed bin path */
-	installedBinPath := "/usr/local/bin/terraform"
+// initialize : removes existing symlink to terraform binary based on provided binPath
+func initialize(binPath string) {
 
 	/* find terraform binary location if terraform is already installed*/
-	cmd := NewCommand("terraform")
+	cmd := NewCommand(binPath)
 	next := cmd.Find()
 
 	/* overrride installation default binary path if terraform is already installed */
 	/* find the last bin path */
 	for path := next(); len(path) > 0; path = next() {
-		installedBinPath = path
+		binPath = path
 	}
 
 	/* check if current symlink to terraform binary exist */
-	symlinkExist := CheckSymlink(installedBinPath)
+	symlinkExist := CheckSymlink(binPath)
 
 	/* remove current symlink if exist*/
 	if symlinkExist {
-		RemoveSymlink(installedBinPath)
+		RemoveSymlink(binPath)
 	}
 
 }
@@ -90,7 +84,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	 */
 	binPath = InstallableBinLocation(binPath)
 
-	initialize()                           //initialize path
+	initialize(binPath)                    //initialize path
 	installLocation = GetInstallLocation() //get installation location -  this is where we will put our terraform binary file
 
 	goarch := runtime.GOARCH
