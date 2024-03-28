@@ -23,6 +23,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	semver "github.com/hashicorp/go-version"
@@ -40,7 +41,6 @@ import (
 
 const (
 	defaultMirror = "https://releases.hashicorp.com/terraform"
-	defaultBin    = "/usr/local/bin/terraform" //default bin installation dir
 	defaultLatest = ""
 	tfvFilename   = ".terraform-version"
 	rcFilename    = ".tfswitchrc"
@@ -48,6 +48,8 @@ const (
 	tgHclFilename = "terragrunt.hcl"
 	versionPrefix = "terraform_"
 )
+
+var defaultBin = getOSDefaultBin()
 
 var version = "0.12.0\n"
 
@@ -489,4 +491,18 @@ func checkVersionDefinedHCL(tgFile *string) bool {
 		return false
 	}
 	return true
+}
+
+func getOSDefaultBin() string {
+	//
+	const goos = runtime.GOOS
+	var homedir = lib.GetHomeDirectory()
+
+	if goos == "darwin" {
+		return homedir + "/bin/terraform"
+	}
+	if goos == "windows" {
+		return homedir + "/bin/terraform.exe"
+	}
+	return "/usr/local/bin/terraform"
 }
