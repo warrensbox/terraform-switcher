@@ -27,11 +27,11 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	var semver string
 	if preRelease == true {
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver = `\/(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?/?"`
+		semver = `\/?(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?/?"`
 	} else if preRelease == false {
 		// Getting versions from body; should return match /X.X.X/ where X is a number
 		// without the ending '"' pre-release folders would be tried and break.
-		semver = `\/(\d+\.\d+\.\d+)\/?"`
+		semver = `\/?(\d+\.\d+\.\d+)\/?"`
 	}
 	r, _ := regexp.Compile(semver)
 	for i := range result {
@@ -58,7 +58,7 @@ func GetTFLatest(mirrorURL string) (string, error) {
 		return "", error
 	}
 	// Getting versions from body; should return match /X.X.X/ where X is a number
-	semver := `\/(\d+\.\d+\.\d+)\/?"`
+	semver := `\/?(\d+\.\d+\.\d+)\/?"`
 	r, _ := regexp.Compile(semver)
 	for i := range result {
 		if r.MatchString(result[i]) {
@@ -80,7 +80,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 			return "", error
 		}
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver := fmt.Sprintf(`\/(%s{1}\.\d+\-[a-zA-z]+\d*)\/?"`, version)
+		semver := fmt.Sprintf(`\/?(%s{1}\.\d+\-[a-zA-z]+\d*)\/?"`, version)
 		r, err := regexp.Compile(semver)
 		if err != nil {
 			return "", err
