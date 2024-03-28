@@ -1,4 +1,4 @@
-package lib_test
+package lib
 
 import (
 	"fmt"
@@ -6,10 +6,10 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
@@ -22,13 +22,20 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	macOS := "_darwin_amd64.zip"
 
 	// get current user
-	homedir, errCurr := homedir.Dir()
+	home, errCurr := homedir.Dir()
 	if errCurr != nil {
 		log.Fatal(errCurr)
 	}
 
-	fmt.Printf("Current home directory: %v \n", homedir)
-	installLocation := filepath.Join(homedir, installPath)
+	fmt.Printf("Current home directory: %v \n", home)
+
+	var installLocation = ""
+	if runtime.GOOS != "windows" {
+		installLocation = filepath.Join(home, installPath)
+	} else {
+		installLocation = installPath
+	}
+	fmt.Printf("Install Location: %v \n", installLocation)
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
@@ -43,9 +50,9 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	/* test download old terraform version */
 	lowestVersion := "0.11.0"
 
-	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
-	expectedFile := filepath.Join(homedir, installPath, installVersion+lowestVersion+macOS)
-	installedFile, errDownload := lib.DownloadFromURL(installLocation, url)
+	uri := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
+	expectedFile := filepath.Join(installLocation, installVersion+lowestVersion+macOS)
+	installedFile, errDownload := downloadFromURL(installLocation, uri)
 
 	if errDownload != nil {
 		t.Logf("Expected file name %v to be downloaded", expectedFile)
