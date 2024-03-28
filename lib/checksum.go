@@ -17,7 +17,7 @@ import (
 func getChecksumFromHashFile(signatureFilePath string, terraformFileName string) (string, error) {
 	readFile, err := os.Open(signatureFilePath)
 	if err != nil {
-		fmt.Println("[Error]: Could not open ", signatureFilePath)
+		fmt.Println("[Error] : Could not open ", signatureFilePath)
 		return "", err
 	}
 	defer readFile.Close()
@@ -38,17 +38,17 @@ func checkChecksumMatches(hashFile string, targetFile *os.File) bool {
 	_, fileName := filepath.Split(targetFile.Name())
 	expectedChecksum, err := getChecksumFromHashFile(hashFile, fileName)
 	if err != nil {
-		fmt.Println("[Error]: could not get expected checksum from file: " + err.Error())
+		fmt.Println("[Error] : Could not get expected checksum from file: " + err.Error())
 		return false
 	}
 	hash := sha256.New()
 	if _, err := io.Copy(hash, targetFile); err != nil {
-		fmt.Println("[Error]: Calculating Checksum failed: " + err.Error())
+		fmt.Println("[Error] : Calculating Checksum failed: " + err.Error())
 		return false
 	}
 	checksum := hex.EncodeToString(hash.Sum(nil))
 	if expectedChecksum != checksum {
-		fmt.Println("[Error]: Checksum mismatch. Expected: ", expectedChecksum, " got ", checksum)
+		fmt.Println("[Error] : Checksum mismatch. Expected: ", expectedChecksum, " got ", checksum)
 		return false
 	}
 	return true
@@ -59,13 +59,13 @@ func checkSignatureOfChecksums(keyRingReader *os.File, hashFile *os.File, signat
 	log.Println("Verifying signature of checksum file...")
 	keyring, err := openpgp.ReadArmoredKeyRing(keyRingReader)
 	if err != nil {
-		log.Fatal("[Error]: Read armored key ring: " + err.Error())
+		log.Fatal("[Error] : Read armored key ring: " + err.Error())
 		return false
 	}
 
 	_, err = openpgp.CheckDetachedSignature(keyring, hashFile, signatureFile)
 	if err != nil {
-		log.Fatal("[Error]: Checking detached signature: " + err.Error())
+		log.Fatal("[Error] : Checking detached signature: " + err.Error())
 		return false
 	}
 	log.Println("Verification successful.")
