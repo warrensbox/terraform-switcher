@@ -28,52 +28,44 @@ func DownloadFromURL(installLocation string, mirrorURL string, tfversion string,
 	err := downloadPublicKey(installLocation, pubKeyFilename)
 	if err != nil {
 		log.Fatal("[Error]: Could not download public key file")
-		return "", err
 	}
 
 	log.Println("Downloading ", zipUrl)
 	zipFilePath, err := downloadFromURL(installLocation, zipUrl)
 	if err != nil {
 		log.Fatal("[Error]: Could not download zip file")
-		return "", err
 	}
 
 	log.Println("Downloading ", hashUrl)
 	hashFilePath, err := downloadFromURL(installLocation, hashUrl)
 	if err != nil {
 		log.Fatal("[Error]: Could not download hash file")
-		return "", err
 	}
 
 	log.Println("Downloading ", hashSignatureUrl)
 	hashSigFilePath, err := downloadFromURL(installLocation, hashSignatureUrl)
 	if err != nil {
 		log.Fatal("[Error]: Could not download hash signature file")
-		return "", err
 	}
 
 	publicKeyFile, err := os.Open(pubKeyFilename)
 	if err != nil {
-		log.Fatal("[Error]: Could not open the public key")
-		return "", err
+		log.Fatal("[Error]: Could not open the public key.", pubKeyFilename)
 	}
 
 	signatureFile, err := os.Open(hashSigFilePath)
 	if err != nil {
-		log.Fatal("[Error]: Could not open the public key")
-		return "", err
+		log.Fatal("[Error]: Could not open the signature file.", hashSigFilePath)
 	}
 
 	targetFile, err := os.Open(zipFilePath)
 	if err != nil {
-		log.Fatal("[Error]: Could not open the terraform binary for signature verification.")
-		return "", err
+		log.Fatal("[Error]: Could not open the terraform binary for checksum verification.", zipFilePath)
 	}
 
 	hashFile, err := os.Open(hashFilePath)
 	if err != nil {
-		log.Fatal("[Error]: Could not open the terraform binary for signature verification.")
-		return "", err
+		log.Fatal("[Error]: Could not open the terraform checksum file for signature verification.", hashFilePath)
 	}
 	verified := checkSignatureOfChecksums(publicKeyFile, hashFile, signatureFile)
 	if !verified {
