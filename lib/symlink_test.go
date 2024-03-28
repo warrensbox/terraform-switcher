@@ -1,12 +1,13 @@
 package lib_test
 
 import (
+	"github.com/mitchellh/go-homedir"
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
-	"github.com/mitchellh/go-homedir"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
@@ -14,38 +15,60 @@ import (
 // create symlink, check if symlink exist, remove symlink
 func TestCreateSymlink(t *testing.T) {
 
-	testSymlinkSrc := "/test-tfswitcher-src"
-
 	testSymlinkDest := "/test-tfswitcher-dest"
-
-	homedir, errCurr := homedir.Dir()
-	if errCurr != nil {
-		log.Fatal(errCurr)
+	testSymlinkSrc := "/test-tfswitcher-src"
+	if runtime.GOOS == "windows" {
+		testSymlinkSrc = "/test-tfswitcher-src.exe"
 	}
-	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
-	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
 
-	ln, _ := os.Readlink(symlinkPathSrc)
+	home, err := homedir.Dir()
+	if err != nil {
+		log.Fatalf(`Could not detect home directory.`)
+	}
+	symlinkPathSrc := filepath.Join(home, testSymlinkSrc)
+	symlinkPathDest := filepath.Join(home, testSymlinkDest)
 
-	if ln != symlinkPathDest {
-		t.Logf("Symlink does not exist %v [expected]", ln)
-	} else {
-		t.Logf("Symlink exist %v [expected]", ln)
-		os.Remove(symlinkPathSrc)
-		t.Logf("Removed existing symlink for testing purposes")
+	// Create file for test as windows does not like no source
+	create, err := os.Create(symlinkPathDest)
+	if err != nil {
+		log.Fatalf(`Could not create test dest file for symlink at %v`, symlinkPathDest)
+	}
+	defer create.Close()
+
+	if runtime.GOOS != "windows" {
+		ln, _ := os.Readlink(symlinkPathSrc)
+
+		if ln != symlinkPathDest {
+			t.Logf("Symlink does not exist %v [expected]", ln)
+		} else {
+			t.Logf("Symlink exist %v [expected]", ln)
+			os.Remove(symlinkPathSrc)
+			t.Logf("Removed existing symlink for testing purposes")
+		}
 	}
 
 	lib.CreateSymlink(symlinkPathDest, symlinkPathSrc)
 
-	lnCheck, _ := os.Readlink(symlinkPathSrc)
-	if lnCheck == symlinkPathDest {
-		t.Logf("Symlink exist %v [expected]", lnCheck)
+	if runtime.GOOS == "windows" {
+		_, err := os.Stat(symlinkPathSrc + ".exe")
+		if err != nil {
+			t.Logf("Could not stat file copy at %v. [unexpected]", symlinkPathSrc)
+			t.Error("File copy was not created.")
+		} else {
+			t.Logf("File copy exists at %v [expected]", symlinkPathSrc)
+		}
 	} else {
-		t.Logf("Symlink does not exist %v [unexpected]", lnCheck)
-		t.Error("Symlink was not created")
+		lnCheck, _ := os.Readlink(symlinkPathSrc)
+		if lnCheck == symlinkPathDest {
+			t.Logf("Symlink exist %v [expected]", lnCheck)
+		} else {
+			t.Logf("Symlink does not exist %v [unexpected]", lnCheck)
+			t.Error("Symlink was not created")
+		}
 	}
 
 	os.Remove(symlinkPathSrc)
+	os.Remove(symlinkPathDest)
 }
 
 // TestRemoveSymlink : check if symlink exist-create if does not exist,

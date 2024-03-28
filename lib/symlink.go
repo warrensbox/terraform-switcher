@@ -1,27 +1,51 @@
 package lib
 
 import (
+	"io"
 	"log"
 	"os"
+	"runtime"
 )
 
-//CreateSymlink : create symlink
+// CreateSymlink : create symlink or copy file to bin directory if windows
 func CreateSymlink(cwd string, dir string) {
+	// If we are on windows the symlink is not working correctly.
+	// Copy the desired terraform binary to the path environment.
+	if runtime.GOOS == "windows" {
+		r, err := os.Open(cwd)
+		if err != nil {
+			log.Fatalf(`Unable to open source binary: %s.`, cwd)
+			os.Exit(1)
+		}
+		defer r.Close()
 
-	err := os.Symlink(cwd, dir)
-	if err != nil {
-		log.Fatalf(`
+		w, err := os.Create(dir + ".exe")
+		if err != nil {
+			log.Fatalf(`Could not create target binary: %s.`, dir+".exe")
+			os.Exit(1)
+		}
+		defer func() {
+			if c := w.Close(); err == nil {
+				err = c
+			}
+		}()
+		_, err = io.Copy(w, r)
+	} else {
+		err := os.Symlink(cwd, dir)
+		if err != nil {
+			log.Fatalf(`
 		Unable to create new symlink.
 		Maybe symlink already exist. Try removing existing symlink manually.
 		Try running "unlink %s" to remove existing symlink.
 		If error persist, you may not have the permission to create a symlink at %s.
 		Error: %s
 		`, dir, dir, err)
-		os.Exit(1)
+			os.Exit(1)
+		}
 	}
 }
 
-//RemoveSymlink : remove symlink
+// RemoveSymlink : remove symlink
 func RemoveSymlink(symlinkPath string) {
 
 	_, err := os.Lstat(symlinkPath)
