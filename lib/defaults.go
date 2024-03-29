@@ -12,9 +12,9 @@ func GetDefaultBin() string {
 	if runtime.GOOS == "windows" {
 		home, err := homedir.Dir()
 		if err != nil {
-			log.Fatalf(`Could not detect home directory.`)
+			log.Fatalf("Could not detect home directory.")
 		}
-		defaultBin = home + `/bin/terraform.exe`
+		defaultBin = home + "/bin/terraform.exe"
 	}
 	return defaultBin
 }

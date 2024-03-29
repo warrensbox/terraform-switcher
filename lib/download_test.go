@@ -24,7 +24,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	home, err := homedir.Dir()
 	if err != nil {
-		log.Fatalf(`Could not detect home directory.`)
+		log.Fatalf("Could not detect home directory.")
 	}
 
 	fmt.Printf("Current user homedir: %v \n", home)
