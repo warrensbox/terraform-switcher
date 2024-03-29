@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -17,7 +16,7 @@ import (
 func RenameFile(src string, dest string) {
 	err := os.Rename(src, dest)
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(err)
 		return
 	}
 }
@@ -103,10 +102,10 @@ func Unzip(src string, dest string) ([]string, error) {
 // CreateDirIfNotExist : create directory if directory does not exist
 func CreateDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		fmt.Printf("Creating directory for terraform binary at: %v\n", dir)
+		logger.Info("Creating directory for terraform binary at: %v", dir)
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			fmt.Printf("Unable to create directory for terraform binary at: %v", dir)
+			logger.Errorf("Unable to create directory for terraform binary at: %v", dir)
 			panic(err)
 		}
 	}
@@ -126,7 +125,7 @@ func WriteLines(lines []string, path string) (err error) {
 	for _, item := range lines {
 		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
 		if err != nil {
-			fmt.Println(err)
+			logger.Error(err)
 			break
 		}
 	}

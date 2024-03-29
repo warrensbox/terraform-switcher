@@ -1,9 +1,8 @@
-package lib_test
+package lib
 
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -15,13 +14,12 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 // TestRenameFile : Create a file, check filename exist,
 // rename file, check new filename exit
 func TestRenameFile(t *testing.T) {
-	installFile := lib.ConvertExecutableExt("terraform")
+	installFile := ConvertExecutableExt("terraform")
 	installVersion := "terraform_"
 	installPath := "/.terraform.versions_test/"
 	version := "0.0.7"
@@ -45,9 +43,9 @@ func TestRenameFile(t *testing.T) {
 		t.Error("Missing file")
 	}
 
-	installVersionFilePath := lib.ConvertExecutableExt(filepath.Join(installLocation, installVersion+version))
+	installVersionFilePath := ConvertExecutableExt(filepath.Join(installLocation, installVersion+version))
 
-	lib.RenameFile(installFilePath, installVersionFilePath)
+	RenameFile(installFilePath, installVersionFilePath)
 
 	if exist := checkFileExist(installVersionFilePath); exist {
 		t.Logf("New file exist %v", installVersionFilePath)
@@ -69,7 +67,7 @@ func TestRenameFile(t *testing.T) {
 // TestRemoveFiles : Create a file, check file exist,
 // remove file, check file does not exist
 func TestRemoveFiles(t *testing.T) {
-	installFile := lib.ConvertExecutableExt("terraform")
+	installFile := ConvertExecutableExt("terraform")
 	installPath := "/.terraform.versions_test/"
 
 	homedir, errCurr := homedir.Dir()
@@ -91,7 +89,7 @@ func TestRemoveFiles(t *testing.T) {
 		t.Error("Missing file")
 	}
 
-	lib.RemoveFiles(installFilePath)
+	RemoveFiles(installFilePath)
 
 	if exist := checkFileExist(installFilePath); exist {
 		t.Logf("Old file should not exist %v", installFilePath)
@@ -109,7 +107,7 @@ func TestUnzip(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 	absPath, _ := filepath.Abs("../test-data/test-data.zip")
 
-	fmt.Println(absPath)
+	logger.Info("Absolute Path:" + absPath)
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
@@ -119,11 +117,10 @@ func TestUnzip(t *testing.T) {
 
 	createDirIfNotExist(installLocation)
 
-	files, errUnzip := lib.Unzip(absPath, installLocation)
+	files, errUnzip := Unzip(absPath, installLocation)
 
 	if errUnzip != nil {
-		fmt.Println("Unable to unzip zip file")
-		log.Fatal(errUnzip)
+		logger.Fatal("Unable to unzip zip file", errUnzip)
 		os.Exit(1)
 	}
 
@@ -158,7 +155,7 @@ func TestCreateDirIfNotExist(t *testing.T) {
 		t.Error("Directory should not exist")
 	}
 
-	lib.CreateDirIfNotExist(installLocation)
+	CreateDirIfNotExist(installLocation)
 	t.Logf("Creating directory %v", installLocation)
 
 	if _, err := os.Stat(installLocation); err == nil {
@@ -189,7 +186,7 @@ func TestWriteLines(t *testing.T) {
 	recentFilePath := filepath.Join(installLocation, recentFile)
 	test_array := []string{"0.1.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
 
-	errWrite := lib.WriteLines(test_array, recentFilePath)
+	errWrite := WriteLines(test_array, recentFilePath)
 
 	if errWrite != nil {
 		t.Logf("Write should work %v (unexpected)", errWrite)
@@ -274,7 +271,7 @@ func TestReadLines(t *testing.T) {
 		}
 	}
 
-	lines, errRead := lib.ReadLines(recentFilePath)
+	lines, errRead := ReadLines(recentFilePath)
 
 	if errRead != nil {
 		log.Fatalf("Error: %s\n", errRead)
@@ -313,7 +310,7 @@ func TestIsDirEmpty(t *testing.T) {
 
 	createDirIfNotExist(test_dir_path)
 
-	empty := lib.IsDirEmpty(test_dir_path)
+	empty := IsDirEmpty(test_dir_path)
 
 	t.Logf("Expected directory to be empty %v [expected]", test_dir_path)
 
@@ -342,10 +339,10 @@ func TestCheckDirHasTFBin(t *testing.T) {
 
 	createDirIfNotExist(installLocation)
 
-	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, installFilePrefix+"_"+goos+"_"+goarch))
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, installFilePrefix+"_"+goos+"_"+goarch))
 	createFile(installFileVersionPath)
 
-	empty := lib.CheckDirHasTGBin(installLocation, installFilePrefix)
+	empty := CheckDirHasTGBin(installLocation, installFilePrefix)
 
 	t.Logf("Expected directory to have tf file %v [expected]", installFileVersionPath)
 
@@ -361,7 +358,7 @@ func TestCheckDirHasTFBin(t *testing.T) {
 // TestPath : create file in directory, check if path exist
 func TestPath(t *testing.T) {
 	installPath := "/.terraform.versions_test"
-	installFile := lib.ConvertExecutableExt("terraform")
+	installFile := ConvertExecutableExt("terraform")
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
@@ -374,7 +371,7 @@ func TestPath(t *testing.T) {
 	installFilePath := filepath.Join(installLocation, installFile)
 	createFile(installFilePath)
 
-	path := lib.Path(installFilePath)
+	path := Path(installFilePath)
 
 	t.Logf("Path created %s\n", installFilePath)
 	t.Logf("Path expected %s\n", installLocation)
@@ -393,7 +390,7 @@ func TestGetFileName(t *testing.T) {
 
 	fileNameWithExt := "file.toml"
 
-	fileName := lib.GetFileName(fileNameWithExt)
+	fileName := GetFileName(fileNameWithExt)
 
 	if fileName == "file" {
 		t.Logf("File removed extension (expected)")
@@ -418,7 +415,7 @@ func TestConvertExecutableExt(t *testing.T) {
 	}
 
 	for _, fpath := range test_array {
-		fpathExt := lib.ConvertExecutableExt((fpath))
+		fpathExt := ConvertExecutableExt((fpath))
 		outputMsg := fpath + " converted to " + fpathExt + " on " + runtime.GOOS
 
 		switch runtime.GOOS {

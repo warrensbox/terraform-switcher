@@ -54,7 +54,7 @@ func GetInstallLocation() string {
 	/* get current user */
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 
 	userCommon := homedir
@@ -113,7 +113,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
-		fmt.Printf("Switched terraform to version %q \n", tfversion)
+		logger.Infof("Switched terraform to version %q", tfversion)
 		AddRecent(tfversion) //add to recent file for faster lookup
 		os.Exit(0)
 	}
@@ -131,16 +131,13 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
-		fmt.Println(errDownload)
-		os.Exit(1)
+		logger.Fatal(errDownload)
 	}
 
 	/* unzip the downloaded zipfile */
 	_, errUnzip := Unzip(zipFile, installLocation)
 	if errUnzip != nil {
-		fmt.Println("[Error] : Unable to unzip downloaded zip file")
-		log.Fatal(errUnzip)
-		os.Exit(1)
+		logger.Fatal("Unable to unzip downloaded zip file", errUnzip)
 	}
 
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
@@ -159,7 +156,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
-	fmt.Printf("Switched terraform to version %q \n", tfversion)
+	logger.Infof("Switched terraform to version %q", tfversion)
 	AddRecent(tfversion) //add to recent file for faster lookup
 	os.Exit(0)
 }
@@ -175,13 +172,13 @@ func AddRecent(requestedVersion string) {
 		lines, errRead := ReadLines(versionFile)
 
 		if errRead != nil {
-			fmt.Printf("[Error] : %s\n", errRead)
+			logger.Errorf("%s", errRead)
 			return
 		}
 
 		for _, line := range lines {
 			if !ValidVersionFormat(line) {
-				fmt.Println("File dirty. Recreating cache file.")
+				logger.Info("File dirty. Recreating cache file.")
 				RemoveFiles(versionFile)
 				CreateRecentFile(requestedVersion)
 				return
@@ -220,7 +217,7 @@ func GetRecentVersions() ([]string, error) {
 		outputRecent := []string{}
 
 		if errRead != nil {
-			fmt.Printf("Error: %s\n", errRead)
+			logger.Errorf("%s", errRead)
 			return nil, errRead
 		}
 
@@ -291,21 +288,21 @@ func InstallableBinLocation(userBinPath string) string {
 
 			homeBinExist := CheckDirExist(filepath.Join(homedir, "bin")) //check to see if ~/bin exist
 			if homeBinExist {                                            //if ~/bin exist, install at ~/bin/terraform
-				fmt.Printf("Installing terraform at %s\n", filepath.Join(homedir, "bin"))
+				logger.Infof("Installing terraform at %s", filepath.Join(homedir, "bin"))
 				return filepath.Join(homedir, "bin", "terraform")
 			} else { //if ~/bin directory does not exist, create ~/bin for terraform installation
-				fmt.Printf("Unable to write to: %s\n", userBinPath)
-				fmt.Printf("Creating bin directory at: %s\n", filepath.Join(homedir, "bin"))
+				logger.Infof("Unable to write to: %s", userBinPath)
+				logger.Infof("Creating bin directory at: %s", filepath.Join(homedir, "bin"))
 				CreateDirIfNotExist(filepath.Join(homedir, "bin")) //create ~/bin
-				fmt.Printf("RUN `export PATH=$PATH:%s` to append bin to $PATH\n", filepath.Join(homedir, "bin"))
+				logger.Infof("RUN `export PATH=$PATH:%s` to append bin to $PATH", filepath.Join(homedir, "bin"))
 				return filepath.Join(homedir, "bin", "terraform")
 			}
 		} else { // ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
 			return filepath.Join(userBinPath)
 		}
 	}
-	fmt.Printf("[Error] : Binary path does not exist: %s\n", userBinPath)
-	fmt.Printf("[Error] : Manually create bin directory at: %s and try again.\n", binDir)
+	logger.Errorf("Binary path does not exist: %s", userBinPath)
+	logger.Errorf("Manually create bin directory at: %s and try again.", binDir)
 	os.Exit(1)
 	return ""
 }

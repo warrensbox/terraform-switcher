@@ -1,4 +1,4 @@
-package lib_test
+package lib
 
 import (
 	"fmt"
@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"testing"
-
-	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
@@ -27,7 +25,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 		log.Fatalf("Could not detect home directory.")
 	}
 
-	fmt.Printf("Current user homedir: %v \n", home)
+	fmt.Printf("Current home directory: %v \n", home)
 	var installLocation = ""
 	if runtime.GOOS != "windows" {
 		installLocation = filepath.Join(home, installPath)
@@ -51,7 +49,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
 	expectedFile := filepath.Join(installLocation, installVersion+lowestVersion+macOS)
-	installedFile, errDownload := lib.DownloadFromURL(installLocation, url)
+	installedFile, errDownload := DownloadFromURL(installLocation, url)
 
 	if errDownload != nil {
 		t.Logf("Expected file name %v to be downloaded", expectedFile)
@@ -76,7 +74,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	t.Cleanup(func() {
 		defer os.Remove(tempDir)
-		fmt.Println("Cleanup temporary directory")
+		logger.Info("Cleanup temporary directory")
 	})
 }
 
