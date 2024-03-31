@@ -40,17 +40,16 @@ jobs:
 
     # Run test code
     - name: Go test
-      run: 
-        command: |
-          set -e
-          go get -v -t -d ./...
-          go vet -tests=false ./...
-          go test -v ./...
-          mkdir -p build
-          go build -v -o build/tfswitch
-          find ./test-data/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
-              ./build/tfswitch -c "${TEST_PATH}" || exit 1
-          done
+      run: |
+        set -e
+        go get -v -t -d ./...
+        go vet -tests=false ./...
+        go test -v ./...
+        mkdir -p build
+        go build -v -o build/tfswitch
+        find ./test-data/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
+            ./build/tfswitch -c "${TEST_PATH}" || exit 1
+        done
       continue-on-error: false
 
     # Test to see if tfswitch works with --help
