@@ -1,6 +1,3 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
 name: Run test
 
 on:
@@ -30,4 +27,14 @@ jobs:
       run: go build -v ./...
 
     - name: Running test
-      run: go test -v ./...
+      run: 
+        command: |
+          set -e
+          go get -v -t -d ./...
+          go vet -tests=false ./...
+          go test -v ./...
+          mkdir -p build
+          go build -v -o build/tfswitch
+          find ./test-data/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
+              ./build/tfswitch -c "${TEST_PATH}" || exit 1
+          done
