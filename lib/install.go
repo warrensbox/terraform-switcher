@@ -32,7 +32,7 @@ func initialize(binPath string) {
 	cmd := NewCommand(binPath)
 	next := cmd.Find()
 
-	/* overrride installation default binary path if terraform is already installed */
+	/* override installation default binary path if terraform is already installed */
 	/* find the last bin path */
 	for path := next(); len(path) > 0; path = next() {
 		binPath = path
@@ -79,7 +79,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terraform"
 	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tfswitch there
-	 * Inform user that they dont have permission to default location, therefore tfswitch was installed in $HOME/bin
+	 * Inform user that they don't have permission to default location, therefore tfswitch was installed in $HOME/bin
 	 * Tell users to add $HOME/bin to their path
 	 */
 	binPath = InstallableBinLocation(binPath)
@@ -226,7 +226,7 @@ func GetRecentVersions() ([]string, error) {
 
 		for _, line := range lines {
 			/* 	checks if versions in the recent file are valid.
-			If any version is invalid, it will be consider dirty
+			If any version is invalid, it will be considered dirty
 			and the recent file will be removed
 			*/
 			if !ValidVersionFormat(line) {
@@ -279,7 +279,7 @@ func InstallableBinLocation(userBinPath string) string {
 	binDir := Path(userBinPath)           //get path directory from binary path
 	binPathExist := CheckDirExist(binDir) //the default is /usr/local/bin but users can provide custom bin locations
 
-	if binPathExist { //if bin path exist - check if we can write to to it
+	if binPathExist == true { //if bin path exist - check if we can write to it
 
 		binPathWritable := false //assume bin path is not writable
 		if runtime.GOOS != "windows" {
