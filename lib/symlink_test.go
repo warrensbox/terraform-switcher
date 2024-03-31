@@ -31,7 +31,7 @@ func TestCreateSymlink(t *testing.T) {
 	// Create file for test as windows does not like no source
 	create, err := os.Create(symlinkPathDest)
 	if err != nil {
-		log.Fatalf(`Could not create test dest file for symlink at %v`, symlinkPathDest)
+		log.Fatalf("Could not create test dest file for symlink at %v", symlinkPathDest)
 	}
 	defer create.Close()
 
