@@ -1,0 +1,32 @@
+name: Test
+
+on:
+  push:
+    branches: 
+      - '*'         # matches every branch that doesn't contain a '/'
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'        # matches every branch
+      - '!release'   # excludes master
+
+
+jobs:
+
+  integration_tests:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        go_version: ['1.22']
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go_version }}
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Test
+      run: go test -v ./...
