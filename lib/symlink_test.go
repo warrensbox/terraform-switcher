@@ -23,7 +23,7 @@ func TestCreateSymlink(t *testing.T) {
 
 	home, err := homedir.Dir()
 	if err != nil {
-		log.Fatalf(`Could not detect home directory.`)
+		log.Fatalf("Could not detect home directory.")
 	}
 	symlinkPathSrc := filepath.Join(home, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(home, testSymlinkDest)
