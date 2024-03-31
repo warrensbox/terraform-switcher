@@ -14,14 +14,14 @@ func CreateSymlink(cwd string, dir string) {
 	if runtime.GOOS == "windows" {
 		r, err := os.Open(cwd)
 		if err != nil {
-			log.Fatalf(`Unable to open source binary: %s.`, cwd)
+			log.Fatalf("Unable to open source binary: %s", cwd)
 			os.Exit(1)
 		}
 		defer r.Close()
 
 		w, err := os.Create(dir + ".exe")
 		if err != nil {
-			log.Fatalf(`Could not create target binary: %s.`, dir+".exe")
+			log.Fatalf("Could not create target binary: %s", dir + ".exe")
 			os.Exit(1)
 		}
 		defer func() {
