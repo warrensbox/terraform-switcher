@@ -19,8 +19,8 @@ jobs:
     # Checkout code from repo
     - uses: actions/checkout@v4
       with:
-        ref: ${{ github.sha }} # required for better experience using pre-releases
-        fetch-depth: '0'
+        ref: ${{ github.ref_name }} # required for better experience using pre-releases
+        #fetch-depth: '0'
 
     # Install go
     - name: Checkout go
@@ -55,6 +55,8 @@ jobs:
         PRERELEASE: false
         DRY_RUN: false
         VERBOSE: true
+        BRANCH_HISTORY: last
+        TAG_CONTEXT: branch
 
     # Run goreleaser to create new binaries
     - name: Run GoReleaser
