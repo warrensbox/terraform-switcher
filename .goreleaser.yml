@@ -34,8 +34,8 @@ archives:
   - id: archives
     name_template: >-
       {{- .ProjectName }}_
-      {{.Env.RELEASE_VERSION}}_
-      {{- title .Os }}_
+      {{- .Env.RELEASE_VERSION }}_
+      {{- .Os }}_
       {{- if eq .Arch "amd64" }}amd64
       {{- else if eq .Arch "386" }}386
       {{- else }}{{ .Arch }}{{ end }}

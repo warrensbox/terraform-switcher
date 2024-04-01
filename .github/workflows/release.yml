@@ -1,5 +1,4 @@
-# Trigger when commits are pushed to the master branch
-# Trigger when MR to master is closed
+# Trigger when MR to `release` is closed
 
 name: Build-Test-Release Code
 
@@ -12,20 +11,20 @@ on:
 
 
 jobs:
-  hubapp-release:
+  tfswitch-release:
     name: Release
     runs-on: ubuntu-latest
     steps:
 
     # Checkout code from repo
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         ref: ${{ github.sha }} # required for better experience using pre-releases
         fetch-depth: '0'
 
     # Install go
     - name: Checkout go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: '1.22' # The Go version to download (if necessary) and use.
   
@@ -69,7 +68,7 @@ jobs:
         PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
     - name: Install Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.x
 
