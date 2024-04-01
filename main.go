@@ -7,7 +7,7 @@ package main
 
 /*** OPERATION WORKFLOW ***/
 /*
-* 1- Create /usr/local/terraform directory if does not exist
+* 1- Create /usr/local/terraform directory if it does not exist
 * 2- Download zip file from url to /usr/local/terraform
 * 3- Unzip the file to /usr/local/terraform
 * 4- Rename the file from `terraform` to `terraform_version`
@@ -29,6 +29,7 @@ import (
 	"github.com/hashicorp/hcl2/gohcl"
 	"github.com/hashicorp/hcl2/hclparse"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
+	"github.com/mitchellh/go-homedir"
 
 	"github.com/manifoldco/promptui"
 	"github.com/pborman/getopt"
@@ -39,7 +40,6 @@ import (
 
 const (
 	defaultMirror = "https://releases.hashicorp.com/terraform"
-	defaultBin    = "/usr/local/bin/terraform" //default bin installation dir
 	defaultLatest = ""
 	tfvFilename   = ".terraform-version"
 	rcFilename    = ".tfswitchrc"
@@ -52,7 +52,7 @@ var version = "0.12.0\n"
 
 func main() {
 	dir := lib.GetCurrentDirectory()
-	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(defaultBin), "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
+	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(lib.GetDefaultBin()), "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
 	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
 	latestPre := getopt.StringLong("latest-pre", 'p', defaultLatest, "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
 	showLatestPre := getopt.StringLong("show-latest-pre", 'P', defaultLatest, "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
@@ -70,7 +70,11 @@ func main() {
 	getopt.Parse()
 	args := getopt.Args()
 
-	homedir := lib.GetHomeDirectory()
+	homedir, err := homedir.Dir()
+	if err != nil {
+		fmt.Printf("Unable to get home directory: %v\n", err)
+		os.Exit(1)
+	}
 
 	TFVersionFile := filepath.Join(*chDirPath, tfvFilename)    //settings for .terraform-version file in current directory (tfenv compatible)
 	RCFile := filepath.Join(*chDirPath, rcFilename)            //settings for .tfswitchrc file in current directory (backward compatible purpose)
@@ -110,14 +114,14 @@ func main() {
 		/* latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
 		case *latestPre != "":
 			preRelease := true
-			installLatestImplicitVersion(*latestPre, custBinPath, mirrorURL, preRelease)
+			installLatestImplicitVersion(*latestPre, &binPath, mirrorURL, preRelease)
 		/* latest implicit version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
 		case *latestStable != "":
 			preRelease := false
-			installLatestImplicitVersion(*latestStable, custBinPath, mirrorURL, preRelease)
+			installLatestImplicitVersion(*latestStable, &binPath, mirrorURL, preRelease)
 		/* latest stable version */
 		case *latestFlag:
-			installLatestVersion(custBinPath, mirrorURL)
+			installLatestVersion(&binPath, mirrorURL)
 		/* version provided on command line as arg */
 		case len(args) == 1:
 			installVersion(args[0], &binPath, mirrorURL)
@@ -138,7 +142,7 @@ func main() {
 		case checkTFEnvExist() && len(args) == 0 && version == "":
 			tfversion := os.Getenv("TF_VERSION")
 			fmt.Printf("Terraform version environment variable: %s\n", tfversion)
-			installVersion(tfversion, custBinPath, mirrorURL)
+			installVersion(tfversion, &binPath, mirrorURL)
 		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
 		case fileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
 			installTGHclFile(&TGHACLFile, &binPath, mirrorURL)
@@ -309,7 +313,7 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 	}
 }
 
-//retrive file content of regular file
+// retrive file content of regular file
 func retrieveFileContents(file string) string {
 	fileContents, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -357,7 +361,13 @@ func checkTFEnvExist() bool {
 
 /* parses everything in the toml file, return required version and bin path */
 func getParamsTOML(binPath string, dir string) (string, string) {
-	path := lib.GetHomeDirectory()
+	path, err := homedir.Dir()
+
+	if err != nil {
+		fmt.Printf("Unable to get home directory: %v\n", err)
+		os.Exit(1)
+	}
+
 	if dir == path {
 		path = "home directory"
 	} else {
@@ -376,8 +386,8 @@ func getParamsTOML(binPath string, dir string) (string, string) {
 		os.Exit(1) // exit immediately if config file provided but it is unable to read it
 	}
 
-	bin := viper.Get("bin")                                            // read custom binary location
-	if binPath == lib.ConvertExecutableExt(defaultBin) && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
+	bin := viper.Get("bin")                                                     // read custom binary location
+	if binPath == lib.ConvertExecutableExt(lib.GetDefaultBin()) && bin != nil { // if the bin path is the same as the default binary path and if the custom binary is provided in the toml file (use it)
 		binPath = os.ExpandEnv(bin.(string))
 	}
 	//fmt.Println(binPath) //uncomment this to debug

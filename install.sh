@@ -369,7 +369,7 @@ adjust_os
 
 adjust_arch
 
-log_info "found version: ${VERSION} for ${TAG}/${OS}/${ARCH}"
+log_info "found version: ${VERSION} for ${TAG}/${PLATFORM}"
 
 NAME=${PROJECT_NAME}_${VERSION}_${OS}_${ARCH}
 TARBALL=${NAME}.${FORMAT}
