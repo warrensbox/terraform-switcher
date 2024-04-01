@@ -20,7 +20,7 @@ builds:
       - 7
     ignore:
       - goos: windows
-        goarch: arm    
+        goarch: arm64    
 checksum:
   name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_checksums.txt'
 changelog:
@@ -29,17 +29,19 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+
 archives:
-  -
-    name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
-    replacements:
-      darwin: darwin
-      linux: linux
-      386: 386
-      amd64: amd64
-    format_overrides:
-    - goos: windows
-      format: zip
+  - id: archives
+    name_template: >-
+      {{- .ProjectName }}_
+      {{.Env.RELEASE_VERSION}}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}amd64
+      {{- else if eq .Arch "386" }}386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end -}}
+
+
 brews:
   -
     # Name of the recipe
@@ -48,9 +50,10 @@ brews:
 
   # GitHub/GitLab repository to push the formula to
     # Gitea is not supported yet, but the support coming
-    tap:
+    repository:
       owner: warrensbox
       name: homebrew-tap
+      token: "{{ .Env.PERSONAL_ACCESS_TOKEN }}"
 
     # Reporitory to push the tap to.
     # github:
