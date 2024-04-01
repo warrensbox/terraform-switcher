@@ -12,7 +12,7 @@ jobs:
   integration_tests_linux:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-20.04]
         go_version: ['1.22']
     runs-on: ${{ matrix.os }}
     steps:
