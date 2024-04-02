@@ -9,21 +9,21 @@ on:
 
 jobs:
   tfswitch-release:
-    name: Release
     runs-on: ubuntu-20.04
     steps:
 
     - name: Check if provided input is valid
-    run: |
-      echo "Semantic Version: ${{ github.event.inputs.name }}"
-      VERSION=${{ github.event.inputs.name }}
-      if [ "$VERSION" != "major" ] && [ "$VERSION" != "minor" ] && [ "$VERSION" != "patch" ]; then
-          echo "Error: Provided input string must be 'major', 'minor', or 'patch'"
-          exit 1
+      run: |
+        echo "Semantic Version: ${{ github.event.inputs.name }}"
+        VERSION=${{ github.event.inputs.name }}
+        if [ "$VERSION" != "major" ] && [ "$VERSION" != "minor" ] && [ "$VERSION" != "patch" ]; then
+            echo "Error: Provided input string must be 'major', 'minor', or 'patch'"
+            exit 1
         fi
 
     # Checkout code from repo
-    - uses: actions/checkout@v4
+    - name: Checkout repo
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.head_ref }} # required for better experience using pre-releases
         fetch-depth: '0'
