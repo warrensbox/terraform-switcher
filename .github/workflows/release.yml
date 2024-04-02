@@ -1,14 +1,11 @@
-# Trigger when MR to `release` is closed
-
-name: Build-Test-Release Code
+name: Release (Manual Step)
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - release
-
+  workflow_dispatch:
+    inputs:
+      name:
+        description: "Enter - major, minor, patch"
+        default: "patch"
 
 jobs:
   tfswitch-release:
@@ -16,10 +13,19 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
 
+    - name: Check if provided input is valid
+    run: |
+      echo "Semantic Version: ${{ github.event.inputs.name }}"
+      VERSION=${{ github.event.inputs.name }}
+      if [ "$VERSION" != "major" ] || [ "$VERSION" != "minor" ] || [ "$VERSION" != "patch" ]; then
+          echo "Error: Provided input string must be 'major', 'minor', or 'patch'"
+          exit 1
+        fi
+
     # Checkout code from repo
     - uses: actions/checkout@v4
       with:
-        ref: ${{ github.ref_name }} # required for better experience using pre-releases
+        ref: ${{ github.head_ref }} # required for better experience using pre-releases
         #fetch-depth: '0'
 
     # Install go
@@ -42,10 +48,40 @@ jobs:
       run: mkdir -p build && go build -v -o build/tfswitch && build/tfswitch --help
       continue-on-error: false
 
+    - name: Create dry tag 
+      uses: anothrNick/github-tag-action@1.67.0
+      id: semver-tag-dry 
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: false
+        INITIAL_VERSION: 1.0.0
+        RELEASE_BRANCHES: master
+        DEFAULT_BUMP: ${{ github.event.inputs.name }}
+        PRERELEASE: false
+        DRY_RUN: true #only get the tag
+        VERBOSE: true
+
+    # Write new version into version file    
+    - name: Write new version tag to version file
+      run: |
+        echo ${{ steps.semver-tag-dry.outputs.tag }} > version
+
+    - name: Commit version into repo
+      run: |
+        git config --global user.email "release-bot@users.noreply.github.com"
+        git config --global user.name "release-bot"
+        git commit -a -m "#{{ github.event.inputs.name }} - Setting semantic version"
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+
     # Introduce new tag
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@1.67.0
-      id: tagging  
+      id: semver-tag  
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         WITH_V: false
@@ -66,7 +102,7 @@ jobs:
         args: release --clean
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        RELEASE_VERSION: ${{ steps.tagging.outputs.tag }}
+        RELEASE_VERSION: ${{ steps.semver-tag.outputs.tag }}
         PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
     - name: Install Python
