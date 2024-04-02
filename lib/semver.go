@@ -7,17 +7,16 @@ import (
 	semver "github.com/hashicorp/go-version"
 )
 
-// GetSemver : returns version that will be installed based on server constaint provided
-func GetSemver(tfconstraint *string, mirrorURL *string) (string, error) {
-
+// GetSemver : returns version that will be installed based on server constraint provided
+func GetSemver(tfconstraint string, mirrorURL string) (string, error) {
 	listAll := true
-	tflist, _ := GetTFList(*mirrorURL, listAll) //get list of versions
-	logger.Infof("Reading required version from constraint: %q", *tfconstraint)
-	tfversion, err := SemVerParser(tfconstraint, tflist)
+	tflist, _ := GetTFList(mirrorURL, listAll) //get list of versions
+	logger.Infof("Reading required version from constraint: %q", tfconstraint)
+	tfversion, err := SemVerParser(&tfconstraint, tflist)
 	return tfversion, err
 }
 
-// ValidateSemVer : Goes through the list of terraform version, return a valid tf version for contraint provided
+// SemVerParser  : Goes through the list of terraform version, return a valid tf version for contraint provided
 func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 	tfversion := ""
 	constraints, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
@@ -50,12 +49,12 @@ func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 	return "", fmt.Errorf("error parsing constraint: %s", *tfconstraint)
 }
 
-// Print invalid TF version
+// PrintInvalidTFVersion Print invalid TF version
 func PrintInvalidTFVersion() {
 	logger.Info("Version does not exist or invalid terraform version format.\n Format should be #.#.# or #.#.#-@# where # are numbers and @ are word characters.\n For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 }
 
-// Print invalid TF version
+// PrintInvalidMinorTFVersion Print invalid minor TF version
 func PrintInvalidMinorTFVersion() {
 	logger.Info("Invalid minor terraform version format.\n Format should be #.# where # are numbers. For example, 0.11 is valid version")
 }

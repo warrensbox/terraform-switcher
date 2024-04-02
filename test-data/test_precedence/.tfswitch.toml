@@ -1,2 +1,2 @@
 bin = "/usr/local/bin/terraform_from_toml"
-version = "0.11.3_toml"
+version = "0.11.3"
