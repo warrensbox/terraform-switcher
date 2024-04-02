@@ -9,7 +9,7 @@ on:
 
 jobs:
   tfswitch-release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
 
     - name: Check if provided input is valid
@@ -28,23 +28,25 @@ jobs:
         ref: ${{ github.head_ref }} # required for better experience using pre-releases
         fetch-depth: '0'
 
-    # Install go
-    - name: Checkout go
+    # Install Go
+    - name: Install Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.22' # The Go version to download (if necessary) and use.
+        go-version: '1.22' # The Go version to download (if necessary) and use
   
-    # Double check go version
+    # Double check Go version
     - name: Go version
       id: Version
       run: go version
 
-    # Download dependencies
+    # Download Go dependencies
     - name: Go download
       run: go mod download
 
     # Test to see if tfswitch works with --help
     - name: Go build
+      env:
+        CGO_ENABLED: 0 # Build statically linked binaries
       run: mkdir -p build && go build -v -o build/tfswitch && build/tfswitch --help
       continue-on-error: false
 
@@ -58,7 +60,7 @@ jobs:
         RELEASE_BRANCHES: master
         DEFAULT_BUMP: ${{ github.event.inputs.name }}
         PRERELEASE: false
-        DRY_RUN: true #only get the tag - dry
+        DRY_RUN: true # Only get the tag - dry
         VERBOSE: true
 
     # Write new version into version file    
@@ -91,7 +93,7 @@ jobs:
         RELEASE_BRANCHES: master
         DEFAULT_BUMP: ${{ github.event.inputs.name }}
         PRERELEASE: false
-        DRY_RUN: false #not dry
+        DRY_RUN: false # Not dry
         VERBOSE: true
 
     # Run goreleaser to create new binaries
@@ -105,19 +107,20 @@ jobs:
         RELEASE_VERSION: ${{ steps.semver-tag.outputs.tag }}
         PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
+    # Install Python
     - name: Install Python
       uses: actions/setup-python@v5
       with:
         python-version: 3.x
 
+    # Install Py dependencies
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install mkdocs-material
 
+    # Build WWW page
     - name: Build page   
       run: cd www && mkdocs gh-deploy --force
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-

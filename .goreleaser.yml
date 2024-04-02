@@ -1,5 +1,6 @@
-# This is an example goreleaser.yaml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
+# https://goreleaser.com/
+env:
+  - CGO_ENABLED=0 # Build statically linked binaries
 builds:
   -
     ldflags:
@@ -36,11 +37,8 @@ archives:
       {{- .ProjectName }}_
       {{- .Env.RELEASE_VERSION }}_
       {{- .Os }}_
-      {{- if eq .Arch "amd64" }}amd64
-      {{- else if eq .Arch "386" }}386
-      {{- else }}{{ .Arch }}{{ end }}
+      {{- .Arch }}
       {{- if .Arm }}v{{ .Arm }}{{ end -}}
-
 
 brews:
   -
@@ -48,7 +46,7 @@ brews:
     # Default to project name
     name: tfswitch
 
-  # GitHub/GitLab repository to push the formula to
+    # GitHub/GitLab repository to push the formula to
     # Gitea is not supported yet, but the support coming
     repository:
       owner: warrensbox
