@@ -3,11 +3,9 @@
 name: Build-Test-Release Code
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - release
+  push:
+    branches: 
+       - 'release'   # excludes master
 
 
 jobs:
