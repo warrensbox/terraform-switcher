@@ -19,8 +19,8 @@ jobs:
     # Checkout code from repo
     - uses: actions/checkout@v4
       with:
-        ref: ${{ github.ref_name }} # required for better experience using pre-releases
-        #fetch-depth: '0'
+        ref: ${{ github.sha }} # required for better experience using pre-releases
+        fetch-depth: '0'
 
     # Install go
     - name: Checkout go
