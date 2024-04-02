@@ -17,7 +17,7 @@ jobs:
     run: |
       echo "Semantic Version: ${{ github.event.inputs.name }}"
       VERSION=${{ github.event.inputs.name }}
-      if [ "$VERSION" != "major" ] || [ "$VERSION" != "minor" ] || [ "$VERSION" != "patch" ]; then
+      if [ "$VERSION" != "major" ] && [ "$VERSION" != "minor" ] && [ "$VERSION" != "patch" ]; then
           echo "Error: Provided input string must be 'major', 'minor', or 'patch'"
           exit 1
         fi
