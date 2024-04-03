@@ -1,0 +1,15 @@
+on:
+  release:
+    types:
+      - published
+
+name: Update Go Module Index
+
+jobs:
+  bump-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Ping endpoint
+        run: curl "https://proxy.golang.org/github.com/warrensbox/terraform-switcher/@v/$(git describe HEAD --tags --abbrev=0).info"
