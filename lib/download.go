@@ -10,19 +10,22 @@ import (
 	"strings"
 )
 
+var (
+	PubKeyId     = "72D7468F"
+	PubKeyPrefix = "hashicorp_"
+	PubKeyUri    = "https://www.hashicorp.com/.well-known/pgp-key.txt"
+)
+
 const (
-	pubKeyId     = "72D7468F"
-	pubKeyPrefix = "hashicorp_"
 	pubKeySuffix = ".asc"
-	pubKeyUri    = "https://www.hashicorp.com/.well-known/pgp-key.txt"
 )
 
 // DownloadFromURL : Downloads the terraform binary and its hash from the source url
 func DownloadFromURL(installLocation string, mirrorURL string, tfversion string, versionPrefix string, goos string, goarch string) (string, error) {
-	pubKeyFilename := filepath.Join(installLocation, "/", pubKeyPrefix+pubKeyId+pubKeySuffix)
+	pubKeyFilename := filepath.Join(installLocation, "/", PubKeyPrefix+PubKeyId+pubKeySuffix)
 	zipUrl := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
 	hashUrl := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_SHA256SUMS"
-	hashSignatureUrl := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_SHA256SUMS." + pubKeyId + ".sig"
+	hashSignatureUrl := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_SHA256SUMS." + PubKeyId + ".sig"
 
 	err := downloadPublicKey(installLocation, pubKeyFilename)
 	if err != nil {
@@ -126,7 +129,7 @@ func downloadPublicKey(installLocation string, targetFileName string) error {
 	publicKeyFileExists := FileExists(targetFileName)
 	if !publicKeyFileExists {
 		// Public key does not exist. Let's grab it from hashicorp
-		pubKeyFile, errDl := downloadFromURL(installLocation, pubKeyUri)
+		pubKeyFile, errDl := downloadFromURL(installLocation, PubKeyUri)
 		if errDl != nil {
 			logger.Error("Error while fetching the public key file from ", pubKeyUri)
 			return errDl

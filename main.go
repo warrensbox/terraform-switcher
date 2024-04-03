@@ -64,6 +64,10 @@ func main() {
 	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	defaultVersion := getopt.StringLong("default", 'd', defaultLatest, "Default to this version in case no other versions could be detected. Ex: tfswitch --default 1.2.4")
+	getopt.StringVarLong(&lib.PubKeyId, "public-key-id", 'k', "The ID of the public key to check the checksums against.")
+	getopt.StringVarLong(&lib.PubKeyPrefix, "public-key-prefix", 'x', "The prefix of the public key. i.e. hashicorp_")
+	getopt.StringVarLong(&lib.PubKeyUri, "public-key-uri", 'y', "The URI to download the public key from.")
+
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
 	_ = versionFlag
 
