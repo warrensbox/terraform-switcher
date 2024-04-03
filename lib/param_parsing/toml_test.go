@@ -20,7 +20,7 @@ func TestGetParamsTOML_BinaryPath(t *testing.T) {
 }
 
 func TestGetParamsTOML_Version(t *testing.T) {
-	expected := "0.11.3_toml"
+	expected := "0.11.4"
 	params := prepare()
 	params = getParamsTOML(params)
 	if params.Version != expected {
