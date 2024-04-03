@@ -15,9 +15,7 @@ func TestGetParamsTOML_BinaryPath(t *testing.T) {
 	params := prepare()
 	params = getParamsTOML(params)
 	if params.CustomBinaryPath != expected {
-		t.Log("Actual:", params.CustomBinaryPath)
-		t.Log("Expected:", expected)
-		t.Error("BinaryPath not matching")
+		t.Errorf("BinaryPath not matching. Got %v, expected %v", params.CustomBinaryPath, expected)
 	}
 }
 
@@ -26,8 +24,6 @@ func TestGetParamsTOML_Version(t *testing.T) {
 	params := prepare()
 	params = getParamsTOML(params)
 	if params.Version != expected {
-		t.Log("Actual:", params.Version)
-		t.Log("Expected:", expected)
-		t.Error("Version not matching")
+		t.Errorf("Version not matching. Got %v, expected %v", params.Version, expected)
 	}
 }
