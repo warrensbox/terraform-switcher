@@ -24,7 +24,7 @@ func getParamsTOML(params Params) Params {
 			log.Fatalf("Unable to read %s provided\n", tomlPath)
 		}
 
-		params.Version = viper.GetString("version") //attempt to get the version if it's provided in the toml
+		params.Version = viper.GetString("version") // Attempt to get the version if it's provided in the toml
 		params.CustomBinaryPath = viper.GetString("bin")
 	} else {
 		fmt.Println("No configuration file at " + tomlPath)
