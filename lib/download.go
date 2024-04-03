@@ -77,14 +77,22 @@ func DownloadFromURL(installLocation string, mirrorURL string, tfversion string,
 		logger.Error("Could not open the terraform binary for signature verification.")
 		return "", err
 	}
+
+	var filesToCleanup []string
+	filesToCleanup = append(filesToCleanup, hashFilePath)
+	filesToCleanup = append(filesToCleanup, hashSigFilePath)
+
 	verified := checkSignatureOfChecksums(publicKeyFile, hashFile, signatureFile)
 	if !verified {
+		cleanup(filesToCleanup)
 		return "", errors.New("signature of checksum files could not be verified")
 	}
 	match := checkChecksumMatches(hashFilePath, targetFile)
 	if !match {
+		cleanup(filesToCleanup)
 		return "", errors.New("checksums did not match")
 	}
+	cleanup(filesToCleanup)
 	return zipFilePath, err
 }
 
@@ -106,8 +114,8 @@ func downloadFromURL(installLocation string, url string) (string, error) {
 		return "", errors.New("Unable to download from " + url)
 	}
 
-	zipFile := filepath.Join(installLocation, fileName)
-	output, err := os.Create(zipFile)
+	filePath := filepath.Join(installLocation, fileName)
+	output, err := os.Create(filePath)
 	if err != nil {
 		logger.Errorf("Error while creating %q: %v", zipFile, err)
 		return "", err
@@ -141,4 +149,14 @@ func downloadPublicKey(installLocation string, targetFileName string) error {
 		}
 	}
 	return nil
+}
+
+func cleanup(paths []string) {
+	for _, path := range paths {
+		log.Println("Deleting", path)
+		err := os.Remove(path)
+		if err != nil {
+			log.Println(err)
+		}
+	}
 }
