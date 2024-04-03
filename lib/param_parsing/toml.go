@@ -15,17 +15,18 @@ func getParamsTOML(params Params) Params {
 	if tomlFileExists(params) {
 		fmt.Printf("Reading configuration from %s\n", tomlPath)
 		configfileName := lib.GetFileName(tfSwitchTOMLFileName)
-		viper.SetConfigType("toml")
-		viper.SetConfigName(configfileName)
-		viper.AddConfigPath(params.ChDirPath)
+		viperParser := viper.New()
+		viperParser.SetConfigType("toml")
+		viperParser.SetConfigName(configfileName)
+		viperParser.AddConfigPath(params.ChDirPath)
 
-		errs := viper.ReadInConfig() // Find and read the config file
+		errs := viperParser.ReadInConfig() // Find and read the config file
 		if errs != nil {
 			log.Fatalf("Unable to read %s provided\n", tomlPath)
 		}
 
-		params.Version = viper.GetString("version") // Attempt to get the version if it's provided in the toml
-		params.CustomBinaryPath = viper.GetString("bin")
+		params.Version = viperParser.GetString("version") // Attempt to get the version if it's provided in the toml
+		params.CustomBinaryPath = viperParser.GetString("bin")
 	} else {
 		fmt.Println("No configuration file at " + tomlPath)
 	}
