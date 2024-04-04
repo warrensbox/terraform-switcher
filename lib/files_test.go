@@ -120,8 +120,7 @@ func TestUnzip(t *testing.T) {
 	files, errUnzip := Unzip(absPath, installLocation)
 
 	if errUnzip != nil {
-		logger.Fatal("Unable to unzip zip file", errUnzip)
-		os.Exit(1)
+		logger.Fatalf("Unable to unzip %q file: %v", absPath, errUnzip)
 	}
 
 	tst := strings.Join(files, "")

@@ -48,7 +48,7 @@ const (
 )
 
 var logger = lib.InitLogger()
-var version = "0.12.0\n"
+var version = "0.12.0"
 
 func main() {
 	dir := lib.GetCurrentDirectory()
@@ -369,7 +369,7 @@ func getParamsTOML(binPath string, dir string) (string, string) {
 		path = "current directory"
 	}
 	logger.Infof("Reading %q configuration from %q", tomlFilename, path) // Takes the default bin (defaultBin) if user does not specify bin path
-	configfileName := lib.GetFileName(tomlFilename)                          //get the config file
+	configfileName := lib.GetFileName(tomlFilename)                      //get the config file
 	viper.SetConfigType("toml")
 	viper.SetConfigName(configfileName)
 	viper.AddConfigPath(dir)

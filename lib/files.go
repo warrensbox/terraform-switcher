@@ -105,8 +105,8 @@ func CreateDirIfNotExist(dir string) {
 		logger.Infof("Creating directory for terraform binary at %q", dir)
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			logger.Errorf("Unable to create directory for terraform binary at: %v", dir)
-			panic(err)
+			logger.Error(err)
+			logger.Panicf("Unable to create directory for terraform binary at: %v", dir)
 		}
 	}
 }
