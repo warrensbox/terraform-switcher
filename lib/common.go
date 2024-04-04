@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -33,7 +32,7 @@ func createFile(path string) {
 
 func createDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		log.Printf("Creating directory for terraform: %v", dir)
+		logger.Infof("Creating directory for terraform: %v", dir)
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
 			logger.Panic("Unable to create %q directory for terraform: %v", dir, err)

@@ -3,7 +3,6 @@ package lib
 import (
 	"fmt"
 	"github.com/mitchellh/go-homedir"
-	"log"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -22,7 +21,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	home, err := homedir.Dir()
 	if err != nil {
-		log.Fatalf("Could not detect home directory.")
+		logger.Fatalf("Could not detect home directory")
 	}
 
 	logger.Infof("Current home directory: %q", home)
@@ -32,7 +31,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	} else {
 		installLocation = installPath
 	}
-	fmt.Printf("Install Location: %v \n", installLocation)
+	logger.Infof("Install Location: %v", installLocation)
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {

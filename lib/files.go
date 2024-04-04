@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -170,7 +169,7 @@ func IsDirEmpty(name string) bool {
 
 	f, err := os.Open(name)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 	defer f.Close()
 
@@ -188,8 +187,7 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		log.Fatal(err)
-		//return exist, err
+		logger.Fatal(err)
 	}
 	res := []string{}
 	for _, f := range files {
@@ -227,7 +225,7 @@ func GetCurrentDirectory() string {
 
 	dir, err := os.Getwd() //get current directory
 	if err != nil {
-		log.Printf("Failed to get current directory %v\n", err)
+		logger.Fatalf("Failed to get current directory %v", err)
 		os.Exit(1)
 	}
 	return dir

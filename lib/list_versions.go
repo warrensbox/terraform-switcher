@@ -3,7 +3,6 @@ package lib
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"reflect"
@@ -114,22 +113,20 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 	}
 	resp, errURL := http.Get(mirrorURL)
 	if errURL != nil {
-		log.Printf("[Error] : Getting url: %v", errURL)
+		logger.Fatalf("Error getting url: %v", errURL)
 		os.Exit(1)
-		return nil, errURL
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
+		logger.Fatalf("Error retrieving contents from url: %s", mirrorURL)
 		os.Exit(1)
 	}
 
 	body, errBody := ioutil.ReadAll(resp.Body)
 	if errBody != nil {
-		log.Printf("[Error] : reading body: %v", errBody)
+		logger.Fatalf("Error reading body: %v", errBody)
 		os.Exit(1)
-		return nil, errBody
 	}
 
 	bodyString := string(body)

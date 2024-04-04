@@ -2,7 +2,6 @@ package lib
 
 import (
 	"io"
-	"log"
 	"os"
 	"runtime"
 )
@@ -14,14 +13,14 @@ func CreateSymlink(cwd string, dir string) {
 	if runtime.GOOS == "windows" {
 		r, err := os.Open(cwd)
 		if err != nil {
-			log.Fatalf("Unable to open source binary: %s", cwd)
+			logger.Fatalf("Unable to open source binary: %s", cwd)
 			os.Exit(1)
 		}
 		defer r.Close()
 
 		w, err := os.Create(dir + ".exe")
 		if err != nil {
-			log.Fatalf("Could not create target binary: %s", dir + ".exe")
+			logger.Fatalf("Could not create target binary: %s", dir+".exe")
 			os.Exit(1)
 		}
 		defer func() {
@@ -33,7 +32,7 @@ func CreateSymlink(cwd string, dir string) {
 	} else {
 		err := os.Symlink(cwd, dir)
 		if err != nil {
-			log.Fatalf(`
+			logger.Fatalf(`
 		Unable to create new symlink.
 		Maybe symlink already exist. Try removing existing symlink manually.
 		Try running "unlink %s" to remove existing symlink.
@@ -50,7 +49,7 @@ func RemoveSymlink(symlinkPath string) {
 
 	_, err := os.Lstat(symlinkPath)
 	if err != nil {
-		log.Fatalf(`
+		logger.Fatalf(`
 		Unable to stat symlink.
 		Maybe symlink already exist. Try removing existing symlink manually.
 		Try running "unlink %s" to remove existing symlink.
@@ -62,7 +61,7 @@ func RemoveSymlink(symlinkPath string) {
 		errRemove := os.Remove(symlinkPath)
 
 		if errRemove != nil {
-			log.Fatalf(`
+			logger.Fatalf(`
 			Unable to remove symlink.
 			Maybe symlink already exist. Try removing existing symlink manually.
 			Try running "unlink %s" to remove existing symlink.

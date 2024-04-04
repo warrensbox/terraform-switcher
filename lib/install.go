@@ -2,7 +2,6 @@ package lib
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -71,12 +70,6 @@ func GetInstallLocation() string {
 
 // Install : Install the provided version in the argument
 func Install(tfversion string, binPath string, mirrorURL string) {
-
-	// if !ValidVersionFormat(tfversion) {
-	// 	fmt.Printf("The provided terraform version format does not exist - %s. Try `tfswitch -l` to see all available versions.\n", tfversion)
-	// 	os.Exit(1)
-	// }
-
 	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terraform"
 	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tfswitch there
 	 * Inform user that they don't have permission to default location, therefore tfswitch was installed in $HOME/bin
@@ -270,7 +263,7 @@ func InstallableBinLocation(userBinPath string) string {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 
 	binDir := Path(userBinPath)           //get path directory from binary path
@@ -301,8 +294,7 @@ func InstallableBinLocation(userBinPath string) string {
 			return filepath.Join(userBinPath)
 		}
 	}
-	logger.Warnf("Binary path (%q) does not exist", userBinPath)
-	logger.Noticef("Manually create bin directory %q and try again.", binDir)
+	logger.Fatalf("Binary path (%q) does not exist. Manually create bin directory %q and try again.", userBinPath, binDir)
 	os.Exit(1)
 	return ""
 }

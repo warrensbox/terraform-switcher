@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -26,7 +25,7 @@ func TestRenameFile(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -72,7 +71,7 @@ func TestRemoveFiles(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -111,7 +110,7 @@ func TestUnzip(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -141,7 +140,7 @@ func TestCreateDirIfNotExist(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -176,7 +175,7 @@ func TestWriteLines(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -189,7 +188,7 @@ func TestWriteLines(t *testing.T) {
 
 	if errWrite != nil {
 		t.Logf("Write should work %v (unexpected)", errWrite)
-		log.Fatal(errWrite)
+		logger.Fatal(errWrite)
 	} else {
 		var (
 			file             *os.File
@@ -199,7 +198,7 @@ func TestWriteLines(t *testing.T) {
 			lines            []string
 		)
 		if file, errOpen = os.Open(recentFilePath); errOpen != nil {
-			log.Fatal(errOpen)
+			logger.Fatal(errOpen)
 		}
 
 		reader := bufio.NewReader(file)
@@ -219,12 +218,12 @@ func TestWriteLines(t *testing.T) {
 		}
 
 		if errRead != nil {
-			log.Fatalf("Error: %s\n", errRead)
+			logger.Fatalf("Error: %s", errRead)
 		}
 
 		for _, line := range lines {
 			if !semverRegex.MatchString(line) {
-				log.Fatalf("Write to file is not invalid: %s\n", line)
+				logger.Fatalf("Write to file is not invalid: %s", line)
 				break
 			}
 		}
@@ -244,7 +243,7 @@ func TestReadLines(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -259,13 +258,13 @@ func TestReadLines(t *testing.T) {
 	)
 
 	if file, errCreate = os.Create(recentFilePath); errCreate != nil {
-		log.Fatalf("Error: %s\n", errCreate)
+		logger.Fatalf("Error: %s", errCreate)
 	}
 
 	for _, item := range test_array {
 		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
 		if err != nil {
-			log.Fatalf("Error: %s\n", err)
+			logger.Fatalf("Error: %s", err)
 			break
 		}
 	}
@@ -273,12 +272,12 @@ func TestReadLines(t *testing.T) {
 	lines, errRead := ReadLines(recentFilePath)
 
 	if errRead != nil {
-		log.Fatalf("Error: %s\n", errRead)
+		logger.Fatalf("Error: %s", errRead)
 	}
 
 	for _, line := range lines {
 		if !semverRegex.MatchString(line) {
-			log.Fatalf("Write to file is not invalid: %s\n", line)
+			logger.Fatalf("Write to file is not invalid: %s", line)
 			break
 		}
 	}
@@ -297,7 +296,7 @@ func TestIsDirEmpty(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -332,7 +331,7 @@ func TestCheckDirHasTFBin(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -361,7 +360,7 @@ func TestPath(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -402,7 +401,7 @@ func TestGetFileName(t *testing.T) {
 func TestConvertExecutableExt(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 
 	installPath := "/.terraform.versions_test/"

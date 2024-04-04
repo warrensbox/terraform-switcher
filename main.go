@@ -72,7 +72,7 @@ func main() {
 
 	homedir, err := homedir.Dir()
 	if err != nil {
-		logger.Errorf("Unable to get home directory: %v", err)
+		logger.Fatalf("Unable to get home directory: %v", err)
 		os.Exit(1)
 	}
 
