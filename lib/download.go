@@ -13,11 +13,11 @@ import (
 func DownloadFromURL(installLocation string, url string) (string, error) {
 	tokens := strings.Split(url, "/")
 	fileName := tokens[len(tokens)-1]
-	logger.Infof("Downloading to: %s", installLocation)
+	logger.Infof("Downloading to %q", installLocation)
 
 	response, err := http.Get(url)
 	if err != nil {
-		logger.Error("Error while downloading", url, "-", err)
+		logger.Errorf("Error downloading %s: %v", url, err)
 		return "", err
 	}
 	defer response.Body.Close()
@@ -31,14 +31,14 @@ func DownloadFromURL(installLocation string, url string) (string, error) {
 	zipFile := filepath.Join(installLocation, fileName)
 	output, err := os.Create(zipFile)
 	if err != nil {
-		logger.Error("Error while creating", zipFile, "-", err)
+		logger.Errorf("Error while creating %q: %v", zipFile, err)
 		return "", err
 	}
 	defer output.Close()
 
 	n, err := io.Copy(output, response.Body)
 	if err != nil {
-		logger.Error("Error while downloading", url, "-", err)
+		logger.Errorf("Error while downloading %s: %v", url, err)
 		return "", err
 	}
 

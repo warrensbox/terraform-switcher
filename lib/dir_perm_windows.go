@@ -8,19 +8,19 @@ func CheckDirWritable(path string) bool {
 
 	info, err := os.Stat(path)
 	if err != nil {
-		logger.Info("Path doesn't exist")
+		logger.Errorf("Path doesn't exist: %q", path)
 		return false
 	}
 
 	err = nil
 	if !info.IsDir() {
-		logger.Info("Path isn't a directory")
+		logger.Errorf("Path isn't a directory: %q", path)
 		return false
 	}
 
 	// Check if the user bit is enabled in file permission
 	if info.Mode().Perm()&(1<<(uint(7))) == 0 {
-		logger.Info("Write permission bit is not set on this file for user")
+		logger.Errorf("Path is not writable by the user: %q", path)
 		return false
 	}
 

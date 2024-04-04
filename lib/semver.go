@@ -12,7 +12,7 @@ func GetSemver(tfconstraint *string, mirrorURL *string) (string, error) {
 
 	listAll := true
 	tflist, _ := GetTFList(*mirrorURL, listAll) //get list of versions
-	logger.Infof("Reading required version from constraint: %s", *tfconstraint)
+	logger.Infof("Reading required version from constraint: %q", *tfconstraint)
 	tfversion, err := SemVerParser(tfconstraint, tflist)
 	return tfversion, err
 }
@@ -39,7 +39,7 @@ func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 	for _, element := range versions {
 		if constraints.Check(element) { // Validate a version against a constraint
 			tfversion = element.String()
-			logger.Infof("Matched version: %s", tfversion)
+			logger.Infof("Matched version: %q", tfversion)
 			if ValidVersionFormat(tfversion) { //check if version format is correct
 				return tfversion, nil
 			}
@@ -57,5 +57,5 @@ func PrintInvalidTFVersion() {
 
 // Print invalid TF version
 func PrintInvalidMinorTFVersion() {
-	logger.Info("Invalid minor terraform version format. Format should be #.# where # are numbers. For example, 0.11 is valid version")
+	logger.Info("Invalid minor terraform version format.\n Format should be #.# where # are numbers. For example, 0.11 is valid version")
 }

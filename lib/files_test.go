@@ -107,7 +107,7 @@ func TestUnzip(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 	absPath, _ := filepath.Abs("../test-data/test-data.zip")
 
-	logger.Info("Absolute Path:" + absPath)
+	logger.Infof("Absolute Path: %q", absPath)
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {

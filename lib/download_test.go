@@ -25,7 +25,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 		log.Fatalf("Could not detect home directory.")
 	}
 
-	fmt.Printf("Current home directory: %v \n", home)
+	logger.Infof("Current home directory: %q", home)
 	var installLocation = ""
 	if runtime.GOOS != "windows" {
 		installLocation = filepath.Join(home, installPath)
@@ -74,7 +74,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	t.Cleanup(func() {
 		defer os.Remove(tempDir)
-		logger.Info("Cleanup temporary directory")
+		logger.Infof("Cleanup temporary directory %q", tempDir)
 	})
 }
 

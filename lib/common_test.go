@@ -22,13 +22,13 @@ func createFile(path string) {
 	if os.IsNotExist(err) {
 		file, err := os.Create(path)
 		if err != nil {
-			logger.Infof("%v", err)
+			logger.Error(err)
 			return
 		}
 		defer file.Close()
 	}
 
-	logger.Info("==> done creating file", path)
+	logger.Infof("==> done creating %q file", path)
 }
 
 func createDirIfNotExist(dir string) {
@@ -36,7 +36,7 @@ func createDirIfNotExist(dir string) {
 		log.Printf("Creating directory for terraform: %v", dir)
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			logger.Fatalf("Unable to create directory for terraform: %v", dir)
+			logger.Fatal("Unable to create %q directory for terraform: %v", dir, err)
 			panic(err)
 		}
 	}

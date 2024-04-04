@@ -131,13 +131,13 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
-		logger.Fatal(errDownload)
+		logger.Fatalf("Error downloading %s: %v", url, errDownload)
 	}
 
 	/* unzip the downloaded zipfile */
 	_, errUnzip := Unzip(zipFile, installLocation)
 	if errUnzip != nil {
-		logger.Fatal("Unable to unzip downloaded zip file", errUnzip)
+		logger.Fatalf("Unable to unzip %q file: %v", zipFile, errUnzip)
 	}
 
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
@@ -172,13 +172,13 @@ func AddRecent(requestedVersion string) {
 		lines, errRead := ReadLines(versionFile)
 
 		if errRead != nil {
-			logger.Errorf("%s", errRead)
+			logger.Errorf("Error reading %q file: %v", versionFile, errRead)
 			return
 		}
 
 		for _, line := range lines {
 			if !ValidVersionFormat(line) {
-				logger.Info("File dirty. Recreating cache file.")
+				logger.Infof("File %q is dirty (recreating cache file)", versionFile)
 				RemoveFiles(versionFile)
 				CreateRecentFile(requestedVersion)
 				return
@@ -217,7 +217,7 @@ func GetRecentVersions() ([]string, error) {
 		outputRecent := []string{}
 
 		if errRead != nil {
-			logger.Errorf("%s", errRead)
+			logger.Errorf("Error reading %q file: %f", versionFile, errRead)
 			return nil, errRead
 		}
 
@@ -288,21 +288,21 @@ func InstallableBinLocation(userBinPath string) string {
 
 			homeBinExist := CheckDirExist(filepath.Join(homedir, "bin")) //check to see if ~/bin exist
 			if homeBinExist {                                            //if ~/bin exist, install at ~/bin/terraform
-				logger.Infof("Installing terraform at %s", filepath.Join(homedir, "bin"))
+				logger.Infof("Installing terraform at %q", filepath.Join(homedir, "bin"))
 				return filepath.Join(homedir, "bin", "terraform")
 			} else { //if ~/bin directory does not exist, create ~/bin for terraform installation
-				logger.Infof("Unable to write to: %s", userBinPath)
-				logger.Infof("Creating bin directory at: %s", filepath.Join(homedir, "bin"))
+				logger.Noticef("Unable to write to %q", userBinPath)
+				logger.Infof("Creating bin directory at %q", filepath.Join(homedir, "bin"))
 				CreateDirIfNotExist(filepath.Join(homedir, "bin")) //create ~/bin
-				logger.Infof("RUN `export PATH=$PATH:%s` to append bin to $PATH", filepath.Join(homedir, "bin"))
+				logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append bin to $PATH", filepath.Join(homedir, "bin"))
 				return filepath.Join(homedir, "bin", "terraform")
 			}
 		} else { // ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
 			return filepath.Join(userBinPath)
 		}
 	}
-	logger.Errorf("Binary path does not exist: %s", userBinPath)
-	logger.Errorf("Manually create bin directory at: %s and try again.", binDir)
+	logger.Warnf("Binary path (%q) does not exist", userBinPath)
+	logger.Noticef("Manually create bin directory %q and try again.", binDir)
 	os.Exit(1)
 	return ""
 }

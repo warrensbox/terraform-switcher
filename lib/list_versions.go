@@ -43,7 +43,7 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	}
 
 	if len(tfVersionList.tflist) == 0 {
-		logger.Infof("Cannot get list from mirror: %s", mirrorURL)
+		logger.Infof("Cannot get version list from mirror: %s", mirrorURL)
 	}
 
 	return tfVersionList.tflist, nil
