@@ -79,7 +79,7 @@ func main() {
 		/* if default version is provided - Pick this instead of going for prompt */
 		installVersion(parameters.DefaultVersion, parameters.CustomBinaryPath, parameters.MirrorURL)
 	default:
-		//set list all false - only official release will be displayed
+		// Set list all false - only official release will be displayed
 		installOption(false, parameters.CustomBinaryPath, parameters.MirrorURL)
 	}
 }
@@ -143,8 +143,8 @@ func installVersion(arg, customBinaryPath, mirrorURL string) {
 		}
 
 		//if the requested version had not been downloaded before
-		//set list all true - all versions including beta and rc will be displayed
-		tflist, _ := lib.GetTFList(mirrorURL, true)         //get list of versions
+		// Set list all true - all versions including beta and rc will be displayed
+		tflist, _ := lib.GetTFList(mirrorURL, true)         // Get list of versions
 		exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
 
 		if exist {
@@ -166,10 +166,10 @@ func installVersion(arg, customBinaryPath, mirrorURL string) {
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
 func installOption(listAll bool, customBinaryPath, mirrorURL string) {
-	tflist, _ := lib.GetTFList(mirrorURL, listAll) //get list of versions
-	recentVersions, _ := lib.GetRecentVersions()   //get recent versions from RECENT file
-	tflist = append(recentVersions, tflist...)     //append recent versions to the top of the list
-	tflist = lib.RemoveDuplicateVersions(tflist)   //remove duplicate version
+	tflist, _ := lib.GetTFList(mirrorURL, listAll) // Get list of versions
+	recentVersions, _ := lib.GetRecentVersions()   // Get recent versions from RECENT file
+	tflist = append(recentVersions, tflist...)     // Append recent versions to the top of the list
+	tflist = lib.RemoveDuplicateVersions(tflist)   // Remove duplicate version
 
 	if len(tflist) == 0 {
 		logger.Fatalf("Terraform version list is empty: %s", *mirrorURL)
