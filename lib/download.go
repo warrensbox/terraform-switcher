@@ -2,7 +2,6 @@ package lib
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -99,11 +98,11 @@ func DownloadFromURL(installLocation string, mirrorURL string, tfversion string,
 func downloadFromURL(installLocation string, url string) (string, error) {
 	tokens := strings.Split(url, "/")
 	fileName := tokens[len(tokens)-1]
-	log.Printf("Downloading to: %s\n", filepath.Join(installLocation, "/", fileName))
+	logger.Infof("Downloading to: %s", filepath.Join(installLocation, "/", fileName))
 
 	response, err := http.Get(url)
 	if err != nil {
-		log.Fatal("[Error] : Error while downloading", url, "-", err)
+		logger.Errorf("Error while downloading %q - %v", url, err)
 		return "", err
 	}
 	defer response.Body.Close()
@@ -117,7 +116,7 @@ func downloadFromURL(installLocation string, url string) (string, error) {
 	filePath := filepath.Join(installLocation, fileName)
 	output, err := os.Create(filePath)
 	if err != nil {
-		logger.Errorf("Error while creating %q: %v", zipFile, err)
+		logger.Errorf("Error while creating %q: %v", filePath, err)
 		return "", err
 	}
 	defer output.Close()
@@ -129,17 +128,17 @@ func downloadFromURL(installLocation string, url string) (string, error) {
 	}
 
 	logger.Info(n, "bytes downloaded")
-	return zipFile, nil
+	return filePath, nil
 }
 
 func downloadPublicKey(installLocation string, targetFileName string) error {
-	fmt.Println("Looking up public key file at ", targetFileName)
+	logger.Debugf("Looking up public key file at %q", targetFileName)
 	publicKeyFileExists := FileExists(targetFileName)
 	if !publicKeyFileExists {
 		// Public key does not exist. Let's grab it from hashicorp
 		pubKeyFile, errDl := downloadFromURL(installLocation, PubKeyUri)
 		if errDl != nil {
-			logger.Error("Error while fetching the public key file from ", pubKeyUri)
+			logger.Error("Error while fetching the public key file from ", PubKeyUri)
 			return errDl
 		}
 		errRename := os.Rename(pubKeyFile, targetFileName)
@@ -153,10 +152,10 @@ func downloadPublicKey(installLocation string, targetFileName string) error {
 
 func cleanup(paths []string) {
 	for _, path := range paths {
-		log.Println("Deleting", path)
+		logger.Infof("Deleting %q", path)
 		err := os.Remove(path)
 		if err != nil {
-			log.Println(err)
+			logger.Error("Error deleting %q - %q", path, err)
 		}
 	}
 }

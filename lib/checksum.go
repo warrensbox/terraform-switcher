@@ -4,10 +4,8 @@ import (
 	"bufio"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"golang.org/x/crypto/openpgp"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,7 +15,7 @@ import (
 func getChecksumFromHashFile(signatureFilePath string, terraformFileName string) (string, error) {
 	readFile, err := os.Open(signatureFilePath)
 	if err != nil {
-		fmt.Println("[Error] : Could not open ", signatureFilePath)
+		logger.Errorf("Could not open %q", signatureFilePath)
 		return "", err
 	}
 	defer readFile.Close()
@@ -42,19 +40,19 @@ func checkChecksumMatches(hashFile string, targetFile *os.File) bool {
 	expectedChecksum, err := getChecksumFromHashFile(hashFile, fileName)
 	if err != nil {
 		closeFileHandlers(fileHandlersToClose)
-		fmt.Println("[Error] : Could not get expected checksum from file: " + err.Error())
+		logger.Errorf("Could not get expected checksum from file: %q", err.Error())
 		return false
 	}
 	hash := sha256.New()
 	if _, err := io.Copy(hash, targetFile); err != nil {
 		closeFileHandlers(fileHandlersToClose)
-		fmt.Println("[Error] : Calculating Checksum failed: " + err.Error())
+		logger.Errorf("Calculating Checksum failed: %q", err.Error())
 		return false
 	}
 	checksum := hex.EncodeToString(hash.Sum(nil))
 	if expectedChecksum != checksum {
 		closeFileHandlers(fileHandlersToClose)
-		fmt.Println("[Error] : Checksum mismatch. Expected: ", expectedChecksum, " got ", checksum)
+		logger.Errorf("Checksum mismatch. Expected: %q, expected %v", expectedChecksum, checksum)
 		return false
 	}
 	closeFileHandlers(fileHandlersToClose)
@@ -68,21 +66,21 @@ func checkSignatureOfChecksums(keyRingReader *os.File, hashFile *os.File, signat
 	fileHandlersToClose = append(fileHandlersToClose, hashFile)
 	fileHandlersToClose = append(fileHandlersToClose, signatureFile)
 
-	log.Println("Verifying signature of checksum file...")
+	logger.Info("Verifying signature of checksum file...")
 	keyring, err := openpgp.ReadArmoredKeyRing(keyRingReader)
 	if err != nil {
 		closeFileHandlers(fileHandlersToClose)
-		log.Fatal("[Error] : Read armored key ring: " + err.Error())
+		logger.Errorf("Read armored key ring: %q", err.Error())
 		return false
 	}
 
 	_, err = openpgp.CheckDetachedSignature(keyring, hashFile, signatureFile)
 	if err != nil {
 		closeFileHandlers(fileHandlersToClose)
-		log.Fatal("[Error] : Checking detached signature: " + err.Error())
+		logger.Errorf("Checking detached signature: %q", err.Error())
 		return false
 	}
-	log.Println("Verification successful.")
+	logger.Info("Verification successful.")
 	closeFileHandlers(fileHandlersToClose)
 	return true
 }

@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"log"
 	"os"
 )
 
@@ -16,7 +15,7 @@ func FileExists(filename string) bool {
 
 func closeFileHandlers(handlers []*os.File) {
 	for _, handler := range handlers {
-		log.Println("Closing file handler", handler.Name())
+		logger.Debugf("Closing file handler %q", handler.Name())
 		_ = handler.Close()
 	}
 }

@@ -67,7 +67,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	}
 
 	//check file name is what is expected
-	_, err := os.Stat(expectedFile)
+	_, err = os.Stat(expectedFile)
 	if err != nil {
 		t.Logf("Expected file does not exist %v", expectedFile)
 	}
