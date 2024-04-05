@@ -278,7 +278,6 @@ func TestReadLines(t *testing.T) {
 	for _, line := range lines {
 		if !semverRegex.MatchString(line) {
 			logger.Fatalf("Write to file is not invalid: %s", line)
-			break
 		}
 	}
 

@@ -1,8 +1,10 @@
 package lib
 
 import (
-	"github.com/mitchellh/go-homedir"
+	"os"
 	"runtime"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // GetDefaultBin Get default binary path
@@ -12,6 +14,7 @@ func GetDefaultBin() string {
 		home, err := homedir.Dir()
 		if err != nil {
 			logger.Fatal("Could not detect home directory.")
+			os.Exit(1)
 		}
 		defaultBin = home + "/bin/terraform.exe"
 	}
