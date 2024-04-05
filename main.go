@@ -172,7 +172,7 @@ func installOption(listAll bool, customBinaryPath, mirrorURL string) {
 	tflist = lib.RemoveDuplicateVersions(tflist)   // Remove duplicate version
 
 	if len(tflist) == 0 {
-		logger.Fatalf("Terraform version list is empty: %s", *mirrorURL)
+		logger.Fatalf("Terraform version list is empty: %s", mirrorURL)
 		os.Exit(1)
 	}
 
