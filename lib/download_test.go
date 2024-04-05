@@ -23,7 +23,6 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	home, err := homedir.Dir()
 	if err != nil {
 		logger.Fatalf("Could not detect home directory")
-		os.Exit(1)
 	}
 
 	logger.Infof("Current home directory: %q", home)

@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"os"
 	"reflect"
 	"testing"
 )
@@ -32,7 +31,6 @@ func TestGetTFList(t *testing.T) {
 
 	if !exists {
 		logger.Fatalf("Not able to find version: %s", val)
-		os.Exit(1)
 	} else {
 		t.Log("Write versions exist (expected)")
 	}
@@ -48,7 +46,6 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 
 	if len(list) == len(test_array) {
 		logger.Fatalf("Not able to remove duplicate: %s\n", test_array)
-		os.Exit(1)
 	} else {
 		t.Log("Write versions exist (expected)")
 	}
@@ -67,7 +64,6 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
 		logger.Fatalf("Failed to verify version format: %s\n", version)
-		os.Exit(1)
 	}
 
 	version = "1.11.9"
@@ -78,7 +74,6 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
 		logger.Fatalf("Failed to verify version format: %s\n", version)
-		os.Exit(1)
 	}
 
 	version = "1.11.a"
@@ -89,7 +84,6 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Logf("Invalid version format : %s (expected)", version)
 	} else {
 		logger.Fatalf("Failed to verify version format: %s\n", version)
-		os.Exit(1)
 	}
 
 	version = "22323"
@@ -100,7 +94,6 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Logf("Invalid version format : %s (expected)", version)
 	} else {
 		logger.Fatalf("Failed to verify version format: %s\n", version)
-		os.Exit(1)
 	}
 
 	version = "@^&*!)!"
@@ -111,7 +104,6 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Logf("Invalid version format : %s (expected)", version)
 	} else {
 		logger.Fatalf("Failed to verify version format: %s\n", version)
-		os.Exit(1)
 	}
 
 	version = "1.11.9-beta1"
@@ -122,7 +114,6 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
 		logger.Fatalf("Failed to verify version format: %s\n", version)
-		os.Exit(1)
 	}
 
 	version = "0.12.0-rc2"
@@ -133,7 +124,6 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
 		logger.Fatalf("Failed to verify version format: %s\n", version)
-		os.Exit(1)
 	}
 
 	version = "1.11.4-boom"
@@ -144,7 +134,6 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
 		logger.Fatalf("Failed to verify version format: %s\n", version)
-		os.Exit(1)
 	}
 
 	version = "1.11.4-1"
@@ -155,7 +144,6 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Logf("Invalid version format : %s (expected)", version)
 	} else {
 		logger.Fatalf("Failed to verify version format: %s\n", version)
-		os.Exit(1)
 	}
 
 }
