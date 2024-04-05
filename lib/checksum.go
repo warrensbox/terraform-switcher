@@ -15,7 +15,7 @@ import (
 func getChecksumFromHashFile(signatureFilePath string, terraformFileName string) (string, error) {
 	readFile, err := os.Open(signatureFilePath)
 	if err != nil {
-		logger.Errorf("Could not open %q", signatureFilePath)
+		logger.Errorf("Could not open %q: %v", signatureFilePath, err)
 		return "", err
 	}
 	defer readFile.Close()
@@ -31,7 +31,7 @@ func getChecksumFromHashFile(signatureFilePath string, terraformFileName string)
 	return "", nil
 }
 
-// checkChecksumMatches This will calculate and compare the check sum of the downloaded zip file.
+// checkChecksumMatches This will calculate and compare the check sum of the downloaded zip file
 func checkChecksumMatches(hashFile string, targetFile *os.File) bool {
 	var fileHandlersToClose []*os.File
 	fileHandlersToClose = append(fileHandlersToClose, targetFile)
@@ -40,26 +40,26 @@ func checkChecksumMatches(hashFile string, targetFile *os.File) bool {
 	expectedChecksum, err := getChecksumFromHashFile(hashFile, fileName)
 	if err != nil {
 		closeFileHandlers(fileHandlersToClose)
-		logger.Errorf("Could not get expected checksum from file: %q", err.Error())
+		logger.Errorf("Could not get checksum from file %q: %v", hashFile, err)
 		return false
 	}
 	hash := sha256.New()
 	if _, err := io.Copy(hash, targetFile); err != nil {
 		closeFileHandlers(fileHandlersToClose)
-		logger.Errorf("Calculating Checksum failed: %q", err.Error())
+		logger.Errorf("Checksum calculation failed for %q: %v", fileName, err)
 		return false
 	}
 	checksum := hex.EncodeToString(hash.Sum(nil))
 	if expectedChecksum != checksum {
 		closeFileHandlers(fileHandlersToClose)
-		logger.Errorf("Checksum mismatch. Expected: %q, expected %v", expectedChecksum, checksum)
+		logger.Errorf("Checksum mismatch for %q. Expected: %q, calculated: %v", fileName, expectedChecksum, checksum)
 		return false
 	}
 	closeFileHandlers(fileHandlersToClose)
 	return true
 }
 
-// checkSignatureOfChecksums THis will verify the signature of the file containing the hash sums
+// checkSignatureOfChecksums This will verify the signature of the file containing the hash sums
 func checkSignatureOfChecksums(keyRingReader *os.File, hashFile *os.File, signatureFile *os.File) bool {
 	var fileHandlersToClose []*os.File
 	fileHandlersToClose = append(fileHandlersToClose, keyRingReader)
@@ -70,17 +70,17 @@ func checkSignatureOfChecksums(keyRingReader *os.File, hashFile *os.File, signat
 	keyring, err := openpgp.ReadArmoredKeyRing(keyRingReader)
 	if err != nil {
 		closeFileHandlers(fileHandlersToClose)
-		logger.Errorf("Read armored key ring: %q", err.Error())
+		logger.Errorf("Could not read armored key ring: %v", err)
 		return false
 	}
 
 	_, err = openpgp.CheckDetachedSignature(keyring, hashFile, signatureFile)
 	if err != nil {
 		closeFileHandlers(fileHandlersToClose)
-		logger.Errorf("Checking detached signature: %q", err.Error())
+		logger.Errorf("Could not check detached signature: %v", err)
 		return false
 	}
-	logger.Info("Verification successful.")
+	logger.Info("Checksum file signature verification successful.")
 	closeFileHandlers(fileHandlersToClose)
 	return true
 }

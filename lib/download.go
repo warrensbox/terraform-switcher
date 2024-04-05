@@ -28,52 +28,52 @@ func DownloadFromURL(installLocation string, mirrorURL string, tfversion string,
 
 	err := downloadPublicKey(installLocation, pubKeyFilename)
 	if err != nil {
-		logger.Error("Could not download public key file")
+		logger.Error("Could not download public PGP key file.")
 		return "", err
 	}
 
 	logger.Infof("Downloading %q", zipUrl)
 	zipFilePath, err := downloadFromURL(installLocation, zipUrl)
 	if err != nil {
-		logger.Error("Could not download zip file")
+		logger.Error("Could not download zip file.")
 		return "", err
 	}
 
 	logger.Infof("Downloading %q", hashUrl)
 	hashFilePath, err := downloadFromURL(installLocation, hashUrl)
 	if err != nil {
-		logger.Error("Could not download hash file")
+		logger.Error("Could not download hash file.")
 		return "", err
 	}
 
 	logger.Infof("Downloading %q", hashSignatureUrl)
 	hashSigFilePath, err := downloadFromURL(installLocation, hashSignatureUrl)
 	if err != nil {
-		logger.Error("Could not download hash signature file")
+		logger.Error("Could not download hash signature file.")
 		return "", err
 	}
 
 	publicKeyFile, err := os.Open(pubKeyFilename)
 	if err != nil {
-		logger.Error("Could not open the public key")
+		logger.Errorf("Could not open public key %q: %v", pubKeyFilename, err)
 		return "", err
 	}
 
 	signatureFile, err := os.Open(hashSigFilePath)
 	if err != nil {
-		logger.Error("Could not open the public key")
+		logger.Errorf("Could not open hash signature file %q: %v", hashSigFilePath, err)
 		return "", err
 	}
 
 	targetFile, err := os.Open(zipFilePath)
 	if err != nil {
-		logger.Error("Could not open the terraform binary for signature verification.")
+		logger.Errorf("Could not open zip file %q: %v", zipFilePath, err)
 		return "", err
 	}
 
 	hashFile, err := os.Open(hashFilePath)
 	if err != nil {
-		logger.Error("Could not open the terraform binary for signature verification.")
+		logger.Errord("Could not open hash file %q: %v", hashFilePath, err)
 		return "", err
 	}
 
@@ -84,12 +84,12 @@ func DownloadFromURL(installLocation string, mirrorURL string, tfversion string,
 	verified := checkSignatureOfChecksums(publicKeyFile, hashFile, signatureFile)
 	if !verified {
 		cleanup(filesToCleanup)
-		return "", errors.New("signature of checksum files could not be verified")
+		return "", errors.New("Signature of checksum file could not be verified")
 	}
 	match := checkChecksumMatches(hashFilePath, targetFile)
 	if !match {
 		cleanup(filesToCleanup)
-		return "", errors.New("checksums did not match")
+		return "", errors.New("Checksums did not match")
 	}
 	cleanup(filesToCleanup)
 	return zipFilePath, err
@@ -98,11 +98,11 @@ func DownloadFromURL(installLocation string, mirrorURL string, tfversion string,
 func downloadFromURL(installLocation string, url string) (string, error) {
 	tokens := strings.Split(url, "/")
 	fileName := tokens[len(tokens)-1]
-	logger.Infof("Downloading to: %s", filepath.Join(installLocation, "/", fileName))
+	logger.Infof("Downloading to %q", filepath.Join(installLocation, "/", fileName))
 
 	response, err := http.Get(url)
 	if err != nil {
-		logger.Errorf("Error while downloading %q - %v", url, err)
+		logger.Errorf("Error downloading %s: %v", url, err)
 		return "", err
 	}
 	defer response.Body.Close()
@@ -116,7 +116,7 @@ func downloadFromURL(installLocation string, url string) (string, error) {
 	filePath := filepath.Join(installLocation, fileName)
 	output, err := os.Create(filePath)
 	if err != nil {
-		logger.Errorf("Error while creating %q: %v", filePath, err)
+		logger.Errorf("Error creating %q: %v", filePath, err)
 		return "", err
 	}
 	defer output.Close()
@@ -138,12 +138,12 @@ func downloadPublicKey(installLocation string, targetFileName string) error {
 		// Public key does not exist. Let's grab it from hashicorp
 		pubKeyFile, errDl := downloadFromURL(installLocation, PubKeyUri)
 		if errDl != nil {
-			logger.Error("Error while fetching the public key file from ", PubKeyUri)
+			logger.Errorf("Error fetching public key file from %s", PubKeyUri)
 			return errDl
 		}
 		errRename := os.Rename(pubKeyFile, targetFileName)
 		if errRename != nil {
-			logger.Error("Error while renaming the public key file from ", pubKeyFile, " to ", targetFileName)
+			logger.Errorf("Error renaming public key file from %q to %q", pubKeyFile, targetFileName)
 			return errRename
 		}
 	}
@@ -155,7 +155,7 @@ func cleanup(paths []string) {
 		logger.Infof("Deleting %q", path)
 		err := os.Remove(path)
 		if err != nil {
-			logger.Error("Error deleting %q - %q", path, err)
+			logger.Error("Error deleting %q: %v", path, err)
 		}
 	}
 }
