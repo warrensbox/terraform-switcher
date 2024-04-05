@@ -433,6 +433,7 @@ func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
 	curDir, err := os.Getwd()
 	if err != nil {
 		logger.Fatalf("Could not get current working directory: %v", err)
+		os.Exit(1)
 	}
 
 	absPath := dir
@@ -440,12 +441,14 @@ func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
 		absPath, err = filepath.Abs(dir)
 		if err != nil {
 			logger.Fatalf("Could not derive absolute path to %q: %v", dir, err)
+			os.Exit(1)
 		}
 	}
 
 	relPath, err := filepath.Rel(curDir, absPath)
 	if err != nil {
 		logger.Fatalf("Could not derive relative path to %q: %v", dir, err)
+		os.Exit(1)
 	}
 
 	logger.Infof("Reading required version from terraform module at %q", relPath)
