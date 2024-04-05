@@ -70,18 +70,16 @@ func DownloadFromURL(installLocation string, mirrorURL string, tfversion string,
 	var filesToCleanup []string
 	filesToCleanup = append(filesToCleanup, hashFilePath)
 	filesToCleanup = append(filesToCleanup, hashSigFilePath)
+	defer cleanup(filesToCleanup)
 
 	verified := checkSignatureOfChecksums(publicKeyFile, hashFile, signatureFile)
 	if !verified {
-		cleanup(filesToCleanup)
 		return "", errors.New("Signature of checksum file could not be verified")
 	}
 	match := checkChecksumMatches(hashFilePath, targetFile)
 	if !match {
-		cleanup(filesToCleanup)
 		return "", errors.New("Checksums did not match")
 	}
-	cleanup(filesToCleanup)
 	return zipFilePath, err
 }
 
