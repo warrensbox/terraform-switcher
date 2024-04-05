@@ -2,12 +2,13 @@ package lib
 
 import (
 	"fmt"
-	"github.com/mitchellh/go-homedir"
 	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded

@@ -1,11 +1,12 @@
 package lib
 
 import (
-	"github.com/mitchellh/go-homedir"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // TestCreateSymlink : check if symlink exist-remove if exist,
