@@ -21,7 +21,7 @@ func getParamsTOML(params Params) Params {
 
 		errs := viperParser.ReadInConfig() // Find and read the config file
 		if errs != nil {
-			logger.Fatalf("Unable to read %s provided", tomlPath)
+			logger.Fatalf("Could not to read %q: %v", tomlPath, errs)
 			os.Exit(1)
 		}
 
