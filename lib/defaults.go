@@ -35,8 +35,8 @@ const (
 	DefaultMirror             = "https://releases.hashicorp.com/terraform"
 	DefaultLatest             = ""
 	installFile               = "terraform"
-	versionPrefix             = "terraform_"
 	installPath               = ".terraform.versions"
 	recentFile                = "RECENT"
 	tfDarwinArm64StartVersion = "1.0.2"
+	versionPrefix             = "terraform_"
 )
