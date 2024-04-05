@@ -368,8 +368,8 @@ func getParamsTOML(binPath string, dir string) (string, string) {
 	} else {
 		path = "current directory"
 	}
-	logger.Infof("Reading %q configuration from %q", tomlFilename, path) // Takes the default bin (defaultBin) if user does not specify bin path
-	configfileName := lib.GetFileName(tomlFilename)                      //get the config file
+	logger.Infof("Reading %q from %s", tomlFilename, path)
+	configfileName := lib.GetFileName(tomlFilename) // get the config file
 	viper.SetConfigType("toml")
 	viper.SetConfigName(configfileName)
 	viper.AddConfigPath(dir)
@@ -430,7 +430,25 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 
 // install when tf file is provided
 func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
-	logger.Infof("Reading required version from terraform module at %q", dir)
+	curDir, err := os.Getwd()
+	if err != nil {
+		logger.Fatalf("Could not get current working directory: %v", err)
+	}
+
+	absPath := dir
+	if !filepath.IsAbs(dir) {
+		absPath, err = filepath.Abs(dir)
+		if err != nil {
+			logger.Fatalf("Could not derive absolute path to %q: %v", dir, err)
+		}
+	}
+
+	relPath, err := filepath.Rel(curDir, absPath)
+	if err != nil {
+		logger.Fatalf("Could not derive relative path to %q: %v", dir, err)
+	}
+
+	logger.Infof("Reading required version from terraform module at %q", relPath)
 	module, _ := tfconfig.LoadModule(dir)
 	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
 	installFromConstraint(&tfconstraint, custBinPath, mirrorURL)
