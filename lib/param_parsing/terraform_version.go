@@ -1,9 +1,7 @@
 package param_parsing
 
 import (
-	"fmt"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"log"
 	"os"
 	"strings"
 )
@@ -13,10 +11,11 @@ const terraformVersionFileName = ".terraform-version"
 func GetParamsFromTerraformVersion(params Params) Params {
 	filePath := params.ChDirPath + "/" + terraformVersionFileName
 	if lib.CheckFileExist(filePath) {
-		fmt.Printf("Reading configuration from %s\n", filePath)
+		logger.Infof("Reading configuration from %s", filePath)
 		content, err := os.ReadFile(filePath)
 		if err != nil {
-			log.Fatal("Could not read file content", filePath, err)
+			logger.Errorf("Could not read file content at %s:%v", filePath, err)
+			os.Exit(1)
 		}
 		params.Version = strings.TrimSpace(string(content))
 	}

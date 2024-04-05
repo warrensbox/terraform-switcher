@@ -30,3 +30,8 @@ func GetDefaultBin() string {
 	}
 	return defaultBin
 }
+
+const (
+	DefaultMirror = "https://releases.hashicorp.com/terraform"
+	DefaultLatest = ""
+)

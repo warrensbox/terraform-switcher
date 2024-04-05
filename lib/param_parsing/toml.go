@@ -1,10 +1,9 @@
 package param_parsing
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"log"
+	"os"
 )
 
 const tfSwitchTOMLFileName = ".tfswitch.toml"
@@ -13,7 +12,7 @@ const tfSwitchTOMLFileName = ".tfswitch.toml"
 func getParamsTOML(params Params) Params {
 	tomlPath := params.ChDirPath + "/" + tfSwitchTOMLFileName
 	if tomlFileExists(params) {
-		fmt.Printf("Reading configuration from %s\n", tomlPath)
+		logger.Infof("Reading configuration from %s", tomlPath)
 		configfileName := lib.GetFileName(tfSwitchTOMLFileName)
 		viperParser := viper.New()
 		viperParser.SetConfigType("toml")
@@ -22,13 +21,14 @@ func getParamsTOML(params Params) Params {
 
 		errs := viperParser.ReadInConfig() // Find and read the config file
 		if errs != nil {
-			log.Fatalf("Unable to read %s provided\n", tomlPath)
+			logger.Fatalf("Unable to read %s provided", tomlPath)
+			os.Exit(1)
 		}
 
 		params.Version = viperParser.GetString("version") // Attempt to get the version if it's provided in the toml
 		params.CustomBinaryPath = viperParser.GetString("bin")
 	} else {
-		fmt.Println("No configuration file at " + tomlPath)
+		logger.Infof("No configuration file at %s", tomlPath)
 	}
 	return params
 }
