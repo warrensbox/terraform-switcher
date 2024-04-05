@@ -47,9 +47,9 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	/* test download old terraform version */
 	lowestVersion := "0.11.0"
 
-	url := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
+	urlToDownload := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
 	expectedFile := filepath.Join(installLocation, installVersion+lowestVersion+macOS)
-	installedFile, errDownload := DownloadFromURL(installLocation, url)
+	installedFile, errDownload := downloadFromURL(installLocation, urlToDownload)
 
 	if errDownload != nil {
 		t.Logf("Expected file name %v to be downloaded", expectedFile)

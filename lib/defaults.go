@@ -7,6 +7,16 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
+var (
+	PubKeyId     = "72D7468F"
+	PubKeyPrefix = "hashicorp_"
+	PubKeyUri    = "https://www.hashicorp.com/.well-known/pgp-key.txt"
+)
+
+const (
+	pubKeySuffix = ".asc"
+)
+
 // GetDefaultBin Get default binary path
 func GetDefaultBin() string {
 	var defaultBin = "/usr/local/bin/terraform"
