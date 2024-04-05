@@ -11,10 +11,10 @@ const tfSwitchFileName = ".tfswitchrc"
 func GetParamsFromTfSwitch(params Params) Params {
 	filePath := params.ChDirPath + "/" + tfSwitchFileName
 	if lib.CheckFileExist(filePath) {
-		logger.Infof("Reading configuration from %s", filePath)
+		logger.Infof("Reading configuration from %q", filePath)
 		content, err := os.ReadFile(filePath)
 		if err != nil {
-			logger.Fatalf("Could not read file content %s: %v", filePath, err)
+			logger.Fatalf("Could not read file content from %q: %v", filePath, err)
 			os.Exit(1)
 		}
 		params.Version = strings.TrimSpace(string(content))

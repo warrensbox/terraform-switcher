@@ -142,10 +142,10 @@ func installVersion(arg, customBinaryPath, mirrorURL string) {
 			os.Exit(0)
 		}
 
-		//if the requested version had not been downloaded before
+		// If the requested version had not been downloaded before
 		// Set list all true - all versions including beta and rc will be displayed
 		tflist, _ := lib.GetTFList(mirrorURL, true)         // Get list of versions
-		exist := lib.VersionExist(requestedVersion, tflist) //check if version exist before downloading it
+		exist := lib.VersionExist(requestedVersion, tflist) // Check if version exists before downloading it
 
 		if exist {
 			lib.Install(requestedVersion, customBinaryPath, mirrorURL)

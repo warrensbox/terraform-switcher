@@ -11,10 +11,10 @@ const terraformVersionFileName = ".terraform-version"
 func GetParamsFromTerraformVersion(params Params) Params {
 	filePath := params.ChDirPath + "/" + terraformVersionFileName
 	if lib.CheckFileExist(filePath) {
-		logger.Infof("Reading configuration from %s", filePath)
+		logger.Infof("Reading configuration from %q", filePath)
 		content, err := os.ReadFile(filePath)
 		if err != nil {
-			logger.Errorf("Could not read file content at %s:%v", filePath, err)
+			logger.Errorf("Could not read file content at %q: %v", filePath, err)
 			os.Exit(1)
 		}
 		params.Version = strings.TrimSpace(string(content))

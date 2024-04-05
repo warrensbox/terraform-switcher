@@ -16,22 +16,22 @@ type terragruntVersionConstraints struct {
 func GetVersionFromTerragrunt(params Params) Params {
 	filePath := params.ChDirPath + "/" + terraGruntFileName
 	if lib.CheckFileExist(filePath) {
-		logger.Infof("Reading configuration from %s", filePath)
+		logger.Infof("Reading configuration from %q", filePath)
 		parser := hclparse.NewParser()
 		hclFile, diagnostics := parser.ParseHCLFile(filePath)
 		if diagnostics.HasErrors() {
-			logger.Fatalf("Unable to parse HCL file %s", filePath)
+			logger.Fatalf("Unable to parse HCL file %q", filePath)
 			os.Exit(1)
 		}
 		var versionFromTerragrunt terragruntVersionConstraints
 		diagnostics = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
 		if diagnostics.HasErrors() {
-			logger.Fatal("Could not decode body of HCL file.")
+			logger.Fatalf("Could not decode body of HCL file %q", filePath)
 			os.Exit(1)
 		}
 		version, err := lib.GetSemver(versionFromTerragrunt.TerraformVersionConstraint, params.MirrorURL)
 		if err != nil {
-			logger.Fatal("Could not determine semantic version")
+			logger.Fatalf("No version found matching %q", versionFromTerragrunt.TerraformVersionConstraint)
 			os.Exit(1)
 		}
 		params.Version = version

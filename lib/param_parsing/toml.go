@@ -12,7 +12,7 @@ const tfSwitchTOMLFileName = ".tfswitch.toml"
 func getParamsTOML(params Params) Params {
 	tomlPath := params.ChDirPath + "/" + tfSwitchTOMLFileName
 	if tomlFileExists(params) {
-		logger.Infof("Reading configuration from %s", tomlPath)
+		logger.Infof("Reading configuration from %q", tomlPath)
 		configfileName := lib.GetFileName(tfSwitchTOMLFileName)
 		viperParser := viper.New()
 		viperParser.SetConfigType("toml")
