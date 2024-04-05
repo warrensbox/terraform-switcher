@@ -430,9 +430,38 @@ func installOption(listAll bool, custBinPath, mirrorURL *string) {
 
 // install when tf file is provided
 func installTFProvidedModule(dir string, custBinPath, mirrorURL *string) {
+	var tfconstraints []string
+	var exactConstraints []string
+
 	logger.Infof("Reading required version from terraform module at %q", dir)
 	module, _ := tfconfig.LoadModule(dir)
-	tfconstraint := module.RequiredCore[0] //we skip duplicated definitions and use only first one
+	requiredVersions := module.RequiredCore
+
+	for key := range requiredVersions {
+		tfconstraint := requiredVersions[key]
+		tfconstraintParts := strings.Fields(tfconstraint)
+
+		if len(tfconstraintParts) > 2 {
+			logger.Fatalf("Invalid version constraint found: %q", tfconstraint)
+			os.Exit(1)
+		} else if len(tfconstraintParts) == 1 {
+			exactConstraints = append(exactConstraints, tfconstraint)
+			tfconstraint = "= " + tfconstraintParts[0]
+		}
+
+		if tfconstraintParts[0] == "=" {
+			exactConstraints = append(exactConstraints, tfconstraint)
+		}
+
+		tfconstraints = append(tfconstraints, tfconstraint)
+	}
+
+	if len(exactConstraints) > 0 && len(tfconstraints) > 1 {
+		logger.Fatalf("Exact constraint (%q) cannot be combined with other conditions", strings.Join(exactConstraints, ", "))
+		os.Exit(1)
+	}
+
+	tfconstraint := strings.Join(tfconstraints, ", ")
 	installFromConstraint(&tfconstraint, custBinPath, mirrorURL)
 }
 
@@ -443,7 +472,7 @@ func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string)
 	if err == nil {
 		lib.Install(tfversion, *custBinPath, *mirrorURL)
 	}
-	logger.Fatalf("No version found to match constraint: %v.\n Follow the README.md instructions for setup: https://github.com/warrensbox/terraform-switcher/blob/master/README.md", err)
+	logger.Fatalf("No version found to match constraint: %v\n Follow the README.md instructions for setup: https://github.com/warrensbox/terraform-switcher/blob/master/README.md", err)
 }
 
 // Install using version constraint from terragrunt file
