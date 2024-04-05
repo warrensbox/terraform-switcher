@@ -3,6 +3,7 @@ package param_parsing
 import (
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 	"github.com/warrensbox/terraform-switcher/lib"
+	"os"
 )
 
 const versionTfFileName = "version.tf"

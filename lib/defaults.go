@@ -38,5 +38,5 @@ const (
 	installPath               = ".terraform.versions"
 	recentFile                = "RECENT"
 	tfDarwinArm64StartVersion = "1.0.2"
-	versionPrefix             = "terraform_"
+	VersionPrefix             = "terraform_"
 )

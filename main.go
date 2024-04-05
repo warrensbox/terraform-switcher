@@ -29,12 +29,6 @@ import (
 	lib "github.com/warrensbox/terraform-switcher/lib"
 )
 
-const (
-	tfvFilename = ".terraform-version"
-
-	versionPrefix = "terraform_"
-)
-
 var logger = lib.InitLogger()
 var version string
 
@@ -133,7 +127,7 @@ func installVersion(arg, customBinaryPath, mirrorURL string) {
 
 		//check to see if the requested version has been downloaded before
 		installLocation := lib.GetInstallLocation()
-		installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+requestedVersion))
+		installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, lib.VersionPrefix+requestedVersion))
 		recentDownloadFile := lib.CheckFileExist(installFileVersionPath)
 		if recentDownloadFile {
 			lib.ChangeSymlink(installFileVersionPath, customBinaryPath)

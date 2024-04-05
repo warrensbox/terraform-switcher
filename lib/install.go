@@ -83,7 +83,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 	}
 
 	/* check if selected version already downloaded */
-	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, versionPrefix+tfversion))
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, VersionPrefix+tfversion))
 	fileExist := CheckFileExist(installFileVersionPath)
 
 	/* if selected version already exist, */
@@ -111,7 +111,8 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	zipFile, errDownload := DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch)
+	url := mirrorURL + tfversion + "/" + VersionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
+	zipFile, errDownload := DownloadFromURL(installLocation, url)
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
