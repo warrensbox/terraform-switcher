@@ -26,6 +26,7 @@ func TestRenameFile(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -72,6 +73,7 @@ func TestRemoveFiles(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -111,6 +113,7 @@ func TestUnzip(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -120,6 +123,7 @@ func TestUnzip(t *testing.T) {
 
 	if errUnzip != nil {
 		logger.Fatalf("Unable to unzip %q file: %v", absPath, errUnzip)
+		os.Exit(1)
 	}
 
 	tst := strings.Join(files, "")
@@ -141,6 +145,7 @@ func TestCreateDirIfNotExist(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -176,6 +181,7 @@ func TestWriteLines(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -189,6 +195,7 @@ func TestWriteLines(t *testing.T) {
 	if errWrite != nil {
 		t.Logf("Write should work %v (unexpected)", errWrite)
 		logger.Fatal(errWrite)
+		os.Exit(1)
 	} else {
 		var (
 			file             *os.File
@@ -199,6 +206,7 @@ func TestWriteLines(t *testing.T) {
 		)
 		if file, errOpen = os.Open(recentFilePath); errOpen != nil {
 			logger.Fatal(errOpen)
+			os.Exit(1)
 		}
 
 		reader := bufio.NewReader(file)
@@ -219,12 +227,13 @@ func TestWriteLines(t *testing.T) {
 
 		if errRead != nil {
 			logger.Fatalf("Error: %s", errRead)
+			os.Exit(1)
 		}
 
 		for _, line := range lines {
 			if !semverRegex.MatchString(line) {
 				logger.Fatalf("Write to file is not invalid: %s", line)
-				break
+				os.Exit(1)
 			}
 		}
 
@@ -244,6 +253,7 @@ func TestReadLines(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -259,13 +269,14 @@ func TestReadLines(t *testing.T) {
 
 	if file, errCreate = os.Create(recentFilePath); errCreate != nil {
 		logger.Fatalf("Error: %s", errCreate)
+		os.Exit(1)
 	}
 
 	for _, item := range test_array {
 		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
 		if err != nil {
 			logger.Fatalf("Error: %s", err)
-			break
+			os.Exit(1)
 		}
 	}
 
@@ -273,12 +284,13 @@ func TestReadLines(t *testing.T) {
 
 	if errRead != nil {
 		logger.Fatalf("Error: %s", errRead)
+		os.Exit(1)
 	}
 
 	for _, line := range lines {
 		if !semverRegex.MatchString(line) {
 			logger.Fatalf("Write to file is not invalid: %s", line)
-			break
+			os.Exit(1)
 		}
 	}
 
@@ -297,6 +309,7 @@ func TestIsDirEmpty(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -332,6 +345,7 @@ func TestCheckDirHasTFBin(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -361,6 +375,7 @@ func TestPath(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
@@ -402,6 +417,7 @@ func TestConvertExecutableExt(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 
 	installPath := "/.terraform.versions_test/"

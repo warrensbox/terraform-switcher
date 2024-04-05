@@ -1,11 +1,12 @@
 package lib
 
 import (
-	"github.com/mitchellh/go-homedir"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // TestCreateSymlink : check if symlink exist-remove if exist,
@@ -21,6 +22,7 @@ func TestCreateSymlink(t *testing.T) {
 	home, err := homedir.Dir()
 	if err != nil {
 		logger.Fatalf("Could not detect home directory.")
+		os.Exit(1)
 	}
 	symlinkPathSrc := filepath.Join(home, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(home, testSymlinkDest)
@@ -29,6 +31,7 @@ func TestCreateSymlink(t *testing.T) {
 	create, err := os.Create(symlinkPathDest)
 	if err != nil {
 		logger.Fatalf("Could not create test dest file for symlink at %v", symlinkPathDest)
+		os.Exit(1)
 	}
 	defer create.Close()
 
@@ -79,6 +82,7 @@ func TestRemoveSymlink(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
@@ -114,6 +118,7 @@ func TestCheckSymlink(t *testing.T) {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)

@@ -2,12 +2,13 @@ package lib
 
 import (
 	"fmt"
-	"github.com/mitchellh/go-homedir"
 	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
@@ -22,6 +23,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	home, err := homedir.Dir()
 	if err != nil {
 		logger.Fatalf("Could not detect home directory")
+		os.Exit(1)
 	}
 
 	logger.Infof("Current home directory: %q", home)
