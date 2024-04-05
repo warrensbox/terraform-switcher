@@ -301,4 +301,5 @@ func InstallableBinLocation(userBinPath string) string {
 
 	logger.Fatalf("Binary path (%q) does not exist. Manually create bin directory %q and try again.", userBinPath, binDir)
 	os.Exit(1)
+	return ""
 }
