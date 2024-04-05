@@ -1,8 +1,6 @@
-package lib_test
+package lib
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -23,22 +21,21 @@ func createFile(path string) {
 	if os.IsNotExist(err) {
 		file, err := os.Create(path)
 		if err != nil {
-			fmt.Printf("%v", err)
+			logger.Error(err)
 			return
 		}
 		defer file.Close()
 	}
 
-	fmt.Println("==> done creating file", path)
+	logger.Infof("==> done creating %q file", path)
 }
 
 func createDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		log.Printf("Creating directory for terraform: %v", dir)
+		logger.Infof("Creating directory for terraform: %v", dir)
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			fmt.Printf("Unable to create directory for terraform: %v", dir)
-			panic(err)
+			logger.Panic("Unable to create %q directory for terraform: %v", dir, err)
 		}
 	}
 }

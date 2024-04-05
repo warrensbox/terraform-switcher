@@ -2,7 +2,6 @@ package lib
 
 import (
 	"github.com/mitchellh/go-homedir"
-	"log"
 	"runtime"
 )
 
@@ -12,7 +11,7 @@ func GetDefaultBin() string {
 	if runtime.GOOS == "windows" {
 		home, err := homedir.Dir()
 		if err != nil {
-			log.Fatalf("Could not detect home directory.")
+			logger.Fatal("Could not detect home directory.")
 		}
 		defaultBin = home + "/bin/terraform.exe"
 	}

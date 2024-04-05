@@ -4,10 +4,8 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,7 +15,7 @@ import (
 func RenameFile(src string, dest string) {
 	err := os.Rename(src, dest)
 	if err != nil {
-		fmt.Println(err)
+		logger.Error(err)
 		return
 	}
 }
@@ -103,11 +101,11 @@ func Unzip(src string, dest string) ([]string, error) {
 // CreateDirIfNotExist : create directory if directory does not exist
 func CreateDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		fmt.Printf("Creating directory for terraform binary at: %v\n", dir)
+		logger.Infof("Creating directory for terraform binary at %q", dir)
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			fmt.Printf("Unable to create directory for terraform binary at: %v", dir)
-			panic(err)
+			logger.Error(err)
+			logger.Panicf("Unable to create directory for terraform binary at: %v", dir)
 		}
 	}
 }
@@ -126,7 +124,7 @@ func WriteLines(lines []string, path string) (err error) {
 	for _, item := range lines {
 		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
 		if err != nil {
-			fmt.Println(err)
+			logger.Error(err)
 			break
 		}
 	}
@@ -171,7 +169,7 @@ func IsDirEmpty(name string) bool {
 
 	f, err := os.Open(name)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 	defer f.Close()
 
@@ -189,8 +187,7 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		log.Fatal(err)
-		//return exist, err
+		logger.Fatal(err)
 	}
 	res := []string{}
 	for _, f := range files {
@@ -228,7 +225,7 @@ func GetCurrentDirectory() string {
 
 	dir, err := os.Getwd() //get current directory
 	if err != nil {
-		log.Printf("Failed to get current directory %v\n", err)
+		logger.Fatalf("Failed to get current directory %v", err)
 		os.Exit(1)
 	}
 	return dir

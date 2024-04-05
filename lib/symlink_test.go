@@ -1,14 +1,11 @@
-package lib_test
+package lib
 
 import (
 	"github.com/mitchellh/go-homedir"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
-
-	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 // TestCreateSymlink : check if symlink exist-remove if exist,
@@ -23,7 +20,7 @@ func TestCreateSymlink(t *testing.T) {
 
 	home, err := homedir.Dir()
 	if err != nil {
-		log.Fatalf("Could not detect home directory.")
+		logger.Fatalf("Could not detect home directory.")
 	}
 	symlinkPathSrc := filepath.Join(home, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(home, testSymlinkDest)
@@ -31,7 +28,7 @@ func TestCreateSymlink(t *testing.T) {
 	// Create file for test as windows does not like no source
 	create, err := os.Create(symlinkPathDest)
 	if err != nil {
-		log.Fatalf("Could not create test dest file for symlink at %v", symlinkPathDest)
+		logger.Fatalf("Could not create test dest file for symlink at %v", symlinkPathDest)
 	}
 	defer create.Close()
 
@@ -47,7 +44,7 @@ func TestCreateSymlink(t *testing.T) {
 		}
 	}
 
-	lib.CreateSymlink(symlinkPathDest, symlinkPathSrc)
+	CreateSymlink(symlinkPathDest, symlinkPathSrc)
 
 	if runtime.GOOS == "windows" {
 		_, err := os.Stat(symlinkPathSrc + ".exe")
@@ -81,7 +78,7 @@ func TestRemoveSymlink(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
@@ -96,7 +93,7 @@ func TestRemoveSymlink(t *testing.T) {
 		}
 	}
 
-	lib.RemoveSymlink(symlinkPathSrc)
+	RemoveSymlink(symlinkPathSrc)
 
 	lnCheck, _ := os.Readlink(symlinkPathSrc)
 	if lnCheck == symlinkPathDest {
@@ -116,7 +113,7 @@ func TestCheckSymlink(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		logger.Fatal(errCurr)
 	}
 	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
@@ -130,7 +127,7 @@ func TestCheckSymlink(t *testing.T) {
 		}
 	}
 
-	symlinkExist := lib.CheckSymlink(symlinkPathSrc)
+	symlinkExist := CheckSymlink(symlinkPathSrc)
 
 	if symlinkExist {
 		t.Logf("Symlink does exist %v [expected]", ln)

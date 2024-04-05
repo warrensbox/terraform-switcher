@@ -3,7 +3,6 @@ package lib
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"reflect"
@@ -15,7 +14,7 @@ type tfVersionList struct {
 	tflist []string
 }
 
-//GetTFList :  Get the list of available terraform version given the hashicorp url
+// GetTFList :  Get the list of available terraform version given the hashicorp url
 func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 
 	result, error := GetTFURLBody(mirrorURL)
@@ -43,14 +42,14 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	}
 
 	if len(tfVersionList.tflist) == 0 {
-		fmt.Printf("Cannot get list from mirror: %s\n", mirrorURL)
+		logger.Infof("Cannot get version list from mirror: %s", mirrorURL)
 	}
 
 	return tfVersionList.tflist, nil
 
 }
 
-//GetTFLatest :  Get the latest terraform version given the hashicorp url
+// GetTFLatest :  Get the latest terraform version given the hashicorp url
 func GetTFLatest(mirrorURL string) (string, error) {
 
 	result, error := GetTFURLBody(mirrorURL)
@@ -71,7 +70,7 @@ func GetTFLatest(mirrorURL string) (string, error) {
 	return "", nil
 }
 
-//GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
+// GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
 	if preRelease == true {
 		//TODO: use GetTFList() instead of GetTFURLBody
@@ -105,7 +104,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 	return "", nil
 }
 
-//GetTFURLBody : Get list of terraform versions from hashicorp releases
+// GetTFURLBody : Get list of terraform versions from hashicorp releases
 func GetTFURLBody(mirrorURL string) ([]string, error) {
 
 	hasSlash := strings.HasSuffix(mirrorURL, "/")
@@ -114,22 +113,20 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 	}
 	resp, errURL := http.Get(mirrorURL)
 	if errURL != nil {
-		log.Printf("[Error] : Getting url: %v", errURL)
+		logger.Fatalf("Error getting url: %v", errURL)
 		os.Exit(1)
-		return nil, errURL
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		log.Printf("[Error] : Retrieving contents from url: %s", mirrorURL)
+		logger.Fatalf("Error retrieving contents from url: %s", mirrorURL)
 		os.Exit(1)
 	}
 
 	body, errBody := ioutil.ReadAll(resp.Body)
 	if errBody != nil {
-		log.Printf("[Error] : reading body: %v", errBody)
+		logger.Fatalf("Error reading body: %v", errBody)
 		os.Exit(1)
-		return nil, errBody
 	}
 
 	bodyString := string(body)
@@ -138,7 +135,7 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 	return result, nil
 }
 
-//VersionExist : check if requested version exist
+// VersionExist : check if requested version exist
 func VersionExist(val interface{}, array interface{}) (exists bool) {
 
 	exists = false
@@ -157,7 +154,7 @@ func VersionExist(val interface{}, array interface{}) (exists bool) {
 	return exists
 }
 
-//RemoveDuplicateVersions : remove duplicate version
+// RemoveDuplicateVersions : remove duplicate version
 func RemoveDuplicateVersions(elements []string) []string {
 	// Use map to record duplicates as we find them.
 	encountered := map[string]bool{}
