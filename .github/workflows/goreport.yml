@@ -1,0 +1,13 @@
+name: Update goreport card
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  goreport:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update goreport card
+        run: curl -X POST -F "repo=github.com/$GITHUB_REPOSITORY" https://goreportcard.com/checks
