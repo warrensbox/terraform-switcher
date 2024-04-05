@@ -473,6 +473,7 @@ func installFromConstraint(tfconstraint *string, custBinPath, mirrorURL *string)
 		lib.Install(tfversion, *custBinPath, *mirrorURL)
 	}
 	logger.Fatalf("No version found to match constraint: %v\n Follow the README.md instructions for setup: https://github.com/warrensbox/terraform-switcher/blob/master/README.md", err)
+	os.Exit(1)
 }
 
 // Install using version constraint from terragrunt file
