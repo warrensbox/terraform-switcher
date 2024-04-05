@@ -124,7 +124,7 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
-		logger.Fatalf("Error downloading %s: %v", url, errDownload)
+		logger.Fatalf("Error downloading: %s", errDownload)
 		os.Exit(1)
 	}
 
