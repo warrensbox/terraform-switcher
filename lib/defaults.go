@@ -32,6 +32,11 @@ func GetDefaultBin() string {
 }
 
 const (
-	DefaultMirror = "https://releases.hashicorp.com/terraform"
-	DefaultLatest = ""
+	DefaultMirror             = "https://releases.hashicorp.com/terraform"
+	DefaultLatest             = ""
+	installFile               = "terraform"
+	versionPrefix             = "terraform_"
+	installPath               = ".terraform.versions"
+	recentFile                = "RECENT"
+	tfDarwinArm64StartVersion = "1.0.2"
 )

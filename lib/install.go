@@ -11,15 +11,6 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
-const (
-	installFile               = "terraform"
-	versionPrefix             = "terraform_"
-	installPath               = ".terraform.versions"
-	recentFile                = "RECENT"
-	defaultBin                = "/usr/local/bin/terraform" //default bin installation dir
-	tfDarwinArm64StartVersion = "1.0.2"
-)
-
 var (
 	installLocation = "/tmp"
 )
