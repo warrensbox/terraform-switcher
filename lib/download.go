@@ -9,16 +9,6 @@ import (
 	"strings"
 )
 
-var (
-	PubKeyId     = "72D7468F"
-	PubKeyPrefix = "hashicorp_"
-	PubKeyUri    = "https://www.hashicorp.com/.well-known/pgp-key.txt"
-)
-
-const (
-	pubKeySuffix = ".asc"
-)
-
 // DownloadFromURL : Downloads the terraform binary and its hash from the source url
 func DownloadFromURL(installLocation string, mirrorURL string, tfversion string, versionPrefix string, goos string, goarch string) (string, error) {
 	pubKeyFilename := filepath.Join(installLocation, "/", PubKeyPrefix+PubKeyId+pubKeySuffix)
@@ -73,7 +63,7 @@ func DownloadFromURL(installLocation string, mirrorURL string, tfversion string,
 
 	hashFile, err := os.Open(hashFilePath)
 	if err != nil {
-		logger.Errord("Could not open hash file %q: %v", hashFilePath, err)
+		logger.Errorf("Could not open hash file %q: %v", hashFilePath, err)
 		return "", err
 	}
 
