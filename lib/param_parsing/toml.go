@@ -27,8 +27,6 @@ func getParamsTOML(params Params) Params {
 
 		params.Version = viperParser.GetString("version") // Attempt to get the version if it's provided in the toml
 		params.CustomBinaryPath = viperParser.GetString("bin")
-	} else {
-		logger.Debugf("No configuration file at %q", tomlPath)
 	}
 	return params
 }
