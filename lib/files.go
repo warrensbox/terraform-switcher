@@ -170,6 +170,7 @@ func IsDirEmpty(name string) bool {
 	f, err := os.Open(name)
 	if err != nil {
 		logger.Fatal(err)
+		os.Exit(1)
 	}
 	defer f.Close()
 
@@ -188,6 +189,7 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		logger.Fatal(err)
+		os.Exit(1)
 	}
 	res := []string{}
 	for _, f := range files {

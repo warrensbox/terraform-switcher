@@ -1,6 +1,5 @@
-[![Build Status](https://travis-ci.org/warrensbox/terraform-switcher.svg?branch=master)](https://travis-ci.org/warrensbox/terraform-switcher)
+[![Build Status](https://github.com/warrensbox/terraform-switcher/actions/workflows/build.yml/badge.svg)](https://github.com/warrensbox/terraform-switcher/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher)](https://goreportcard.com/report/github.com/warrensbox/terraform-switcher)
-[![CircleCI](https://circleci.com/gh/warrensbox/terraform-switcher/tree/master.svg?style=shield&circle-token=55ddceec95ff67eb38269152282f8a7d761c79a5)](https://circleci.com/gh/warrensbox/terraform-switcher)
 
 # Terraform Switcher
 
@@ -9,7 +8,7 @@
 <!-- ![gopher](https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/logo.png =100x20) -->
 
 The `tfswitch` command line tool lets you switch between different versions of [terraform](https://www.terraform.io/).
-If you do not have a particular version of terraform installed, `tfswitch` will download the version you desire.
+If you do not have a particular version of terraform installed, `tfswitch` will download and verify the version you desire.
 The installation is minimal and easy.
 Once installed, simply select the version you require from the dropdown and start using terraform.
 
