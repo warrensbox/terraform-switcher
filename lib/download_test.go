@@ -25,14 +25,14 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 		logger.Fatalf("Could not detect home directory")
 	}
 
-	logger.Infof("Current home directory: %q", home)
+	t.Logf("Current home directory: %q", home)
 	var installLocation = ""
 	if runtime.GOOS != "windows" {
 		installLocation = filepath.Join(home, installPath)
 	} else {
 		installLocation = installPath
 	}
-	logger.Infof("Install Location: %v", installLocation)
+	t.Logf("Install Location: %v", installLocation)
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
@@ -74,7 +74,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	t.Cleanup(func() {
 		defer os.Remove(tempDir)
-		logger.Infof("Cleanup temporary directory %q", tempDir)
+		t.Logf("Cleanup temporary directory %q", tempDir)
 	})
 }
 

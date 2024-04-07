@@ -35,7 +35,6 @@ var version string
 func main() {
 
 	parameters := param_parsing.GetParameters()
-	//defaults := lib.GetDefaults()
 
 	switch {
 	case parameters.VersionFlag:
