@@ -3,6 +3,7 @@ package lib
 import (
 	"github.com/gookit/slog"
 	"github.com/gookit/slog/handler"
+	"os"
 )
 
 const loggingTemplate = "{{datetime}} {{level}} [{{caller}}] {{message}} {{data}} {{extra}}\n"
@@ -18,5 +19,6 @@ func InitLogger() *slog.Logger {
 	h := handler.NewConsoleHandler(slog.AllLevels)
 	h.SetFormatter(formatter)
 	logger := slog.NewWithHandlers(h)
+	logger.ExitFunc = os.Exit
 	return logger
 }
