@@ -17,11 +17,11 @@ on:
   pull_request:
     branches: [ "master" ]
     paths-ignore:
-      - "**/*.md"
       - "**/.*"
-      - "**/*_test.go" #Ignore test files
-      - "www/**/*"
+      - "**/*.md"
+      - "**/*_test.go"
       - "test-data/**/*"
+      - "www/**/*"
   schedule:
     - cron: '16 12 * * 1'
 
