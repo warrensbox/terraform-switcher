@@ -54,6 +54,7 @@ func GetInstallLocation() string {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 
 	userCommon := homedir
@@ -119,18 +120,19 @@ func Install(tfversion string, binPath string, mirrorURL string) {
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	url := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
-	zipFile, errDownload := DownloadFromURL(installLocation, url)
+	zipFile, errDownload := DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch)
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
-		logger.Fatalf("Error downloading %s: %v", url, errDownload)
+		logger.Fatalf("Error downloading: %s", errDownload)
+		os.Exit(1)
 	}
 
 	/* unzip the downloaded zipfile */
 	_, errUnzip := Unzip(zipFile, installLocation)
 	if errUnzip != nil {
 		logger.Fatalf("Unable to unzip %q file: %v", zipFile, errUnzip)
+		os.Exit(1)
 	}
 
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
@@ -264,6 +266,7 @@ func InstallableBinLocation(userBinPath string) string {
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
 		logger.Fatal(errCurr)
+		os.Exit(1)
 	}
 
 	binDir := Path(userBinPath)           //get path directory from binary path
@@ -294,6 +297,7 @@ func InstallableBinLocation(userBinPath string) string {
 			return filepath.Join(userBinPath)
 		}
 	}
+
 	logger.Fatalf("Binary path (%q) does not exist. Manually create bin directory %q and try again.", userBinPath, binDir)
 	os.Exit(1)
 	return ""
