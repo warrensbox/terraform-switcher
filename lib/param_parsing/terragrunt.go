@@ -4,7 +4,6 @@ import (
 	"github.com/hashicorp/hcl2/gohcl"
 	"github.com/hashicorp/hcl2/hclparse"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"os"
 )
 
 const terraGruntFileName = "terragrunt.hcl"
@@ -21,18 +20,15 @@ func GetVersionFromTerragrunt(params Params) Params {
 		hclFile, diagnostics := parser.ParseHCLFile(filePath)
 		if diagnostics.HasErrors() {
 			logger.Fatalf("Unable to parse HCL file %q", filePath)
-			os.Exit(1)
 		}
 		var versionFromTerragrunt terragruntVersionConstraints
 		diagnostics = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
 		if diagnostics.HasErrors() {
 			logger.Fatalf("Could not decode body of HCL file %q", filePath)
-			os.Exit(1)
 		}
 		version, err := lib.GetSemver(versionFromTerragrunt.TerraformVersionConstraint, params.MirrorURL)
 		if err != nil {
 			logger.Fatalf("No version found matching %q", versionFromTerragrunt.TerraformVersionConstraint)
-			os.Exit(1)
 		}
 		params.Version = version
 	}

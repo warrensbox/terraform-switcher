@@ -14,8 +14,7 @@ func GetParamsFromTerraformVersion(params Params) Params {
 		logger.Infof("Reading configuration from %q", filePath)
 		content, err := os.ReadFile(filePath)
 		if err != nil {
-			logger.Errorf("Could not read file content at %q: %v", filePath, err)
-			os.Exit(1)
+			logger.Fatalf("Could not read file content at %q: %v", filePath, err)
 		}
 		params.Version = strings.TrimSpace(string(content))
 	}
