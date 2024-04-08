@@ -181,8 +181,13 @@ func installOption(listAll bool, customBinaryPath, mirrorURL string) {
 	tfversion = strings.Trim(tfversion, " *recent") //trim versions with the string " *recent" appended
 
 	if errPrompt != nil {
-		logger.Fatalf("Prompt failed %v", errPrompt)
-		os.Exit(1)
+		if errPrompt.Error() == "^C" {
+			// Cancel execution
+			os.Exit(1)
+		} else {
+			logger.Fatalf("Prompt failed %v", errPrompt)
+			os.Exit(1)
+		}
 	}
 
 	lib.Install(tfversion, customBinaryPath, mirrorURL)

@@ -3,7 +3,6 @@ package param_parsing
 import (
 	"github.com/spf13/viper"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"os"
 )
 
 const tfSwitchTOMLFileName = ".tfswitch.toml"
