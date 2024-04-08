@@ -43,8 +43,10 @@ func main() {
 		} else {
 			fmt.Println("Version not defined during build.")
 		}
+		os.Exit(0)
 	case parameters.HelpFlag:
 		param_parsing.UsageMessage()
+		os.Exit(0)
 	case parameters.ListAllFlag:
 		/* show all terraform version including betas and RCs*/
 		installOption(true, parameters.CustomBinaryPath, parameters.MirrorURL)
