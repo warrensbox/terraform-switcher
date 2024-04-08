@@ -18,6 +18,7 @@ func TestGetParameters_version_from_args(t *testing.T) {
 		getopt.CommandLine = getopt.New()
 	})
 }
+
 func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()

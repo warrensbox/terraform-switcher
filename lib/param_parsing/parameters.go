@@ -54,7 +54,7 @@ func GetParameters() Params {
 		params = GetParamsFromTfSwitch(params)
 	} else if terraformVersionFileExists(params) {
 		params = GetParamsFromTerraformVersion(params)
-	} else if versionTFFileExists(params) {
+	} else if isTerraformModule(params) {
 		params = GetVersionFromVersionsTF(params)
 	} else if terraGruntFileExists(params) {
 		params = GetVersionFromTerragrunt(params)
