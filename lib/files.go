@@ -57,24 +57,23 @@ func Unzip(src string, dest string) ([]string, error) {
 
 	for _, f := range r.File {
 
-		filePath, _ := filepath.Abs(f.Name)
-		rc, err := f.Open()
-		if err != nil {
-			return filenames, err
-		}
-		defer rc.Close()
+		absoluteName, _ := filepath.Abs(f.Name)
+		if !strings.Contains(f.Name, "..") {
+			rc, err := f.Open()
+			if err != nil {
+				return filenames, err
+			}
+			defer rc.Close()
 
-		// Store filename/path for returning and using later on
-		fpath := filepath.Join(dest, f.Name)
-		filenames = append(filenames, fpath)
+			// Store filename/path for returning and using later on
+			fpath := filepath.Join(dest, absoluteName)
+			filenames = append(filenames, fpath)
 
-		if f.FileInfo().IsDir() {
+			if f.FileInfo().IsDir() {
 
-			// Make Folder
-			_ = os.MkdirAll(fpath, os.ModePerm)
-
-		} else {
-			if !strings.Contains(filePath, "..") {
+				// Make Folder
+				_ = os.MkdirAll(fpath, os.ModePerm)
+			} else {
 				// Make File
 				if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
 					return filenames, err
