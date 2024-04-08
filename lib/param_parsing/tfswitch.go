@@ -15,7 +15,6 @@ func GetParamsFromTfSwitch(params Params) Params {
 		content, err := os.ReadFile(filePath)
 		if err != nil {
 			logger.Fatalf("Could not read file content from %q: %v", filePath, err)
-			os.Exit(1)
 		}
 		params.Version = strings.TrimSpace(string(content))
 	}

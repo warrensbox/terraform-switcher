@@ -5,8 +5,6 @@ import (
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
-const versionTfFileName = "version.tf"
-
 func GetVersionFromVersionsTF(params Params) Params {
 	logger.Infof("Reading version from terraform module at %q", params.ChDirPath)
 	module, err := tfconfig.LoadModule(params.ChDirPath)

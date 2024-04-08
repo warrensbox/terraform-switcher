@@ -22,7 +22,6 @@ func getParamsTOML(params Params) Params {
 		errs := viperParser.ReadInConfig() // Find and read the config file
 		if errs != nil {
 			logger.Fatalf("Could not to read %q: %v", tomlPath, errs)
-			os.Exit(1)
 		}
 
 		params.Version = viperParser.GetString("version") // Attempt to get the version if it's provided in the toml
