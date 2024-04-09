@@ -2,9 +2,8 @@ package lib
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
-	"os"
 	"reflect"
 	"regexp"
 	"strings"
@@ -16,8 +15,8 @@ type tfVersionList struct {
 
 // GetTFList :  Get the list of available terraform version given the hashicorp url
 func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
-
-	result, error := GetTFURLBody(mirrorURL)
+	logger.Debugf("Get list of terraform versions")
+	result, error := getTFURLBody(mirrorURL)
 	if error != nil {
 		return nil, error
 	}
@@ -42,7 +41,7 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	}
 
 	if len(tfVersionList.tflist) == 0 {
-		logger.Infof("Cannot get version list from mirror: %s", mirrorURL)
+		logger.Errorf("Cannot get version list from mirror: %s", mirrorURL)
 	}
 
 	return tfVersionList.tflist, nil
@@ -52,7 +51,7 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 // GetTFLatest :  Get the latest terraform version given the hashicorp url
 func GetTFLatest(mirrorURL string) (string, error) {
 
-	result, error := GetTFURLBody(mirrorURL)
+	result, error := getTFURLBody(mirrorURL)
 	if error != nil {
 		return "", error
 	}
@@ -73,8 +72,8 @@ func GetTFLatest(mirrorURL string) (string, error) {
 // GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
 	if preRelease == true {
-		//TODO: use GetTFList() instead of GetTFURLBody
-		versions, error := GetTFURLBody(mirrorURL)
+		//TODO: use GetTFList() instead of getTFURLBody
+		versions, error := getTFURLBody(mirrorURL)
 		if error != nil {
 			return "", error
 		}
@@ -104,29 +103,27 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 	return "", nil
 }
 
-// GetTFURLBody : Get list of terraform versions from hashicorp releases
-func GetTFURLBody(mirrorURL string) ([]string, error) {
+// getTFURLBody : Get list of terraform versions from hashicorp releases
+func getTFURLBody(mirrorURL string) ([]string, error) {
 
 	hasSlash := strings.HasSuffix(mirrorURL, "/")
-	if !hasSlash { //if does not have slash - append slash
+	if !hasSlash {
+		//if it does not have slash - append slash
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}
 	resp, errURL := http.Get(mirrorURL)
 	if errURL != nil {
 		logger.Fatalf("Error getting url: %v", errURL)
-		os.Exit(1)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		logger.Fatalf("Error retrieving contents from url: %s", mirrorURL)
-		os.Exit(1)
 	}
 
-	body, errBody := ioutil.ReadAll(resp.Body)
+	body, errBody := io.ReadAll(resp.Body)
 	if errBody != nil {
 		logger.Fatalf("Error reading body: %v", errBody)
-		os.Exit(1)
 	}
 
 	bodyString := string(body)

@@ -22,5 +22,5 @@ func GetVersionFromVersionsTF(params Params) Params {
 
 func isTerraformModule(params Params) bool {
 	module, err := tfconfig.LoadModule(params.ChDirPath)
-	return err != nil && len(module.RequiredCore) > 0
+	return err == nil && len(module.RequiredCore) > 0
 }

@@ -4,19 +4,20 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 // RenameFile : rename file name
 func RenameFile(src string, dest string) {
+	logger.Debugf("Renaming file %v to %v", src, dest)
 	err := os.Rename(src, dest)
 	if err != nil {
-		logger.Error(err)
-		return
+		logger.Fatal(err)
 	}
 }
 
@@ -46,55 +47,27 @@ func CheckFileExist(file string) bool {
 // Unzip will decompress a zip archive, moving all files and folders
 // within the zip file (parameter 1) to an output directory (parameter 2).
 func Unzip(src string, dest string) ([]string, error) {
+	logger.Debugf("Unzipping file %v", src)
 
 	var filenames []string
 
-	r, err := zip.OpenReader(src)
+	reader, err := zip.OpenReader(src)
 	if err != nil {
 		return filenames, err
 	}
-	defer r.Close()
-
-	for _, f := range r.File {
-
-		filePath, _ := filepath.Abs(f.Name)
-		rc, err := f.Open()
-		if err != nil {
-			return filenames, err
-		}
-		defer rc.Close()
-
-		// Store filename/path for returning and using later on
-		fpath := filepath.Join(dest, f.Name)
-		filenames = append(filenames, fpath)
-
-		if f.FileInfo().IsDir() {
-
-			// Make Folder
-			_ = os.MkdirAll(fpath, os.ModePerm)
-
+	defer reader.Close()
+	destination, err := filepath.Abs(dest)
+	if err != nil {
+		logger.Fatalf("Could not open destination %v", err)
+	}
+	var wg sync.WaitGroup
+	for _, f := range reader.File {
+		wg.Add(1)
+		unzipErr := unzipFile(f, destination, &wg)
+		if unzipErr != nil {
+			logger.Fatalf("Error unzipping %s", unzipErr)
 		} else {
-			if !strings.Contains(filePath, "..") {
-				// Make File
-				if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
-					return filenames, err
-				}
-
-				outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-				if err != nil {
-					return filenames, err
-				}
-
-				_, err = io.Copy(outFile, rc)
-
-				// Close the file without defer to close before next iteration of loop
-				_ = outFile.Close()
-
-				if err != nil {
-					return filenames, err
-				}
-			}
-
+			filenames = append(filenames, filepath.Join(destination, f.Name))
 		}
 	}
 	return filenames, nil
@@ -188,10 +161,9 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 
 	exist := false
 
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		logger.Fatal(err)
-		os.Exit(1)
 	}
 	res := []string{}
 	for _, f := range files {
@@ -230,7 +202,50 @@ func GetCurrentDirectory() string {
 	dir, err := os.Getwd() //get current directory
 	if err != nil {
 		logger.Fatalf("Failed to get current directory %v", err)
-		os.Exit(1)
 	}
 	return dir
+}
+
+func unzipFile(f *zip.File, destination string, wg *sync.WaitGroup) error {
+	defer wg.Done()
+	// 4. Check if file paths are not vulnerable to Zip Slip
+	filePath := filepath.Join(destination, f.Name)
+	if !strings.HasPrefix(filePath, filepath.Clean(destination)+string(os.PathSeparator)) {
+		return fmt.Errorf("invalid file path: %s", filePath)
+	}
+
+	// 5. Create directory tree
+	if f.FileInfo().IsDir() {
+		logger.Debugf("Extracting Directory %v", filePath)
+		if err := os.MkdirAll(filePath, os.ModePerm); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
+		return err
+	}
+
+	// 6. Create a destination file for unzipped content
+	destinationFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+	if err != nil {
+		return err
+	}
+
+	// 7. Unzip the content of a file and copy it to the destination file
+	zippedFile, err := f.Open()
+	if err != nil {
+		return err
+	}
+
+	logger.Debugf("Extracting File %v", destinationFile.Name())
+	if _, err := io.Copy(destinationFile, zippedFile); err != nil {
+		return err
+	}
+	logger.Debugf("Closing destination file handler %v", destinationFile.Name())
+	_ = destinationFile.Close()
+	logger.Debugf("Closing zipped file handler %v", f.Name)
+	_ = zippedFile.Close()
+	return nil
 }
