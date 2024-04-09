@@ -15,3 +15,8 @@ updates:
     labels:
       - c:deps
       - golang
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "07:00"
