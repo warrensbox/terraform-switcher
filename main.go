@@ -19,7 +19,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -64,6 +63,11 @@ func main() {
 	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
 	defaultVersion := getopt.StringLong("default", 'd', defaultLatest, "Default to this version in case no other versions could be detected. Ex: tfswitch --default 1.2.4")
+
+	getopt.StringVarLong(&lib.PubKeyId, "public-key-id", 'k', "The ID of the public key to check the checksums against")
+	getopt.StringVarLong(&lib.PubKeyPrefix, "public-key-prefix", 'x', "The prefix of the public key. i.e. \"hashicorp_\"")
+	getopt.StringVarLong(&lib.PubKeyUri, "public-key-uri", 'y', "The URI to download the public key from")
+
 	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
 	_ = versionFlag
 
@@ -96,10 +100,10 @@ func main() {
 	 * If you provide a custom binary path with the -b option, this will override the bin value in the toml file
 	 * If you provide a version on the command line, this will override the version value in the toml file
 	 */
-	case fileExists(TOMLConfigFile) || fileExists(HomeTOMLConfigFile):
+	case lib.FileExists(TOMLConfigFile) || lib.FileExists(HomeTOMLConfigFile):
 		version := ""
 		binPath := *custBinPath
-		if fileExists(TOMLConfigFile) { //read from toml from current directory
+		if lib.FileExists(TOMLConfigFile) { //read from toml from current directory
 			version, binPath = getParamsTOML(binPath, *chDirPath)
 		} else { // else read from toml from home directory
 			version, binPath = getParamsTOML(binPath, homedir)
@@ -126,12 +130,12 @@ func main() {
 		case len(args) == 1:
 			installVersion(args[0], &binPath, mirrorURL)
 		/* provide an tfswitchrc file (IN ADDITION TO A TOML FILE) */
-		case fileExists(RCFile) && len(args) == 0:
+		case lib.FileExists(RCFile) && len(args) == 0:
 			readingFileMsg(rcFilename)
 			tfversion := retrieveFileContents(RCFile)
 			installVersion(tfversion, &binPath, mirrorURL)
 		/* if .terraform-version file found (IN ADDITION TO A TOML FILE) */
-		case fileExists(TFVersionFile) && len(args) == 0:
+		case lib.FileExists(TFVersionFile) && len(args) == 0:
 			readingFileMsg(tfvFilename)
 			tfversion := retrieveFileContents(TFVersionFile)
 			installVersion(tfversion, &binPath, mirrorURL)
@@ -144,7 +148,7 @@ func main() {
 			logger.Infof("\"TF_VERSION\" environment variable value: %q", tfversion)
 			installVersion(tfversion, &binPath, mirrorURL)
 		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
-		case fileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
+		case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
 			installTGHclFile(&TGHACLFile, &binPath, mirrorURL)
 		// if no arg is provided - but toml file is provided
 		case version != "":
@@ -191,13 +195,13 @@ func main() {
 		installVersion(args[0], custBinPath, mirrorURL)
 
 	/* provide an tfswitchrc file */
-	case fileExists(RCFile) && len(args) == 0:
+	case lib.FileExists(RCFile) && len(args) == 0:
 		readingFileMsg(rcFilename)
 		tfversion := retrieveFileContents(RCFile)
 		installVersion(tfversion, custBinPath, mirrorURL)
 
 	/* if .terraform-version file found */
-	case fileExists(TFVersionFile) && len(args) == 0:
+	case lib.FileExists(TFVersionFile) && len(args) == 0:
 		readingFileMsg(tfvFilename)
 		tfversion := retrieveFileContents(TFVersionFile)
 		installVersion(tfversion, custBinPath, mirrorURL)
@@ -207,7 +211,7 @@ func main() {
 		installTFProvidedModule(*chDirPath, custBinPath, mirrorURL)
 
 	/* if terragrunt.hcl file found */
-	case fileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
+	case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
 		installTGHclFile(&TGHACLFile, custBinPath, mirrorURL)
 
 	/* if Terraform Version environment variable is set */
@@ -315,7 +319,7 @@ func installVersion(arg string, custBinPath *string, mirrorURL *string) {
 
 // retrive file content of regular file
 func retrieveFileContents(file string) string {
-	fileContents, err := ioutil.ReadFile(file)
+	fileContents, err := os.ReadFile(file)
 	if err != nil {
 		logger.Fatalf("Failed reading %q file: %v\n Follow the README.md instructions for setup: https://github.com/warrensbox/terraform-switcher/blob/master/README.md", tfvFilename, err)
 		os.Exit(1)
@@ -327,15 +331,6 @@ func retrieveFileContents(file string) string {
 // Print message reading file content of :
 func readingFileMsg(filename string) {
 	logger.Infof("Reading file %q", filename)
-}
-
-// fileExists checks if a file exists and is not a directory before we try using it to prevent further errors.
-func fileExists(filename string) bool {
-	info, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return !info.IsDir()
 }
 
 // fileExists checks if a file exists and is not a directory before we

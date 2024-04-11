@@ -1,0 +1,8 @@
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# The `CODEOWNERS` file is owned by repo owner
+/.github/CODEOWNERS @warrensbox
+
+# The entries are placed in a historical order
+# 20240408: initial CODEOWNERS commit (added repo owner and all current collaborators)
+* @warrensbox @yermulnik @jukie @MatrixCrawler @crablab @MatthewJohn

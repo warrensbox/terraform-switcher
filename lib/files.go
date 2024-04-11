@@ -57,6 +57,7 @@ func Unzip(src string, dest string) ([]string, error) {
 
 	for _, f := range r.File {
 
+		filePath, _ := filepath.Abs(f.Name)
 		rc, err := f.Open()
 		if err != nil {
 			return filenames, err
@@ -70,27 +71,28 @@ func Unzip(src string, dest string) ([]string, error) {
 		if f.FileInfo().IsDir() {
 
 			// Make Folder
-			os.MkdirAll(fpath, os.ModePerm)
+			_ = os.MkdirAll(fpath, os.ModePerm)
 
 		} else {
+			if !strings.Contains(filePath, "..") {
+				// Make File
+				if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
+					return filenames, err
+				}
 
-			// Make File
-			if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
-				return filenames, err
-			}
+				outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+				if err != nil {
+					return filenames, err
+				}
 
-			outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-			if err != nil {
-				return filenames, err
-			}
+				_, err = io.Copy(outFile, rc)
 
-			_, err = io.Copy(outFile, rc)
+				// Close the file without defer to close before next iteration of loop
+				_ = outFile.Close()
 
-			// Close the file without defer to close before next iteration of loop
-			outFile.Close()
-
-			if err != nil {
-				return filenames, err
+				if err != nil {
+					return filenames, err
+				}
 			}
 
 		}
