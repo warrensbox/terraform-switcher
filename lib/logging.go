@@ -8,17 +8,37 @@ import (
 
 const loggingTemplate = "{{datetime}} {{level}} [{{caller}}] {{message}} {{data}} {{extra}}\n"
 
-var logger = InitLogger()
+var logger *slog.Logger
 
-func InitLogger() *slog.Logger {
+func InitLogger(logLevel string) *slog.Logger {
 	formatter := slog.NewTextFormatter()
 	formatter.EnableColor = true
 	formatter.ColorTheme = slog.ColorTheme
 	formatter.TimeFormat = "15:04:05.000"
 	formatter.SetTemplate(loggingTemplate)
-	h := handler.NewConsoleHandler(slog.AllLevels)
+
+	var h *handler.ConsoleHandler
+	//params := param_parsing.GetParameters()
+	if logLevel == "TRACE" {
+		h = handler.NewConsoleHandler(TraceLogging)
+	} else if logLevel == "DEBUG" {
+		h = handler.NewConsoleHandler(DebugLogging)
+	} else if logLevel == "NOTICE" {
+		h = handler.NewConsoleHandler(NoticeLogging)
+	} else {
+		h = handler.NewConsoleHandler(NormalLogging)
+	}
+
 	h.SetFormatter(formatter)
-	logger := slog.NewWithHandlers(h)
-	logger.ExitFunc = os.Exit
-	return logger
+	newLogger := slog.NewWithHandlers(h)
+	newLogger.ExitFunc = os.Exit
+	logger = newLogger
+	return newLogger
 }
+
+var (
+	NormalLogging = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel}
+	NoticeLogging = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel}
+	DebugLogging  = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel}
+	TraceLogging  = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel, slog.TraceLevel}
+)

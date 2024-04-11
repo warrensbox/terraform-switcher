@@ -29,12 +29,11 @@ import (
 	lib "github.com/warrensbox/terraform-switcher/lib"
 )
 
-var logger = lib.InitLogger()
+var parameters = param_parsing.GetParameters()
+var logger = lib.InitLogger(parameters.LogLevel)
 var version string
 
 func main() {
-
-	parameters := param_parsing.GetParameters()
 
 	switch {
 	case parameters.VersionFlag:

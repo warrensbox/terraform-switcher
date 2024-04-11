@@ -2,6 +2,7 @@ package param_parsing
 
 import (
 	"fmt"
+	"github.com/gookit/slog"
 	"github.com/pborman/getopt"
 	"github.com/warrensbox/terraform-switcher/lib"
 	"os"
@@ -16,6 +17,7 @@ type Params struct {
 	LatestPre        string
 	LatestStable     string
 	ListAllFlag      bool
+	LogLevel         string
 	MirrorURL        string
 	ShowLatestFlag   bool
 	ShowLatestPre    string
@@ -24,7 +26,7 @@ type Params struct {
 	VersionFlag      bool
 }
 
-var logger = lib.InitLogger()
+var logger *slog.Logger
 
 func GetParameters() Params {
 	var params Params
@@ -38,6 +40,7 @@ func GetParameters() Params {
 	getopt.StringVarLong(&params.LatestPre, "latest-pre", 'p', "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: tfswitch --latest-stable 0.13.0 downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
 	getopt.BoolVarLong(&params.ListAllFlag, "list-all", 'l', "List all versions of terraform - including beta and rc")
+	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', "Set loglevel for tfswitch. One of (INFO, NOTICE, DEBUG, TRACE)")
 	getopt.StringVarLong(&params.MirrorURL, "mirror", 'm', "Install from a remote API other than the default. Default: "+lib.DefaultMirror)
 	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
 	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
@@ -47,6 +50,7 @@ func GetParameters() Params {
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
 
+	logger = lib.InitLogger(params.LogLevel)
 	// Read configuration files
 	if tomlFileExists(params) {
 		params = getParamsTOML(params)
@@ -81,6 +85,7 @@ func initParams(params Params) Params {
 	params.LatestPre = lib.DefaultLatest
 	params.LatestStable = lib.DefaultLatest
 	params.ListAllFlag = false
+	params.LogLevel = "INFO"
 	params.MirrorURL = lib.DefaultMirror
 	params.ShowLatestFlag = false
 	params.ShowLatestPre = lib.DefaultLatest
