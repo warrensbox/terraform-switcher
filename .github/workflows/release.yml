@@ -33,7 +33,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: '1.22' # The Go version to download (if necessary) and use
-  
+
     # Double check Go version
     - name: Go version
       id: Version
@@ -50,9 +50,9 @@ jobs:
       run: mkdir -p build && go build -v -o build/tfswitch && build/tfswitch --help
       continue-on-error: false
 
-    - name: Create dry tag 
+    - name: Create dry tag
       uses: anothrNick/github-tag-action@1.67.0
-      id: semver-tag-dry 
+      id: semver-tag-dry
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         WITH_V: false
@@ -63,7 +63,7 @@ jobs:
         DRY_RUN: true # Only get the tag - dry
         VERBOSE: true
 
-    # Write new version into version file    
+    # Write new version into version file
     - name: Write new version tag to version file
       run: |
         echo ${{ steps.semver-tag-dry.outputs.tag }} > version
@@ -73,19 +73,33 @@ jobs:
       run: |
         git config --global user.email "release-bot@users.noreply.github.com"
         git config --global user.name "release-bot"
-        git commit -a -m "#{{ github.event.inputs.name }} - Setting semantic version"
+        git commit -a -m "#${{ github.event.inputs.name }} - Setting semantic version"
 
     # Push the changes to remote
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }}
+        branch: release-${{ steps.semver-tag-dry.outputs.tag }}
+
+    - name: Create Pull Request
+      id: cpr
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: release-${{ steps.semver-tag-dry.outputs.tag }}
+        title: Release ${{ steps.semver-tag-dry.outputs.tag }}
+        labels: automerge
+
+    - name: Merging release PR
+      run: gh pr merge --merge --auto "${{ steps.cpr.outputs.pull-request-number }}"
+      env:
+        GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
     # Introduce new tag (for real)
     - name: Bump version and push tag
       uses: anothrNick/github-tag-action@1.67.0
-      id: semver-tag  
+      id: semver-tag
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         WITH_V: false
@@ -119,8 +133,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install mkdocs-material
 
-    # Build WWW page
-    - name: Build page   
+   # Build WWW page
+    - name: Build page
       run: cd www && mkdocs gh-deploy --force
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
