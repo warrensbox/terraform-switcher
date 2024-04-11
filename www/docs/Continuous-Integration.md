@@ -1,5 +1,5 @@
-### Jenkins setup
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/jenkins_tfswitch.png" alt="drawing" style="width: 370px;"/>
+## Jenkins setup
+![jenkins_tfswitch](static/jenkins_tfswitch.png)
 
 ```sh
 #!/bin/bash 
@@ -23,10 +23,9 @@ $CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.
 terraform -v                    #testing version
 ```
 
-### Circle CI setup
+## Circle CI setup
 
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/circleci_tfswitch.png" alt="drawing" style="width: 470px;"/>
-
+![cirecleci_tfswitch](static/circleci_tfswitch.png)
 
 Example config yaml
 ```yaml

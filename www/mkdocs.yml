@@ -6,22 +6,25 @@ repo_url: https://github.com/warrensbox/terraform-switcher
 site_url: https://tfswitch.warrensbox.com
 
 theme:
-    name: material
-    palette:
-        primary: indigo
-    favicon: static/favicon_tfswitch_16.png
-    logo: static/logo.png
+  name: material
+  palette:
+    primary: indigo
+  favicon: static/favicon_tfswitch_16.png
+  logo: static/logo.png
 
 nav:
-    - index.md
-    - Install.md
-    - Quick-Start.md
-    - Continuous-Integration.md
-    - Upgrade-or-Uninstall.md
-    - How-to-Contribute.md
-    - Troubleshoot.md
-    
+  - Home: index.md
+  - Installation: Installation.md
+  - Usage:
+    - General: usage/general.md
+    - Command line: usage/commandline.md
+    - Config files: usage/config-files.md
+    - CI/CD: usage/ci-cd.md
+  - CI/CD Examples: Continuous-Integration.md
+  - Upgrade-or-Uninstall.md
+  - How-to-Contribute.md
+  - Troubleshoot.md
+
 google_analytics:
-    - UA-120055973-1
-    - auto
-    
+  - UA-120055973-1
+  - auto
