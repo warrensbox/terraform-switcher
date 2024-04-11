@@ -18,7 +18,6 @@ func InitLogger(logLevel string) *slog.Logger {
 	formatter.SetTemplate(loggingTemplate)
 
 	var h *handler.ConsoleHandler
-	//params := param_parsing.GetParameters()
 	if logLevel == "TRACE" {
 		h = handler.NewConsoleHandler(TraceLogging)
 	} else if logLevel == "DEBUG" {

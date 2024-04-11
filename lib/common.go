@@ -30,16 +30,6 @@ func createFile(path string) {
 	logger.Infof("==> done creating %q file", path)
 }
 
-func createDirIfNotExist(dir string) {
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		logger.Infof("Creating directory for terraform: %v", dir)
-		err = os.MkdirAll(dir, 0755)
-		if err != nil {
-			logger.Panic("Unable to create %q directory for terraform: %v", dir, err)
-		}
-	}
-}
-
 func cleanUp(path string) {
 	removeContents(path)
 	removeFiles(path)

@@ -153,7 +153,7 @@ func TestCreateDirIfNotExist(t *testing.T) {
 		t.Error("Directory should not exist")
 	}
 
-	CreateDirIfNotExist(installLocation)
+	createDirIfNotExist(installLocation)
 	t.Logf("Creating directory %v", installLocation)
 
 	if _, err := os.Stat(installLocation); err == nil {

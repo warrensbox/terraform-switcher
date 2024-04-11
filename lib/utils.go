@@ -1,6 +1,8 @@
 package lib
 
 import (
+	"fmt"
+	"github.com/pborman/getopt"
 	"os"
 )
 
@@ -18,4 +20,10 @@ func closeFileHandlers(handlers []*os.File) {
 		logger.Debugf("Closing file handler %q", handler.Name())
 		_ = handler.Close()
 	}
+}
+
+func UsageMessage() {
+	fmt.Print("\n\n")
+	getopt.PrintUsage(os.Stderr)
+	fmt.Println("Supply the terraform version as an argument, or choose from a menu")
 }

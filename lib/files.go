@@ -73,14 +73,13 @@ func Unzip(src string, dest string) ([]string, error) {
 	return filenames, nil
 }
 
-// CreateDirIfNotExist : create directory if directory does not exist
-func CreateDirIfNotExist(dir string) {
+// createDirIfNotExist : create directory if directory does not exist
+func createDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		logger.Infof("Creating directory for terraform binary at %q", dir)
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			logger.Error(err)
-			logger.Panicf("Unable to create directory for terraform binary at: %v", dir)
+			logger.Panicf("Unable to create %q directory for terraform: %v", dir, err)
 		}
 	}
 }

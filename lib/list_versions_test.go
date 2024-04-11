@@ -12,7 +12,7 @@ const (
 // TestGetTFList : Get list from hashicorp
 func TestGetTFList(t *testing.T) {
 
-	list, _ := GetTFList(hashiURL, true)
+	list, _ := getTFList(hashiURL, true)
 
 	val := "0.1.0"
 	var exists bool
@@ -41,7 +41,7 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 
 	testArray := []string{"0.0.1", "0.0.2", "0.0.3", "0.0.1", "0.12.0-beta1", "0.12.0-beta1"}
 
-	list := RemoveDuplicateVersions(testArray)
+	list := removeDuplicateVersions(testArray)
 
 	if len(list) == len(testArray) {
 		t.Errorf("Not able to remove duplicate: %s\n", testArray)
@@ -57,7 +57,7 @@ func TestValidVersionFormat(t *testing.T) {
 	var version string
 	version = "0.11.8"
 
-	valid := ValidVersionFormat(version)
+	valid := validVersionFormat(version)
 
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
@@ -67,7 +67,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "1.11.9"
 
-	valid = ValidVersionFormat(version)
+	valid = validVersionFormat(version)
 
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
@@ -77,7 +77,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "1.11.a"
 
-	valid = ValidVersionFormat(version)
+	valid = validVersionFormat(version)
 
 	if valid == false {
 		t.Logf("Invalid version format : %s (expected)", version)
@@ -87,7 +87,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "22323"
 
-	valid = ValidVersionFormat(version)
+	valid = validVersionFormat(version)
 
 	if valid == false {
 		t.Logf("Invalid version format : %s (expected)", version)
@@ -97,7 +97,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "@^&*!)!"
 
-	valid = ValidVersionFormat(version)
+	valid = validVersionFormat(version)
 
 	if valid == false {
 		t.Logf("Invalid version format : %s (expected)", version)
@@ -107,7 +107,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "1.11.9-beta1"
 
-	valid = ValidVersionFormat(version)
+	valid = validVersionFormat(version)
 
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
@@ -117,7 +117,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "0.12.0-rc2"
 
-	valid = ValidVersionFormat(version)
+	valid = validVersionFormat(version)
 
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
@@ -127,7 +127,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "1.11.4-boom"
 
-	valid = ValidVersionFormat(version)
+	valid = validVersionFormat(version)
 
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
@@ -137,7 +137,7 @@ func TestValidVersionFormat(t *testing.T) {
 
 	version = "1.11.4-1"
 
-	valid = ValidVersionFormat(version)
+	valid = validVersionFormat(version)
 
 	if valid == false {
 		t.Logf("Invalid version format : %s (expected)", version)

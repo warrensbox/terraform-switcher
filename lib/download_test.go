@@ -32,7 +32,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	} else {
 		installLocation = installPath
 	}
-	t.Logf("Install Location: %v", installLocation)
+	t.Logf("install Location: %v", installLocation)
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
