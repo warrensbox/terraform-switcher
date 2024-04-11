@@ -47,7 +47,7 @@ const (
 )
 
 var logger = lib.InitLogger()
-var version *string
+var version string
 
 func main() {
 	dir := lib.GetCurrentDirectory()
@@ -79,7 +79,6 @@ func main() {
 		logger.Fatalf("Unable to get home directory: %v", err)
 		os.Exit(1)
 	}
-
 	TFVersionFile := filepath.Join(*chDirPath, tfvFilename)    //settings for .terraform-version file in current directory (tfenv compatible)
 	RCFile := filepath.Join(*chDirPath, rcFilename)            //settings for .tfswitchrc file in current directory (backward compatible purpose)
 	TOMLConfigFile := filepath.Join(*chDirPath, tomlFilename)  //settings for .tfswitch.toml file in current directory (option to specify bin directory)
@@ -89,7 +88,7 @@ func main() {
 	switch {
 	case *versionFlag:
 		//if *versionFlag {
-		if version != nil {
+		if version != "" {
 			fmt.Printf("Version: %s\n", version)
 		} else {
 			fmt.Println("Version not defined during build.")
