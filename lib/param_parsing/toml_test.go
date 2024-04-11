@@ -1,12 +1,14 @@
 package param_parsing
 
 import (
+	"github.com/warrensbox/terraform-switcher/lib"
 	"testing"
 )
 
 func prepare() Params {
 	var params Params
 	params.ChDirPath = "../../test-data/test_tfswitchtoml"
+	logger = lib.InitLogger("DEBUG")
 	return params
 }
 
@@ -25,5 +27,14 @@ func TestGetParamsTOML_Version(t *testing.T) {
 	params = getParamsTOML(params)
 	if params.Version != expected {
 		t.Errorf("Version not matching. Got %v, expected %v", params.Version, expected)
+	}
+}
+
+func TestGetParamsTOML_log_level(t *testing.T) {
+	expected := "NOTICE"
+	params := prepare()
+	params = getParamsTOML(params)
+	if params.LogLevel != expected {
+		t.Errorf("Version not matching. Got %v, expected %v", params.LogLevel, expected)
 	}
 }

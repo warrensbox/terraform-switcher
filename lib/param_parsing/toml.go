@@ -23,8 +23,15 @@ func getParamsTOML(params Params) Params {
 			logger.Fatalf("Could not to read %q: %v", tomlPath, errs)
 		}
 
-		params.Version = viperParser.GetString("version") // Attempt to get the version if it's provided in the toml
-		params.CustomBinaryPath = viperParser.GetString("bin")
+		if viperParser.Get("version") != nil {
+			params.Version = viperParser.GetString("version")
+		}
+		if viperParser.Get("bin") != nil {
+			params.CustomBinaryPath = viperParser.GetString("bin")
+		}
+		if viperParser.Get("log-level") != nil {
+			params.LogLevel = viperParser.GetString("log-level")
+		}
 	}
 	return params
 }

@@ -1,2 +1,3 @@
 bin = "/usr/local/bin/terraform_from_toml"
 version = "0.11.4"
+log-level = "NOTICE"
