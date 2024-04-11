@@ -33,7 +33,7 @@ func getChecksumFromHashFile(signatureFilePath string, terraformFileName string)
 
 // checkChecksumMatches This will calculate and compare the check sum of the downloaded zip file
 func checkChecksumMatches(hashFile string, targetFile *os.File) bool {
-	logger.Debugf("Checksum comparison for %v", targetFile.Name())
+	logger.Debugf("Checksum comparison for %q", targetFile.Name())
 	var fileHandlersToClose []*os.File
 	fileHandlersToClose = append(fileHandlersToClose, targetFile)
 	defer closeFileHandlers(fileHandlersToClose)

@@ -14,7 +14,7 @@ import (
 
 // RenameFile : rename file name
 func RenameFile(src string, dest string) {
-	logger.Debugf("Renaming file %v to %v", src, dest)
+	logger.Debugf("Renaming file %q to %q", src, dest)
 	err := os.Rename(src, dest)
 	if err != nil {
 		logger.Fatal(err)
@@ -47,7 +47,7 @@ func CheckFileExist(file string) bool {
 // Unzip will decompress a zip archive, moving all files and folders
 // within the zip file (parameter 1) to an output directory (parameter 2).
 func Unzip(src string, dest string) ([]string, error) {
-	logger.Debugf("Unzipping file %v", src)
+	logger.Debugf("Unzipping file %q", src)
 
 	var filenames []string
 
@@ -58,14 +58,14 @@ func Unzip(src string, dest string) ([]string, error) {
 	defer reader.Close()
 	destination, err := filepath.Abs(dest)
 	if err != nil {
-		logger.Fatalf("Could not open destination %v", err)
+		logger.Fatalf("Could not open destination: %v", err)
 	}
 	var wg sync.WaitGroup
 	for _, f := range reader.File {
 		wg.Add(1)
 		unzipErr := unzipFile(f, destination, &wg)
 		if unzipErr != nil {
-			logger.Fatalf("Error unzipping %s", unzipErr)
+			logger.Fatalf("Error unzipping %v", unzipErr)
 		} else {
 			filenames = append(filenames, filepath.Join(destination, f.Name))
 		}
@@ -211,12 +211,12 @@ func unzipFile(f *zip.File, destination string, wg *sync.WaitGroup) error {
 	// 4. Check if file paths are not vulnerable to Zip Slip
 	filePath := filepath.Join(destination, f.Name)
 	if !strings.HasPrefix(filePath, filepath.Clean(destination)+string(os.PathSeparator)) {
-		return fmt.Errorf("invalid file path: %s", filePath)
+		return fmt.Errorf("Invalid file path: %q", filePath)
 	}
 
 	// 5. Create directory tree
 	if f.FileInfo().IsDir() {
-		logger.Debugf("Extracting Directory %v", filePath)
+		logger.Debugf("Extracting directory %q", filePath)
 		if err := os.MkdirAll(filePath, os.ModePerm); err != nil {
 			return err
 		}
@@ -239,13 +239,13 @@ func unzipFile(f *zip.File, destination string, wg *sync.WaitGroup) error {
 		return err
 	}
 
-	logger.Debugf("Extracting File %v", destinationFile.Name())
+	logger.Debugf("Extracting File %q", destinationFile.Name())
 	if _, err := io.Copy(destinationFile, zippedFile); err != nil {
 		return err
 	}
-	logger.Debugf("Closing destination file handler %v", destinationFile.Name())
+	logger.Debugf("Closing destination file handler %q", destinationFile.Name())
 	_ = destinationFile.Close()
-	logger.Debugf("Closing zipped file handler %v", f.Name)
+	logger.Debugf("Closing zipped file handler %q", f.Name)
 	_ = zippedFile.Close()
 	return nil
 }
