@@ -90,9 +90,9 @@ func main() {
 	case *versionFlag:
 		//if *versionFlag {
 		if version != nil {
-			logger.Infof("Version: %s", version)
+			fmt.Printf("Version: %s\n", version)
 		} else {
-			logger.Error("Version not set correctly.")
+			fmt.Println("Version not defined during build.")
 		}
 	case *helpFlag:
 		//} else if *helpFlag {
