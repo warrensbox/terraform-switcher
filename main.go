@@ -186,7 +186,6 @@ func installOption(listAll bool, customBinaryPath, mirrorURL string) {
 			os.Exit(1)
 		} else {
 			logger.Fatalf("Prompt failed %v", errPrompt)
-			os.Exit(1)
 		}
 	}
 
