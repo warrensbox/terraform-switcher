@@ -47,7 +47,7 @@ const (
 )
 
 var logger = lib.InitLogger()
-var version = "0.12.0"
+var version *string
 
 func main() {
 	dir := lib.GetCurrentDirectory()
@@ -89,7 +89,11 @@ func main() {
 	switch {
 	case *versionFlag:
 		//if *versionFlag {
-		logger.Infof("Version: %s", version)
+		if version != nil {
+			logger.Infof("Version: %s", version)
+		} else {
+			logger.Error("Version not set correctly.")
+		}
 	case *helpFlag:
 		//} else if *helpFlag {
 		usageMessage()
