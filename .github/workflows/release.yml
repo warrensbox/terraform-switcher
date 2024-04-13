@@ -55,7 +55,7 @@ jobs:
       id: semver-tag-dry
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        WITH_V: false
+        WITH_V: true
         INITIAL_VERSION: 1.0.0
         RELEASE_BRANCHES: master
         DEFAULT_BUMP: ${{ github.event.inputs.name }}

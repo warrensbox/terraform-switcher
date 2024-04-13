@@ -15,6 +15,12 @@ Once installed, simply select the version you require from the dropdown and star
 ## Documentation
 Click [here](https://tfswitch.warrensbox.com) for our extended documentation.
 
+## NOTE
+Going forward we will change the version identifier of `tfswitch` to align with the common go package versioning.  
+Please be advised to change any automated implementation you might have that is relying on the `tfswitch` version string.  
+**Old version string:** `0.1.2412`  
+**New version string:** `v1.0.0` Note the `v` that is preceding all version numbers.
+
 ## Installation
 `tfswitch` is available as a binary and on various package managers (eg. Homebrew). 
 
