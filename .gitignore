@@ -36,3 +36,4 @@ build-script.sh
 .idea
 
 /vendor
+/www/site
