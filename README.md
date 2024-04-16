@@ -59,7 +59,7 @@ Alternatively, you can install the binary from the source <a href="https://githu
 
 See [our installation documentation](https://tfswitch.warrensbox.com/Install) for more details.
 
-[!IMPORTANT]
+> [!IMPORTANT]    
 > The version identifier of `tfswitch` has changed to align with the common `go` package versioning.
 >
 > Version numbers will now be prefixed with a `v` - eg. `v1.2.3`.
@@ -81,12 +81,12 @@ More [usage guide here](https://tfswitch.warrensbox.com/Quick-Start/)
 
 ## How to contribute
 An open source project becomes meaningful when people collaborate to improve the code.    
-Feel free to look at the code, critique and make suggestions. Let's make `tfswitch` better!   
+Feel free to look at the code, critique and make suggestions. Let's make `tfswitch` better!
 
-See step-by-step instructions on how to contribute here: [Contribute](https://tfswitch.warrensbox.com/How-to-Contribute/)      
+See step-by-step instructions on how to contribute here: [Contribute](https://tfswitch.warrensbox.com/How-to-Contribute/)
 
 ## Additional Info
-See how to *upgrade*, *uninstall*, *troubleshoot* here: [More info](https://tfswitch.warrensbox.com/Upgrade-or-Uninstall/)   
+See how to *upgrade*, *uninstall*, *troubleshoot* here: [More info](https://tfswitch.warrensbox.com/Upgrade-or-Uninstall/)
 
 ## Issues
 Please open  *issues* here: [New Issue](https://github.com/warrensbox/terraform-switcher/issues)
