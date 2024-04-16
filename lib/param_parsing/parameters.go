@@ -54,7 +54,7 @@ func GetParameters() Params {
 	if tomlFileExists(params) {
 		params = getParamsTOML(params)
 	} else if tfSwitchFileExists(params) {
-		params = GetParamsFromTfSwitch(params)
+		params, err = GetParamsFromTfSwitch(params)
 	} else if terraformVersionFileExists(params) {
 		params, err = GetParamsFromTerraformVersion(params)
 	} else if isTerraformModule(params) {
