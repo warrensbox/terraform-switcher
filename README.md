@@ -62,7 +62,7 @@ See [our installation documentation](https://tfswitch.warrensbox.com/Install) fo
 > [!IMPORTANT]    
 > The version identifier of `tfswitch` has changed to align with the common `go` package versioning.
 >
-> Version numbers will now be prefixed with a `v` - eg. `v1.2.3`.
+> Version numbers will now be prefixed with a `v` - eg. `v1.0.3`.
 >
 > Please change any automated implementations relying on the `tfswitch` version string. 
 >
