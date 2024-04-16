@@ -38,15 +38,15 @@ func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 	for _, element := range versions {
 		if constraints.Check(element) { // Validate a version against a constraint
 			tfversion = element.String()
-			logger.Infof("Matched version: %q", tfversion)
 			if validVersionFormat(tfversion) { //check if version format is correct
+				logger.Infof("Matched version: %q", tfversion)
 				return tfversion, nil
+			} else {
+				PrintInvalidTFVersion()
 			}
 		}
 	}
-
-	PrintInvalidTFVersion()
-	return "", fmt.Errorf("error parsing constraint: %s", *tfconstraint)
+	return "", fmt.Errorf("did not find version matching constraint: %s", *tfconstraint)
 }
 
 // PrintInvalidTFVersion Print invalid TF version
