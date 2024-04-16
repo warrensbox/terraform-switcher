@@ -23,7 +23,7 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})
-	expected := "../../test-data/test_tfswitchtoml"
+	expected := "../../test-data/integration-tests/test_tfswitchtoml"
 	os.Args = []string{"cmd", "--chdir=" + expected}
 	params := GetParameters()
 	actual := params.ChDirPath
@@ -46,7 +46,7 @@ func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})
-	expected := "../../test-data/test_tfswitchtoml"
+	expected := "../../test-data/integration-tests/test_tfswitchtoml"
 	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin"}
 	params := GetParameters()
 	actual := params.ChDirPath
@@ -70,7 +70,7 @@ func TestGetParameters_check_config_precedence(t *testing.T) {
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})
-	os.Args = []string{"cmd", "--chdir=../../test-data/test_precedence"}
+	os.Args = []string{"cmd", "--chdir=../../test-data/integration-tests/test_precedence"}
 	parameters := prepare()
 	parameters = GetParameters()
 	expected := "0.11.3"

@@ -6,7 +6,7 @@ import (
 
 func TestGetParamsFromTerraformVersion(t *testing.T) {
 	var params Params
-	params.ChDirPath = "../../test-data/test_terraform-version"
+	params.ChDirPath = "../../test-data/integration-tests/test_terraform-version"
 	params, _ = GetParamsFromTerraformVersion(params)
 	expected := "0.11.0"
 	if params.Version != expected {
@@ -16,7 +16,7 @@ func TestGetParamsFromTerraformVersion(t *testing.T) {
 
 func TestGetParamsFromTerraformVersion_no_file(t *testing.T) {
 	var params Params
-	params.ChDirPath = "../../test-data/test_no_file"
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
 	params, _ = GetParamsFromTerraformVersion(params)
 	if params.Version != "" {
 		t.Errorf("Expected emtpy version string. Got: %v", params.Version)

@@ -11,7 +11,7 @@ func TestGetVersionFromVersionsTF(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	var params Params
 	params = initParams(params)
-	params.ChDirPath = "../../test-data/test_versiontf"
+	params.ChDirPath = "../../test-data/integration-tests/test_versiontf"
 	params, _ = GetVersionFromVersionsTF(params)
 	v1, _ := version.NewVersion("1.0.0")
 	v2, _ := version.NewVersion("2.0.0")
@@ -25,7 +25,7 @@ func TestGetVersionFromVersionsTF_erroneous_file(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	var params Params
 	params = initParams(params)
-	params.ChDirPath = "../../test-data/test_versiontf_error"
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_error"
 	params, err := GetVersionFromVersionsTF(params)
 	if err == nil {
 		t.Error("Expected error got nil")
@@ -41,7 +41,7 @@ func TestGetVersionFromVersionsTF_non_existent_constraint(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	var params Params
 	params = initParams(params)
-	params.ChDirPath = "../../test-data/test_versiontf_non_existent"
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_existent"
 	params, err := GetVersionFromVersionsTF(params)
 	if err == nil {
 		t.Error("Expected error got nil")

@@ -7,7 +7,7 @@ import (
 
 func prepare() Params {
 	var params Params
-	params.ChDirPath = "../../test-data/test_tfswitchtoml"
+	params.ChDirPath = "../../test-data/integration-tests/test_tfswitchtoml"
 	logger = lib.InitLogger("DEBUG")
 	return params
 }
@@ -41,7 +41,7 @@ func TestGetParamsTOML_log_level(t *testing.T) {
 
 func TestGetParamsTOML_no_file(t *testing.T) {
 	var params Params
-	params.ChDirPath = "../../test-data/test_no_file"
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
 	params, _ = getParamsTOML(params)
 	if params.Version != "" {
 		t.Errorf("Expected emtpy version string. Got: %v", params.Version)
@@ -51,7 +51,7 @@ func TestGetParamsTOML_no_file(t *testing.T) {
 func TestGetParamsTOML_error_in_file(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	var params Params
-	params.ChDirPath = "../../test-data/test_tfswitchtoml_error"
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_tfswitchtoml_error"
 	params, err := getParamsTOML(params)
 	if err == nil {
 		t.Errorf("Expected error for reading erroneous toml file. Got nil")
