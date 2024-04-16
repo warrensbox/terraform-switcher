@@ -207,13 +207,13 @@ func GetCurrentDirectory() string {
 
 func unzipFile(f *zip.File, destination string, wg *sync.WaitGroup) error {
 	defer wg.Done()
-	// 4. Check if file paths are not vulnerable to Zip Slip
+	// 1. Check if file paths are not vulnerable to Zip Slip
 	filePath := filepath.Join(destination, f.Name)
 	if !strings.HasPrefix(filePath, filepath.Clean(destination)+string(os.PathSeparator)) {
 		return fmt.Errorf("Invalid file path: %q", filePath)
 	}
 
-	// 5. Create directory tree
+	// 2. Create directory tree
 	if f.FileInfo().IsDir() {
 		logger.Debugf("Extracting directory %q", filePath)
 		if err := os.MkdirAll(filePath, os.ModePerm); err != nil {
@@ -226,14 +226,20 @@ func unzipFile(f *zip.File, destination string, wg *sync.WaitGroup) error {
 		return err
 	}
 
-	// 6. Create a destination file for unzipped content
+	// 3. Create a destination file for unzipped content
 	destinationFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+	defer func(destinationFile *os.File) {
+		_ = destinationFile.Close()
+	}(destinationFile)
 	if err != nil {
 		return err
 	}
 
-	// 7. Unzip the content of a file and copy it to the destination file
+	// 4. Unzip the content of a file and copy it to the destination file
 	zippedFile, err := f.Open()
+	defer func(zippedFile io.ReadCloser) {
+		_ = zippedFile.Close()
+	}(zippedFile)
 	if err != nil {
 		return err
 	}
