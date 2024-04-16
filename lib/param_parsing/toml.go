@@ -8,7 +8,7 @@ import (
 const tfSwitchTOMLFileName = ".tfswitch.toml"
 
 // getParamsTOML parses everything in the toml file, return required version and bin path
-func getParamsTOML(params Params) Params {
+func getParamsTOML(params Params) (Params, error) {
 	tomlPath := params.ChDirPath + "/" + tfSwitchTOMLFileName
 	if tomlFileExists(params) {
 		logger.Infof("Reading configuration from %q", tomlPath)
@@ -20,7 +20,8 @@ func getParamsTOML(params Params) Params {
 
 		errs := viperParser.ReadInConfig() // Find and read the config file
 		if errs != nil {
-			logger.Fatalf("Could not to read %q: %v", tomlPath, errs)
+			logger.Errorf("Could not to read %q: %v", tomlPath, errs)
+			return params, errs
 		}
 
 		if viperParser.Get("bin") != nil {
@@ -33,7 +34,7 @@ func getParamsTOML(params Params) Params {
 			params.Version = viperParser.GetString("version")
 		}
 	}
-	return params
+	return params, nil
 }
 
 func tomlFileExists(params Params) bool {

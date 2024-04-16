@@ -52,7 +52,7 @@ func GetParameters() Params {
 	var err error
 	// Read configuration files
 	if tomlFileExists(params) {
-		params = getParamsTOML(params)
+		params, err = getParamsTOML(params)
 	} else if tfSwitchFileExists(params) {
 		params, err = GetParamsFromTfSwitch(params)
 	} else if terraformVersionFileExists(params) {
