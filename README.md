@@ -24,7 +24,6 @@ Please be advised to change any automated implementation you might have that is 
 ## Installation
 `tfswitch` is available as a binary and on various package managers (eg. Homebrew). 
 
-
 ## Windows
 Download and extract the Windows version of `tfswitch` that is compatible with your system.  
 We are building binaries for 386, amd64, arm6 and arm7 CPU structure.  
