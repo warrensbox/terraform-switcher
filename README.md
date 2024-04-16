@@ -24,17 +24,52 @@ Please be advised to change any automated implementation you might have that is 
 ## Installation
 `tfswitch` is available as a binary and on various package managers (eg. Homebrew). 
 
-See [our installation documentation](https://tfswitch.warrensbox.com/Installation) for more details.
+## Windows
+Download and extract the Windows version of `tfswitch` that is compatible with your system.  
+We are building binaries for 386, amd64, arm6 and arm7 CPU structure.  
+See the [release page](https://github.com/warrensbox/terraform-switcher/releases/latest) for your download.
 
-> [!IMPORTANT]
+## Homebrew
+For macOS or various Linux distributions, Homebrew offers the simplest installation process. <a href="https://brew.sh/" target="_blank">If you do not have homebrew installed, click here</a>.
+
+```ruby
+brew install warrensbox/tap/tfswitch
+```
+
+## Linux
+Installation for Linux operating systems.
+
+```sh
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
+```
+
+## Arch User Repository (AUR) packages for Arch Linux
+
+```sh
+# compiled from source
+yay tfswitch
+
+# precompiled
+yay tfswitch-bin
+```
+
+## Install from source
+
+Alternatively, you can install the binary from the source <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">here</a>.
+
+See [our installation documentation](https://tfswitch.warrensbox.com/Install) for more details.
+
+> [!IMPORTANT]    
 > The version identifier of `tfswitch` has changed to align with the common `go` package versioning.
 >
-> Version numbers will now be prefixed with a `v` - eg. `v1.2.3`.
+> Version numbers will now be prefixed with a `v` - eg. `v1.0.3`.
 >
 > Please change any automated implementations relying on the `tfswitch` version string. 
 >
 > **Old version string:** `0.1.2412`
 > **New version string:** `v1.0.3`
+
+[Having trouble installing](https://tfswitch.warrensbox.com/Troubleshoot/)
 
 ## Quick Start
 ### Dropdown Menu
@@ -42,14 +77,16 @@ Execute `tfswitch` and select the desired Terraform version via the dropdown men
 ### Version on command line
 Use `tfswitch 1.7.0` to install Terraform version 1.7.0. Replace the version number as required.
 
+More [usage guide here](https://tfswitch.warrensbox.com/Quick-Start/)
+
 ## How to contribute
 An open source project becomes meaningful when people collaborate to improve the code.    
-Feel free to look at the code, critique and make suggestions. Let's make `tfswitch` better!   
+Feel free to look at the code, critique and make suggestions. Let's make `tfswitch` better!
 
-See step-by-step instructions on how to contribute here: [Contribute](https://tfswitch.warrensbox.com/How-to-Contribute/)      
+See step-by-step instructions on how to contribute here: [Contribute](https://tfswitch.warrensbox.com/How-to-Contribute/)
 
 ## Additional Info
-See how to *upgrade*, *uninstall*, *troubleshoot* here: [More info](https://tfswitch.warrensbox.com/Upgrade-or-Uninstall/)   
+See how to *upgrade*, *uninstall*, *troubleshoot* here: [More info](https://tfswitch.warrensbox.com/Upgrade-or-Uninstall/)
 
 ## Issues
 Please open  *issues* here: [New Issue](https://github.com/warrensbox/terraform-switcher/issues)
