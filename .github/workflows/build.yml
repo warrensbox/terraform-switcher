@@ -90,3 +90,10 @@ jobs:
     - name: Running unit tests
       run: |
         go test -v ./...
+
+    - name: Running integration tests
+      run: |
+        mkdir build
+        mkdir bin
+        go build -v -o build/tfswitch
+        for /D %%s in (.\integration-tests\*) do ( .\build\tfswitch -c "%%s" -b .\bin\terraform )
