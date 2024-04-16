@@ -31,7 +31,7 @@ We are building binaries for 386, amd64, arm6 and arm7 CPU structure.
 See the [release page](https://github.com/warrensbox/terraform-switcher/releases/latest) for your download.
 
 ## Homebrew
-Installation for macOS is the easiest with Homebrew. <a href="https://brew.sh/" target="_blank">If you do not have homebrew installed, click here</a>.
+For macOS or various Linux distributions, Homebrew offers the simplest installation process. <a href="https://brew.sh/" target="_blank">If you do not have homebrew installed, click here</a>.
 
 ```ruby
 brew install warrensbox/tap/tfswitch
