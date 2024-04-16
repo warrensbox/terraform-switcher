@@ -49,19 +49,23 @@ func GetParameters() Params {
 	getopt.Parse()
 
 	logger = lib.InitLogger(params.LogLevel)
+	var err error
 	// Read configuration files
 	if tomlFileExists(params) {
 		params = getParamsTOML(params)
 	} else if tfSwitchFileExists(params) {
 		params = GetParamsFromTfSwitch(params)
 	} else if terraformVersionFileExists(params) {
-		params = GetParamsFromTerraformVersion(params)
+		params, err = GetParamsFromTerraformVersion(params)
 	} else if isTerraformModule(params) {
 		params = GetVersionFromVersionsTF(params)
 	} else if terraGruntFileExists(params) {
-		params = GetVersionFromTerragrunt(params)
+		params, err = GetVersionFromTerragrunt(params)
 	} else {
 		params = GetParamsFromEnvironment(params)
+	}
+	if err != nil {
+		logger.Fatalf("Error parsing configuration file: %q", err)
 	}
 
 	// Parse again to overwrite anything that might by defined on the cli AND in any config file (CLI always wins)
