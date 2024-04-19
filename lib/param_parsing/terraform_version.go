@@ -3,13 +3,14 @@ package param_parsing
 import (
 	"github.com/warrensbox/terraform-switcher/lib"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
 const terraformVersionFileName = ".terraform-version"
 
 func GetParamsFromTerraformVersion(params Params) (Params, error) {
-	filePath := params.ChDirPath + "/" + terraformVersionFileName
+	filePath := filepath.Join(params.ChDirPath, terraformVersionFileName)
 	if lib.CheckFileExist(filePath) {
 		logger.Infof("Reading configuration from %q", filePath)
 		content, err := os.ReadFile(filePath)
@@ -23,6 +24,6 @@ func GetParamsFromTerraformVersion(params Params) (Params, error) {
 }
 
 func terraformVersionFileExists(params Params) bool {
-	filePath := params.ChDirPath + "/" + terraformVersionFileName
+	filePath := filepath.Join(params.ChDirPath, terraformVersionFileName)
 	return lib.CheckFileExist(filePath)
 }
