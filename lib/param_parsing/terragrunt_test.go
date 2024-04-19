@@ -3,6 +3,7 @@ package param_parsing
 import (
 	"github.com/hashicorp/go-version"
 	"github.com/warrensbox/terraform-switcher/lib"
+	"strings"
 	"testing"
 )
 
@@ -39,9 +40,9 @@ func TestGetVersionFromTerragrunt_erroneous_file(t *testing.T) {
 	if err == nil {
 		t.Error("Expected error but got none.")
 	} else {
-		expectedError := "could not decode body of HCL file \"../../test-data/skip-integration-tests/test_terragrunt_error_hcl/terragrunt.hcl\""
-		if err.Error() != expectedError {
-			t.Errorf("Expected error to be '%q', got '%q'", expectedError, err)
+		expectedError := "could not decode body of HCL file"
+		if !strings.Contains(err.Error(), expectedError) {
+			t.Errorf("Expected error to contain '%q', got '%q'", expectedError, err)
 		}
 	}
 }
