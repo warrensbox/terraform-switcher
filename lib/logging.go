@@ -8,7 +8,13 @@ import (
 
 const loggingTemplate = "{{datetime}} {{level}} [{{caller}}] {{message}} {{data}} {{extra}}\n"
 
-var logger *slog.Logger
+var (
+	logger        *slog.Logger
+	NormalLogging = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel}
+	NoticeLogging = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel}
+	DebugLogging  = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel}
+	TraceLogging  = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel, slog.TraceLevel}
+)
 
 func InitLogger(logLevel string) *slog.Logger {
 	formatter := slog.NewTextFormatter()
@@ -18,13 +24,17 @@ func InitLogger(logLevel string) *slog.Logger {
 	formatter.SetTemplate(loggingTemplate)
 
 	var h *handler.ConsoleHandler
-	if logLevel == "TRACE" {
+	switch logLevel {
+	case "TRACE":
 		h = handler.NewConsoleHandler(TraceLogging)
-	} else if logLevel == "DEBUG" {
+		break
+	case "DEBUG":
 		h = handler.NewConsoleHandler(DebugLogging)
-	} else if logLevel == "NOTICE" {
+		break
+	case "NOTICE":
 		h = handler.NewConsoleHandler(NoticeLogging)
-	} else {
+		break
+	default:
 		h = handler.NewConsoleHandler(NormalLogging)
 	}
 
@@ -34,10 +44,3 @@ func InitLogger(logLevel string) *slog.Logger {
 	logger = newLogger
 	return newLogger
 }
-
-var (
-	NormalLogging = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel}
-	NoticeLogging = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel}
-	DebugLogging  = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel}
-	TraceLogging  = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel, slog.TraceLevel}
-)
