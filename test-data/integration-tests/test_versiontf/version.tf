@@ -6,3 +6,7 @@ terraform {
     kubernetes = ">= 1.11.1"
   }
 }
+
+terraform {
+  required_version = "<= 1.0.5"
+}
