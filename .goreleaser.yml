@@ -158,8 +158,8 @@ changelog:
     # prefixed with the commit SHA1, usually in the form of
     # `<abbrev-commit>[:] <title-commit>`.
     exclude:
-      - " Merge pull request "
-      - test(ing)?
+      - "^.*?Merge pull request "
+      - "^.*?test(ing)?"
 
     # Commit messages matching the regexp listed here will be the only ones
     # added to the changelog
