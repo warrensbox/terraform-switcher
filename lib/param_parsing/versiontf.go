@@ -1,6 +1,8 @@
 package param_parsing
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
@@ -11,7 +13,25 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 	var tfConstraints []string
 	var exactConstraints []string
 
-	logger.Infof("Reading version from terraform module at %q", params.ChDirPath)
+	curDir, err := os.Getwd()
+	if err != nil {
+		logger.Fatalf("Could not get current working directory: %v", err)
+	}
+
+	absPath := params.ChDirPath
+	if !filepath.IsAbs(params.ChDirPath) {
+		absPath, err = filepath.Abs(params.ChDirPath)
+		if err != nil {
+			logger.Fatalf("Could not derive absolute path to %q: %v", params.ChDirPath, err)
+		}
+	}
+
+	relPath, err := filepath.Rel(curDir, absPath)
+	if err != nil {
+		logger.Fatalf("Could not derive relative path to %q: %v", params.ChDirPath, err)
+	}
+
+	logger.Infof("Reading version from terraform module at %q", relPath)
 	module, err := tfconfig.LoadModule(params.ChDirPath)
 	if err != nil {
 		logger.Errorf("Could not load terraform module at %q", params.ChDirPath)
