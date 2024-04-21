@@ -299,7 +299,6 @@ func InstallLatestImplicitVersion(requestedVersion, customBinaryPath, mirrorURL 
 	if err != nil {
 		logger.Errorf("Error parsing constraint %q: %v", requestedVersion, err)
 	}
-	//if lib.ValidMinorVersionFormat(requestedVersion) {
 	tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
 	if err == nil && tfversion != "" {
 		install(tfversion, customBinaryPath, mirrorURL)

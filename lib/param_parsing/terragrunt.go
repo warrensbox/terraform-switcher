@@ -22,7 +22,6 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 		hclFile, diagnostics := parser.ParseHCLFile(filePath)
 		if diagnostics.HasErrors() {
 			return params, fmt.Errorf("unable to parse HCL file %q", filePath)
-			//logger.Fatalf("Unable to parse HCL file %q", filePath)
 		}
 		var versionFromTerragrunt terragruntVersionConstraints
 		diagnostics = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
