@@ -2,7 +2,7 @@ package lib
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"reflect"
@@ -14,12 +14,12 @@ type tfVersionList struct {
 	tflist []string
 }
 
-// GetTFList :  Get the list of available terraform version given the hashicorp url
-func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
-
-	result, error := GetTFURLBody(mirrorURL)
-	if error != nil {
-		return nil, error
+// getTFList :  Get the list of available terraform version given the hashicorp url
+func getTFList(mirrorURL string, preRelease bool) ([]string, error) {
+	logger.Debugf("Get list of terraform versions")
+	result, err := getTFURLBody(mirrorURL)
+	if err != nil {
+		return nil, err
 	}
 
 	var tfVersionList tfVersionList
@@ -42,19 +42,16 @@ func GetTFList(mirrorURL string, preRelease bool) ([]string, error) {
 	}
 
 	if len(tfVersionList.tflist) == 0 {
-		logger.Infof("Cannot get version list from mirror: %s", mirrorURL)
+		logger.Errorf("Cannot get version list from mirror: %s", mirrorURL)
 	}
-
 	return tfVersionList.tflist, nil
-
 }
 
-// GetTFLatest :  Get the latest terraform version given the hashicorp url
-func GetTFLatest(mirrorURL string) (string, error) {
-
-	result, error := GetTFURLBody(mirrorURL)
-	if error != nil {
-		return "", error
+// getTFLatest :  Get the latest terraform version given the hashicorp url
+func getTFLatest(mirrorURL string) (string, error) {
+	result, err := getTFURLBody(mirrorURL)
+	if err != nil {
+		return "", err
 	}
 	// Getting versions from body; should return match /X.X.X/ where X is a number
 	semver := `\/?(\d+\.\d+\.\d+)\/?"`
@@ -66,15 +63,14 @@ func GetTFLatest(mirrorURL string) (string, error) {
 			return trimstr, nil
 		}
 	}
-
 	return "", nil
 }
 
-// GetTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
-func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
+// getTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
+func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
 	if preRelease == true {
-		//TODO: use GetTFList() instead of GetTFURLBody
-		versions, error := GetTFURLBody(mirrorURL)
+		//TODO: use getTFList() instead of getTFURLBody
+		versions, error := getTFURLBody(mirrorURL)
 		if error != nil {
 			return "", error
 		}
@@ -93,7 +89,7 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 		}
 	} else if preRelease == false {
 		listAll := false
-		tflist, _ := GetTFList(mirrorURL, listAll) //get list of versions
+		tflist, _ := getTFList(mirrorURL, listAll) //get list of versions
 		version = fmt.Sprintf("~> %v", version)
 		semv, err := SemVerParser(&version, tflist)
 		if err != nil {
@@ -104,29 +100,27 @@ func GetTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 	return "", nil
 }
 
-// GetTFURLBody : Get list of terraform versions from hashicorp releases
-func GetTFURLBody(mirrorURL string) ([]string, error) {
+// getTFURLBody : Get list of terraform versions from hashicorp releases
+func getTFURLBody(mirrorURL string) ([]string, error) {
 
 	hasSlash := strings.HasSuffix(mirrorURL, "/")
-	if !hasSlash { //if does not have slash - append slash
+	if !hasSlash {
+		//if it does not have slash - append slash
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}
 	resp, errURL := http.Get(mirrorURL)
 	if errURL != nil {
 		logger.Fatalf("Error getting url: %v", errURL)
-		os.Exit(1)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		logger.Fatalf("Error retrieving contents from url: %s", mirrorURL)
-		os.Exit(1)
 	}
 
-	body, errBody := ioutil.ReadAll(resp.Body)
+	body, errBody := io.ReadAll(resp.Body)
 	if errBody != nil {
 		logger.Fatalf("Error reading body: %v", errBody)
-		os.Exit(1)
 	}
 
 	bodyString := string(body)
@@ -135,9 +129,8 @@ func GetTFURLBody(mirrorURL string) ([]string, error) {
 	return result, nil
 }
 
-// VersionExist : check if requested version exist
-func VersionExist(val interface{}, array interface{}) (exists bool) {
-
+// versionExist : check if requested version exist
+func versionExist(val interface{}, array interface{}) (exists bool) {
 	exists = false
 	switch reflect.TypeOf(array).Kind() {
 	case reflect.Slice:
@@ -149,13 +142,14 @@ func VersionExist(val interface{}, array interface{}) (exists bool) {
 				return exists
 			}
 		}
+	default:
+		panic("unhandled default case")
 	}
-
 	return exists
 }
 
-// RemoveDuplicateVersions : remove duplicate version
-func RemoveDuplicateVersions(elements []string) []string {
+// removeDuplicateVersions : remove duplicate version
+func removeDuplicateVersions(elements []string) []string {
 	// Use map to record duplicates as we find them.
 	encountered := map[string]bool{}
 	result := []string{}
@@ -175,20 +169,19 @@ func RemoveDuplicateVersions(elements []string) []string {
 	return result
 }
 
-// ValidVersionFormat : returns valid version format
+// validVersionFormat : returns valid version format
 /* For example: 0.1.2 = valid
 // For example: 0.1.2-beta1 = valid
 // For example: 0.1.2-alpha = valid
 // For example: a.1.2 = invalid
 // For example: 0.1. 2 = invalid
 */
-func ValidVersionFormat(version string) bool {
+func validVersionFormat(version string) bool {
 
 	// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
 	// Follow https://semver.org/spec/v1.0.0-beta.html
 	// Check regular expression at https://rubular.com/r/ju3PxbaSBALpJB
 	semverRegex := regexp.MustCompile(`^(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?$`)
-
 	return semverRegex.MatchString(version)
 }
 
@@ -197,10 +190,31 @@ func ValidVersionFormat(version string) bool {
 // For example: a.1.2 = invalid
 // For example: 0.1.2 = invalid
 */
-func ValidMinorVersionFormat(version string) bool {
+func validMinorVersionFormat(version string) bool {
 
 	// Getting versions from body; should return match /X.X./ where X is a number
 	semverRegex := regexp.MustCompile(`^(\d+\.\d+)$`)
 
 	return semverRegex.MatchString(version)
+}
+
+// ShowLatestVersion show install latest stable tf version
+func ShowLatestVersion(mirrorURL string) {
+	tfversion, _ := getTFLatest(mirrorURL)
+	logger.Infof("%s", tfversion)
+}
+
+// ShowLatestImplicitVersion show latest - argument (version) must be provided
+func ShowLatestImplicitVersion(requestedVersion, mirrorURL string, preRelease bool) {
+	if validMinorVersionFormat(requestedVersion) {
+		tfversion, _ := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
+		if len(tfversion) > 0 {
+			logger.Infof("%s", tfversion)
+		} else {
+			logger.Fatal("The provided terraform version does not exist.\n Try `tfswitch -l` to see all available versions")
+			os.Exit(1)
+		}
+	} else {
+		PrintInvalidMinorTFVersion()
+	}
 }

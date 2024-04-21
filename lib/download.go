@@ -121,7 +121,7 @@ func downloadFromURL(installLocation string, url string) (string, error) {
 
 func downloadPublicKey(installLocation string, targetFileName string) error {
 	logger.Debugf("Looking up public key file at %q", targetFileName)
-	publicKeyFileExists := FileExists(targetFileName)
+	publicKeyFileExists := FileExistsAndIsNotDir(targetFileName)
 	if !publicKeyFileExists {
 		// Public key does not exist. Let's grab it from hashicorp
 		pubKeyFile, errDl := downloadFromURL(installLocation, PubKeyUri)
