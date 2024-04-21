@@ -21,7 +21,7 @@ func TestCreateSymlink(t *testing.T) {
 
 	home, err := homedir.Dir()
 	if err != nil {
-		logger.Fatalf("Could not detect home directory.")
+		t.Errorf("Could not detect home directory.")
 	}
 	symlinkPathSrc := filepath.Join(home, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(home, testSymlinkDest)
@@ -29,7 +29,7 @@ func TestCreateSymlink(t *testing.T) {
 	// Create file for test as windows does not like no source
 	create, err := os.Create(symlinkPathDest)
 	if err != nil {
-		logger.Fatalf("Could not create test dest file for symlink at %v", symlinkPathDest)
+		t.Errorf("Could not create test dest file for symlink at %v", symlinkPathDest)
 	}
 	defer create.Close()
 
@@ -40,7 +40,7 @@ func TestCreateSymlink(t *testing.T) {
 			t.Logf("Symlink does not exist %v [expected]", ln)
 		} else {
 			t.Logf("Symlink exist %v [expected]", ln)
-			os.Remove(symlinkPathSrc)
+			_ = os.Remove(symlinkPathSrc)
 			t.Logf("Removed existing symlink for testing purposes")
 		}
 	}
@@ -65,8 +65,8 @@ func TestCreateSymlink(t *testing.T) {
 		}
 	}
 
-	os.Remove(symlinkPathSrc)
-	os.Remove(symlinkPathDest)
+	_ = os.Remove(symlinkPathSrc)
+	_ = os.Remove(symlinkPathDest)
 }
 
 // TestRemoveSymlink : check if symlink exist-create if does not exist,
@@ -79,7 +79,7 @@ func TestRemoveSymlink(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		logger.Fatal(errCurr)
+		t.Error(errCurr)
 	}
 	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
@@ -114,7 +114,7 @@ func TestCheckSymlink(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		logger.Fatal(errCurr)
+		t.Error(errCurr)
 	}
 	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
@@ -136,5 +136,5 @@ func TestCheckSymlink(t *testing.T) {
 		t.Logf("Symlink does not exist %v [unexpected]", ln)
 	}
 
-	os.Remove(symlinkPathSrc)
+	_ = os.Remove(symlinkPathSrc)
 }

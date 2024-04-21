@@ -51,11 +51,11 @@ jobs:
       continue-on-error: false
 
     - name: Create dry tag
-      uses: anothrNick/github-tag-action@1.67.0
+      uses: anothrNick/github-tag-action@1.69.0
       id: semver-tag-dry
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        WITH_V: false
+        WITH_V: true
         INITIAL_VERSION: 1.0.0
         RELEASE_BRANCHES: master
         DEFAULT_BUMP: ${{ github.event.inputs.name }}
@@ -98,7 +98,7 @@ jobs:
 
     # Introduce new tag (for real)
     - name: Bump version and push tag
-      uses: anothrNick/github-tag-action@1.67.0
+      uses: anothrNick/github-tag-action@1.69.0
       id: semver-tag
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
