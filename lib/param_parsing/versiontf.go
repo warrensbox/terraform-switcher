@@ -32,10 +32,9 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 	}
 
 	logger.Infof("Reading version from terraform module at %q", relPath)
-	module, err := tfconfig.LoadModule(params.ChDirPath)
-	if err != nil {
-		logger.Errorf("Could not load terraform module at %q", params.ChDirPath)
-		return params, err.Err()
+	module, _ := tfconfig.LoadModule(params.ChDirPath)
+	if module.Diagnostics.HasErrors() {
+		logger.Fatalf("Could not load terraform module at %q", params.ChDirPath)
 	}
 
 	requiredVersions := module.RequiredCore
