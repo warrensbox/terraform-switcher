@@ -67,7 +67,7 @@ jobs:
         mkdir -p build
         go build -v -o build/tfswitch
         mkdir `pwd`/bin/
-        find ./test-data/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
+        find ./test-data/integration-tests/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
             ./build/tfswitch -c "${TEST_PATH}" -b `pwd`/bin/terraform || exit 1
         done
 

@@ -23,211 +23,63 @@ import (
 	"path/filepath"
 	"strings"
 
-	semver "github.com/hashicorp/go-version"
 	"github.com/hashicorp/hcl2/gohcl"
 	"github.com/hashicorp/hcl2/hclparse"
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
-	"github.com/mitchellh/go-homedir"
-
 	"github.com/manifoldco/promptui"
+	"github.com/mitchellh/go-homedir"
 	"github.com/pborman/getopt"
 	"github.com/spf13/viper"
-
 	lib "github.com/warrensbox/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib/param_parsing"
 )
 
-const (
-	defaultMirror = "https://releases.hashicorp.com/terraform"
-	defaultLatest = ""
-	tfvFilename   = ".terraform-version"
-	rcFilename    = ".tfswitchrc"
-	tomlFilename  = ".tfswitch.toml"
-	tgHclFilename = "terragrunt.hcl"
-	versionPrefix = "terraform_"
-)
-
-var logger = lib.InitLogger()
-var version = "0.12.0"
+var parameters = param_parsing.GetParameters()
+var logger = lib.InitLogger(parameters.LogLevel)
+var version string
 
 func main() {
-	dir := lib.GetCurrentDirectory()
-	custBinPath := getopt.StringLong("bin", 'b', lib.ConvertExecutableExt(lib.GetDefaultBin()), "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
-	listAllFlag := getopt.BoolLong("list-all", 'l', "List all versions of terraform - including beta and rc")
-	latestPre := getopt.StringLong("latest-pre", 'p', defaultLatest, "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
-	showLatestPre := getopt.StringLong("show-latest-pre", 'P', defaultLatest, "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
-	latestStable := getopt.StringLong("latest-stable", 's', defaultLatest, "Latest implicit version based on a constraint. Ex: tfswitch --latest-stable 0.13.0 downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
-	showLatestStable := getopt.StringLong("show-latest-stable", 'S', defaultLatest, "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
-	latestFlag := getopt.BoolLong("latest", 'u', "Get latest stable version")
-	showLatestFlag := getopt.BoolLong("show-latest", 'U', "Show latest stable version")
-	mirrorURL := getopt.StringLong("mirror", 'm', defaultMirror, "Install from a remote API other than the default. Default: "+defaultMirror)
-	chDirPath := getopt.StringLong("chdir", 'c', dir, "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
-	versionFlag := getopt.BoolLong("version", 'v', "Displays the version of tfswitch")
-	defaultVersion := getopt.StringLong("default", 'd', defaultLatest, "Default to this version in case no other versions could be detected. Ex: tfswitch --default 1.2.4")
-
-	getopt.StringVarLong(&lib.PubKeyId, "public-key-id", 'k', "The ID of the public key to check the checksums against")
-	getopt.StringVarLong(&lib.PubKeyPrefix, "public-key-prefix", 'x', "The prefix of the public key. i.e. \"hashicorp_\"")
-	getopt.StringVarLong(&lib.PubKeyUri, "public-key-uri", 'y', "The URI to download the public key from")
-
-	helpFlag := getopt.BoolLong("help", 'h', "Displays help message")
-	_ = versionFlag
-
-	getopt.Parse()
-	args := getopt.Args()
-
-	homedir, err := homedir.Dir()
-	if err != nil {
-		logger.Fatalf("Unable to get home directory: %v", err)
-		os.Exit(1)
-	}
-
-	TFVersionFile := filepath.Join(*chDirPath, tfvFilename)    //settings for .terraform-version file in current directory (tfenv compatible)
-	RCFile := filepath.Join(*chDirPath, rcFilename)            //settings for .tfswitchrc file in current directory (backward compatible purpose)
-	TOMLConfigFile := filepath.Join(*chDirPath, tomlFilename)  //settings for .tfswitch.toml file in current directory (option to specify bin directory)
-	HomeTOMLConfigFile := filepath.Join(homedir, tomlFilename) //settings for .tfswitch.toml file in home directory (option to specify bin directory)
-	TGHACLFile := filepath.Join(*chDirPath, tgHclFilename)     //settings for terragrunt.hcl file in current directory (option to specify bin directory)
 
 	switch {
-	case *versionFlag:
-		//if *versionFlag {
-		logger.Infof("Version: %s", version)
-	case *helpFlag:
-		//} else if *helpFlag {
-		usageMessage()
-	/* Checks if the .tfswitch.toml file exist in home or current directory
-	 * This block checks to see if the tfswitch toml file is provided in the current path.
-	 * If the .tfswitch.toml file exist, it has a higher precedence than the .tfswitchrc file
-	 * You can specify the custom binary path and the version you desire
-	 * If you provide a custom binary path with the -b option, this will override the bin value in the toml file
-	 * If you provide a version on the command line, this will override the version value in the toml file
-	 */
-	case lib.FileExists(TOMLConfigFile) || lib.FileExists(HomeTOMLConfigFile):
-		version := ""
-		binPath := *custBinPath
-		if lib.FileExists(TOMLConfigFile) { //read from toml from current directory
-			version, binPath = getParamsTOML(binPath, *chDirPath)
-		} else { // else read from toml from home directory
-			version, binPath = getParamsTOML(binPath, homedir)
+	case parameters.VersionFlag:
+		if version != "" {
+			fmt.Printf("Version: %s\n", version)
+		} else {
+			fmt.Println("Version not defined during build.")
 		}
-
-		switch {
-		/* GIVEN A TOML FILE, */
+		os.Exit(0)
+	case parameters.HelpFlag:
+		lib.UsageMessage()
+		os.Exit(0)
+	case parameters.ListAllFlag:
 		/* show all terraform version including betas and RCs*/
-		case *listAllFlag:
-			listAll := true //set list all true - all versions including beta and rc will be displayed
-			installOption(listAll, &binPath, mirrorURL)
+		lib.InstallOption(true, parameters.CustomBinaryPath, parameters.MirrorURL)
+	case parameters.LatestPre != "":
 		/* latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
-		case *latestPre != "":
-			preRelease := true
-			installLatestImplicitVersion(*latestPre, &binPath, mirrorURL, preRelease)
-		/* latest implicit version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
-		case *latestStable != "":
-			preRelease := false
-			installLatestImplicitVersion(*latestStable, &binPath, mirrorURL, preRelease)
+		lib.InstallLatestImplicitVersion(parameters.LatestPre, parameters.CustomBinaryPath, parameters.MirrorURL, true)
+	case parameters.ShowLatestPre != "":
+		/* show latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
+		lib.ShowLatestImplicitVersion(parameters.ShowLatestPre, parameters.MirrorURL, true)
+	case parameters.LatestStable != "":
+		/* latest implicit version. Ex: tfswitch --latest-stable 0.13 downloads 0.13.5 (latest) */
+		lib.InstallLatestImplicitVersion(parameters.LatestStable, parameters.CustomBinaryPath, parameters.MirrorURL, false)
+	case parameters.ShowLatestStable != "":
+		/* show latest implicit stable version. Ex: tfswitch --show-latest-stable 0.13 downloads 0.13.5 (latest) */
+		lib.ShowLatestImplicitVersion(parameters.ShowLatestStable, parameters.MirrorURL, false)
+	case parameters.LatestFlag:
 		/* latest stable version */
-		case *latestFlag:
-			installLatestVersion(&binPath, mirrorURL)
-		/* version provided on command line as arg */
-		case len(args) == 1:
-			installVersion(args[0], &binPath, mirrorURL)
-		/* provide an tfswitchrc file (IN ADDITION TO A TOML FILE) */
-		case lib.FileExists(RCFile) && len(args) == 0:
-			readingFileMsg(rcFilename)
-			tfversion := retrieveFileContents(RCFile)
-			installVersion(tfversion, &binPath, mirrorURL)
-		/* if .terraform-version file found (IN ADDITION TO A TOML FILE) */
-		case lib.FileExists(TFVersionFile) && len(args) == 0:
-			readingFileMsg(tfvFilename)
-			tfversion := retrieveFileContents(TFVersionFile)
-			installVersion(tfversion, &binPath, mirrorURL)
-		/* if versions.tf file found (IN ADDITION TO A TOML FILE) */
-		case checkTFModuleFileExist(*chDirPath) && len(args) == 0:
-			installTFProvidedModule(*chDirPath, &binPath, mirrorURL)
-		/* if Terraform Version environment variable is set */
-		case checkTFEnvExist() && len(args) == 0 && version == "":
-			tfversion := os.Getenv("TF_VERSION")
-			logger.Infof("\"TF_VERSION\" environment variable value: %q", tfversion)
-			installVersion(tfversion, &binPath, mirrorURL)
-		/* if terragrunt.hcl file found (IN ADDITION TO A TOML FILE) */
-		case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-			installTGHclFile(&TGHACLFile, &binPath, mirrorURL)
-		// if no arg is provided - but toml file is provided
-		case version != "":
-			installVersion(version, &binPath, mirrorURL)
-		default:
-			listAll := false //set list all false - only official release will be displayed
-			installOption(listAll, &binPath, mirrorURL)
-		}
-
-	/* show all terraform version including betas and RCs*/
-	case *listAllFlag:
-		installWithListAll(custBinPath, mirrorURL)
-
-	/* latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
-	case *latestPre != "":
-		preRelease := true
-		installLatestImplicitVersion(*latestPre, custBinPath, mirrorURL, preRelease)
-
-	/* show latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
-	case *showLatestPre != "":
-		preRelease := true
-		showLatestImplicitVersion(*showLatestPre, custBinPath, mirrorURL, preRelease)
-
-	/* latest implicit version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
-	case *latestStable != "":
-		preRelease := false
-		installLatestImplicitVersion(*latestStable, custBinPath, mirrorURL, preRelease)
-
-	/* show latest implicit stable version. Ex: tfswitch --latest 0.13 downloads 0.13.5 (latest) */
-	case *showLatestStable != "":
-		preRelease := false
-		showLatestImplicitVersion(*showLatestStable, custBinPath, mirrorURL, preRelease)
-
-	/* latest stable version */
-	case *latestFlag:
-		installLatestVersion(custBinPath, mirrorURL)
-
-	/* show latest stable version */
-	case *showLatestFlag:
-		showLatestVersion(custBinPath, mirrorURL)
-
-	/* version provided on command line as arg */
-	case len(args) == 1:
-		installVersion(args[0], custBinPath, mirrorURL)
-
-	/* provide an tfswitchrc file */
-	case lib.FileExists(RCFile) && len(args) == 0:
-		readingFileMsg(rcFilename)
-		tfversion := retrieveFileContents(RCFile)
-		installVersion(tfversion, custBinPath, mirrorURL)
-
-	/* if .terraform-version file found */
-	case lib.FileExists(TFVersionFile) && len(args) == 0:
-		readingFileMsg(tfvFilename)
-		tfversion := retrieveFileContents(TFVersionFile)
-		installVersion(tfversion, custBinPath, mirrorURL)
-
-	/* if versions.tf file found */
-	case checkTFModuleFileExist(*chDirPath) && len(args) == 0:
-		installTFProvidedModule(*chDirPath, custBinPath, mirrorURL)
-
-	/* if terragrunt.hcl file found */
-	case lib.FileExists(TGHACLFile) && checkVersionDefinedHCL(&TGHACLFile) && len(args) == 0:
-		installTGHclFile(&TGHACLFile, custBinPath, mirrorURL)
-
-	/* if Terraform Version environment variable is set */
-	case checkTFEnvExist() && len(args) == 0:
-		tfversion := os.Getenv("TF_VERSION")
-		logger.Infof("\"TF_VERSION\" environment variable value: %q", tfversion)
-		installVersion(tfversion, custBinPath, mirrorURL)
-
-	/* if default version is provided - Pick this instead of going for prompt */
-	case *defaultVersion != "":
-		installVersion(*defaultVersion, custBinPath, mirrorURL)
-
-	// if no arg is provided
+		lib.InstallLatestVersion(parameters.CustomBinaryPath, parameters.MirrorURL)
+	case parameters.ShowLatestFlag:
+		/* show latest stable version */
+		lib.ShowLatestVersion(parameters.MirrorURL)
+	case parameters.Version != "":
+		lib.InstallVersion(parameters.Version, parameters.CustomBinaryPath, parameters.MirrorURL)
+	case parameters.DefaultVersion != "":
+		/* if default version is provided - Pick this instead of going for prompt */
+		lib.InstallVersion(parameters.DefaultVersion, parameters.CustomBinaryPath, parameters.MirrorURL)
 	default:
-		listAll := false //set list all false - only official release will be displayed
-		installOption(listAll, custBinPath, mirrorURL)
+		// Set list all false - only official release will be displayed
+		lib.InstallOption(false, parameters.CustomBinaryPath, parameters.MirrorURL)
 	}
 }
 

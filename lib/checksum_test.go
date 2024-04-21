@@ -18,6 +18,7 @@ func Test_getChecksumFromHashFile(t *testing.T) {
 }
 
 func Test_checkChecksumMatches(t *testing.T) {
+	InitLogger("TRACE")
 	targetFile, err := os.Open("../test-data/checksum-check-file")
 	if err != nil {
 		t.Errorf("[Error]: Could not open testfile for signature verification.")

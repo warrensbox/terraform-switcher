@@ -1,0 +1,3 @@
+bin sdf= "/usr/local/bin/terraform_from_toml"
+version =sdfh "0.11.4"
+log-level =w35 "NOTICE"
