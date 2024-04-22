@@ -41,7 +41,7 @@ func initialize(binPath string) {
 // will create the installDir if it does not exist
 func getInstallLocation(installPath string) string {
 	/* set installation location */
-	installLocation = filepath.Join(installPath, installDir)
+	installLocation = filepath.Join(installPath, InstallDir)
 
 	/* Create local installation directory if it does not exist */
 	createDirIfNotExist(installLocation)
