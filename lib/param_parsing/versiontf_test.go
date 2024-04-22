@@ -25,7 +25,7 @@ func TestGetVersionFromVersionsTF_non_matching_constraints(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	var params Params
 	params = initParams(params)
-	params.ChDirPath = "../../test-data/integration-tests/test_versiontf_non_matching_constraints"
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_matching_constraints"
 	params, err := GetVersionFromVersionsTF(params)
 	if err == nil {
 		t.Error("Expected error but got nil")
