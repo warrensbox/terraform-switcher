@@ -58,7 +58,7 @@ func GetParameters() Params {
 	} else if terraformVersionFileExists(params) {
 		params, err = GetParamsFromTerraformVersion(params)
 	} else if isTerraformModule(params) {
-		params, _ = GetVersionFromVersionsTF(params)
+		params, err = GetVersionFromVersionsTF(params)
 	} else if terraGruntFileExists(params) {
 		params, err = GetVersionFromTerragrunt(params)
 	} else {

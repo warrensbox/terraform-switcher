@@ -1,6 +1,7 @@
 package param_parsing
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -58,7 +59,7 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 	}
 
 	if len(exactConstraints) > 0 && len(tfConstraints) > 1 {
-		logger.Fatalf("Exact constraint (%q) cannot be combined with other conditions", strings.Join(exactConstraints, ", "))
+		return params, fmt.Errorf("exact constraint (%q) cannot be combined with other conditions", strings.Join(exactConstraints, ", "))
 	}
 
 	tfConstraint := strings.Join(tfConstraints, ", ")
