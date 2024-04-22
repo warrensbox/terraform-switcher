@@ -49,7 +49,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	urlToDownload := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
 	expectedFile := filepath.Join(installLocation, installVersion+lowestVersion+macOS)
-	installedFile, errDownload := downloadFromURL(installLocation, urlToDownload)
+	installedFile, errDownload := downloadFromURL(installLocation, urlToDownload, nil)
 
 	if errDownload != nil {
 		t.Logf("Expected file name %v to be downloaded", expectedFile)
