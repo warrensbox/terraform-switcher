@@ -86,4 +86,4 @@ The Terraform binaries will then be placed in the directory `.terraform.versions
 tfswitch -i /opt/terraform
 ```
 
-**NOTE** - The directory passed in `-i`/`--install` must be created before running `tfswtich`
+**NOTE** - The directory passed in `-i`/`--install` must be created before running `tfswitch`
