@@ -7,10 +7,7 @@ import (
 
 func checkFileExist(file string) bool {
 	_, err := os.Stat(file)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func createFile(path string) {

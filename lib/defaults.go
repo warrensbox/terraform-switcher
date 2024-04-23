@@ -1,10 +1,7 @@
 package lib
 
 import (
-	"os"
 	"runtime"
-
-	"github.com/mitchellh/go-homedir"
 )
 
 var (
@@ -21,11 +18,7 @@ const (
 func GetDefaultBin() string {
 	var defaultBin = "/usr/local/bin/terraform"
 	if runtime.GOOS == "windows" {
-		home, err := homedir.Dir()
-		if err != nil {
-			logger.Fatal("Could not detect home directory.")
-			os.Exit(1)
-		}
+		home := GetHomeDirectory()
 		defaultBin = home + "/bin/terraform.exe"
 	}
 	return defaultBin
@@ -35,7 +28,7 @@ const (
 	DefaultMirror             = "https://releases.hashicorp.com/terraform"
 	DefaultLatest             = ""
 	installFile               = "terraform"
-	installPath               = ".terraform.versions"
+	InstallDir                = ".terraform.versions"
 	recentFile                = "RECENT"
 	tfDarwinArm64StartVersion = "1.0.2"
 	VersionPrefix             = "terraform_"

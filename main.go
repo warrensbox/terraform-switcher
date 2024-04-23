@@ -44,32 +44,32 @@ func main() {
 		os.Exit(0)
 	case parameters.ListAllFlag:
 		/* show all terraform version including betas and RCs*/
-		lib.InstallOption(true, parameters.CustomBinaryPath, parameters.MirrorURL)
+		lib.InstallOption(true, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	case parameters.LatestPre != "":
 		/* latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
-		lib.InstallLatestImplicitVersion(parameters.LatestPre, parameters.CustomBinaryPath, parameters.MirrorURL, true)
+		lib.InstallLatestImplicitVersion(parameters.LatestPre, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, true)
 	case parameters.ShowLatestPre != "":
 		/* show latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
 		lib.ShowLatestImplicitVersion(parameters.ShowLatestPre, parameters.MirrorURL, true)
 	case parameters.LatestStable != "":
 		/* latest implicit version. Ex: tfswitch --latest-stable 0.13 downloads 0.13.5 (latest) */
-		lib.InstallLatestImplicitVersion(parameters.LatestStable, parameters.CustomBinaryPath, parameters.MirrorURL, false)
+		lib.InstallLatestImplicitVersion(parameters.LatestStable, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, false)
 	case parameters.ShowLatestStable != "":
 		/* show latest implicit stable version. Ex: tfswitch --show-latest-stable 0.13 downloads 0.13.5 (latest) */
 		lib.ShowLatestImplicitVersion(parameters.ShowLatestStable, parameters.MirrorURL, false)
 	case parameters.LatestFlag:
 		/* latest stable version */
-		lib.InstallLatestVersion(parameters.CustomBinaryPath, parameters.MirrorURL)
+		lib.InstallLatestVersion(parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	case parameters.ShowLatestFlag:
 		/* show latest stable version */
 		lib.ShowLatestVersion(parameters.MirrorURL)
 	case parameters.Version != "":
-		lib.InstallVersion(parameters.Version, parameters.CustomBinaryPath, parameters.MirrorURL)
+		lib.InstallVersion(parameters.Version, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	case parameters.DefaultVersion != "":
 		/* if default version is provided - Pick this instead of going for prompt */
-		lib.InstallVersion(parameters.DefaultVersion, parameters.CustomBinaryPath, parameters.MirrorURL)
+		lib.InstallVersion(parameters.DefaultVersion, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	default:
 		// Set list all false - only official release will be displayed
-		lib.InstallOption(false, parameters.CustomBinaryPath, parameters.MirrorURL)
+		lib.InstallOption(false, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	}
 }
