@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // RenameFile : rename file name
@@ -38,10 +40,7 @@ func RemoveFiles(src string) {
 // CheckFileExist : check if file exist in directory
 func CheckFileExist(file string) bool {
 	_, err := os.Stat(file)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 // Unzip will decompress a zip archive, moving all files and folders
@@ -203,6 +202,16 @@ func GetCurrentDirectory() string {
 		logger.Fatalf("Failed to get current directory %v", err)
 	}
 	return dir
+}
+
+// GetHomeDirectory : return the user's home directory
+func GetHomeDirectory() string {
+
+	homedir, err := homedir.Dir()
+	if err != nil {
+		logger.Fatalf("Failed to get user's home directory %v", err)
+	}
+	return homedir
 }
 
 func unzipFile(f *zip.File, destination string, wg *sync.WaitGroup) error {
