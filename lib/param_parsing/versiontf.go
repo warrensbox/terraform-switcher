@@ -32,7 +32,7 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 		logger.Fatalf("Could not derive relative path to %q: %v", params.ChDirPath, err)
 	}
 
-	logger.Infof("Reading version from terraform module at %q", relPath)
+	logger.Infof("Reading version from Terraform module at %q", relPath)
 	module, _ := tfconfig.LoadModule(params.ChDirPath)
 	if module.Diagnostics.HasErrors() {
 		logger.Fatalf("Could not load terraform module at %q", params.ChDirPath)
