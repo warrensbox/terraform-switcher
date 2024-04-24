@@ -84,6 +84,12 @@ jobs:
         title: Release ${{ steps.semver-tag-dry.outputs.tag }}
         labels: automerge
 
+    - name: Check outputs
+      if: ${{ steps.cpr.outputs.pull-request-number }}
+      run: |
+        echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+        echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+
     - name: Merging release PR
       run: gh pr merge --merge --auto "${{ steps.cpr.outputs.pull-request-number }}"
       env:
