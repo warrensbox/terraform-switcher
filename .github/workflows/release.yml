@@ -61,7 +61,7 @@ jobs:
         DEFAULT_BUMP: ${{ github.event.inputs.name }}
         PRERELEASE: false
         DRY_RUN: true # Only get the tag - dry
-        VERBOSE: true
+        VERBOSE: false
 
     # Echo version
     - name: Echo version 
