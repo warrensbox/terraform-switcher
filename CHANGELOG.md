@@ -5,13 +5,46 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## Unreleased
+## [v1.1.0](https://github.com/warrensbox/terraform-switcher/tree/v1.1.0) - 2024-04-24
 
-- go: bump golang.org/x/sys from 0.18.0 to 0.19.0 [#358](https://github.com/warrensbox/terraform-switcher/pull/358) ([dependabot](https://github.com/dependabot))
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/1.0.2...v1.1.0)
+
+### Added
+
+- feat: Support multiple TF version constraints from module and improve logging [#362](https://github.com/warrensbox/terraform-switcher/pull/362) ([yermulnik](https://github.com/yermulnik))
+- Refactor parameter parsing [#356](https://github.com/warrensbox/terraform-switcher/pull/356) ([MatrixCrawler](https://github.com/MatrixCrawler))
 - feat: Build statically linked binaries [#353](https://github.com/warrensbox/terraform-switcher/pull/353) ([yermulnik](https://github.com/yermulnik))
+- Logging refactoring [#350](https://github.com/warrensbox/terraform-switcher/pull/350) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- Checksum check for TF Binaries [#334](https://github.com/warrensbox/terraform-switcher/pull/334) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- Feature: Add flag for install location (optional) [#309](https://github.com/warrensbox/terraform-switcher/pull/309) ([ArronaxKP](https://github.com/ArronaxKP))
+
+### Fixed
+
+- Fix for Version during build process [#374](https://github.com/warrensbox/terraform-switcher/pull/374) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- fix for #369 [#370](https://github.com/warrensbox/terraform-switcher/pull/370) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- Release Workflow fix [#360](https://github.com/warrensbox/terraform-switcher/pull/360) ([MatrixCrawler](https://github.com/MatrixCrawler))
 - Fix/refactor deployment [#352](https://github.com/warrensbox/terraform-switcher/pull/352) ([warrensbox](https://github.com/warrensbox))
 - Fix/refactor deployment [#351](https://github.com/warrensbox/terraform-switcher/pull/351) ([warrensbox](https://github.com/warrensbox))
-- Logging refactoring [#350](https://github.com/warrensbox/terraform-switcher/pull/350) ([MatrixCrawler](https://github.com/MatrixCrawler))
+
+### Documentation
+
+- Added how to install on README [#378](https://github.com/warrensbox/terraform-switcher/pull/378) ([warrensbox](https://github.com/warrensbox))
+- Readme and documentation update [#376](https://github.com/warrensbox/terraform-switcher/pull/376) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- Update README.md [#364](https://github.com/warrensbox/terraform-switcher/pull/364) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- docs: Actualize CHANGELOG [#359](https://github.com/warrensbox/terraform-switcher/pull/359) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- feat(goreleaser): Update `changelog` section of `.goreleaser.yml` [#381](https://github.com/warrensbox/terraform-switcher/pull/381) ([yermulnik](https://github.com/yermulnik))
+- Update dependabot.yml [#375](https://github.com/warrensbox/terraform-switcher/pull/375) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- optimization suggestion for #372 [#373](https://github.com/warrensbox/terraform-switcher/pull/373) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- feat: Add `CODEOWNERS` file [#368](https://github.com/warrensbox/terraform-switcher/pull/368) ([yermulnik](https://github.com/yermulnik))
+- go: bump golang.org/x/crypto from 0.17.0 to 0.22.0 [#367](https://github.com/warrensbox/terraform-switcher/pull/367) ([dependabot](https://github.com/dependabot))
+- go: bump golang.org/x/crypto from 0.16.0 to 0.17.0 [#366](https://github.com/warrensbox/terraform-switcher/pull/366) ([dependabot](https://github.com/dependabot))
+- Create goreport.yml [#365](https://github.com/warrensbox/terraform-switcher/pull/365) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- go: bump golang.org/x/sys from 0.18.0 to 0.19.0 [#358](https://github.com/warrensbox/terraform-switcher/pull/358) ([dependabot](https://github.com/dependabot))
+- Update Go Package Index [#354](https://github.com/warrensbox/terraform-switcher/pull/354) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- Create codeql-analysis.yml [#256](https://github.com/warrensbox/terraform-switcher/pull/256) ([jukie](https://github.com/jukie))
 
 ## [1.0.2](https://github.com/warrensbox/terraform-switcher/releases/tag/1.0.2) - 2024-04-01
 
