@@ -56,24 +56,17 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         WITH_V: true
-        INITIAL_VERSION: 1.0.0
+        INITIAL_VERSION: 1.1.0
         RELEASE_BRANCHES: master
         DEFAULT_BUMP: ${{ github.event.inputs.name }}
         PRERELEASE: false
         DRY_RUN: true # Only get the tag - dry
         VERBOSE: true
 
-    # Write new version into version file
-    - name: Write new version tag to version file
+    # Echo version
+    - name: Echo version 
       run: |
-        echo ${{ steps.semver-tag-dry.outputs.tag }} > version
-
-    # Commit the changes in the previous step
-    - name: Commit version into repo
-      run: |
-        git config --global user.email "release-bot@users.noreply.github.com"
-        git config --global user.name "release-bot"
-        git commit -a -m "#${{ github.event.inputs.name }} - Setting semantic version"
+        echo ${{ steps.semver-tag-dry.outputs.tag }}
 
     # Push the changes to remote
     - name: Push changes
@@ -103,7 +96,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         WITH_V: false
-        INITIAL_VERSION: 1.0.0
+        INITIAL_VERSION: 1.1.0
         RELEASE_BRANCHES: master
         DEFAULT_BUMP: ${{ github.event.inputs.name }}
         PRERELEASE: false
