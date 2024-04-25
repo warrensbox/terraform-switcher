@@ -75,25 +75,25 @@ jobs:
     #     github_token: ${{ secrets.GITHUB_TOKEN }}
     #     branch: release-${{ steps.semver-tag-dry.outputs.tag }}
 
-    - name: Create Pull Request
-      id: cpr
-      uses: peter-evans/create-pull-request@v6
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        branch: release-${{ steps.semver-tag-dry.outputs.tag }}
-        title: Release ${{ steps.semver-tag-dry.outputs.tag }}
-        labels: automerge
+    # - name: Create Pull Request
+    #   id: cpr
+    #   uses: peter-evans/create-pull-request@v6
+    #   with:
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    #     branch: release-${{ steps.semver-tag-dry.outputs.tag }}
+    #     title: Release ${{ steps.semver-tag-dry.outputs.tag }}
+    #     labels: automerge
 
-    - name: Check outputs
-      if: ${{ steps.cpr.outputs.pull-request-number }}
-      run: |
-        echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-        echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+    # - name: Check outputs
+    #   if: ${{ steps.cpr.outputs.pull-request-number }}
+    #   run: |
+    #     echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+    #     echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
 
-    - name: Merging release PR
-      run: gh pr merge --merge --auto "${{ steps.cpr.outputs.pull-request-number }}"
-      env:
-        GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+    # - name: Merging release PR
+    #   run: gh pr merge --merge --auto "${{ steps.cpr.outputs.pull-request-number }}"
+    #   env:
+    #     GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
     # Introduce new tag (for real)
     - name: Bump version and push tag
