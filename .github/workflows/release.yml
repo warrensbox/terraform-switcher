@@ -69,11 +69,11 @@ jobs:
         echo ${{ steps.semver-tag-dry.outputs.tag }}
 
     # Push the changes to remote
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: release-${{ steps.semver-tag-dry.outputs.tag }}
+    # - name: Push changes
+    #   uses: ad-m/github-push-action@master
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     branch: release-${{ steps.semver-tag-dry.outputs.tag }}
 
     - name: Create Pull Request
       id: cpr
