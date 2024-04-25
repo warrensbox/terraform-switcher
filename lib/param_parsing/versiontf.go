@@ -1,7 +1,7 @@
 package param_parsing
 
 import (
-	"fmt"
+	semver "github.com/hashicorp/go-version"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -13,7 +13,7 @@ import (
 
 func GetVersionFromVersionsTF(params Params) (Params, error) {
 	var tfConstraints []string
-	var exactConstraints []string
+	//var exactConstraints []string
 
 	curDir, err := os.Getwd()
 	if err != nil {
@@ -42,25 +42,14 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 	requiredVersions := module.RequiredCore
 
 	for key := range requiredVersions {
-		tfConstraint := cleanupVersionConstraints(requiredVersions[key])
-		tfConstraintParts := strings.Fields(tfConstraint)
-
-		if len(tfConstraintParts) > 2 {
-			logger.Fatalf("Invalid version constraint found: %q", tfConstraint)
-		} else if len(tfConstraintParts) == 1 {
-			exactConstraints = append(exactConstraints, tfConstraint)
-			tfConstraint = "= " + tfConstraintParts[0]
+		// Check if the version contraint is valid
+		constraint, constraintErr := semver.NewConstraint(requiredVersions[key])
+		if constraintErr != nil {
+			logger.Errorf("Invalid version constraint found: %q", requiredVersions[key])
+			return params, constraintErr
 		}
-
-		if tfConstraintParts[0] == "=" {
-			exactConstraints = append(exactConstraints, tfConstraint)
-		}
-
-		tfConstraints = append(tfConstraints, tfConstraint)
-	}
-
-	if len(exactConstraints) > 0 && len(tfConstraints) > 1 {
-		return params, fmt.Errorf("exact constraint (%q) cannot be combined with other conditions", strings.Join(exactConstraints, ", "))
+		// It's valid. Add to list
+		tfConstraints = append(tfConstraints, constraint.String())
 	}
 
 	tfConstraint := strings.Join(tfConstraints, ", ")
