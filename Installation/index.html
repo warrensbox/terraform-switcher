@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://tfswitch.warrensbox.com/Continuous-Integration/">
+        <link rel="canonical" href="https://tfswitch.warrensbox.com/Installation/">
       
       
-        <link rel="prev" href="../usage/ci-cd/">
+        <link rel="prev" href="..">
       
       
-        <link rel="next" href="../Upgrade-or-Uninstall/">
+        <link rel="next" href="../usage/general/">
       
       
       <link rel="icon" href="../static/favicon_tfswitch_16.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>CI/CD Examples - TFSwitch</title>
+        <title>Installation - TFSwitch</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#jenkins-setup" class="md-skip">
+        <a href="#installation" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CI/CD Examples
+              Installation
             
           </span>
         </div>
@@ -242,10 +242,30 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../Installation/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -254,6 +274,71 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      Windows
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#homebrew" class="md-nav__link">
+    <span class="md-ellipsis">
+      Homebrew
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linux
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arch-user-repository-aur-packages-for-arch-linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      Arch User Repository (AUR) packages for Arch Linux
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-from-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install from source
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -388,28 +473,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    CI/CD Examples
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../Continuous-Integration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -418,42 +485,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#jenkins-setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      Jenkins setup
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#circle-ci-setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      Circle CI setup
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -535,6 +566,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -543,18 +576,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#jenkins-setup" class="md-nav__link">
+  <a href="#windows" class="md-nav__link">
     <span class="md-ellipsis">
-      Jenkins setup
+      Windows
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#circle-ci-setup" class="md-nav__link">
+  <a href="#homebrew" class="md-nav__link">
     <span class="md-ellipsis">
-      Circle CI setup
+      Homebrew
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      Linux
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arch-user-repository-aur-packages-for-arch-linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      Arch User Repository (AUR) packages for Arch Linux
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-from-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      Install from source
     </span>
   </a>
   
@@ -578,69 +638,30 @@
   
 
 
-  <h1>CI/CD Examples</h1>
-
-<h2 id="jenkins-setup">Jenkins setup</h2>
-<p><img alt="jenkins_tfswitch" src="../static/jenkins_tfswitch.png" /></p>
-<pre><code class="language-sh">#!/bin/bash 
-
-echo &quot;Installing tfswitch locally&quot;
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine
-
-chmod 755 install.sh #Make installer executable
-
-./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
-
-CUSTOMBIN=`pwd`/.bin            #set custom bin path
-
-export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
-
-$CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
-
-#OR 
-$CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
-
-terraform -v                    #testing version
+<h1 id="installation">Installation</h1>
+<p><code>tfswitch</code> is available for Windows, macOS and Linux based operating systems.</p>
+<h2 id="windows">Windows</h2>
+<p>Download and extract the Windows version of <code>tfswitch</code> that is compatible with your system.<br />
+We are building binaries for 386, amd64, arm6 and arm7 CPU structure.<br />
+See the <a href="https://github.com/warrensbox/terraform-switcher/releases/latest">release page</a> for your download.</p>
+<h2 id="homebrew">Homebrew</h2>
+<p>Installation for macOS is the easiest with Homebrew. <a href="https://brew.sh/" target="_blank">If you do not have homebrew installed, click here</a>.</p>
+<pre><code class="language-ruby">brew install warrensbox/tap/tfswitch
 </code></pre>
-<h2 id="circle-ci-setup">Circle CI setup</h2>
-<p><img alt="cirecleci_tfswitch" src="../static/circleci_tfswitch.png" /></p>
-<p>Example config yaml</p>
-<pre><code class="language-yaml">version: 2
-jobs:
-  build:
-    docker:
-      - image: ubuntu
-
-    working_directory: /go/src/github.com/warrensbox/terraform-switcher
-
-    steps:
-      - checkout
-      - run: 
-          command: |    
-            set +e   
-            apt-get update 
-            apt-get install -y wget 
-            rm -rf /var/lib/apt/lists/*
-
-            echo &quot;Installing tfswitch locally&quot;
-
-            wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine
-
-            chmod 755 install.sh            #Make installer executable
-
-            ./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
-
-            CUSTOMBIN=`pwd`/.bin            #set custom bin path
-
-            export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
-
-            $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
-
-            #OR 
-            $CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
-
-            terraform -v                    #testing version
+<h2 id="linux">Linux</h2>
+<p>Installation for Linux operating systems.</p>
+<pre><code class="language-sh">curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
 </code></pre>
+<h2 id="arch-user-repository-aur-packages-for-arch-linux">Arch User Repository (AUR) packages for Arch Linux</h2>
+<pre><code class="language-sh"># compiled from source
+yay tfswitch
+
+# precompiled
+yay tfswitch-bin
+</code></pre>
+<h2 id="install-from-source">Install from source</h2>
+<p>Alternatively, you can install the binary from the source <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">here</a>.</p>
+<p><a href="https://tfswitch.warrensbox.com/Troubleshoot/">Having trouble installing</a>.</p>
 
 
 

@@ -10,28 +10,28 @@
       
       
       
-        <link rel="canonical" href="https://tfswitch.warrensbox.com/Continuous-Integration/">
+        <link rel="canonical" href="https://tfswitch.warrensbox.com/usage/config-files/">
       
       
-        <link rel="prev" href="../usage/ci-cd/">
+        <link rel="prev" href="../commandline/">
       
       
-        <link rel="next" href="../Upgrade-or-Uninstall/">
+        <link rel="next" href="../ci-cd/">
       
       
-      <link rel="icon" href="../static/favicon_tfswitch_16.png">
+      <link rel="icon" href="../../static/favicon_tfswitch_16.png">
       <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.19">
     
     
       
-        <title>CI/CD Examples - TFSwitch</title>
+        <title>Config files - TFSwitch</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -50,7 +50,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#jenkins-setup" class="md-skip">
+        <a href="#get-the-version-from-a-subdirectory" class="md-skip">
           Skip to content
         </a>
       
@@ -90,9 +90,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="TFSwitch" class="md-header__button md-logo" aria-label="TFSwitch" data-md-component="logo">
+    <a href="../.." title="TFSwitch" class="md-header__button md-logo" aria-label="TFSwitch" data-md-component="logo">
       
-  <img src="../static/logo.png" alt="logo">
+  <img src="../../static/logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CI/CD Examples
+              Config files
             
           </span>
         </div>
@@ -196,9 +196,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="TFSwitch" class="md-nav__button md-logo" aria-label="TFSwitch" data-md-component="logo">
+    <a href="../.." title="TFSwitch" class="md-nav__button md-logo" aria-label="TFSwitch" data-md-component="logo">
       
-  <img src="../static/logo.png" alt="logo">
+  <img src="../../static/logo.png" alt="logo">
 
     </a>
     TFSwitch
@@ -225,7 +225,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -245,7 +245,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Installation/" class="md-nav__link">
+      <a href="../../Installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -262,17 +262,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -286,7 +288,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Usage
@@ -300,7 +302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/general/" class="md-nav__link">
+      <a href="../general/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -321,7 +323,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/commandline/" class="md-nav__link">
+      <a href="../commandline/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -339,10 +341,28 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../usage/config-files/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Config files
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -351,6 +371,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#get-the-version-from-a-subdirectory" class="md-nav__link">
+    <span class="md-ellipsis">
+      Get the version from a subdirectory
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-versiontf-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use version.tf file
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-tfswitchrc-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use .tfswitchrc file
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-tfswitchtoml-file-for-non-admin-users-with-limited-privilege-on-their-computers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use .tfswitch.toml file (For non-admin - users with limited privilege on their computers)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-terragrunthcl-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use terragrunt.hcl file
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -363,7 +446,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/ci-cd/" class="md-nav__link">
+      <a href="../ci-cd/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -388,28 +471,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    CI/CD Examples
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../Continuous-Integration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -418,42 +483,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#jenkins-setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      Jenkins setup
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#circle-ci-setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      Circle CI setup
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -465,7 +494,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Upgrade-or-Uninstall/" class="md-nav__link">
+      <a href="../../Upgrade-or-Uninstall/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -485,7 +514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../How-to-Contribute/" class="md-nav__link">
+      <a href="../../How-to-Contribute/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -505,7 +534,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Troubleshoot/" class="md-nav__link">
+      <a href="../../Troubleshoot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -543,18 +572,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#jenkins-setup" class="md-nav__link">
+  <a href="#get-the-version-from-a-subdirectory" class="md-nav__link">
     <span class="md-ellipsis">
-      Jenkins setup
+      Get the version from a subdirectory
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#circle-ci-setup" class="md-nav__link">
+  <a href="#use-versiontf-file" class="md-nav__link">
     <span class="md-ellipsis">
-      Circle CI setup
+      Use version.tf file
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-tfswitchrc-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use .tfswitchrc file
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-tfswitchtoml-file-for-non-admin-users-with-limited-privilege-on-their-computers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use .tfswitch.toml file (For non-admin - users with limited privilege on their computers)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-terragrunthcl-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use terragrunt.hcl file
     </span>
   </a>
   
@@ -578,68 +634,64 @@
   
 
 
-  <h1>CI/CD Examples</h1>
+  <h1>Config files</h1>
 
-<h2 id="jenkins-setup">Jenkins setup</h2>
-<p><img alt="jenkins_tfswitch" src="../static/jenkins_tfswitch.png" /></p>
-<pre><code class="language-sh">#!/bin/bash 
-
-echo &quot;Installing tfswitch locally&quot;
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine
-
-chmod 755 install.sh #Make installer executable
-
-./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
-
-CUSTOMBIN=`pwd`/.bin            #set custom bin path
-
-export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
-
-$CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
-
-#OR 
-$CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
-
-terraform -v                    #testing version
+<h2 id="get-the-version-from-a-subdirectory">Get the version from a subdirectory</h2>
+<p>While using the file configuration it might be necessary to change the working directory. You can do that with the <code>--chdir</code> or <code>-c</code> parameter.</p>
+<pre><code class="language-bash">tfswitch --chdir terraform_dir
+tfswitch -c terraform_dir
 </code></pre>
-<h2 id="circle-ci-setup">Circle CI setup</h2>
-<p><img alt="cirecleci_tfswitch" src="../static/circleci_tfswitch.png" /></p>
-<p>Example config yaml</p>
-<pre><code class="language-yaml">version: 2
-jobs:
-  build:
-    docker:
-      - image: ubuntu
+<h2 id="use-versiontf-file">Use version.tf file</h2>
+<p>If a .tf file with the terraform constraints is included in the current directory, it should automatically download or switch to that terraform version.<br />
+For example, the following should automatically switch terraform to the lastest version:  </p>
+<pre><code>terraform {
+  required_version = &quot;&gt;= 0.12.9&quot;
 
-    working_directory: /go/src/github.com/warrensbox/terraform-switcher
-
-    steps:
-      - checkout
-      - run: 
-          command: |    
-            set +e   
-            apt-get update 
-            apt-get install -y wget 
-            rm -rf /var/lib/apt/lists/*
-
-            echo &quot;Installing tfswitch locally&quot;
-
-            wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine
-
-            chmod 755 install.sh            #Make installer executable
-
-            ./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
-
-            CUSTOMBIN=`pwd`/.bin            #set custom bin path
-
-            export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
-
-            $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
-
-            #OR 
-            $CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
-
-            terraform -v                    #testing version
+  required_providers {
+    aws        = &quot;&gt;= 2.52.0&quot;
+    kubernetes = &quot;&gt;= 1.11.1&quot;
+  }
+}
+</code></pre>
+<p><img alt="versiontf" src="../../static/versiontf.gif" title="Use version.tf" /></p>
+<h2 id="use-tfswitchrc-file">Use .tfswitchrc file</h2>
+<p><img alt="tfswitchrc" src="../../static/tfswitch-v6.gif" /></p>
+<ol>
+<li>Create a <code>.tfswitchrc</code> file containing the desired version</li>
+<li>For example, <code>echo "0.10.5" &gt;&gt; .tfswitchrc</code> for version 0.10.5 of terraform</li>
+<li>Run the command <code>tfswitch</code> in the same directory as your <code>.tfswitchrc</code></li>
+</ol>
+<p><em>Instead of a <code>.tfswitchrc</code> file, a <code>.terraform-version</code> file may be used for compatibility with <a href="https://github.com/tfutils/tfenv#terraform-version-file"><code>tfenv</code></a> and other tools which use it</em></p>
+<h2 id="use-tfswitchtoml-file-for-non-admin-users-with-limited-privilege-on-their-computers">Use .tfswitch.toml file  (For non-admin - users with limited privilege on their computers)</h2>
+<p>This is similiar to using a .tfswitchrc file, but you can specify a custom binary path for your terraform installation</p>
+<p><img alt="toml1" src="../../static/tfswitch-v7.gif" />
+<img alt="toml2" src="../../static/tfswitch-v8.gif" /></p>
+<ol>
+<li>Create a custom binary path. Ex: <code>mkdir $HOME/bin</code></li>
+<li>Add the path to your PATH. Ex: <code>export PATH=$PATH:$HOME/bin</code> (add this to your bash profile or zsh profile)</li>
+<li>Pass -b or --bin parameter with your custom path to install terraform. Ex: <code>tfswitch -b $HOME/bin/terraform 0.10.8</code></li>
+<li>Optionally, you can create a <code>.tfswitch.toml</code> file in your terraform directory(current directory) OR in your home directory(~/.tfswitch.toml). The toml file in the current directory has a higher precedence than toml file in the home directory</li>
+<li>Your <code>.tfswitch.toml</code> file should look like this:</li>
+</ol>
+<pre><code class="language-ruby">bin = &quot;$HOME/bin/terraform&quot;
+version = &quot;0.11.3&quot;
+</code></pre>
+<ol>
+<li>Run <code>tfswitch</code> and it should automatically install the required terraform version in the specified binary path</li>
+</ol>
+<p><strong>NOTE</strong></p>
+<ol>
+<li>For linux users that do not have write permission to <code>/usr/local/bin/</code>, <code>tfswitch</code> will attempt to install terraform at <code>$HOME/bin</code>. Run <code>export PATH=$PATH:$HOME/bin</code> to append bin to PATH  </li>
+<li>For windows host, <code>tfswitch</code> need to be run under <code>Administrator</code> mode, and <code>$HOME/.tfswitch.toml</code> with <code>bin</code> must be defined (with a valid path) as minimum, below is an example for <code>$HOME/.tfswitch.toml</code> on windows</li>
+</ol>
+<pre><code class="language-toml">bin = &quot;C:\\Users\\&lt;%USRNAME%&gt;\\bin\\terraform.exe&quot;
+</code></pre>
+<h2 id="use-terragrunthcl-file">Use terragrunt.hcl file</h2>
+<p>If a terragrunt.hcl file with the terraform constraint is included in the current directory, it should automatically download or switch to that terraform version.<br />
+For example, the following should automatically switch terraform to the lastest version 0.13:</p>
+<pre><code class="language-ruby">terragrunt_version_constraint = &quot;&gt;= 0.26, &lt; 0.27&quot;
+terraform_version_constraint  = &quot;&gt;= 0.13, &lt; 0.14&quot;
+...
 </code></pre>
 
 
@@ -691,10 +743,10 @@ jobs:
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      <script src="../../assets/javascripts/bundle.dd8806f2.min.js"></script>
       
     
   </body>

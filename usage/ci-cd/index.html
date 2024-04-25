@@ -10,28 +10,28 @@
       
       
       
-        <link rel="canonical" href="https://tfswitch.warrensbox.com/Continuous-Integration/">
+        <link rel="canonical" href="https://tfswitch.warrensbox.com/usage/ci-cd/">
       
       
-        <link rel="prev" href="../usage/ci-cd/">
+        <link rel="prev" href="../config-files/">
       
       
-        <link rel="next" href="../Upgrade-or-Uninstall/">
+        <link rel="next" href="../../Continuous-Integration/">
       
       
-      <link rel="icon" href="../static/favicon_tfswitch_16.png">
+      <link rel="icon" href="../../static/favicon_tfswitch_16.png">
       <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.19">
     
     
       
-        <title>CI/CD Examples - TFSwitch</title>
+        <title>CI/CD - TFSwitch</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.66ac8b77.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -50,7 +50,7 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#jenkins-setup" class="md-skip">
+        <a href="#set-a-default-tf-version-for-cicd-pipeline" class="md-skip">
           Skip to content
         </a>
       
@@ -90,9 +90,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="TFSwitch" class="md-header__button md-logo" aria-label="TFSwitch" data-md-component="logo">
+    <a href="../.." title="TFSwitch" class="md-header__button md-logo" aria-label="TFSwitch" data-md-component="logo">
       
-  <img src="../static/logo.png" alt="logo">
+  <img src="../../static/logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CI/CD Examples
+              CI/CD
             
           </span>
         </div>
@@ -196,9 +196,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="TFSwitch" class="md-nav__button md-logo" aria-label="TFSwitch" data-md-component="logo">
+    <a href="../.." title="TFSwitch" class="md-nav__button md-logo" aria-label="TFSwitch" data-md-component="logo">
       
-  <img src="../static/logo.png" alt="logo">
+  <img src="../../static/logo.png" alt="logo">
 
     </a>
     TFSwitch
@@ -225,7 +225,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -245,7 +245,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Installation/" class="md-nav__link">
+      <a href="../../Installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -262,17 +262,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -286,7 +288,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Usage
@@ -300,7 +302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/general/" class="md-nav__link">
+      <a href="../general/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -321,7 +323,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/commandline/" class="md-nav__link">
+      <a href="../commandline/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -342,7 +344,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../usage/config-files/" class="md-nav__link">
+      <a href="../config-files/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -360,34 +362,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../usage/ci-cd/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    CI/CD
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -402,7 +376,7 @@
           
   
   <span class="md-ellipsis">
-    CI/CD Examples
+    CI/CD
   </span>
   
 
@@ -413,7 +387,7 @@
         
   
   <span class="md-ellipsis">
-    CI/CD Examples
+    CI/CD
   </span>
   
 
@@ -433,18 +407,51 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#jenkins-setup" class="md-nav__link">
+  <a href="#set-a-default-tf-version-for-cicd-pipeline" class="md-nav__link">
     <span class="md-ellipsis">
-      Jenkins setup
+      Set a default TF version for CI/CD pipeline
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#circle-ci-setup" class="md-nav__link">
+  <a href="#automatically-switch-with-bash" class="md-nav__link">
     <span class="md-ellipsis">
-      Circle CI setup
+      Automatically switch with bash
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automatically-switch-with-zsh" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatically switch with zsh
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Automatically switch with zsh">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#older-version-of-zsh" class="md-nav__link">
+    <span class="md-ellipsis">
+      Older version of zsh
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automatically-switch-with-fish-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatically switch with fish shell
     </span>
   </a>
   
@@ -457,6 +464,14 @@
     </li>
   
 
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
@@ -465,7 +480,27 @@
   
   
     <li class="md-nav__item">
-      <a href="../Upgrade-or-Uninstall/" class="md-nav__link">
+      <a href="../../Continuous-Integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD Examples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Upgrade-or-Uninstall/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -485,7 +520,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../How-to-Contribute/" class="md-nav__link">
+      <a href="../../How-to-Contribute/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -505,7 +540,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../Troubleshoot/" class="md-nav__link">
+      <a href="../../Troubleshoot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -543,18 +578,51 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#jenkins-setup" class="md-nav__link">
+  <a href="#set-a-default-tf-version-for-cicd-pipeline" class="md-nav__link">
     <span class="md-ellipsis">
-      Jenkins setup
+      Set a default TF version for CI/CD pipeline
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#circle-ci-setup" class="md-nav__link">
+  <a href="#automatically-switch-with-bash" class="md-nav__link">
     <span class="md-ellipsis">
-      Circle CI setup
+      Automatically switch with bash
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automatically-switch-with-zsh" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatically switch with zsh
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Automatically switch with zsh">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#older-version-of-zsh" class="md-nav__link">
+    <span class="md-ellipsis">
+      Older version of zsh
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#automatically-switch-with-fish-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatically switch with fish shell
     </span>
   </a>
   
@@ -578,68 +646,69 @@
   
 
 
-  <h1>CI/CD Examples</h1>
+  <h1>CI/CD</h1>
 
-<h2 id="jenkins-setup">Jenkins setup</h2>
-<p><img alt="jenkins_tfswitch" src="../static/jenkins_tfswitch.png" /></p>
-<pre><code class="language-sh">#!/bin/bash 
-
-echo &quot;Installing tfswitch locally&quot;
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine
-
-chmod 755 install.sh #Make installer executable
-
-./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
-
-CUSTOMBIN=`pwd`/.bin            #set custom bin path
-
-export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
-
-$CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
-
-#OR 
-$CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
-
-terraform -v                    #testing version
+<h2 id="set-a-default-tf-version-for-cicd-pipeline">Set a default TF version for CI/CD pipeline</h2>
+<ol>
+<li>When using a CI/CD pipeline, you may want a default or fallback version to avoid the pipeline from hanging.</li>
+<li>Ex: <code>tfswitch -d 1.2.3</code> or <code>tfswitch --default 1.2.3</code> installs version <code>1.2.3</code> when no other versions could be detected.
+<a href="../continuous-integration">Also, see CICD example</a></li>
+</ol>
+<h2 id="automatically-switch-with-bash">Automatically switch with bash</h2>
+<p>Add the following to the end of your <code>~/.bashrc</code> file:
+(Use either <code>.tfswitchrc</code> or <code>.tfswitch.toml</code> or <code>.terraform-version</code>)</p>
+<pre><code class="language-sh">cdtfswitch(){
+  builtin cd &quot;$@&quot;;
+  cdir=$PWD;
+  if [ -e &quot;$cdir/.tfswitchrc&quot; ]; then
+    tfswitch
+  fi
+}
+alias cd='cdtfswitch'
 </code></pre>
-<h2 id="circle-ci-setup">Circle CI setup</h2>
-<p><img alt="cirecleci_tfswitch" src="../static/circleci_tfswitch.png" /></p>
-<p>Example config yaml</p>
-<pre><code class="language-yaml">version: 2
-jobs:
-  build:
-    docker:
-      - image: ubuntu
+<h2 id="automatically-switch-with-zsh">Automatically switch with zsh</h2>
+<p>Add the following to the end of your <code>~/.zshrc</code> file:</p>
+<pre><code class="language-sh">load-tfswitch() {
+  local tfswitchrc_path=&quot;.tfswitchrc&quot;
 
-    working_directory: /go/src/github.com/warrensbox/terraform-switcher
+  if [ -f &quot;$tfswitchrc_path&quot; ]; then
+    tfswitch
+  fi
+}
+add-zsh-hook chpwd load-tfswitch
+load-tfswitch
+</code></pre>
+<blockquote>
+<p>NOTE: if you see an error like this: <code>command not found: add-zsh-hook</code>, then you might be on an older version of zsh (see below), or you simply need to load <code>add-zsh-hook</code> by adding this to your <code>.zshrc</code>:
+   <code>autoload -U add-zsh-hook</code></p>
+</blockquote>
+<h3 id="older-version-of-zsh">Older version of zsh</h3>
+<pre><code class="language-sh">cd(){
+  builtin cd &quot;$@&quot;;
+  cdir=$PWD;
+  if [ -e &quot;$cdir/.tfswitchrc&quot; ]; then
+    tfswitch
+  fi
+}
+</code></pre>
+<h2 id="automatically-switch-with-fish-shell">Automatically switch with fish shell</h2>
+<p>Add the following to the end of your <code>~/.config/fish/config.fish</code> file:</p>
+<pre><code class="language-sh">function switch_terraform --on-event fish_postexec
+    string match --regex '^cd\s' &quot;$argv&quot; &gt; /dev/null
+    set --local is_command_cd $status
 
-    steps:
-      - checkout
-      - run: 
-          command: |    
-            set +e   
-            apt-get update 
-            apt-get install -y wget 
-            rm -rf /var/lib/apt/lists/*
+    if test $is_command_cd -eq 0
+      if count *.tf &gt; /dev/null
 
-            echo &quot;Installing tfswitch locally&quot;
+        grep -c &quot;required_version&quot; *.tf &gt; /dev/null
+        set --local tf_contains_version $status
 
-            wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine
-
-            chmod 755 install.sh            #Make installer executable
-
-            ./install.sh -b `pwd`/.bin      #Install tfswitch in a location you have permission
-
-            CUSTOMBIN=`pwd`/.bin            #set custom bin path
-
-            export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
-
-            $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
-
-            #OR 
-            $CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
-
-            terraform -v                    #testing version
+        if test $tf_contains_version -eq 0
+            command tfswitch
+        end
+      end
+    end
+end
 </code></pre>
 
 
@@ -691,10 +760,10 @@ jobs:
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.dd8806f2.min.js"></script>
+      <script src="../../assets/javascripts/bundle.dd8806f2.min.js"></script>
       
     
   </body>
