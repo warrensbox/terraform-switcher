@@ -4,7 +4,6 @@ import (
 	semver "github.com/hashicorp/go-version"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
@@ -66,10 +65,4 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 func isTerraformModule(params Params) bool {
 	module, err := tfconfig.LoadModule(params.ChDirPath)
 	return err == nil && len(module.RequiredCore) > 0
-}
-
-func cleanupVersionConstraints(constraint string) string {
-	regex := regexp.MustCompile(`(?P<Comparator>\D+)(?P<Version>(\d+\.\d+\.\d+)(-[a-zA-z]+\d*)?)$`)
-	stringSubmatch := regex.FindStringSubmatch(constraint)
-	return strings.TrimSpace(stringSubmatch[1]) + " " + stringSubmatch[2]
 }
