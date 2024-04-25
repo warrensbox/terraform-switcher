@@ -13,5 +13,15 @@ updates:
     commit-message:
       prefix: "go:"
     labels:
-      - c:deps
       - golang
+      - dependencies
+  - package-ecosystem: "github-actions"
+    directory: /
+    schedule:
+      interval: daily
+      time: "07:00"
+    commit-message:
+      prefix: "gh-actions:"
+    labels:
+      - gh-actions
+      - dependencies

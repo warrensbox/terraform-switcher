@@ -43,6 +43,5 @@ export PATH=$PATH:$HOME/.bin #Export your .bin into your path
 
 ```
 
-See the custom directory option `-b`:    
-<img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v7.gif" alt="drawing" style="width: 670px;"/>    
-
+See the custom directory option `-b`:  
+![custom directory](static/tfswitch-v7.gif "Custom binary path")

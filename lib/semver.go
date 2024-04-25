@@ -7,17 +7,16 @@ import (
 	semver "github.com/hashicorp/go-version"
 )
 
-// GetSemver : returns version that will be installed based on server constaint provided
-func GetSemver(tfconstraint *string, mirrorURL *string) (string, error) {
-
+// GetSemver : returns version that will be installed based on server constraint provided
+func GetSemver(tfconstraint string, mirrorURL string) (string, error) {
 	listAll := true
-	tflist, _ := GetTFList(*mirrorURL, listAll) //get list of versions
-	fmt.Printf("Reading required version from constraint: %s\n", *tfconstraint)
-	tfversion, err := SemVerParser(tfconstraint, tflist)
+	tflist, _ := getTFList(mirrorURL, listAll) //get list of versions
+	logger.Infof("Reading required version from constraint: %q", tfconstraint)
+	tfversion, err := SemVerParser(&tfconstraint, tflist)
 	return tfversion, err
 }
 
-// ValidateSemVer : Goes through the list of terraform version, return a valid tf version for contraint provided
+// SemVerParser  : Goes through the list of terraform version, return a valid tf version for contraint provided
 func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 	tfversion := ""
 	constraints, err := semver.NewConstraint(*tfconstraint) //NewConstraint returns a Constraints instance that a Version instance can be checked against
@@ -39,23 +38,24 @@ func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 	for _, element := range versions {
 		if constraints.Check(element) { // Validate a version against a constraint
 			tfversion = element.String()
-			fmt.Printf("Matched version: %s\n", tfversion)
-			if ValidVersionFormat(tfversion) { //check if version format is correct
+			if validVersionFormat(tfversion) { //check if version format is correct
+				logger.Infof("Matched version: %q", tfversion)
 				return tfversion, nil
+			} else {
+				PrintInvalidTFVersion()
 			}
 		}
 	}
 
-	PrintInvalidTFVersion()
-	return "", fmt.Errorf("error parsing constraint: %s", *tfconstraint)
+	return "", fmt.Errorf("did not find version matching constraint: %s", *tfconstraint)
 }
 
-// Print invalid TF version
+// PrintInvalidTFVersion Print invalid TF version
 func PrintInvalidTFVersion() {
-	fmt.Println("Version does not exist or invalid terraform version format.\n Format should be #.#.# or #.#.#-@# where # are numbers and @ are word characters.\n For example, 0.11.7 and 0.11.9-beta1 are valid versions")
+	logger.Info("Version does not exist or invalid terraform version format.\n Format should be #.#.# or #.#.#-@# where # are numbers and @ are word characters.\n For example, 0.11.7 and 0.11.9-beta1 are valid versions")
 }
 
-// Print invalid TF version
+// PrintInvalidMinorTFVersion Print invalid minor TF version
 func PrintInvalidMinorTFVersion() {
-	fmt.Println("Invalid minor terraform version format. Format should be #.# where # are numbers. For example, 0.11 is valid version")
+	logger.Info("Invalid minor terraform version format.\n Format should be #.# where # are numbers. For example, 0.11 is valid version")
 }

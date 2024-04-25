@@ -1,24 +1,55 @@
-name: Run test
+name: Run tests
 
 on:
   push:
     branches: 
-      - '*'         # matches every branch that doesn't contain a '/'
-      - '*/*'       # matches every branch containing a single '/'
-      - '**'        # matches every branch
-      - '!release'   # excludes master
+      - '*'       # matches every branch that doesn't contain a '/'
+      - '*/*'     # matches every branch containing a single '/'
+      - '**'      # matches every branch
+      - '!master' # excludes `master` branch
+
+env:
+  CGO_ENABLED: 0 # Build statically linked binaries
+
 jobs:
+  fmt_and_vet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+
+      - name: Check vet
+        run: |
+          go vet ./...
+
+      - name: Check fmt
+        run: |
+          go fmt ./...
+          if [[ -z "$(git status --porcelain)" ]]; then
+            echo "Formatting is consistent with 'go fmt'."
+          else
+            echo "Run 'go fmt ./...' to automatically apply standard Go style to all packages."
+            git status --porcelain
+            exit 1
+          fi
 
   integration_tests_linux:
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-latest]
         go_version: ['1.22']
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
 
-    - name: Set up Go
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Go
       uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go_version }}
@@ -26,16 +57,17 @@ jobs:
     - name: Build code
       run: go build -v ./...
 
-    - name: Running test
+    - name: Running unit tests
+      run: |
+        go test -v ./...
+
+    - name: Running integration tests
       run: |
         set -e
-        go get -v -t -d ./...
-        go vet -tests=false ./...
-        go test -v ./...
         mkdir -p build
         go build -v -o build/tfswitch
         mkdir `pwd`/bin/
-        find ./test-data/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
+        find ./test-data/integration-tests/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
             ./build/tfswitch -c "${TEST_PATH}" -b `pwd`/bin/terraform || exit 1
         done
 
@@ -46,16 +78,15 @@ jobs:
         go_version: ['1.22']
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
 
-    - name: Set up Go
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Go
       uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go_version }}
 
-    - name: Build code
-      run: go build -v ./...
-
-    - name: Running test
+    - name: Running unit tests
       run: |
         go test -v ./...

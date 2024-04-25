@@ -1,14 +1,12 @@
-package lib_test
+package lib
 
 import (
-	"github.com/mitchellh/go-homedir"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
 
-	"github.com/warrensbox/terraform-switcher/lib"
+	"github.com/mitchellh/go-homedir"
 )
 
 // TestCreateSymlink : check if symlink exist-remove if exist,
@@ -23,7 +21,7 @@ func TestCreateSymlink(t *testing.T) {
 
 	home, err := homedir.Dir()
 	if err != nil {
-		log.Fatalf("Could not detect home directory.")
+		t.Errorf("Could not detect home directory.")
 	}
 	symlinkPathSrc := filepath.Join(home, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(home, testSymlinkDest)
@@ -31,7 +29,7 @@ func TestCreateSymlink(t *testing.T) {
 	// Create file for test as windows does not like no source
 	create, err := os.Create(symlinkPathDest)
 	if err != nil {
-		log.Fatalf("Could not create test dest file for symlink at %v", symlinkPathDest)
+		t.Errorf("Could not create test dest file for symlink at %v", symlinkPathDest)
 	}
 	defer create.Close()
 
@@ -42,12 +40,12 @@ func TestCreateSymlink(t *testing.T) {
 			t.Logf("Symlink does not exist %v [expected]", ln)
 		} else {
 			t.Logf("Symlink exist %v [expected]", ln)
-			os.Remove(symlinkPathSrc)
+			_ = os.Remove(symlinkPathSrc)
 			t.Logf("Removed existing symlink for testing purposes")
 		}
 	}
 
-	lib.CreateSymlink(symlinkPathDest, symlinkPathSrc)
+	CreateSymlink(symlinkPathDest, symlinkPathSrc)
 
 	if runtime.GOOS == "windows" {
 		_, err := os.Stat(symlinkPathSrc + ".exe")
@@ -67,8 +65,8 @@ func TestCreateSymlink(t *testing.T) {
 		}
 	}
 
-	os.Remove(symlinkPathSrc)
-	os.Remove(symlinkPathDest)
+	_ = os.Remove(symlinkPathSrc)
+	_ = os.Remove(symlinkPathDest)
 }
 
 // TestRemoveSymlink : check if symlink exist-create if does not exist,
@@ -81,7 +79,7 @@ func TestRemoveSymlink(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		t.Error(errCurr)
 	}
 	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
@@ -96,7 +94,7 @@ func TestRemoveSymlink(t *testing.T) {
 		}
 	}
 
-	lib.RemoveSymlink(symlinkPathSrc)
+	RemoveSymlink(symlinkPathSrc)
 
 	lnCheck, _ := os.Readlink(symlinkPathSrc)
 	if lnCheck == symlinkPathDest {
@@ -116,7 +114,7 @@ func TestCheckSymlink(t *testing.T) {
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
-		log.Fatal(errCurr)
+		t.Error(errCurr)
 	}
 	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
@@ -130,7 +128,7 @@ func TestCheckSymlink(t *testing.T) {
 		}
 	}
 
-	symlinkExist := lib.CheckSymlink(symlinkPathSrc)
+	symlinkExist := CheckSymlink(symlinkPathSrc)
 
 	if symlinkExist {
 		t.Logf("Symlink does exist %v [expected]", ln)
@@ -138,5 +136,5 @@ func TestCheckSymlink(t *testing.T) {
 		t.Logf("Symlink does not exist %v [unexpected]", ln)
 	}
 
-	os.Remove(symlinkPathSrc)
+	_ = os.Remove(symlinkPathSrc)
 }
