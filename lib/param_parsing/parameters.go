@@ -23,6 +23,7 @@ type Params struct {
 	ShowLatestStable string
 	Version          string
 	VersionFlag      bool
+	WhichFlag        bool
 }
 
 var logger *slog.Logger
@@ -46,6 +47,7 @@ func GetParameters() Params {
 	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
 	getopt.BoolVarLong(&params.VersionFlag, "version", 'v', "Displays the version of tfswitch")
+	getopt.BoolVarLong(&params.WhichFlag, "which", 'w', "Displays the currently selected terraform version by tfswitch")
 
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()

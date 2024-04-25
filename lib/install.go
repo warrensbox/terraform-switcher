@@ -133,9 +133,20 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 	os.Exit(0)
 }
 
+func addCurrent(version, installPath string) {
+	installLocation = getInstallLocation(installPath)
+	currentFile := filepath.Join(installLocation, currentFileName)
+	fileHandler, err := os.OpenFile(currentFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	defer fileHandler.Close()
+	if err != nil {
+		logger.Errorf("Could not create CURRENT file: %s", err.Error())
+	}
+	_, _ = fileHandler.WriteString(version)
+}
+
 // addRecent : add to recent file
 func addRecent(requestedVersion string, installPath string) {
-
+	addCurrent(requestedVersion, installPath)
 	installLocation = getInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
 	versionFile := filepath.Join(installLocation, recentFile)
 
