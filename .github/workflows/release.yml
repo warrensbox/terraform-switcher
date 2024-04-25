@@ -101,7 +101,7 @@ jobs:
       id: semver-tag
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        WITH_V: false
+        WITH_V: true
         INITIAL_VERSION: 1.0.0
         RELEASE_BRANCHES: master
         DEFAULT_BUMP: ${{ github.event.inputs.name }}
@@ -119,6 +119,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         RELEASE_VERSION: ${{ steps.semver-tag.outputs.tag }}
         PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        NO_CREATE_CHANGELOG: true
 
     # Install Python
     - name: Install Python
