@@ -26,7 +26,6 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	}
 
 	t.Logf("Current home directory: %q", home)
-	var installLocation = ""
 	if runtime.GOOS != "windows" {
 		installLocation = filepath.Join(home, installPath)
 	} else {

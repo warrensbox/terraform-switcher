@@ -19,6 +19,6 @@ func TestGetParamsFromTerraformVersion_no_file(t *testing.T) {
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
 	params, _ = GetParamsFromTerraformVersion(params)
 	if params.Version != "" {
-		t.Errorf("Expected emtpy version string. Got: %v", params.Version)
+		t.Errorf("Expected empty version string. Got: %v", params.Version)
 	}
 }
