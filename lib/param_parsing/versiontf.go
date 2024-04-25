@@ -12,7 +12,6 @@ import (
 
 func GetVersionFromVersionsTF(params Params) (Params, error) {
 	var tfConstraints []string
-	//var exactConstraints []string
 
 	curDir, err := os.Getwd()
 	if err != nil {
