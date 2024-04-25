@@ -68,9 +68,9 @@ func main() {
 	case parameters.DefaultVersion != "":
 		/* if default version is provided - Pick this instead of going for prompt */
 		lib.InstallVersion(parameters.DefaultVersion, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
-	case parameters.WhichFlag:
+	case parameters.ShowSelectedFlag:
 		// Display the currently active version of terraform
-		lib.CurrentActiveVersion(parameters.InstallPath)
+		lib.CurrentActiveVersion(parameters.CustomBinaryPath)
 	default:
 		// Set list all false - only official release will be displayed
 		lib.InstallOption(false, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)

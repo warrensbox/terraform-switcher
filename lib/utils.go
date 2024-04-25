@@ -1,11 +1,11 @@
 package lib
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/pborman/getopt"
 	"os"
-	"path/filepath"
+	"os/exec"
+	"strings"
 )
 
 // FileExistsAndIsNotDir checks if a file exists and is not a directory before we try using it to prevent further errors
@@ -31,15 +31,11 @@ func UsageMessage() {
 }
 
 func CurrentActiveVersion(installPath string) {
-	installLocation = getInstallLocation(installPath)
-	currentFile := filepath.Join(installLocation, currentFileName)
-	file, err := os.Open(currentFile)
-	defer file.Close()
+	out, err := exec.Command(installPath, "--version").Output()
 	if err != nil {
-		logger.Fatalf("Could not open file '%q'", err)
+		logger.Fatal(err)
 	}
-	scanner := bufio.NewScanner(file)
-	if scanner.Scan() {
-		fmt.Println("Terraform-Version:", scanner.Text())
-	}
+	outputString := string(out)
+	result := strings.FieldsFunc(outputString, func(c rune) bool { return c == '\n' || c == '\r' })
+	fmt.Print(result[0])
 }

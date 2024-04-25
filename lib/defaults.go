@@ -25,7 +25,6 @@ func GetDefaultBin() string {
 }
 
 const (
-	currentFileName           = "CURRENT"
 	DefaultMirror             = "https://releases.hashicorp.com/terraform"
 	DefaultLatest             = ""
 	installFile               = "terraform"
