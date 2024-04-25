@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/hashicorp/go-version"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"strings"
 	"testing"
 )
 
@@ -17,23 +16,24 @@ func TestGetVersionFromVersionsTF_matches_version(t *testing.T) {
 	v1, _ := version.NewVersion("1.0.5")
 	actualVersion, _ := version.NewVersion(params.Version)
 	if !actualVersion.Equal(v1) {
-		t.Error("Determined version is not 1.0.5")
+		t.Errorf("Determined version is not 1.0.5, but %s", params.Version)
 	}
 }
 
-func TestGetVersionFromVersionsTF_non_matching_constraints(t *testing.T) {
+func TestGetVersionFromVersionsTF_impossible_constraints(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	var params Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_matching_constraints"
 	params, err := GetVersionFromVersionsTF(params)
+	expectedError := "did not find version matching constraint: ~> 1.0.0, =1.0.5, <= 1.0.4"
 	if err == nil {
-		t.Error("Expected error but got nil")
+		t.Errorf("Expected error '%s', got nil", expectedError)
 	} else {
-		expected := "exact constraint ("
-		expected2 := ") cannot be combined with other conditions"
-		if !strings.Contains(fmt.Sprint(err), expected) || !strings.Contains(fmt.Sprint(err), expected2) {
-			t.Errorf("Expected error string containing %q and %q. Got %q", expected, expected2, err)
+		if err.Error() == expectedError {
+			t.Logf("Got expected error '%s'", err)
+		} else {
+			t.Errorf("Got unexpected error '%s'", err)
 		}
 	}
 }
@@ -47,7 +47,7 @@ func TestGetVersionFromVersionsTF_erroneous_file(t *testing.T) {
 	if err == nil {
 		t.Error("Expected error got nil")
 	} else {
-		expected := "error parsing constraint: Malformed constraint: ~527> 1.0.0"
+		expected := "Malformed constraint: ~527> 1.0.0"
 		if fmt.Sprint(err) != expected {
 			t.Errorf("Expected error %q, got %q", expected, err)
 		}
