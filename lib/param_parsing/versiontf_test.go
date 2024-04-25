@@ -17,7 +17,7 @@ func TestGetVersionFromVersionsTF_matches_version(t *testing.T) {
 	v1, _ := version.NewVersion("1.0.5")
 	actualVersion, _ := version.NewVersion(params.Version)
 	if !actualVersion.Equal(v1) {
-		t.Error("Determined version is not 1.0.5")
+		t.Errorf("Determined version is not 1.0.5, but %s", params.Version)
 	}
 }
 
