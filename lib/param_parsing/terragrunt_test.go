@@ -3,7 +3,6 @@ package param_parsing
 import (
 	"github.com/hashicorp/go-version"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"strings"
 	"testing"
 )
 
@@ -41,12 +40,11 @@ func TestGetVersionFromTerragrunt_erroneous_file(t *testing.T) {
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_terragrunt_error_hcl"
 	params, err := GetVersionFromTerragrunt(params)
-	if err == nil {
-		t.Error("Expected error but got none.")
-	} else {
-		expectedError := "could not find terraform_version_constraint in file"
-		if !strings.Contains(err.Error(), expectedError) {
-			t.Errorf("Expected error to contain '%q', got '%q'", expectedError, err)
-		}
+	if err != nil {
+		t.Error(err)
+	}
+	expected := ""
+	if params.Version != expected {
+		t.Errorf("Expected version '%s', got '%s'", expected, params.Version)
 	}
 }
