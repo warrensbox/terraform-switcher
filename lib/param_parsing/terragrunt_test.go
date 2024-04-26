@@ -3,15 +3,18 @@ package param_parsing
 import (
 	"github.com/hashicorp/go-version"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"strings"
 	"testing"
 )
 
 func TestGetVersionFromTerragrunt(t *testing.T) {
 	var params Params
+	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_terragrunt_hcl"
-	params, _ = GetVersionFromTerragrunt(params)
+	params, err := GetVersionFromTerragrunt(params)
+	if err != nil {
+		t.Fatalf("Got error '%s'", err)
+	}
 	v1, _ := version.NewVersion("0.13")
 	v2, _ := version.NewVersion("0.14")
 	actualVersion, _ := version.NewVersion(params.Version)
@@ -37,12 +40,11 @@ func TestGetVersionFromTerragrunt_erroneous_file(t *testing.T) {
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_terragrunt_error_hcl"
 	params, err := GetVersionFromTerragrunt(params)
-	if err == nil {
-		t.Error("Expected error but got none.")
-	} else {
-		expectedError := "could not decode body of HCL file"
-		if !strings.Contains(err.Error(), expectedError) {
-			t.Errorf("Expected error to contain '%q', got '%q'", expectedError, err)
-		}
+	if err != nil {
+		t.Error(err)
+	}
+	expected := ""
+	if params.Version != expected {
+		t.Errorf("Expected version '%s', got '%s'", expected, params.Version)
 	}
 }
