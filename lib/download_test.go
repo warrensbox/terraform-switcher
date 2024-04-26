@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync"
 	"testing"
 
 	"github.com/mitchellh/go-homedir"
@@ -13,7 +14,7 @@ import (
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
 func TestDownloadFromURL_FileNameMatch(t *testing.T) {
-
+	logger = InitLogger("DEBUG")
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installVersion := "terraform_"
 	tempDir := t.TempDir()
@@ -46,10 +47,11 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 	/* test download old terraform version */
 	lowestVersion := "0.11.0"
-
+	var wg sync.WaitGroup
+	defer wg.Done()
 	urlToDownload := hashiURL + lowestVersion + "/" + installVersion + lowestVersion + macOS
 	expectedFile := filepath.Join(installLocation, installVersion+lowestVersion+macOS)
-	installedFile, errDownload := downloadFromURL(installLocation, urlToDownload, nil)
+	installedFile, errDownload := downloadFromURL(installLocation, urlToDownload, &wg)
 
 	if errDownload != nil {
 		t.Logf("Expected file name %v to be downloaded", expectedFile)
