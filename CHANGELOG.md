@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+
+## [v1.1.1](https://github.com/warrensbox/terraform-switcher/tree/v1.1.1) - 2024-04-27  
+
+### Fixed
+
+- Fix issue related to additional configuration apart from terraform_version_constraint failing #401 [#409](https://github.com/warrensbox/terraform-switcher/pull/409) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- Fix issue related to terraform version constraint in version.tf not being parsed correctly #410 #402 [#403](https://github.com/warrensbox/terraform-switcher/pull/403) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- Fix issue where install.sh is unable to download tfswitch version(s) with 'v' appended to the version number  #394 #413 #413 [#403](https://github.com/warrensbox/terraform-switcher/pull/405) ([yermulnik](https://github.com/yermulnik)) and ([d33psky](https://github.com/d33psky))
+
 ## [v1.1.0](https://github.com/warrensbox/terraform-switcher/tree/v1.1.0) - 2024-04-25
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/1.0.2...v1.1.0)
