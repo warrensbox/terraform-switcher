@@ -46,6 +46,7 @@ func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 			}
 		}
 	}
+
 	return "", fmt.Errorf("did not find version matching constraint: %s", *tfconstraint)
 }
 

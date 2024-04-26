@@ -12,6 +12,7 @@ type Params struct {
 	DefaultVersion   string
 	DryRun           bool
 	HelpFlag         bool
+	InstallPath      string
 	LatestFlag       bool
 	LatestPre        string
 	LatestStable     string
@@ -36,6 +37,7 @@ func GetParameters() Params {
 	getopt.StringVarLong(&params.DefaultVersion, "default", 'd', "Default to this version in case no other versions could be detected. Ex: tfswitch --default 1.2.4")
 	getopt.BoolVarLong(&params.DryRun, "dry-run", 'r', "Only show what tfswitch would do. Don't download anything.")
 	getopt.BoolVarLong(&params.HelpFlag, "help", 'h', "Displays help message")
+	getopt.StringVarLong(&params.InstallPath, "install", 'i', "Custom install path. Ex: tfswitch -i /Users/username. The binaries will be in the sub installDir directory e.g. /Users/username/"+lib.InstallDir)
 	getopt.BoolVarLong(&params.LatestFlag, "latest", 'u', "Get latest stable version")
 	getopt.StringVarLong(&params.LatestPre, "latest-pre", 'p', "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: tfswitch --latest-stable 0.13.0 downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
@@ -50,6 +52,7 @@ func GetParameters() Params {
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
 
+	oldLogLevel := params.LogLevel
 	logger = lib.InitLogger(params.LogLevel)
 	var err error
 	// Read configuration files
@@ -60,7 +63,7 @@ func GetParameters() Params {
 	} else if terraformVersionFileExists(params) {
 		params, err = GetParamsFromTerraformVersion(params)
 	} else if isTerraformModule(params) {
-		params, _ = GetVersionFromVersionsTF(params)
+		params, err = GetVersionFromVersionsTF(params)
 	} else if terraGruntFileExists(params) {
 		params, err = GetVersionFromTerragrunt(params)
 	} else {
@@ -68,6 +71,11 @@ func GetParameters() Params {
 	}
 	if err != nil {
 		logger.Fatalf("Error parsing configuration file: %q", err)
+	}
+
+	// Logger config was changed by the config files. Reinitialise.
+	if params.LogLevel != oldLogLevel {
+		logger = lib.InitLogger(params.LogLevel)
 	}
 
 	// Parse again to overwrite anything that might by defined on the cli AND in any config file (CLI always wins)
@@ -86,6 +94,7 @@ func initParams(params Params) Params {
 	params.DefaultVersion = lib.DefaultLatest
 	params.DryRun = false
 	params.HelpFlag = false
+	params.InstallPath = lib.GetHomeDirectory()
 	params.LatestFlag = false
 	params.LatestPre = lib.DefaultLatest
 	params.LatestStable = lib.DefaultLatest

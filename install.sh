@@ -78,19 +78,13 @@ check_platform() {
   fi
 }
 tag_to_version() {
-  if [ -z "${TAG}" ]; then
-    log_info "checking GitHub for latest tag"
-  else
-    log_info "checking GitHub for tag '${TAG}'"
-  fi
+  test -z "${TAG}" && TAG="latest"
+  log_info "checking GitHub for tag '${TAG}'"
   REALTAG=$(github_release "$OWNER/$REPO" "${TAG}") && true
   if test -z "$REALTAG"; then
     log_crit "unable to find '${TAG}' - use 'latest' or see https://github.com/${PREFIX}/releases for details"
     exit 1
   fi
-  # if version starts with 'v', remove it
-  TAG="$REALTAG"
-  VERSION=${TAG#v}
 }
 adjust_format() {
   # change format (tar.gz or zip) based on ARCH
@@ -287,8 +281,14 @@ github_release() {
   owner_repo=$1
   version=$2
   test -z "$version" && version="latest"
-  giturl="https://github.com/${owner_repo}/releases/${version}"
-  json=$(http_copy "$giturl" "Accept:application/json")
+  if [ "$version" = "latest" ]; then
+    giturl="https://github.com/${owner_repo}/releases/${version##v}"
+    json=$(http_copy "$giturl" "Accept:application/json")
+  else
+    giturl_v="https://github.com/${owner_repo}/releases/v${version##v}"
+    giturl_no_v="https://github.com/${owner_repo}/releases/${version##v}"
+    json=$(http_copy "$giturl_v" "Accept:application/json" || http_copy "$giturl_no_v" "Accept:application/json")
+  fi
   test -z "$json" && return 1
   version=$(echo "$json" | tr -s '\n' ' ' | sed 's/.*"tag_name":"//' | sed 's/".*//')
   test -z "$version" && return 1
@@ -369,13 +369,12 @@ adjust_os
 
 adjust_arch
 
-log_info "found version: ${VERSION} for ${TAG}/${PLATFORM}"
+log_info "found version: ${REALTAG} for ${TAG}/${PLATFORM}"
 
-NAME=${PROJECT_NAME}_${VERSION}_${OS}_${ARCH}
+NAME=${PROJECT_NAME}_${REALTAG}_${OS}_${ARCH}
 TARBALL=${NAME}.${FORMAT}
-TARBALL_URL=${GITHUB_DOWNLOAD}/${TAG}/${TARBALL}
-CHECKSUM=${PROJECT_NAME}_${VERSION}_checksums.txt
-CHECKSUM_URL=${GITHUB_DOWNLOAD}/${TAG}/${CHECKSUM}
-
+TARBALL_URL=${GITHUB_DOWNLOAD}/${REALTAG}/${TARBALL}
+CHECKSUM=${PROJECT_NAME}_${REALTAG}_checksums.txt
+CHECKSUM_URL=${GITHUB_DOWNLOAD}/${REALTAG}/${CHECKSUM}
 
 execute
