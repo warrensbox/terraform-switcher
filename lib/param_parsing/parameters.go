@@ -46,7 +46,7 @@ func GetParameters() Params {
 	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
 	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
-	getopt.BoolVarLong(&params.ShowSelectedFlag, "which", 'w', "Displays the currently selected terraform version by tfswitch")
+	getopt.BoolVarLong(&params.ShowSelectedFlag, "show-selected", 'w', "Display the currently selected terraform version by tfswitch")
 	getopt.BoolVarLong(&params.VersionFlag, "version", 'v', "Displays the version of tfswitch")
 
 	// Parse the command line parameters to fetch stuff like chdir
