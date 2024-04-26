@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"reflect"
 	"regexp"
 	"strings"
@@ -185,36 +184,8 @@ func validVersionFormat(version string) bool {
 	return semverRegex.MatchString(version)
 }
 
-// ValidMinorVersionFormat : returns valid MINOR version format
-/* For example: 0.1 = valid
-// For example: a.1.2 = invalid
-// For example: 0.1.2 = invalid
-*/
-func validMinorVersionFormat(version string) bool {
-
-	// Getting versions from body; should return match /X.X./ where X is a number
-	semverRegex := regexp.MustCompile(`^(\d+\.\d+)$`)
-
-	return semverRegex.MatchString(version)
-}
-
 // ShowLatestVersion show install latest stable tf version
 func ShowLatestVersion(mirrorURL string) {
 	tfversion, _ := getTFLatest(mirrorURL)
 	logger.Infof("%s", tfversion)
-}
-
-// ShowLatestImplicitVersion show latest - argument (version) must be provided
-func ShowLatestImplicitVersion(requestedVersion, mirrorURL string, preRelease bool) {
-	if validMinorVersionFormat(requestedVersion) {
-		tfversion, _ := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
-		if len(tfversion) > 0 {
-			logger.Infof("%s", tfversion)
-		} else {
-			logger.Fatal("The provided terraform version does not exist.\n Try `tfswitch -l` to see all available versions")
-			os.Exit(1)
-		}
-	} else {
-		PrintInvalidMinorTFVersion()
-	}
 }

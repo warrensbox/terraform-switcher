@@ -1,11 +1,12 @@
 package param_parsing
 
 import (
+	"github.com/warrensbox/terraform-switcher/lib/types"
 	"testing"
 )
 
 func TestGetParamsFromTfSwitch(t *testing.T) {
-	var params Params
+	var params types.Params
 	params.ChDirPath = "../../test-data/integration-tests/test_tfswitchrc"
 	params, _ = GetParamsFromTfSwitch(params)
 	expected := "0.10.5"
@@ -15,7 +16,7 @@ func TestGetParamsFromTfSwitch(t *testing.T) {
 }
 
 func TestGetParamsFromTfSwitch_no_file(t *testing.T) {
-	var params Params
+	var params types.Params
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
 	params, _ = GetParamsFromTfSwitch(params)
 	if params.Version != "" {

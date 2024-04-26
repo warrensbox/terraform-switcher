@@ -2,6 +2,7 @@ package lib
 
 import (
 	"fmt"
+	"github.com/warrensbox/terraform-switcher/lib/types"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -209,7 +210,7 @@ func getRecentVersions(installPath string) ([]string, error) {
 			}
 
 			/* 	output can be confusing since it displays the 3 most recent used terraform version
-			append the string *recent to the output to make it more user friendly
+			append the string *recent to the output to make it more user-friendly
 			*/
 			outputRecent = append(outputRecent, fmt.Sprintf("%s *recent", line))
 		}
@@ -279,52 +280,65 @@ func installableBinLocation(userBinPath string) string {
 }
 
 // InstallLatestVersion install latest stable tf version
-func InstallLatestVersion(dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
-	tfversion, _ := getTFLatest(mirrorURL)
-	if !dryRun {
-		install(tfversion, customBinaryPath, installPath, mirrorURL)
+func InstallLatestVersion(parameters types.Params) {
+	tfversion, _ := getTFLatest(parameters.MirrorURL)
+	if !parameters.DryRun {
+		install(tfversion, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	}
 }
 
 // InstallLatestImplicitVersion install latest - argument (version) must be provided
-func InstallLatestImplicitVersion(dryRun bool, requestedVersion, customBinaryPath, installPath string, mirrorURL string, preRelease bool) {
+func InstallLatestImplicitVersion(parameters types.Params, preRelease bool) {
+	var requestedVersion string
+	if preRelease {
+		requestedVersion = parameters.LatestPre
+	} else {
+		requestedVersion = parameters.LatestStable
+	}
+
 	_, err := version.NewConstraint(requestedVersion)
 	if err != nil {
 		logger.Errorf("Error parsing constraint %q: %v", requestedVersion, err)
 	}
-	tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
-	if err == nil && tfversion != "" && !dryRun {
-		install(tfversion, customBinaryPath, installPath, mirrorURL)
+	tfversion, err := getTFLatestImplicit(parameters.MirrorURL, preRelease, requestedVersion)
+
+	if err == nil && tfversion != "" {
+		if !parameters.DryRun {
+			install(tfversion, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
+		} else {
+			logger.Infof("%s", tfversion)
+			return
+		}
 	}
 	logger.Errorf("Error parsing constraint %q: %v", requestedVersion, err)
 	PrintInvalidMinorTFVersion()
 }
 
 // InstallVersion install with provided version as argument
-func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorURL string) {
-	logger.Debugf("Install version %s. Dry run: %s", version, strconv.FormatBool(dryRun))
-	if !dryRun {
-		if validVersionFormat(version) {
-			requestedVersion := version
+func InstallVersion(parameters types.Params) {
+	logger.Debugf("Install version %s. Dry run: %s", parameters.Version, strconv.FormatBool(parameters.DryRun))
+	if !parameters.DryRun {
+		if validVersionFormat(parameters.Version) {
+			requestedVersion := parameters.Version
 
 			//check to see if the requested version has been downloaded before
-			installLocation := GetInstallLocation(installPath)
+			installLocation := GetInstallLocation(parameters.InstallPath)
 			installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, VersionPrefix+requestedVersion))
 			recentDownloadFile := CheckFileExist(installFileVersionPath)
 			if recentDownloadFile {
-				ChangeSymlink(installFileVersionPath, customBinaryPath)
+				ChangeSymlink(installFileVersionPath, parameters.CustomBinaryPath)
 				logger.Infof("Switched terraform to version %q", requestedVersion)
-				addRecent(requestedVersion, installPath) //add to recent file for faster lookup
+				addRecent(requestedVersion, parameters.InstallPath) //add to recent file for faster lookup
 				return
 			}
 
 			// If the requested version had not been downloaded before
 			// Set list all true - all versions including beta and rc will be displayed
-			tflist, _ := getTFList(mirrorURL, true)         // Get list of versions
-			exist := versionExist(requestedVersion, tflist) // Check if version exists before downloading it
+			tflist, _ := getTFList(parameters.MirrorURL, true) // Get list of versions
+			exist := versionExist(requestedVersion, tflist)    // Check if version exists before downloading it
 
 			if exist {
-				install(requestedVersion, customBinaryPath, installPath, mirrorURL)
+				install(requestedVersion, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 			} else {
 				logger.Fatal("The provided terraform version does not exist.\n Try `tfswitch -l` to see all available versions")
 			}
@@ -340,14 +354,14 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 // InstallOption displays & installs tf version
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
-func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
-	tflist, _ := getTFList(mirrorURL, listAll)          // Get list of versions
-	recentVersions, _ := getRecentVersions(installPath) // Get recent versions from RECENT file
-	tflist = append(recentVersions, tflist...)          // Append recent versions to the top of the list
-	tflist = removeDuplicateVersions(tflist)            // Remove duplicate version
+func InstallOption(parameters types.Params, listAll bool) {
+	tflist, _ := getTFList(parameters.MirrorURL, listAll)          // Get list of versions
+	recentVersions, _ := getRecentVersions(parameters.InstallPath) // Get recent versions from RECENT file
+	tflist = append(recentVersions, tflist...)                     // Append recent versions to the top of the list
+	tflist = removeDuplicateVersions(tflist)                       // Remove duplicate version
 
 	if len(tflist) == 0 {
-		logger.Fatalf("Terraform version list is empty: %s", mirrorURL)
+		logger.Fatalf("Terraform version list is empty: %s", parameters.MirrorURL)
 		os.Exit(1)
 	}
 
@@ -368,8 +382,8 @@ func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, m
 			logger.Fatalf("Prompt failed %v", errPrompt)
 		}
 	}
-	if !dryRun {
-		install(tfversion, customBinaryPath, installPath, mirrorURL)
+	if !parameters.DryRun {
+		install(tfversion, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	}
 	os.Exit(0)
 }

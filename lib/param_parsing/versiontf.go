@@ -2,6 +2,7 @@ package param_parsing
 
 import (
 	semver "github.com/hashicorp/go-version"
+	"github.com/warrensbox/terraform-switcher/lib/types"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,7 +11,7 @@ import (
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
-func GetVersionFromVersionsTF(params Params) (Params, error) {
+func GetVersionFromVersionsTF(params types.Params) (types.Params, error) {
 	var tfConstraints []string
 
 	curDir, err := os.Getwd()
@@ -61,7 +62,7 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 	return params, nil
 }
 
-func isTerraformModule(params Params) bool {
+func isTerraformModule(params types.Params) bool {
 	module, err := tfconfig.LoadModule(params.ChDirPath)
 	return err == nil && len(module.RequiredCore) > 0
 }

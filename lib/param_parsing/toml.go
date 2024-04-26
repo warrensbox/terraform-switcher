@@ -3,13 +3,14 @@ package param_parsing
 import (
 	"github.com/spf13/viper"
 	"github.com/warrensbox/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib/types"
 	"path/filepath"
 )
 
 const tfSwitchTOMLFileName = ".tfswitch.toml"
 
 // getParamsTOML parses everything in the toml file, return required version and bin path
-func getParamsTOML(params Params) (Params, error) {
+func getParamsTOML(params types.Params) (types.Params, error) {
 	tomlPath := filepath.Join(params.ChDirPath, tfSwitchTOMLFileName)
 	if tomlFileExists(params) {
 		logger.Infof("Reading configuration from %q", tomlPath)
@@ -38,7 +39,7 @@ func getParamsTOML(params Params) (Params, error) {
 	return params, nil
 }
 
-func tomlFileExists(params Params) bool {
+func tomlFileExists(params types.Params) bool {
 	tomlPath := filepath.Join(params.ChDirPath, tfSwitchTOMLFileName)
 	return lib.CheckFileExist(tomlPath)
 }

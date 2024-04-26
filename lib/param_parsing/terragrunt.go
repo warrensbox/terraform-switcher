@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/hcl/v2/gohcl"
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/warrensbox/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib/types"
 	"path/filepath"
 )
 
@@ -14,7 +15,7 @@ type terragruntVersionConstraints struct {
 	TerraformVersionConstraint string `hcl:"terraform_version_constraint"`
 }
 
-func GetVersionFromTerragrunt(params Params) (Params, error) {
+func GetVersionFromTerragrunt(params types.Params) (types.Params, error) {
 	filePath := filepath.Join(params.ChDirPath, terraGruntFileName)
 	if lib.CheckFileExist(filePath) {
 		logger.Infof("Reading configuration from %q", filePath)
@@ -38,7 +39,7 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 	return params, nil
 }
 
-func terraGruntFileExists(params Params) bool {
+func terraGruntFileExists(params types.Params) bool {
 	filePath := filepath.Join(params.ChDirPath, terraGruntFileName)
 	return lib.CheckFileExist(filePath)
 }

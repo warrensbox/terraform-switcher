@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"github.com/hashicorp/go-version"
 	"github.com/warrensbox/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib/types"
 	"testing"
 )
 
 func TestGetVersionFromVersionsTF_matches_version(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
-	var params Params
+	var params types.Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_versiontf"
 	params, _ = GetVersionFromVersionsTF(params)
@@ -22,7 +23,7 @@ func TestGetVersionFromVersionsTF_matches_version(t *testing.T) {
 
 func TestGetVersionFromVersionsTF_impossible_constraints(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
-	var params Params
+	var params types.Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_matching_constraints"
 	params, err := GetVersionFromVersionsTF(params)
@@ -40,7 +41,7 @@ func TestGetVersionFromVersionsTF_impossible_constraints(t *testing.T) {
 
 func TestGetVersionFromVersionsTF_erroneous_file(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
-	var params Params
+	var params types.Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_error"
 	params, err := GetVersionFromVersionsTF(params)
@@ -56,7 +57,7 @@ func TestGetVersionFromVersionsTF_erroneous_file(t *testing.T) {
 
 func TestGetVersionFromVersionsTF_non_existent_constraint(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
-	var params Params
+	var params types.Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_existent"
 	params, err := GetVersionFromVersionsTF(params)

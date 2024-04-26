@@ -3,11 +3,12 @@ package param_parsing
 import (
 	"github.com/hashicorp/go-version"
 	"github.com/warrensbox/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib/types"
 	"testing"
 )
 
 func TestGetVersionFromTerragrunt(t *testing.T) {
-	var params Params
+	var params types.Params
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_terragrunt_hcl"
@@ -24,7 +25,7 @@ func TestGetVersionFromTerragrunt(t *testing.T) {
 }
 
 func TestGetVersionTerragrunt_with_no_terragrunt_file(t *testing.T) {
-	var params Params
+	var params types.Params
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
@@ -35,7 +36,7 @@ func TestGetVersionTerragrunt_with_no_terragrunt_file(t *testing.T) {
 }
 
 func TestGetVersionFromTerragrunt_erroneous_file(t *testing.T) {
-	var params Params
+	var params types.Params
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_terragrunt_error_hcl"

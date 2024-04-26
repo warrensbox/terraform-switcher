@@ -1,12 +1,13 @@
 package param_parsing
 
 import (
+	"github.com/warrensbox/terraform-switcher/lib/types"
 	"os"
 	"testing"
 )
 
 func TestGetParamsFromEnvironment_version_from_env(t *testing.T) {
-	var params Params
+	var params types.Params
 	expected := "1.0.0_from_env"
 	_ = os.Setenv("TF_VERSION", expected)
 	params = initParams(params)

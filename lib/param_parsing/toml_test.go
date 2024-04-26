@@ -2,11 +2,12 @@ package param_parsing
 
 import (
 	"github.com/warrensbox/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib/types"
 	"testing"
 )
 
-func prepare() Params {
-	var params Params
+func prepare() types.Params {
+	var params types.Params
 	params.ChDirPath = "../../test-data/integration-tests/test_tfswitchtoml"
 	logger = lib.InitLogger("DEBUG")
 	return params
@@ -40,7 +41,7 @@ func TestGetParamsTOML_log_level(t *testing.T) {
 }
 
 func TestGetParamsTOML_no_file(t *testing.T) {
-	var params Params
+	var params types.Params
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
 	params, _ = getParamsTOML(params)
 	if params.Version != "" {
@@ -50,7 +51,7 @@ func TestGetParamsTOML_no_file(t *testing.T) {
 
 func TestGetParamsTOML_error_in_file(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
-	var params Params
+	var params types.Params
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_tfswitchtoml_error"
 	params, err := getParamsTOML(params)
 	if err == nil {

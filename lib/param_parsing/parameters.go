@@ -4,32 +4,13 @@ import (
 	"github.com/gookit/slog"
 	"github.com/pborman/getopt"
 	"github.com/warrensbox/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib/types"
 )
-
-type Params struct {
-	ChDirPath        string
-	CustomBinaryPath string
-	DefaultVersion   string
-	DryRun           bool
-	HelpFlag         bool
-	InstallPath      string
-	LatestFlag       bool
-	LatestPre        string
-	LatestStable     string
-	ListAllFlag      bool
-	LogLevel         string
-	MirrorURL        string
-	ShowLatestFlag   bool
-	ShowLatestPre    string
-	ShowLatestStable string
-	Version          string
-	VersionFlag      bool
-}
 
 var logger *slog.Logger
 
-func GetParameters() Params {
-	var params Params
+func GetParameters() types.Params {
+	var params types.Params
 	params = initParams(params)
 
 	getopt.StringVarLong(&params.ChDirPath, "chdir", 'c', "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
@@ -45,8 +26,6 @@ func GetParameters() Params {
 	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', "Set loglevel for tfswitch. One of (INFO, NOTICE, DEBUG, TRACE)")
 	getopt.StringVarLong(&params.MirrorURL, "mirror", 'm', "install from a remote API other than the default. Default: "+lib.DefaultMirror)
 	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
-	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
-	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
 	getopt.BoolVarLong(&params.VersionFlag, "version", 'v', "Displays the version of tfswitch")
 
 	// Parse the command line parameters to fetch stuff like chdir
@@ -88,7 +67,7 @@ func GetParameters() Params {
 	return params
 }
 
-func initParams(params Params) Params {
+func initParams(params types.Params) types.Params {
 	params.ChDirPath = lib.GetCurrentDirectory()
 	params.CustomBinaryPath = lib.ConvertExecutableExt(lib.GetDefaultBin())
 	params.DefaultVersion = lib.DefaultLatest
@@ -102,8 +81,6 @@ func initParams(params Params) Params {
 	params.LogLevel = "INFO"
 	params.MirrorURL = lib.DefaultMirror
 	params.ShowLatestFlag = false
-	params.ShowLatestPre = lib.DefaultLatest
-	params.ShowLatestStable = lib.DefaultLatest
 	params.Version = lib.DefaultLatest
 	params.VersionFlag = false
 	return params

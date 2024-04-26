@@ -2,6 +2,7 @@ package param_parsing
 
 import (
 	"github.com/warrensbox/terraform-switcher/lib"
+	"github.com/warrensbox/terraform-switcher/lib/types"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,7 +10,7 @@ import (
 
 const tfSwitchFileName = ".tfswitchrc"
 
-func GetParamsFromTfSwitch(params Params) (Params, error) {
+func GetParamsFromTfSwitch(params types.Params) (types.Params, error) {
 	filePath := filepath.Join(params.ChDirPath, tfSwitchFileName)
 	if lib.CheckFileExist(filePath) {
 		logger.Infof("Reading configuration from %q", filePath)
@@ -23,7 +24,7 @@ func GetParamsFromTfSwitch(params Params) (Params, error) {
 	return params, nil
 }
 
-func tfSwitchFileExists(params Params) bool {
+func tfSwitchFileExists(params types.Params) bool {
 	filePath := filepath.Join(params.ChDirPath, tfSwitchFileName)
 	return lib.CheckFileExist(filePath)
 }
