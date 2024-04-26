@@ -7,37 +7,40 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 // DownloadFromURL : Downloads the terraform binary and its hash from the source url
-func DownloadFromURL(installLocation string, mirrorURL string, tfversion string, versionPrefix string, goos string, goarch string) (string, error) {
+func DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch string) (string, error) {
+	var wg sync.WaitGroup
+	defer wg.Done()
 	pubKeyFilename := filepath.Join(installLocation, "/", PubKeyPrefix+PubKeyId+pubKeySuffix)
 	zipUrl := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
 	hashUrl := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_SHA256SUMS"
 	hashSignatureUrl := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_SHA256SUMS." + PubKeyId + ".sig"
 
-	err := downloadPublicKey(installLocation, pubKeyFilename)
+	err := downloadPublicKey(installLocation, pubKeyFilename, &wg)
 	if err != nil {
 		logger.Error("Could not download public PGP key file.")
 		return "", err
 	}
 
 	logger.Infof("Downloading %q", zipUrl)
-	zipFilePath, err := downloadFromURL(installLocation, zipUrl)
+	zipFilePath, err := downloadFromURL(installLocation, zipUrl, &wg)
 	if err != nil {
 		logger.Error("Could not download zip file.")
 		return "", err
 	}
 
 	logger.Infof("Downloading %q", hashUrl)
-	hashFilePath, err := downloadFromURL(installLocation, hashUrl)
+	hashFilePath, err := downloadFromURL(installLocation, hashUrl, &wg)
 	if err != nil {
 		logger.Error("Could not download hash file.")
 		return "", err
 	}
 
 	logger.Infof("Downloading %q", hashSignatureUrl)
-	hashSigFilePath, err := downloadFromURL(installLocation, hashSignatureUrl)
+	hashSigFilePath, err := downloadFromURL(installLocation, hashSignatureUrl, &wg)
 	if err != nil {
 		logger.Error("Could not download hash signature file.")
 		return "", err
@@ -70,7 +73,7 @@ func DownloadFromURL(installLocation string, mirrorURL string, tfversion string,
 	var filesToCleanup []string
 	filesToCleanup = append(filesToCleanup, hashFilePath)
 	filesToCleanup = append(filesToCleanup, hashSigFilePath)
-	defer cleanup(filesToCleanup)
+	defer cleanup(filesToCleanup, &wg)
 
 	verified := checkSignatureOfChecksums(publicKeyFile, hashFile, signatureFile)
 	if !verified {
@@ -83,7 +86,8 @@ func DownloadFromURL(installLocation string, mirrorURL string, tfversion string,
 	return zipFilePath, err
 }
 
-func downloadFromURL(installLocation string, url string) (string, error) {
+func downloadFromURL(installLocation string, url string, wg *sync.WaitGroup) (string, error) {
+	wg.Add(1)
 	tokens := strings.Split(url, "/")
 	fileName := tokens[len(tokens)-1]
 	logger.Infof("Downloading to %q", filepath.Join(installLocation, "/", fileName))
@@ -119,12 +123,12 @@ func downloadFromURL(installLocation string, url string) (string, error) {
 	return filePath, nil
 }
 
-func downloadPublicKey(installLocation string, targetFileName string) error {
+func downloadPublicKey(installLocation string, targetFileName string, wg *sync.WaitGroup) error {
 	logger.Debugf("Looking up public key file at %q", targetFileName)
 	publicKeyFileExists := FileExistsAndIsNotDir(targetFileName)
 	if !publicKeyFileExists {
 		// Public key does not exist. Let's grab it from hashicorp
-		pubKeyFile, errDl := downloadFromURL(installLocation, PubKeyUri)
+		pubKeyFile, errDl := downloadFromURL(installLocation, PubKeyUri, wg)
 		if errDl != nil {
 			logger.Errorf("Error fetching public key file from %s", PubKeyUri)
 			return errDl
@@ -138,8 +142,9 @@ func downloadPublicKey(installLocation string, targetFileName string) error {
 	return nil
 }
 
-func cleanup(paths []string) {
+func cleanup(paths []string, wg *sync.WaitGroup) {
 	for _, path := range paths {
+		wg.Add(1)
 		logger.Infof("Deleting %q", path)
 		err := os.Remove(path)
 		if err != nil {

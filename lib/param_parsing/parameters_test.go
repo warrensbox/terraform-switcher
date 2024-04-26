@@ -2,7 +2,9 @@ package param_parsing
 
 import (
 	"github.com/pborman/getopt"
+	"github.com/warrensbox/terraform-switcher/lib"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -41,11 +43,13 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 	if actual != expected {
 		t.Error("Version Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
-}
-func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})
+}
+
+func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
 	expected := "../../test-data/integration-tests/test_tfswitchtoml"
 	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin"}
 	params := GetParameters()
@@ -64,6 +68,27 @@ func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	if actual != expected {
 		t.Error("Version Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
+}
+
+func TestGetParameters_dry_run_wont_download_anything(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	expected := "../../test-data/integration-tests/test_versiontf"
+	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/tmp", "--dry-run"}
+	params := GetParameters()
+	installLocation := lib.GetInstallLocation(params.InstallPath)
+	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, lib.VersionPrefix+params.Version))
+	// Make sure the file tfswitch WOULD download is absent
+	_ = os.Remove(installFileVersionPath)
+	lib.InstallVersion(params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL)
+	if lib.FileExistsAndIsNotDir(installFileVersionPath) {
+		t.Error("Dry run should NOT download any files.")
+	}
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
 }
 
 func TestGetParameters_check_config_precedence(t *testing.T) {
@@ -76,4 +101,7 @@ func TestGetParameters_check_config_precedence(t *testing.T) {
 	if parameters.Version != expected {
 		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: " + expected)
 	}
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
 }

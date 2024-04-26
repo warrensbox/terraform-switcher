@@ -59,16 +59,18 @@ func Unzip(src string, dest string) ([]string, error) {
 	if err != nil {
 		logger.Fatalf("Could not open destination: %v", err)
 	}
-	var wg sync.WaitGroup
+	var unzipWaitGroup sync.WaitGroup
 	for _, f := range reader.File {
-		wg.Add(1)
-		unzipErr := unzipFile(f, destination, &wg)
+		unzipWaitGroup.Add(1)
+		unzipErr := unzipFile(f, destination, &unzipWaitGroup)
 		if unzipErr != nil {
 			logger.Fatalf("Error unzipping %v", unzipErr)
 		} else {
 			filenames = append(filenames, filepath.Join(destination, f.Name))
 		}
 	}
+	logger.Debug("Waiting for deferred functions.")
+	unzipWaitGroup.Wait()
 	return filenames, nil
 }
 

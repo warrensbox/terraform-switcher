@@ -10,6 +10,7 @@ type Params struct {
 	ChDirPath        string
 	CustomBinaryPath string
 	DefaultVersion   string
+	DryRun           bool
 	HelpFlag         bool
 	InstallPath      string
 	LatestFlag       bool
@@ -34,6 +35,7 @@ func GetParameters() Params {
 	getopt.StringVarLong(&params.ChDirPath, "chdir", 'c', "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	getopt.StringVarLong(&params.CustomBinaryPath, "bin", 'b', "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
 	getopt.StringVarLong(&params.DefaultVersion, "default", 'd', "Default to this version in case no other versions could be detected. Ex: tfswitch --default 1.2.4")
+	getopt.BoolVarLong(&params.DryRun, "dry-run", 'r', "Only show what tfswitch would do. Don't download anything.")
 	getopt.BoolVarLong(&params.HelpFlag, "help", 'h', "Displays help message")
 	getopt.StringVarLong(&params.InstallPath, "install", 'i', "Custom install path. Ex: tfswitch -i /Users/username. The binaries will be in the sub installDir directory e.g. /Users/username/"+lib.InstallDir)
 	getopt.BoolVarLong(&params.LatestFlag, "latest", 'u', "Get latest stable version")
@@ -90,6 +92,7 @@ func initParams(params Params) Params {
 	params.ChDirPath = lib.GetCurrentDirectory()
 	params.CustomBinaryPath = lib.ConvertExecutableExt(lib.GetDefaultBin())
 	params.DefaultVersion = lib.DefaultLatest
+	params.DryRun = false
 	params.HelpFlag = false
 	params.InstallPath = lib.GetHomeDirectory()
 	params.LatestFlag = false
