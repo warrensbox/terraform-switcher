@@ -1,5 +1,5 @@
 site_name: TFSwitch
-site_description: A command line tool to switch between different versions of terraform (install with homebrew and more)
+site_description: A command line tool to switch between different versions of Terraform (install with Homebrew and more)
 copyright: This project is maintained by warrensbox
 repo_name: warrensbox/terraform-switcher
 repo_url: https://github.com/warrensbox/terraform-switcher

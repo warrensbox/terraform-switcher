@@ -63,7 +63,7 @@ yay tfswitch-bin
 
 Alternatively, you can install the binary from the source <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">here</a>.
 
-See [our installation documentation](https://tfswitch.warrensbox.com/Install) for more details.
+See [our installation documentation](https://tfswitch.warrensbox.com/Installation) for more details.
 
 > [!IMPORTANT]
 > The version identifier of `tfswitch` has changed to align with the common `go` package versioning.
@@ -87,7 +87,7 @@ Execute `tfswitch` and select the desired Terraform version via the dropdown men
 
 Use `tfswitch 1.7.0` to install Terraform version 1.7.0. Replace the version number as required.
 
-More [usage guide here](https://tfswitch.warrensbox.com/Quick-Start/)
+More [usage guide here](https://tfswitch.warrensbox.com/usage/commandline/)
 
 ## How to contribute
 
@@ -98,7 +98,7 @@ See step-by-step instructions on how to contribute here: [Contribute](https://tf
 
 ## Additional Info
 
-See how to *upgrade*, *uninstall*, *troubleshoot* here: [More info](https://tfswitch.warrensbox.com/Upgrade-or-Uninstall/)
+See how to [*upgrade* and *uninstall*](https://tfswitch.warrensbox.com/Upgrade-or-Uninstall/) or [*troubleshoot*](https://tfswitch.warrensbox.com/Troubleshoot/)
 
 ## Issues
 
