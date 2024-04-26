@@ -52,6 +52,7 @@ func GetParameters() Params {
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
 
+	oldLogLevel := params.LogLevel
 	logger = lib.InitLogger(params.LogLevel)
 	var err error
 	// Read configuration files
@@ -70,6 +71,11 @@ func GetParameters() Params {
 	}
 	if err != nil {
 		logger.Fatalf("Error parsing configuration file: %q", err)
+	}
+
+	// Logger config was changed by the config files. Reinitialise.
+	if params.LogLevel != oldLogLevel {
+		logger = lib.InitLogger(params.LogLevel)
 	}
 
 	// Parse again to overwrite anything that might by defined on the cli AND in any config file (CLI always wins)
