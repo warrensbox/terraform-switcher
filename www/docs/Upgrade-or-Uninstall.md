@@ -22,7 +22,7 @@ brew uninstall warrensbox/tap/tfswitch
 ```
 ### Linux
 
-Run:
+Run (replace `/usr/local/bin` if you installed `tfswitch` to a custom location):
 
 ```sh
 rm /usr/local/bin/tfswitch

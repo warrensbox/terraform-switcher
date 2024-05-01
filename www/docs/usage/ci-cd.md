@@ -2,7 +2,7 @@
 
 1. When using a CI/CD pipeline, you may want a default or fallback version to avoid the pipeline from hanging.
 2. Ex: `tfswitch -d 1.2.3` or `tfswitch --default 1.2.3` installs version `1.2.3` when no other versions could be detected.
-[Also, see CICD example](../continuous-integration)
+[Also, see CICD example](../Continuous-Integration.md)
 
 ## Automatically switch with bash
 
