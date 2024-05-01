@@ -119,7 +119,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         RELEASE_VERSION: ${{ steps.semver-tag.outputs.tag }}
         PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        NO_CREATE_CHANGELOG: true
+        NO_CREATE_CHANGELOG: false
 
     # Install Python
     - name: Install Python
