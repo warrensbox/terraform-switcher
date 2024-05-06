@@ -12,7 +12,7 @@ require (
 	github.com/pborman/getopt v1.1.0
 	github.com/spf13/viper v1.18.2
 	golang.org/x/crypto v0.22.0
-	golang.org/x/sys v0.19.0
+	golang.org/x/sys v0.20.0
 )
 
 require (
