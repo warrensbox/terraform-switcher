@@ -69,4 +69,7 @@ func TestGetParamsTOML_error_in_file(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error for reading erroneous toml file. Got nil")
 	}
+	if params.Version != "" {
+		t.Errorf("Version should be empty")
+	}
 }
