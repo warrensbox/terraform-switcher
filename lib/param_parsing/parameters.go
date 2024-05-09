@@ -54,18 +54,21 @@ func GetParameters() Params {
 	logger = lib.InitLogger(params.LogLevel)
 	var err error
 	// Read configuration files
-	if tomlFileExists(params) {
+	// TOML file can exist in the current, specified or home directory
+	if tomlFileExists(params.ChDirPath) || tomlFileExists(lib.GetHomeDirectory()) {
 		params, err = getParamsTOML(params)
-	} else if tfSwitchFileExists(params) {
-		params, err = GetParamsFromTfSwitch(params)
-	} else if terraformVersionFileExists(params) {
-		params, err = GetParamsFromTerraformVersion(params)
-	} else if isTerraformModule(params) {
-		params, err = GetVersionFromVersionsTF(params)
-	} else if terraGruntFileExists(params) {
-		params, err = GetVersionFromTerragrunt(params)
-	} else {
-		params = GetParamsFromEnvironment(params)
+
+		if tfSwitchFileExists(params) {
+			params, err = GetParamsFromTfSwitch(params)
+		} else if terraformVersionFileExists(params) {
+			params, err = GetParamsFromTerraformVersion(params)
+		} else if isTerraformModule(params) {
+			params, err = GetVersionFromVersionsTF(params)
+		} else if terraGruntFileExists(params) {
+			params, err = GetVersionFromTerragrunt(params)
+		} else {
+			params = GetParamsFromEnvironment(params)
+		}
 	}
 	if err != nil {
 		logger.Fatalf("Error parsing configuration file: %q", err)
