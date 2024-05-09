@@ -28,3 +28,15 @@ func TestGetParamsFromTfSwitch_no_file(t *testing.T) {
 		t.Errorf("Expected empty version string. Got: %v", params.Version)
 	}
 }
+
+func TestGetParamsFromTfSwitch_no_version(t *testing.T) {
+	var params Params
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_version"
+	params, err := GetParamsFromTfSwitch(params)
+	if err != nil {
+		t.Errorf("Expected no error. Got: %v", err)
+	}
+	if params.Version != "" {
+		t.Errorf("Expected empty version string. Got: %v", params.Version)
+	}
+}

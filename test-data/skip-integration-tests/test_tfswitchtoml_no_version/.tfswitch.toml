@@ -1,0 +1,2 @@
+bin = "/usr/local/bin/terraform_from_toml"
+log-level = "NOTICE"

@@ -1,9 +1,10 @@
 package param_parsing
 
 import (
+	"testing"
+
 	"github.com/hashicorp/go-version"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"testing"
 )
 
 func TestGetVersionFromTerragrunt(t *testing.T) {
@@ -29,6 +30,20 @@ func TestGetVersionTerragrunt_with_no_terragrunt_file(t *testing.T) {
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
 	params, _ = GetVersionFromTerragrunt(params)
+	if params.Version != "" {
+		t.Error("Version should be empty")
+	}
+}
+
+func TestGetVersionTerragrunt_with_no_version(t *testing.T) {
+	var params Params
+	logger = lib.InitLogger("DEBUG")
+	params = initParams(params)
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_terragrunt_no_version"
+	params, err := GetVersionFromTerragrunt(params)
+	if err != nil {
+		t.Fatalf("Got error '%s'", err)
+	}
 	if params.Version != "" {
 		t.Error("Version should be empty")
 	}

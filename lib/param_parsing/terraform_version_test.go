@@ -17,6 +17,18 @@ func TestGetParamsFromTerraformVersion(t *testing.T) {
 	}
 }
 
+func TestGetParamsFromTerraformVersion_no_version(t *testing.T) {
+	var params Params
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_no_version_constraint"
+	params, err := GetParamsFromTerraformVersion(params)
+	if err != nil {
+		t.Fatalf("Got error '%s'", err)
+	}
+	if params.Version != "" {
+		t.Errorf("Expected empty version string. Got: %v", params.Version)
+	}
+}
+
 func TestGetParamsFromTerraformVersion_no_file(t *testing.T) {
 	var params Params
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
