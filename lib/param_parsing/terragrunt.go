@@ -26,6 +26,9 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 		}
 		var versionFromTerragrunt terragruntVersionConstraints
 		diagnostics = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
+		if diagnostics.HasErrors() {
+			return params, fmt.Errorf("unable to decode HCL body %q", filePath)
+		}
 		if versionFromTerragrunt.TerraformVersionConstraint == "" {
 			logger.Infof("No terraform version constraint in %q", filePath)
 			return params, nil
