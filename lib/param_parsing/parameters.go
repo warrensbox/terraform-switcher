@@ -58,15 +58,20 @@ func GetParameters() Params {
 	// Read configuration files
 	if tomlFileExists(params) {
 		params, err = getParamsTOML(params)
-	} else if tfSwitchFileExists(params) {
+	}
+	if params.Version == "" {
 		params, err = GetParamsFromTfSwitch(params)
-	} else if terraformVersionFileExists(params) {
+	}
+	if params.Version == "" {
 		params, err = GetParamsFromTerraformVersion(params)
-	} else if isTerraformModule(params) {
+	}
+	if params.Version == "" {
 		params, err = GetVersionFromVersionsTF(params)
-	} else if terraGruntFileExists(params) {
+	}
+	if params.Version == "" {
 		params, err = GetVersionFromTerragrunt(params)
-	} else {
+	}
+	if params.Version == "" {
 		params = GetParamsFromEnvironment(params)
 	}
 	if err != nil {
