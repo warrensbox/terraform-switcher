@@ -1,10 +1,11 @@
 package param_parsing
 
 import (
-	semver "github.com/hashicorp/go-version"
 	"os"
 	"path/filepath"
 	"strings"
+
+	semver "github.com/hashicorp/go-version"
 
 	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 	"github.com/warrensbox/terraform-switcher/lib"
