@@ -1,10 +1,11 @@
 package param_parsing
 
 import (
-	"github.com/warrensbox/terraform-switcher/lib"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 const terraformVersionFileName = ".terraform-version"
@@ -21,9 +22,4 @@ func GetParamsFromTerraformVersion(params Params) (Params, error) {
 		params.Version = strings.TrimSpace(string(content))
 	}
 	return params, nil
-}
-
-func terraformVersionFileExists(params Params) bool {
-	filePath := filepath.Join(params.ChDirPath, terraformVersionFileName)
-	return lib.CheckFileExist(filePath)
 }
