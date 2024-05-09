@@ -1,11 +1,10 @@
 package param_parsing
 
 import (
+	"github.com/warrensbox/terraform-switcher/lib"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 const tfSwitchFileName = ".tfswitchrc"
@@ -22,4 +21,9 @@ func GetParamsFromTfSwitch(params Params) (Params, error) {
 		params.Version = strings.TrimSpace(string(content))
 	}
 	return params, nil
+}
+
+func tfSwitchFileExists(params Params) bool {
+	filePath := filepath.Join(params.ChDirPath, tfSwitchFileName)
+	return lib.CheckFileExist(filePath)
 }
