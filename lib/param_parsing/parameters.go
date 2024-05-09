@@ -56,9 +56,7 @@ func GetParameters() Params {
 	logger = lib.InitLogger(params.LogLevel)
 	var err error
 	// Read configuration files
-	if tomlFileExists(params) {
-		params, err = getParamsTOML(params)
-	}
+	params, err = getParamsTOML(params)
 	if params.Version == "" {
 		params, err = GetParamsFromTfSwitch(params)
 	}
