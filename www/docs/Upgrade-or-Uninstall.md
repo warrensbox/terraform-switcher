@@ -2,7 +2,7 @@
 
 ### Homebrew
 
-```ruby
+```shell
 brew upgrade warrensbox/tap/tfswitch
 ```
 ### Linux
@@ -17,7 +17,7 @@ curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/i
 
 ### Homebrew
 
-```ruby
+```shell
 brew uninstall warrensbox/tap/tfswitch
 ```
 ### Linux

@@ -48,7 +48,7 @@ This is similiar to using a .tfswitchrc file, but you can specify a custom binar
 4. Optionally, you can create a `.tfswitch.toml` file in your terraform directory(current directory) OR in your home directory(~/.tfswitch.toml). The toml file in the current directory has a higher precedence than toml file in the home directory
 5. Your `.tfswitch.toml` file should look like this:
 
-```ruby
+```toml
 bin = "$HOME/bin/terraform"
 version = "0.11.3"
 ```
@@ -69,7 +69,7 @@ bin = "C:\\Users\\<%USRNAME%>\\bin\\terraform.exe"
 If a terragrunt.hcl file with the terraform constraint is included in the current directory, it should automatically download or switch to that terraform version.  
 For example, the following should automatically switch terraform to the lastest version 0.13:
 
-```ruby
+```hcl
 terragrunt_version_constraint = ">= 0.26, < 0.27"
 terraform_version_constraint  = ">= 0.13, < 0.14"
 ...
