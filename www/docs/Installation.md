@@ -17,24 +17,24 @@ brew install warrensbox/tap/tfswitch
 Installation for Linux operating systems.
 
 ```sh
-curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh | bash
 ```
 
 By default installer script will try to download `tfswitch` binary into `/usr/local/bin`  
 To install at custom path use below:
 ```sh
-curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash -s -- -b $HOME/.local/bin
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh | bash -s -- -b $HOME/.local/bin
 ```
 
 By default installer script will try to download latest version of `tfswitch` binary  
 To install custom (not latest) version use:
 ```sh
-curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash -s -- 1.1.1
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh | bash -s -- 1.1.1
 ```
 
 Both options can be combined though:
 ```sh
-curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash -s -- -b $HOME/.local/bin 1.1.1
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh | bash -s -- -b $HOME/.local/bin 1.1.1
 ```
 
 ## Arch User Repository (AUR) packages for Arch Linux

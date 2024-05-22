@@ -46,7 +46,7 @@ brew install warrensbox/tap/tfswitch
 Installation for Linux operating systems.
 
 ```sh
-curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh | bash
 ```
 
 ## Arch User Repository (AUR) packages for Arch Linux
