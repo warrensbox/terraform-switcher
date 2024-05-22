@@ -572,7 +572,7 @@ For example, the following should automatically switch terraform to the lastest 
 <li>Optionally, you can create a <code>.tfswitch.toml</code> file in your terraform directory(current directory) OR in your home directory(~/.tfswitch.toml). The toml file in the current directory has a higher precedence than toml file in the home directory</li>
 <li>Your <code>.tfswitch.toml</code> file should look like this:</li>
 </ol>
-<pre><code class="language-ruby">bin = &quot;$HOME/bin/terraform&quot;
+<pre><code class="language-toml">bin = &quot;$HOME/bin/terraform&quot;
 version = &quot;0.11.3&quot;
 </code></pre>
 <ol>
@@ -588,7 +588,7 @@ version = &quot;0.11.3&quot;
 <h2 id="use-terragrunthcl-file">Use terragrunt.hcl file</h2>
 <p>If a terragrunt.hcl file with the terraform constraint is included in the current directory, it should automatically download or switch to that terraform version.<br />
 For example, the following should automatically switch terraform to the lastest version 0.13:</p>
-<pre><code class="language-ruby">terragrunt_version_constraint = &quot;&gt;= 0.26, &lt; 0.27&quot;
+<pre><code class="language-hcl">terragrunt_version_constraint = &quot;&gt;= 0.26, &lt; 0.27&quot;
 terraform_version_constraint  = &quot;&gt;= 0.13, &lt; 0.14&quot;
 ...
 </code></pre>
