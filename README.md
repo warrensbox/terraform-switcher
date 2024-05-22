@@ -37,7 +37,7 @@ See the [release page](https://github.com/warrensbox/terraform-switcher/releases
 
 For macOS or various Linux distributions, Homebrew offers the simplest installation process. <a href="https://brew.sh/" target="_blank">If you do not have homebrew installed, click here</a>.
 
-```ruby
+```shell
 brew install warrensbox/tap/tfswitch
 ```
 
@@ -46,7 +46,7 @@ brew install warrensbox/tap/tfswitch
 Installation for Linux operating systems.
 
 ```sh
-curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh | bash
 ```
 
 ## Arch User Repository (AUR) packages for Arch Linux
