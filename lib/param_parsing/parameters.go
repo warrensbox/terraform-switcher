@@ -1,6 +1,8 @@
 package param_parsing
 
 import (
+	"fmt"
+
 	"github.com/gookit/slog"
 	"github.com/pborman/getopt"
 	"github.com/warrensbox/terraform-switcher/lib"
@@ -56,8 +58,9 @@ func GetParameters() Params {
 	// Read configuration files
 	// TOML file can exist in the current, specified or home directory
 	if tomlFileExists(params.ChDirPath) || tomlFileExists(lib.GetHomeDirectory()) {
-		params, err = getParamsTOML(params)
+		params, err = getParamsTOML(params) // need to get path
 
+		fmt.Println(params.CustomBinaryPath)
 		if tfSwitchFileExists(params) {
 			params, err = GetParamsFromTfSwitch(params)
 		} else if terraformVersionFileExists(params) {

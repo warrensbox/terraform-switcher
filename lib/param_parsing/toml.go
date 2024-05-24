@@ -1,6 +1,7 @@
 package param_parsing
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/spf13/viper"
@@ -41,5 +42,8 @@ func getParamsTOML(params Params) (Params, error) {
 
 func tomlFileExists(dir string) bool {
 	tomlPath := filepath.Join(dir, tfSwitchTOMLFileName)
+	if lib.CheckFileExist(tomlPath) {
+		fmt.Println("FOunf toml")
+	}
 	return lib.CheckFileExist(tomlPath)
 }
