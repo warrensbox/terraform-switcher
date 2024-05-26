@@ -104,7 +104,7 @@ func writeTestFile(t *testing.T, basePath string, fileName string, fileContent s
 
 func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string) {
 	getopt.CommandLine = getopt.New()
-	os.Args = []string{"cmd", "--chdir=../../test-data/integration-tests/test_precedence", "--default=0.7.6"}
+	os.Args = []string{"cmd", "--chdir=../../test-data/integration-tests/test_precedence"}
 	parameters := GetParameters()
 	if parameters.Version != expectedVersion {
 		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: " + expectedVersion)
@@ -116,17 +116,7 @@ func TestGetParameters_check_config_precedence(t *testing.T) {
 		getopt.CommandLine = getopt.New()
 	})
 	chDir := "../../test-data/integration-tests/test_precedence"
-
-	// Test wuithout any versions
-	getopt.CommandLine = getopt.New()
-	os.Args = []string{"cmd", "--chdir=../../test-data/integration-tests/test_precedence"}
-	parameters := GetParameters()
-	if parameters.Version != "" {
-		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: \"\"")
-	}
-
-	// Test with default version
-	checkExpectedPrecedenceVersion(t, "0.7.6")
+	checkExpectedPrecedenceVersion(t, "")
 
 	// Create TfSwitch TOML
 	tfSwitchTOMLContent := `
@@ -166,8 +156,8 @@ terraform_version_constraint = ">= 0.13, < 0.14"
 
 	// Test passing command line argument to override all
 	getopt.CommandLine = getopt.New()
-	os.Args = []string{"cmd", "--chdir=../../test-data/integration-tests/test_precedence", "--default=0.7.6", "1.4.5"}
-	parameters = GetParameters()
+	os.Args = []string{"cmd", "--chdir=../../test-data/integration-tests/test_precedence", "1.4.5"}
+	parameters := GetParameters()
 	expectedVersion := "1.4.5"
 	if parameters.Version != expectedVersion {
 		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: " + expectedVersion)
