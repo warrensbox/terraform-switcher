@@ -39,8 +39,8 @@ func GetParameters() Params {
 	var productIds []string
 	var defaultMirrors []string
 	for _, product := range lib.GetAllProducts() {
-		productIds = append(productIds, product.ID)
-		defaultMirrors = append(defaultMirrors, fmt.Sprintf("%s: %s", product.Name, product.DefaultMirror))
+		productIds = append(productIds, product.GetId())
+		defaultMirrors = append(defaultMirrors, fmt.Sprintf("%s: %s", product.GetName(), product.GetDefaultMirrorUrl()))
 	}
 
 	getopt.StringVarLong(&params.ChDirPath, "chdir", 'c', "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
@@ -90,8 +90,9 @@ func GetParameters() Params {
 	product := lib.GetProductById(params.Product)
 	if product == nil {
 		logger.Fatalf("Invalid product: " + params.Product)
+	} else { // Use else as there is a warning that params maybe nil, as it does not see Fatalf as a break condition
+		params.MirrorURL = product.GetDefaultMirrorUrl()
 	}
-	params.MirrorURL = product.DefaultMirror
 
 	// Logger config was changed by the config files. Reinitialise.
 	if params.LogLevel != oldLogLevel {

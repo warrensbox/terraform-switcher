@@ -12,14 +12,17 @@ import (
 
 // DownloadFromURL : Downloads the terraform binary and its hash from the source url
 func DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch string) (string, error) {
+	product := getLegacyProduct()
+	return DownloadProductFromURL(product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch)
+}
+func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch string) (string, error) {
 	var wg sync.WaitGroup
 	defer wg.Done()
-	pubKeyFilename := filepath.Join(installLocation, "/", PubKeyPrefix+PubKeyId+pubKeySuffix)
-	zipUrl := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
-	hashUrl := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_SHA256SUMS"
-	hashSignatureUrl := mirrorURL + tfversion + "/" + versionPrefix + tfversion + "_SHA256SUMS." + PubKeyId + ".sig"
+	zipUrl := mirrorURL + "/" + versionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
+	hashUrl := mirrorURL + "/" + versionPrefix + tfversion + "_SHA256SUMS"
+	hashSignatureUrl := mirrorURL + "/" + versionPrefix + tfversion + "_SHA256SUMS." + product.GetShaSignatureSuffix()
 
-	err := downloadPublicKey(installLocation, pubKeyFilename, &wg)
+	pubKeyFilename, err := downloadPublicKey(product, installLocation, &wg)
 	if err != nil {
 		logger.Error("Could not download public PGP key file.")
 		return "", err
@@ -45,6 +48,9 @@ func DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos,
 		logger.Error("Could not download hash signature file.")
 		return "", err
 	}
+
+	// // Wait for wait group, as the file downloads are required for the below functionality
+	// wg.Wait()
 
 	publicKeyFile, err := os.Open(pubKeyFilename)
 	if err != nil {
@@ -123,23 +129,24 @@ func downloadFromURL(installLocation string, url string, wg *sync.WaitGroup) (st
 	return filePath, nil
 }
 
-func downloadPublicKey(installLocation string, targetFileName string, wg *sync.WaitGroup) error {
-	logger.Debugf("Looking up public key file at %q", targetFileName)
-	publicKeyFileExists := FileExistsAndIsNotDir(targetFileName)
+func downloadPublicKey(product Product, installLocation string, wg *sync.WaitGroup) (string, error) {
+	pubKeyFilePath := filepath.Join(installLocation, "/", product.GetId()+"_"+product.GetPublicKeyId()+pubKeySuffix)
+	logger.Debugf("Looking up public key file at %q", pubKeyFilePath)
+	publicKeyFileExists := FileExistsAndIsNotDir(pubKeyFilePath)
 	if !publicKeyFileExists {
 		// Public key does not exist. Let's grab it from hashicorp
-		pubKeyFile, errDl := downloadFromURL(installLocation, PubKeyUri, wg)
+		pubKeyFile, errDl := downloadFromURL(installLocation, product.GetPublicKeyUrl(), wg)
 		if errDl != nil {
-			logger.Errorf("Error fetching public key file from %s", PubKeyUri)
-			return errDl
+			logger.Errorf("Error fetching public key file from %s", product.GetPublicKeyUrl())
+			return "", errDl
 		}
-		errRename := os.Rename(pubKeyFile, targetFileName)
+		errRename := os.Rename(pubKeyFile, pubKeyFilePath)
 		if errRename != nil {
-			logger.Errorf("Error renaming public key file from %q to %q", pubKeyFile, targetFileName)
-			return errRename
+			logger.Errorf("Error renaming public key file from %q to %q", pubKeyFile, pubKeyFilePath)
+			return "", errRename
 		}
 	}
-	return nil
+	return pubKeyFilePath, nil
 }
 
 func cleanup(paths []string, wg *sync.WaitGroup) {

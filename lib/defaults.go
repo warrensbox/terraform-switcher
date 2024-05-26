@@ -4,12 +4,6 @@ import (
 	"runtime"
 )
 
-var (
-	PubKeyId     = "72D7468F"
-	PubKeyPrefix = "hashicorp_"
-	PubKeyUri    = "https://www.hashicorp.com/.well-known/pgp-key.txt"
-)
-
 const (
 	pubKeySuffix = ".asc"
 )
@@ -27,9 +21,7 @@ func GetDefaultBin() string {
 const (
 	DefaultMirror             = "https://releases.hashicorp.com/terraform"
 	DefaultLatest             = ""
-	installFile               = "terraform"
 	InstallDir                = ".terraform.versions"
-	recentFile                = "RECENT"
+	recentFilePrefix          = "RECENT"
 	tfDarwinArm64StartVersion = "1.0.2"
-	VersionPrefix             = "terraform_"
 )

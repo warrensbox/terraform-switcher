@@ -89,9 +89,9 @@ func CheckSymlink(symlinkPath string) bool {
 }
 
 // ChangeSymlink : move symlink to existing binary
-func ChangeSymlink(binVersionPath string, binPath string) {
+func ChangeSymlink(product Product, binVersionPath string, binPath string) {
 
-	binPath = installableBinLocation(binPath)
+	binPath = installableBinLocation(product, binPath)
 
 	/* remove current symlink if exist*/
 	symlinkExist := CheckSymlink(binPath)

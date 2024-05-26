@@ -39,6 +39,10 @@ func initialize(binPath string) {
 	}
 }
 
+func getRecentFileName(product Product) string {
+	return recentFilePrefix + product.GetId()
+}
+
 // GetInstallLocation : get location where the terraform binary will be installed,
 // will create the installDir if it does not exist
 func GetInstallLocation(installPath string) string {
@@ -51,14 +55,14 @@ func GetInstallLocation(installPath string) string {
 }
 
 // install : install the provided version in the argument
-func install(tfversion string, binPath string, installPath string, mirrorURL string) {
+func install(product Product, tfversion string, binPath string, installPath string, mirrorURL string) {
 	var wg sync.WaitGroup
 	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terraform"
 	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tfswitch there
 	 * Inform user that they don't have permission to default location, therefore tfswitch was installed in $HOME/bin
 	 * Tell users to add $HOME/bin to their path
 	 */
-	binPath = installableBinLocation(binPath)
+	binPath = installableBinLocation(product, binPath)
 
 	initialize(binPath)                               //initialize path
 	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
@@ -74,7 +78,7 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 	}
 
 	/* check if selected version already downloaded */
-	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, VersionPrefix+tfversion))
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+tfversion))
 	fileExist := CheckFileExist(installFileVersionPath)
 
 	/* if selected version already exist, */
@@ -90,7 +94,7 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
 		logger.Infof("Switched terraform to version %q", tfversion)
-		addRecent(tfversion, installPath) //add to recent file for faster lookup
+		addRecent(product, tfversion, installPath) //add to recent file for faster lookup
 		return
 	}
 
@@ -102,7 +106,7 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	zipFile, errDownload := DownloadFromURL(installLocation, mirrorURL, tfversion, VersionPrefix, goos, goarch)
+	zipFile, errDownload := DownloadProductFromURL(product, installLocation, product.GetArtifactUrl(mirrorURL, tfversion), tfversion, product.GetVersionPrefix(), goos, goarch)
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
@@ -118,7 +122,7 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 	logger.Debug("Waiting for deferred functions.")
 	wg.Wait()
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
-	installFilePath := ConvertExecutableExt(filepath.Join(installLocation, installFile))
+	installFilePath := ConvertExecutableExt(filepath.Join(installLocation, product.GetExecutableName()))
 	RenameFile(installFilePath, installFileVersionPath)
 
 	/* remove zipped file to clear clutter */
@@ -134,58 +138,59 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
 	logger.Infof("Switched terraform to version %q", tfversion)
-	addRecent(tfversion, installPath) //add to recent file for faster lookup
+	addRecent(product, tfversion, installPath) //add to recent file for faster lookup
 	return
 }
 
 // addRecent : add to recent file
-func addRecent(requestedVersion string, installPath string) {
+func addRecent(product Product, requestedVersion string, installPath string) {
 
 	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	versionFile := filepath.Join(installLocation, recentFile)
+	recentFilePath := filepath.Join(installLocation, getRecentFileName(product))
 
-	fileExist := CheckFileExist(versionFile)
+	fileExist := CheckFileExist(recentFilePath)
 	if fileExist {
-		lines, errRead := ReadLines(versionFile)
+		lines, errRead := ReadLines(recentFilePath)
 
 		if errRead != nil {
-			logger.Errorf("Error reading %q file: %v", versionFile, errRead)
+			logger.Errorf("Error reading %q file: %v", recentFilePath, errRead)
 			return
 		}
 
 		for _, line := range lines {
 			if !validVersionFormat(line) {
-				logger.Infof("File %q is dirty (recreating cache file)", versionFile)
-				RemoveFiles(versionFile)
-				CreateRecentFile(requestedVersion, installPath)
+				logger.Infof("File %q is dirty (recreating cache file)", recentFilePath)
+				RemoveFiles(recentFilePath)
+				CreateRecentFile(requestedVersion, installPath, recentFilePath)
 				return
 			}
 		}
 
 		versionExist := versionExist(requestedVersion, lines)
 
+		// @TODO Does this not duplicate the behavoir of CreateRecentFile, called above? (possibly )
 		if !versionExist {
 			if len(lines) >= 3 {
 				_, lines = lines[len(lines)-1], lines[:len(lines)-1]
 
 				lines = append([]string{requestedVersion}, lines...)
-				_ = WriteLines(lines, versionFile)
+				_ = WriteLines(lines, recentFilePath)
 			} else {
 				lines = append([]string{requestedVersion}, lines...)
-				_ = WriteLines(lines, versionFile)
+				_ = WriteLines(lines, recentFilePath)
 			}
 		}
 
 	} else {
-		CreateRecentFile(requestedVersion, installPath)
+		CreateRecentFile(requestedVersion, installPath, recentFilePath)
 	}
 }
 
 // getRecentVersions : get recent version from file
-func getRecentVersions(installPath string) ([]string, error) {
+func getRecentVersions(product Product, installPath string) ([]string, error) {
 
 	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	versionFile := filepath.Join(installLocation, recentFile)
+	versionFile := filepath.Join(installLocation, getRecentFileName(product))
 
 	fileExist := CheckFileExist(versionFile)
 	if fileExist {
@@ -221,9 +226,9 @@ func getRecentVersions(installPath string) ([]string, error) {
 }
 
 // CreateRecentFile : create RECENT file
-func CreateRecentFile(requestedVersion string, installPath string) {
+func CreateRecentFile(requestedVersion string, installPath string, recentFilePath string) {
 	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	_ = WriteLines([]string{requestedVersion}, filepath.Join(installLocation, recentFile))
+	_ = WriteLines([]string{requestedVersion}, filepath.Join(installLocation, recentFilePath))
 }
 
 // ConvertExecutableExt : convert excutable with local OS extension
@@ -241,7 +246,9 @@ func ConvertExecutableExt(fpath string) string {
 
 // installableBinLocation : Checks if terraform is installable in the location provided by the user.
 // If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
-func installableBinLocation(userBinPath string) string {
+func installableBinLocation(product Product, userBinPath string) string {
+
+	// @TODO Remove duplicate code in if homeBinExist and rationalise return to single instance
 
 	homedir := GetHomeDirectory()         //get user's home directory
 	binDir := Path(userBinPath)           //get path directory from binary path
@@ -260,13 +267,13 @@ func installableBinLocation(userBinPath string) string {
 			homeBinExist := CheckDirExist(filepath.Join(homedir, "bin")) //check to see if ~/bin exist
 			if homeBinExist {                                            //if ~/bin exist, install at ~/bin/terraform
 				logger.Infof("Installing terraform at %q", filepath.Join(homedir, "bin"))
-				return filepath.Join(homedir, "bin", "terraform")
+				return filepath.Join(homedir, "bin", product.GetExecutableName())
 			} else { //if ~/bin directory does not exist, create ~/bin for terraform installation
 				logger.Noticef("Unable to write to %q", userBinPath)
 				logger.Infof("Creating bin directory at %q", filepath.Join(homedir, "bin"))
 				createDirIfNotExist(filepath.Join(homedir, "bin")) //create ~/bin
 				logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append bin to $PATH", filepath.Join(homedir, "bin"))
-				return filepath.Join(homedir, "bin", "terraform")
+				return filepath.Join(homedir, "bin", product.GetExecutableName())
 			}
 		} else { // ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
 			return filepath.Join(userBinPath)
@@ -280,28 +287,42 @@ func installableBinLocation(userBinPath string) string {
 
 // InstallLatestVersion install latest stable tf version
 func InstallLatestVersion(dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
+	product := getLegacyProduct()
+	InstallLatestProductVersion(product, dryRun, customBinaryPath, installPath, mirrorURL)
+}
+func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
 	tfversion, _ := getTFLatest(mirrorURL)
 	if !dryRun {
-		install(tfversion, customBinaryPath, installPath, mirrorURL)
+		install(product, tfversion, customBinaryPath, installPath, mirrorURL)
 	}
 }
 
 // InstallLatestImplicitVersion install latest - argument (version) must be provided
 func InstallLatestImplicitVersion(dryRun bool, requestedVersion, customBinaryPath, installPath string, mirrorURL string, preRelease bool) {
+	product := getLegacyProduct()
+	InstallLatestProductImplicitVersion(product, dryRun, requestedVersion, customBinaryPath, installPath, mirrorURL, preRelease)
+}
+func InstallLatestProductImplicitVersion(product Product, dryRun bool, requestedVersion, customBinaryPath, installPath string, mirrorURL string, preRelease bool) {
 	_, err := version.NewConstraint(requestedVersion)
 	if err != nil {
 		logger.Errorf("Error parsing constraint %q: %v", requestedVersion, err)
 	}
 	tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
 	if err == nil && tfversion != "" && !dryRun {
-		install(tfversion, customBinaryPath, installPath, mirrorURL)
+		install(product, tfversion, customBinaryPath, installPath, mirrorURL)
 	}
 	logger.Errorf("Error parsing constraint %q: %v", requestedVersion, err)
 	PrintInvalidMinorTFVersion()
 }
 
-// InstallVersion install with provided version as argument
+// InstallVersion install product using legacy product
 func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorURL string) {
+	product := getLegacyProduct()
+	InstallProductVersion(product, dryRun, version, customBinaryPath, installPath, mirrorURL)
+}
+
+// InstallVersion install with provided version as argument
+func InstallProductVersion(product Product, dryRun bool, version, customBinaryPath, installPath, mirrorURL string) {
 	logger.Debugf("Install version %s. Dry run: %s", version, strconv.FormatBool(dryRun))
 	if !dryRun {
 		if validVersionFormat(version) {
@@ -309,12 +330,12 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 
 			//check to see if the requested version has been downloaded before
 			installLocation := GetInstallLocation(installPath)
-			installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, VersionPrefix+requestedVersion))
+			installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+requestedVersion))
 			recentDownloadFile := CheckFileExist(installFileVersionPath)
 			if recentDownloadFile {
-				ChangeSymlink(installFileVersionPath, customBinaryPath)
+				ChangeSymlink(product, installFileVersionPath, customBinaryPath)
 				logger.Infof("Switched terraform to version %q", requestedVersion)
-				addRecent(requestedVersion, installPath) //add to recent file for faster lookup
+				addRecent(product, requestedVersion, installPath) //add to recent file for faster lookup
 				return
 			}
 
@@ -324,7 +345,7 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 			exist := versionExist(requestedVersion, tflist) // Check if version exists before downloading it
 
 			if exist {
-				install(requestedVersion, customBinaryPath, installPath, mirrorURL)
+				install(product, requestedVersion, customBinaryPath, installPath, mirrorURL)
 			} else {
 				logger.Fatal("The provided terraform version does not exist.\n Try `tfswitch -l` to see all available versions")
 			}
@@ -337,14 +358,19 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 	}
 }
 
+func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
+	product := getLegacyProduct()
+	InstallProductOption(product, listAll, dryRun, customBinaryPath, installPath, mirrorURL)
+}
+
 // InstallOption displays & installs tf version
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
-func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
-	tflist, _ := getTFList(mirrorURL, listAll)          // Get list of versions
-	recentVersions, _ := getRecentVersions(installPath) // Get recent versions from RECENT file
-	tflist = append(recentVersions, tflist...)          // Append recent versions to the top of the list
-	tflist = removeDuplicateVersions(tflist)            // Remove duplicate version
+func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
+	tflist, _ := getTFList(mirrorURL, listAll)                   // Get list of versions
+	recentVersions, _ := getRecentVersions(product, installPath) // Get recent versions from RECENT file
+	tflist = append(recentVersions, tflist...)                   // Append recent versions to the top of the list
+	tflist = removeDuplicateVersions(tflist)                     // Remove duplicate version
 
 	if len(tflist) == 0 {
 		logger.Fatalf("Terraform version list is empty: %s", mirrorURL)
@@ -369,7 +395,7 @@ func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, m
 		}
 	}
 	if !dryRun {
-		install(tfversion, customBinaryPath, installPath, mirrorURL)
+		install(product, tfversion, customBinaryPath, installPath, mirrorURL)
 	}
 	os.Exit(0)
 }
