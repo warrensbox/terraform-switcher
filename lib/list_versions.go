@@ -25,13 +25,14 @@ func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionL
 		semver = `\/?(\d+\.\d+\.\d+)\/?"`
 	}
 	r, _ := regexp.Compile(semver)
-	bodyLines := strings.Split(body, "\n")
-	for i := range bodyLines {
-		if r.MatchString(bodyLines[i]) {
-			str := r.FindString(bodyLines[i])
-			trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
-			tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
-		}
+
+	matches := r.FindAllString(body, -1)
+	if matches == nil {
+		return
+	}
+	for _, match := range matches {
+		trimstr := strings.Trim(match, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
+		tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
 	}
 }
 
