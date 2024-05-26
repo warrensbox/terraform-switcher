@@ -97,7 +97,7 @@ func (p OpenTofuProduct) GetPublicKeyUrl() string {
 	return p.PublicKeyUrl
 }
 func (p OpenTofuProduct) GetShaSignatureSuffix() string {
-	return "sig"
+	return "gpgsig"
 }
 
 // Factory methods
