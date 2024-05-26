@@ -14,10 +14,6 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
-const (
-	TERRAFORM_BINARY_NAME = "terraform"
-)
-
 // RenameFile : rename file name
 func RenameFile(src string, dest string) {
 	logger.Debugf("Renaming file %q to %q", src, dest)
@@ -49,7 +45,7 @@ func CheckFileExist(file string) bool {
 
 // Unzip will decompress a zip archive, moving all files and folders
 // within the zip file (parameter 1) to an output directory (parameter 2).
-func Unzip(src string, dest string) ([]string, error) {
+func Unzip(src string, dest string, fileToUnzip string) ([]string, error) {
 	logger.Debugf("Unzipping file %q", src)
 
 	var filenames []string
@@ -67,7 +63,7 @@ func Unzip(src string, dest string) ([]string, error) {
 	for _, f := range reader.File {
 		// Only extract the "terraform" binary
 		// from the archive, ignoring LICENSE and other files
-		if f.Name != TERRAFORM_BINARY_NAME {
+		if f.Name != fileToUnzip {
 			continue
 		}
 

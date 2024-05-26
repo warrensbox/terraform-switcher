@@ -121,7 +121,7 @@ var products = []Product{
 			DefaultMirror:         "https://get.opentofu.org/tofu",
 			DefaultDownloadMirror: "https://github.com/opentofu/opentofu/releases/download",
 			VersionPrefix:         "opentofu_",
-			ExecutableName:        "opentofu",
+			ExecutableName:        "tofu",
 			ArchivePrefix:         "tofu_",
 			PublicKeyId:           "0C0AF313E5FD9F80",
 			PublicKeyUrl:          "https://get.opentofu.org/opentofu.asc",

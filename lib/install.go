@@ -114,7 +114,7 @@ func install(product Product, tfversion string, binPath string, installPath stri
 	}
 
 	/* unzip the downloaded zipfile */
-	_, errUnzip := Unzip(zipFile, installLocation)
+	_, errUnzip := Unzip(zipFile, installLocation, product.GetExecutableName())
 	if errUnzip != nil {
 		logger.Fatalf("Unable to unzip %q file: %v", zipFile, errUnzip)
 	}
