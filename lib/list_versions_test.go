@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -34,6 +35,53 @@ func TestGetTFList(t *testing.T) {
 		t.Log("Write versions exist (expected)")
 	}
 
+}
+
+func compareLists(actual []string, expected []string) error {
+	if len(actual) != len(expected) {
+		return fmt.Errorf("Slices are not equal")
+	}
+
+	for i, v := range expected {
+		if v != actual[i] {
+			return fmt.Errorf("Elements are not the same. Expected: " + v + ", actual: " + actual[i])
+		}
+	}
+	return nil
+}
+
+// TestGetVersionsFromBodyHashicor :  test hashicorp release body
+func TestGetVersionsFromBodyHashicor(t *testing.T) {
+	hashicorpBody := `
+	<a href="/terraform/0.12.2/">terraform_0.12.2</a>
+	</li>
+	<li>
+	<a href="/terraform/0.12.1/">terraform_0.12.1</a>
+	</li>
+	<li>
+	<a href="/terraform/0.12.0/">terraform_0.12.0</a>
+	</li>
+	<li>
+	<a href="/terraform/0.12.0-rc1/">terraform_0.12.0-rc1</a>
+	</li>
+	<li>
+	<a href="/terraform/0.12.0-beta2/">terraform_0.12.0-beta2</a>
+`
+
+	var testTfVersionList tfVersionList
+	getVersionsFromBody(hashicorpBody, false, &testTfVersionList)
+	expectedVersion := []string{"0.12.2", "0.12.1", "0.12.0"}
+	if err := compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", err)
+	}
+
+	// Test pre-release
+	var testTfVersionListPre tfVersionList
+	getVersionsFromBody(hashicorpBody, true, &testTfVersionListPre)
+	expectedVersion = []string{"0.12.2", "0.12.1", "0.12.0", "0.12.0-rc1", "0.12.0-beta2"}
+	if err := compareLists(testTfVersionListPre.tflist, expectedVersion); err != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", err)
+	}
 }
 
 // TestRemoveDuplicateVersions :  test to removed duplicate
