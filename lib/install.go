@@ -342,16 +342,35 @@ func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, m
 	InstallProductOption(product, listAll, dryRun, customBinaryPath, installPath, mirrorURL)
 }
 
+type VersionSelector struct {
+	Version string
+	Label   string
+}
+
 // InstallOption displays & installs tf version
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
 func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
-	tflist, _ := getTFList(mirrorURL, listAll)                // Get list of versions
-	recentVersions := getRecentVersions(product, installPath) // Get recent versions from RECENT file
-	tflist = append(recentVersions, tflist...)                // Append recent versions to the top of the list
-	tflist = removeDuplicateVersions(tflist)                  // Remove duplicate version
+	var selectVersions []VersionSelector
 
-	if len(tflist) == 0 {
+	// Add recent versions
+	for _, version := range getRecentVersions(product, installPath) {
+		selectVersions = append(selectVersions, VersionSelector{
+			Version: version,
+			Label:   version + " *recent",
+		})
+	}
+
+	// Add all versions
+	tfList, _ := getTFList(mirrorURL, listAll)
+	for _, version := range tfList {
+		selectVersions = append(selectVersions, VersionSelector{
+			Version: version,
+			Label:   version,
+		})
+	}
+
+	if len(selectVersions) == 0 {
 		logger.Fatalf("Terraform version list is empty: %s", mirrorURL)
 		os.Exit(1)
 	}
@@ -359,11 +378,18 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	/* prompt user to select version of terraform */
 	prompt := promptui.Select{
 		Label: "Select Terraform version",
-		Items: tflist,
+		Items: selectVersions,
+		Templates: &promptui.SelectTemplates{
+			// Use templates from defaults in promptui, but specifying
+			// the Label attribute of the VersionSelectors
+			Label:    fmt.Sprintf("%s {{.Label}}: ", promptui.IconInitial),
+			Active:   fmt.Sprintf("%s {{ .Label | underline }}", promptui.IconSelect),
+			Inactive: "  {{.Label}}",
+			Selected: fmt.Sprintf(`{{ "%s" | green }} {{ .Label | faint }}`, promptui.IconGood),
+		},
 	}
 
-	_, tfversion, errPrompt := prompt.Run()
-	tfversion = strings.Trim(tfversion, " *recent") //trim versions with the string " *recent" appended
+	selectedItx, _, errPrompt := prompt.Run()
 
 	if errPrompt != nil {
 		if errPrompt.Error() == "^C" {
@@ -374,7 +400,7 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 		}
 	}
 	if !dryRun {
-		install(product, tfversion, customBinaryPath, installPath, mirrorURL)
+		install(product, selectVersions[selectedItx].Version, customBinaryPath, installPath, mirrorURL)
 	}
 	os.Exit(0)
 }
