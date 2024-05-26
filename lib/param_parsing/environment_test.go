@@ -11,6 +11,7 @@ func TestGetParamsFromEnvironment_version_from_env(t *testing.T) {
 	_ = os.Setenv("TF_VERSION", expected)
 	params = initParams(params)
 	params = GetParamsFromEnvironment(params)
+	_ = os.Unsetenv("TF_VERSION")
 	if params.Version != expected {
 		t.Error("Determined version is not matching. Got " + params.Version + ", expected " + expected)
 	}
