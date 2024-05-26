@@ -39,7 +39,7 @@ func TestGetTFList(t *testing.T) {
 
 func compareLists(actual []string, expected []string) error {
 	if len(actual) != len(expected) {
-		return fmt.Errorf("Slices are not equal")
+		return fmt.Errorf("Slices are not equal length: Expected: %v, actual: %v", expected, actual)
 	}
 
 	for i, v := range expected {
