@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -122,13 +123,32 @@ func TestUnzip(t *testing.T) {
 		t.Errorf("Unable to unzip %q file: %v", absPath, errUnzip)
 	}
 
-	tst := strings.Join(files, "")
+	if fileCount := len(files); fileCount != 1 {
+		t.Errorf("Expected extracted files size is %d, expected 1", fileCount)
+	}
 
-	if exist := checkFileExist(tst); exist {
-		t.Logf("File exist %v", tst)
-	} else {
-		t.Logf("File does not exist %v", tst)
-		t.Error("Missing file")
+	// Ensure terraform file exists
+	terraformFile := filepath.Join(installLocation, "terraform")
+	if terraformFileExists := checkFileExist(terraformFile); !terraformFileExists {
+		t.Errorf("File does not exist %v", terraformFile)
+	}
+
+	terraformFileContent, err := ioutil.ReadFile(terraformFile)
+	if err != nil {
+		t.Error(err)
+	}
+	// Ensure terraform file contains test content from
+	if string(terraformFileContent[:]) != "TerraformBinaryContent\n" {
+		t.Errorf("Terraform test file content does not match expected value: %s", string(terraformFileContent[:]))
+	}
+
+	// Ensure README and LICENSE files don't exist
+	nonExistentFiles := []string{"README", "LICENSE"}
+	for _, fileName := range nonExistentFiles {
+		filePath := filepath.Join(installLocation, fileName)
+		if fileExists := checkFileExist(filePath); fileExists {
+			t.Errorf("Zip archive file should not exist: %v", fileExists)
+		}
 	}
 
 	cleanUp(installLocation)
