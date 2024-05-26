@@ -30,7 +30,6 @@ var logger = lib.InitLogger(parameters.LogLevel)
 var version string
 
 func main() {
-
 	switch {
 	case parameters.VersionFlag:
 		if version != "" {
