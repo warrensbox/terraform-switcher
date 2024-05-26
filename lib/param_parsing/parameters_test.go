@@ -97,7 +97,7 @@ func TestGetParameters_check_config_precedence(t *testing.T) {
 	})
 	os.Args = []string{"cmd", "--chdir=../../test-data/integration-tests/test_precedence"}
 	parameters := GetParameters()
-	expected := "0.11.3"
+	expected := "0.13.7"
 	if parameters.Version != expected {
 		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: " + expected)
 	}
