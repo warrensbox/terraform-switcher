@@ -92,12 +92,22 @@ func TestGetParameters_dry_run_wont_download_anything(t *testing.T) {
 	})
 }
 
+func writeTestFile(t *testing.T, basePath string, fileName string, fileContent string) {
+	fullPath := filepath.Join(basePath, fileName)
+	if err := os.WriteFile(fullPath, []byte(fileContent), 0666); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		os.Remove(fullPath)
+	})
+}
+
 func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string) {
+	getopt.CommandLine = getopt.New()
 	os.Args = []string{"cmd", "--chdir=../../test-data/integration-tests/test_precedence"}
 	parameters := GetParameters()
-	expected := "0.13.7"
-	if parameters.Version != expected {
-		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: " + expected)
+	if parameters.Version != expectedVersion {
+		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: " + expectedVersion)
 	}
 }
 
@@ -113,21 +123,15 @@ func TestGetParameters_check_config_precedence(t *testing.T) {
 bin = "/usr/local/bin/terraform_from_toml"
 version = "0.11.3"
 `
-	if err := os.WriteFile(filepath.Join(chDir, ".tfswitch.toml"), []byte(tfSwitchTOMLContent), 0666); err != nil {
-		t.Error(err)
-	}
+	writeTestFile(t, chDir, ".tfswitch.toml", tfSwitchTOMLContent)
 	checkExpectedPrecedenceVersion(t, "0.11.3")
 
 	// Create tfswitchrc file
-	if err := os.WriteFile(filepath.Join(chDir, ".tfswitchrc"), []byte("0.10.5"), 0666); err != nil {
-		t.Error(err)
-	}
+	writeTestFile(t, chDir, ".tfswitchrc", "0.10.5")
 	checkExpectedPrecedenceVersion(t, "0.10.5")
 
 	// Create terraform-version file
-	if err := os.WriteFile(filepath.Join(chDir, ".terraform-version"), []byte("0.11.0"), 0666); err != nil {
-		t.Error(err)
-	}
+	writeTestFile(t, chDir, ".terraform-version", "0.11.0")
 	checkExpectedPrecedenceVersion(t, "0.11.0")
 
 	// Create terraform file
@@ -136,22 +140,28 @@ terraform {
 	required_version = "0.14.1"
 }
 `
-	if err := os.WriteFile(filepath.Join(chDir, "main.tf"), []byte(terraformFileContent), 0666); err != nil {
-		t.Error(err)
-	}
+	writeTestFile(t, chDir, "main.tf", terraformFileContent)
 	checkExpectedPrecedenceVersion(t, "0.14.1")
 
 	// Create terraform file
 	terragruntContent := `
 terraform_version_constraint = ">= 0.13, < 0.14"
 `
-	if err := os.WriteFile(filepath.Join(chDir, "terragrunt.hcl"), []byte(terragruntContent), 0666); err != nil {
-		t.Error(err)
-	}
-	checkExpectedPrecedenceVersion(t, "0.13.9")
+	writeTestFile(t, chDir, "terragrunt.hcl", terragruntContent)
+	checkExpectedPrecedenceVersion(t, "0.13.7")
 
 	// Test with environment variable
-	os.Setenv("TERRAFORM_VERSION", "0.11.31.env")
+	os.Setenv("TF_VERSION", "0.11.31.env")
 	checkExpectedPrecedenceVersion(t, "0.11.31.env")
-	os.Unsetenv("TERRAFORM_VERSION")
+
+	// Test passing command line argument to override all
+	getopt.CommandLine = getopt.New()
+	os.Args = []string{"cmd", "--chdir=../../test-data/integration-tests/test_precedence", "1.4.5"}
+	parameters := GetParameters()
+	expectedVersion := "1.4.5"
+	if parameters.Version != expectedVersion {
+		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: " + expectedVersion)
+	}
+
+	os.Unsetenv("TF_VERSION")
 }
