@@ -106,7 +106,7 @@ func install(product Product, tfversion string, binPath string, installPath stri
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	zipFile, errDownload := DownloadProductFromURL(product, installLocation, product.GetArtifactUrl(mirrorURL, tfversion), tfversion, product.GetVersionPrefix(), goos, goarch)
+	zipFile, errDownload := DownloadProductFromURL(product, installLocation, product.GetArtifactUrl(mirrorURL, tfversion), tfversion, product.GetArchivePrefix(), goos, goarch)
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {

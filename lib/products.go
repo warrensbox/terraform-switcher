@@ -11,6 +11,7 @@ type ProductDetails struct {
 	VersionPrefix         string
 	DefaultDownloadMirror string
 	ExecutableName        string
+	ArchivePrefix         string
 	PublicKeyId           string
 	PublicKeyUrl          string
 }
@@ -28,6 +29,7 @@ type Product interface {
 	GetDefaultMirrorUrl() string
 	GetVersionPrefix() string
 	GetExecutableName() string
+	GetArchivePrefix() string
 	GetPublicKeyId() string
 	GetPublicKeyUrl() string
 	GetShaSignatureSuffix() string
@@ -49,6 +51,9 @@ func (p TerraformProduct) GetVersionPrefix() string {
 }
 func (p TerraformProduct) GetExecutableName() string {
 	return p.ExecutableName
+}
+func (p TerraformProduct) GetArchivePrefix() string {
+	return p.ArchivePrefix
 }
 func (p TerraformProduct) GetArtifactUrl(mirrorURL string, version string) string {
 	return fmt.Sprintf("%s%s", mirrorURL, version)
@@ -79,6 +84,9 @@ func (p OpenTofuProduct) GetVersionPrefix() string {
 func (p OpenTofuProduct) GetExecutableName() string {
 	return p.ExecutableName
 }
+func (p OpenTofuProduct) GetArchivePrefix() string {
+	return p.ArchivePrefix
+}
 func (p OpenTofuProduct) GetArtifactUrl(mirrorURL string, version string) string {
 	return fmt.Sprintf("%s/v%s", p.DefaultDownloadMirror, version)
 }
@@ -101,6 +109,7 @@ var products = []Product{
 			DefaultMirror:  "https://releases.hashicorp.com/terraform",
 			VersionPrefix:  "terraform_",
 			ExecutableName: "terraform",
+			ArchivePrefix:  "terraform_",
 			PublicKeyId:    "72D7468F",
 			PublicKeyUrl:   "https://www.hashicorp.com/.well-known/pgp-key.txt",
 		},
@@ -110,9 +119,10 @@ var products = []Product{
 			ID:                    "opentofu",
 			Name:                  "OpenTofu",
 			DefaultMirror:         "https://get.opentofu.org/tofu",
-			DefaultDownloadMirror: "https://github.com/opentofu/opentofu/releases/tag",
+			DefaultDownloadMirror: "https://github.com/opentofu/opentofu/releases/download",
 			VersionPrefix:         "opentofu_",
 			ExecutableName:        "opentofu",
+			ArchivePrefix:         "tofu_",
 			PublicKeyId:           "0C0AF313E5FD9F80",
 			PublicKeyUrl:          "https://get.opentofu.org/opentofu.asc",
 		},
