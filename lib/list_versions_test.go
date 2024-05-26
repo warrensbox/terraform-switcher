@@ -50,8 +50,8 @@ func compareLists(actual []string, expected []string) error {
 	return nil
 }
 
-// TestGetVersionsFromBodyHashicor :  test hashicorp release body
-func TestGetVersionsFromBodyHashicor(t *testing.T) {
+// TestGetVersionsFromBodyHashicorp :  test hashicorp release body
+func TestGetVersionsFromBodyHashicorp(t *testing.T) {
 	hashicorpBody := `
 	<a href="/terraform/0.12.2/">terraform_0.12.2</a>
 	</li>
@@ -79,6 +79,36 @@ func TestGetVersionsFromBodyHashicor(t *testing.T) {
 	var testTfVersionListPre tfVersionList
 	getVersionsFromBody(hashicorpBody, true, &testTfVersionListPre)
 	expectedVersion = []string{"0.12.2", "0.12.1", "0.12.0", "0.12.0-rc1", "0.12.0-beta2"}
+	if err := compareLists(testTfVersionListPre.tflist, expectedVersion); err != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", err)
+	}
+}
+
+// TestGetVersionsFromBodyOpenTofu :  test OpenTofu release body
+func TestGetVersionsFromBodyOpenTofu(t *testing.T) {
+	openTofuBody := `
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title>OpenTofu releases</title>
+	</head>
+	<body>
+	<ul><li><a href="/tofu/1.7.1/">tofu_1.7.1</a></li><li><a href="/tofu/1.7.0/">tofu_1.7.0</a></li><li><a href="/tofu/1.7.0-rc1/">tofu_1.7.0-rc1</a></li><li><a href="/tofu/1.7.0-beta1/">tofu_1.7.0-beta1</a></li><li><a href="/tofu/1.7.0-alpha1/">tofu_1.7.0-alpha1</a></li><li><a href="/tofu/1.6.2/">tofu_1.6.2</a></li><li><a href="/tofu/1.6.0-alpha1/">tofu_1.6.0-alpha1</a></li></ul>
+	</body>
+	</html>
+`
+
+	var testTfVersionList tfVersionList
+	getVersionsFromBody(openTofuBody, false, &testTfVersionList)
+	expectedVersion := []string{"1.7.1", "1.7.0", "1.6.2"}
+	if err := compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", err)
+	}
+
+	// Test pre-release
+	var testTfVersionListPre tfVersionList
+	getVersionsFromBody(openTofuBody, true, &testTfVersionListPre)
+	expectedVersion = []string{"1.7.1", "1.7.0", "1.7.0-rc1", "1.7.0-beta1", "1.7.0-alpha1", "1.6.2", "1.6.0-alpha1"}
 	if err := compareLists(testTfVersionListPre.tflist, expectedVersion); err != nil {
 		t.Errorf("Parsed version does not match expected versions: %v", err)
 	}
