@@ -1,7 +1,9 @@
 package lib
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -37,10 +39,6 @@ func initialize(binPath string) {
 	if symlinkExist {
 		RemoveSymlink(binPath)
 	}
-}
-
-func getRecentFileName(product Product) string {
-	return recentFilePrefix + product.GetId()
 }
 
 // GetInstallLocation : get location where the terraform binary will be installed,
@@ -94,7 +92,7 @@ func install(product Product, tfversion string, binPath string, installPath stri
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
 		logger.Infof("Switched terraform to version %q", tfversion)
-		addRecent(product, tfversion, installPath) //add to recent file for faster lookup
+		addRecentVersion(product, tfversion, installPath) //add to recent file for faster lookup
 		return
 	}
 
@@ -138,97 +136,78 @@ func install(product Product, tfversion string, binPath string, installPath stri
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
 	logger.Infof("Switched terraform to version %q", tfversion)
-	addRecent(product, tfversion, installPath) //add to recent file for faster lookup
+	addRecentVersion(product, tfversion, installPath) //add to recent file for faster lookup
 	return
 }
 
-// addRecent : add to recent file
-func addRecent(product Product, requestedVersion string, installPath string) {
+// getRecentFileName : Obtain recent version filename for product
+func getRecentFileName(product Product) string {
+	return recentFilePrefix + product.GetId() + ".json"
+}
 
+// addRecent : add to recent file
+func addRecentVersion(product Product, requestedVersion string, installPath string) {
 	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
 	recentFilePath := filepath.Join(installLocation, getRecentFileName(product))
 
-	fileExist := CheckFileExist(recentFilePath)
-	if fileExist {
-		lines, errRead := ReadLines(recentFilePath)
+	// Obtain pre-existing latest version
+	versions := getRecentVersions(product, installPath)
 
-		if errRead != nil {
-			logger.Errorf("Error reading %q file: %v", recentFilePath, errRead)
-			return
+	// Check for requestedVersion in versions list
+	for versionIndex, versionVal := range versions {
+		if versionVal == requestedVersion {
+			versions = append(versions[:versionIndex], versions[versionIndex+1:]...)
 		}
+	}
 
-		for _, line := range lines {
-			if !validVersionFormat(line) {
-				logger.Infof("File %q is dirty (recreating cache file)", recentFilePath)
-				RemoveFiles(recentFilePath)
-				CreateRecentFile(requestedVersion, installPath, recentFilePath)
-				return
-			}
-		}
+	// Add new version to start of slice
+	versions = append([]string{requestedVersion}, versions...)
+	if len(versions) > 3 {
+		versions = versions[0:2]
+	}
 
-		versionExist := versionExist(requestedVersion, lines)
+	// Write new versions back to recent files
+	recentVersionFh, err := os.OpenFile(recentFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		logger.Errorf("Error to open %q file for writing: %v", recentFilePath, err)
+		return
+	}
+	defer recentVersionFh.Close()
 
-		// @TODO Does this not duplicate the behavoir of CreateRecentFile, called above? (possibly )
-		if !versionExist {
-			if len(lines) >= 3 {
-				_, lines = lines[len(lines)-1], lines[:len(lines)-1]
+	// Marhsall data and write to file
+	jsonData, err := json.Marshal(versions)
+	if err != nil {
+		logger.Errorf("Failed to marshal recent versions data: %v", err)
+	}
 
-				lines = append([]string{requestedVersion}, lines...)
-				_ = WriteLines(lines, recentFilePath)
-			} else {
-				lines = append([]string{requestedVersion}, lines...)
-				_ = WriteLines(lines, recentFilePath)
-			}
-		}
-
-	} else {
-		CreateRecentFile(requestedVersion, installPath, recentFilePath)
+	_, err = recentVersionFh.Write(jsonData)
+	if err != nil {
+		logger.Errorf("Failed to write recent versions file data: %v", err)
 	}
 }
 
 // getRecentVersions : get recent version from file
-func getRecentVersions(product Product, installPath string) ([]string, error) {
+func getRecentVersions(product Product, installPath string) []string {
 
 	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	versionFile := filepath.Join(installLocation, getRecentFileName(product))
+	recentVersionFile := filepath.Join(installLocation, getRecentFileName(product))
+	var outputRecent []string
 
-	fileExist := CheckFileExist(versionFile)
+	fileExist := CheckFileExist(recentVersionFile)
 	if fileExist {
-
-		lines, errRead := ReadLines(versionFile)
-		var outputRecent []string
-
-		if errRead != nil {
-			logger.Errorf("Error reading %q file: %f", versionFile, errRead)
-			return nil, errRead
+		content, err := ioutil.ReadFile(recentVersionFile)
+		if err != nil {
+			logger.Warnf("Error when opening recent version file (%s): %s", recentVersionFile, err)
+			return outputRecent
 		}
 
-		for _, line := range lines {
-			/* 	checks if versions in the recent file are valid.
-			If any version is invalid, it will be considered dirty
-			and the recent file will be removed
-			*/
-			if !validVersionFormat(line) {
-				RemoveFiles(versionFile)
-				return nil, errRead
-			}
-
-			/* 	output can be confusing since it displays the 3 most recent used terraform version
-			append the string *recent to the output to make it more user friendly
-			*/
-			outputRecent = append(outputRecent, fmt.Sprintf("%s *recent", line))
+		err = json.Unmarshal(content, &outputRecent)
+		if err != nil {
+			logger.Warnf("Error during unmarshalling recentVersionFile: ", err)
 		}
-
-		return outputRecent, nil
 	}
 
-	return nil, nil
-}
-
-// CreateRecentFile : create RECENT file
-func CreateRecentFile(requestedVersion string, installPath string, recentFilePath string) {
-	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	_ = WriteLines([]string{requestedVersion}, filepath.Join(installLocation, recentFilePath))
+	return outputRecent
 }
 
 // ConvertExecutableExt : convert excutable with local OS extension
@@ -335,7 +314,7 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 			if recentDownloadFile {
 				ChangeSymlink(product, installFileVersionPath, customBinaryPath)
 				logger.Infof("Switched terraform to version %q", requestedVersion)
-				addRecent(product, requestedVersion, installPath) //add to recent file for faster lookup
+				addRecentVersion(product, requestedVersion, installPath) //add to recent file for faster lookup
 				return
 			}
 
@@ -367,10 +346,10 @@ func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, m
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
 func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
-	tflist, _ := getTFList(mirrorURL, listAll)                   // Get list of versions
-	recentVersions, _ := getRecentVersions(product, installPath) // Get recent versions from RECENT file
-	tflist = append(recentVersions, tflist...)                   // Append recent versions to the top of the list
-	tflist = removeDuplicateVersions(tflist)                     // Remove duplicate version
+	tflist, _ := getTFList(mirrorURL, listAll)                // Get list of versions
+	recentVersions := getRecentVersions(product, installPath) // Get recent versions from RECENT file
+	tflist = append(recentVersions, tflist...)                // Append recent versions to the top of the list
+	tflist = removeDuplicateVersions(tflist)                  // Remove duplicate version
 
 	if len(tflist) == 0 {
 		logger.Fatalf("Terraform version list is empty: %s", mirrorURL)

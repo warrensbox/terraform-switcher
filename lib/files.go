@@ -121,6 +121,7 @@ func WriteLines(lines []string, path string) (err error) {
 }
 
 // ReadLines : Read a whole file into the memory and store it as array of lines
+// @TODO This isn't used - should we keep it?
 func ReadLines(path string) (lines []string, err error) {
 	var (
 		file   *os.File
