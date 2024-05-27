@@ -21,7 +21,7 @@ func addRecentGeneric(requestedVersion string, installPath string, dist string) 
 	recentFilePath := filepath.Join(installLocation, recentFile)
 	var recentFileData RecentFiles
 	if CheckFileExist(recentFilePath) {
-		unmarshal(recentFilePath, recentFileData)
+		unmarshal(recentFilePath, &recentFileData)
 	}
 	var sliceToCheck []string
 	if dist == "terraform" {
@@ -52,7 +52,7 @@ func getRecentVersionsGeneric(installPath string, dist string) ([]string, error)
 	installLocation := GetInstallLocation(installPath)
 	recentFilePath := filepath.Join(installLocation, recentFile)
 	var recentFileData RecentFiles
-	unmarshal(recentFilePath, recentFileData)
+	unmarshal(recentFilePath, &recentFileData)
 	if dist == "terraform" {
 		return recentFileData.Terraform, nil
 	} else if dist == "tofu" {
@@ -61,13 +61,13 @@ func getRecentVersionsGeneric(installPath string, dist string) ([]string, error)
 	return nil, nil
 }
 
-func unmarshal(recentFilePath string, recentFileData RecentFiles) {
+func unmarshal(recentFilePath string, recentFileData *RecentFiles) {
 	recentFileContent, err := os.ReadFile(recentFilePath)
 	if err != nil {
 		logger.Errorf("Could not open file %v", recentFilePath)
 	}
-	if !strings.HasPrefix(string(recentFileContent), "{") {
-		convertData(recentFileContent, &recentFileData)
+	if string(recentFileContent[0:1]) != "{" {
+		convertData(recentFileContent, recentFileData)
 	} else {
 		err = json.Unmarshal(recentFileContent, &recentFileData)
 		if err != nil {
