@@ -24,4 +24,5 @@ const (
 	InstallDir                = ".terraform.versions"
 	recentFilePrefix          = "RECENT"
 	tfDarwinArm64StartVersion = "1.0.2"
+	DefaultProductId          = "terraform"
 )
