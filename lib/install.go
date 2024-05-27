@@ -305,13 +305,13 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	}
 
 	if len(selectVersions) == 0 {
-		logger.Fatalf("Terraform version list is empty: %s", mirrorURL)
+		logger.Fatalf("%s version list is empty: %s", product.GetName(), mirrorURL)
 		os.Exit(1)
 	}
 
 	/* prompt user to select version of terraform */
 	prompt := promptui.Select{
-		Label: "Select Terraform version",
+		Label: fmt.Sprintf("Select %s version", product.GetName()),
 		Items: selectVersions,
 		Templates: &promptui.SelectTemplates{
 			// Use templates from defaults in promptui, but specifying
