@@ -38,7 +38,7 @@ func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionL
 
 // getTFList :  Get the list of available terraform version given the hashicorp url
 func getTFList(mirrorURL string, preRelease bool) ([]string, error) {
-	logger.Debugf("Get list of terraform versions")
+	logger.Debug("Getting list of versions")
 	result, err := getTFURLBody(mirrorURL)
 	if err != nil {
 		return nil, err
