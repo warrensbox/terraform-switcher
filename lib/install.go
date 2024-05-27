@@ -267,7 +267,7 @@ func installableBinLocation(product Product, userBinPath string) string {
 				createDirIfNotExist(homeBinDir) //create ~/bin
 				logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append bin to $PATH", homeBinDir)
 			}
-			logger.Infof("Installing terraform at %q", homeBinDir)
+			logger.Infof("Installing %s at %q", product.GetName(), homeBinDir)
 			return filepath.Join(homeBinDir, product.GetExecutableName())
 
 		} else { // ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
