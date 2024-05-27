@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/gookit/slog v0.5.5
-	github.com/hashicorp/go-version v1.6.0
+	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/hcl/v2 v2.20.1
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20231204233900-a34142ec2a72
 	github.com/manifoldco/promptui v0.9.0
