@@ -94,7 +94,7 @@ func TestGetParameters_dry_run_wont_download_anything(t *testing.T) {
 
 func writeTestFile(t *testing.T, basePath string, fileName string, fileContent string) {
 	fullPath := filepath.Join(basePath, fileName)
-	if err := os.WriteFile(fullPath, []byte(fileContent), 0666); err != nil {
+	if err := os.WriteFile(fullPath, []byte(fileContent), 0600); err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() {
