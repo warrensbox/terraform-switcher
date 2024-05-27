@@ -142,6 +142,9 @@ func GetAllProducts() []Product {
 	return products
 }
 
+// Obtain produced used by deprecated public methods that
+// now expect a product to be called.
+// Once these public methods are removed, this function can be removed
 func getLegacyProduct() Product {
 	product := GetProductById(legacyProductId)
 	if product == nil {
