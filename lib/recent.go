@@ -2,7 +2,6 @@ package lib
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -76,7 +75,7 @@ func getRecentFileData(installPath string) RecentFile {
 
 	fileExist := CheckFileExist(recentFilePath)
 	if fileExist {
-		content, err := ioutil.ReadFile(recentFilePath)
+		content, err := os.ReadFile(recentFilePath)
 		if err != nil {
 			logger.Warnf("Error opening recent versions file (%q): %v. Ignoring", recentFilePath, err)
 			return outputRecent
