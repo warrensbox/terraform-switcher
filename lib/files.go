@@ -51,9 +51,12 @@ func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error
 	logger.Debugf("Unzipping file %q", src)
 
 	// Handle old signature of method, where fileToUnzip did not exist
-	fileToUnzip := "terraform"
-	if len(fileToUnzipSlice) > 0 {
+	legacyProduct := getLegacyProduct()
+	fileToUnzip := legacyProduct.GetExecutableName()
+	if len(fileToUnzipSlice) == 1 {
 		fileToUnzip = fileToUnzipSlice[0]
+	} else if len(fileToUnzipSlice) > 1 {
+		logger.Fatal("Too many args passed to Unzip")
 	}
 
 	var filenames []string
