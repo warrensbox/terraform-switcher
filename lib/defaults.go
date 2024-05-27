@@ -10,10 +10,6 @@ var (
 	PubKeyUri    = "https://www.hashicorp.com/.well-known/pgp-key.txt"
 )
 
-const (
-	pubKeySuffix = ".asc"
-)
-
 // GetDefaultBin Get default binary path
 func GetDefaultBin() string {
 	var defaultBin = "/usr/local/bin/terraform"
@@ -27,8 +23,11 @@ func GetDefaultBin() string {
 const (
 	DefaultMirror             = "https://releases.hashicorp.com/terraform"
 	DefaultLatest             = ""
+	distTerraform             = "terraform"
+	distTofu                  = "tofu"
 	installFile               = "terraform"
 	InstallDir                = ".terraform.versions"
+	pubKeySuffix              = ".asc"
 	recentFile                = "RECENT"
 	tfDarwinArm64StartVersion = "1.0.2"
 	VersionPrefix             = "terraform_"

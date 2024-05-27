@@ -12,11 +12,11 @@ type RecentFiles struct {
 	Tofu      []string `json:"tofu"`
 }
 
-func addRecent(requestedVersion string, installPath string) {
-	addRecentGeneric(requestedVersion, installPath, "terraform")
-}
-
-func addRecentGeneric(requestedVersion string, installPath string, dist string) {
+func addRecent(requestedVersion string, installPath string, dist string) {
+	if !validVersionFormat(requestedVersion) {
+		logger.Errorf("The version %s is not a valid version string and won't be stored", requestedVersion)
+		return
+	}
 	installLocation := GetInstallLocation(installPath)
 	recentFilePath := filepath.Join(installLocation, recentFile)
 	var recentFileData RecentFiles
@@ -24,38 +24,33 @@ func addRecentGeneric(requestedVersion string, installPath string, dist string) 
 		unmarshal(recentFilePath, &recentFileData)
 	}
 	var sliceToCheck []string
-	if dist == "terraform" {
+	if dist == distTerraform {
 		sliceToCheck = recentFileData.Terraform
-	} else if dist == "tofu" {
+	} else if dist == distTofu {
 		sliceToCheck = recentFileData.Tofu
 	}
 	for _, v := range sliceToCheck {
-		//TODO Check for valid version format
 		if v == requestedVersion {
 			// entry already exists. Nothing to do
 			return
 		}
 	}
-	if dist == "terraform" {
+	if dist == distTerraform {
 		recentFileData.Terraform = append(recentFileData.Terraform, requestedVersion)
-	} else if dist == "tofu" {
+	} else if dist == distTofu {
 		recentFileData.Tofu = append(recentFileData.Tofu, requestedVersion)
 	}
 	saveFile(recentFileData, recentFilePath)
 }
 
-func getRecentVersions(installPath string) ([]string, error) {
-	return getRecentVersionsGeneric(installPath, "terraform")
-}
-
-func getRecentVersionsGeneric(installPath string, dist string) ([]string, error) {
+func getRecentVersions(installPath string, dist string) ([]string, error) {
 	installLocation := GetInstallLocation(installPath)
 	recentFilePath := filepath.Join(installLocation, recentFile)
 	var recentFileData RecentFiles
 	unmarshal(recentFilePath, &recentFileData)
-	if dist == "terraform" {
+	if dist == distTerraform {
 		return recentFileData.Terraform, nil
-	} else if dist == "tofu" {
+	} else if dist == distTofu {
 		return recentFileData.Tofu, nil
 	}
 	return nil, nil

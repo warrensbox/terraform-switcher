@@ -90,7 +90,7 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
 		logger.Infof("Switched terraform to version %q", tfversion)
-		addRecent(tfversion, installPath) //add to recent file for faster lookup
+		addRecent(tfversion, installPath, distTerraform) //add to recent file for faster lookup
 		return
 	}
 
@@ -134,7 +134,7 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
 	logger.Infof("Switched terraform to version %q", tfversion)
-	addRecent(tfversion, installPath) //add to recent file for faster lookup
+	addRecent(tfversion, installPath, distTerraform) //add to recent file for faster lookup
 	return
 }
 
@@ -226,7 +226,7 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 			if recentDownloadFile {
 				ChangeSymlink(installFileVersionPath, customBinaryPath)
 				logger.Infof("Switched terraform to version %q", requestedVersion)
-				addRecent(requestedVersion, installPath) //add to recent file for faster lookup
+				addRecent(requestedVersion, installPath, distTerraform) //add to recent file for faster lookup
 				return
 			}
 
@@ -253,10 +253,10 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
 func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
-	tflist, _ := getTFList(mirrorURL, listAll)          // Get list of versions
-	recentVersions, _ := getRecentVersions(installPath) // Get recent versions from RECENT file
-	tflist = append(recentVersions, tflist...)          // Append recent versions to the top of the list
-	tflist = removeDuplicateVersions(tflist)            // Remove duplicate version
+	tflist, _ := getTFList(mirrorURL, listAll)                         // Get list of versions
+	recentVersions, _ := getRecentVersions(installPath, distTerraform) // Get recent versions from RECENT file
+	tflist = append(recentVersions, tflist...)                         // Append recent versions to the top of the list
+	tflist = removeDuplicateVersions(tflist)                           // Remove duplicate version
 
 	if len(tflist) == 0 {
 		logger.Fatalf("Terraform version list is empty: %s", mirrorURL)
