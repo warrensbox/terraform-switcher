@@ -55,7 +55,7 @@ func Test_getRecentVersionsGenericForTerraform(t *testing.T) {
 
 func Test_getRecentVersionsGenericForTofu(t *testing.T) {
 	logger = InitLogger("DEBUG")
-	strings, err := getRecentVersions("../test-data/recent/recent_as_json/", distTofu)
+	strings, err := getRecentVersions("../test-data/recent/recent_as_json", distTofu)
 	if err != nil {
 		t.Error("Unable to get versions from recent file")
 	}
@@ -72,7 +72,7 @@ func Test_addRecentGenericForTerraform(t *testing.T) {
 		t.Errorf("Could not create temporary directory")
 	}
 	addRecent("3.7.0", temp, distTerraform)
-	bytes, err := os.ReadFile(filepath.Join(temp, ".terraform.versions/RECENT"))
+	bytes, err := os.ReadFile(filepath.Join(temp, ".terraform.versions", "RECENT"))
 	if err != nil {
 		t.Error("Could not open file")
 		t.Error(err)
@@ -80,7 +80,7 @@ func Test_addRecentGenericForTerraform(t *testing.T) {
 	assert.Equal(t, "{\"terraform\":[\"3.7.0\"],\"tofu\":null}", string(bytes))
 
 	addRecent("1.1.1", temp, distTofu)
-	bytes, err = os.ReadFile(filepath.Join(temp, ".terraform.versions/RECENT"))
+	bytes, err = os.ReadFile(filepath.Join(temp, ".terraform.versions", "RECENT"))
 	if err != nil {
 		t.Error("Could not open file")
 		t.Error(err)

@@ -14,7 +14,7 @@ type RecentFiles struct {
 
 func addRecent(requestedVersion string, installPath string, dist string) {
 	if !validVersionFormat(requestedVersion) {
-		logger.Errorf("The version %s is not a valid version string and won't be stored", requestedVersion)
+		logger.Errorf("The version %q is not a valid version string and won't be stored", requestedVersion)
 		return
 	}
 	installLocation := GetInstallLocation(installPath)
@@ -59,14 +59,14 @@ func getRecentVersions(installPath string, dist string) ([]string, error) {
 func unmarshal(recentFilePath string, recentFileData *RecentFiles) {
 	recentFileContent, err := os.ReadFile(recentFilePath)
 	if err != nil {
-		logger.Errorf("Could not open file %v", recentFilePath)
+		logger.Errorf("Could not open recent versions file %q", recentFilePath)
 	}
 	if string(recentFileContent[0:1]) != "{" {
 		convertData(recentFileContent, recentFileData)
 	} else {
 		err = json.Unmarshal(recentFileContent, &recentFileData)
 		if err != nil {
-			logger.Errorf("Could not unmarshal content of %v", recentFilePath)
+			logger.Errorf("Could not unmarshal recent versions content from %q file", recentFilePath)
 		}
 	}
 }
@@ -83,10 +83,10 @@ func convertData(content []byte, recentFileData *RecentFiles) {
 func saveFile(data RecentFiles, path string) {
 	bytes, err := json.Marshal(data)
 	if err != nil {
-		logger.Errorf("Could not Marshal data to json. %q", err)
+		logger.Errorf("Could not marshal data to JSON: %v", err)
 	}
 	err = os.WriteFile(path, bytes, 0644)
 	if err != nil {
-		logger.Errorf("Could not save file %v", path)
+		logger.Errorf("Could not save file %q: %v", path, err)
 	}
 }
