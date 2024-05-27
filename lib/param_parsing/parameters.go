@@ -60,7 +60,7 @@ func GetParameters() Params {
 	if tomlFileExists(lib.GetHomeDirectory()) {
 		params, err = getParamsTOML(params, lib.GetHomeDirectory())
 		if err != nil {
-			logger.Fatalf("Failed to obtain settings from TOML config in home directory: %q", err)
+			logger.Fatalf("Failed to obtain settings from TOML config in home directory: %v", err)
 		}
 	}
 
@@ -68,43 +68,39 @@ func GetParameters() Params {
 	if tomlFileExists(params.ChDirPath) {
 		params, err = getParamsTOML(params, params.ChDirPath)
 		if err != nil {
-			logger.Fatalf("Failed to obtain settings from TOML config in directory %s: %q", params.ChDirPath, err)
+			logger.Fatalf("Failed to obtain settings from TOML config in directory %q: %v", params.ChDirPath, err)
 		}
 	}
 
 	if tfSwitchFileExists(params) {
 		params, err = GetParamsFromTfSwitch(params)
 		if err != nil {
-			logger.Fatalf("Failed to obtain settings from tfswitch config: %q", err)
+			logger.Fatalf("Failed to obtain settings from \".tfswitch\" file: %v", err)
 		}
 	}
 
 	if terraformVersionFileExists(params) {
 		params, err = GetParamsFromTerraformVersion(params)
 		if err != nil {
-			logger.Fatalf("Failed to obtain settings from Terraform version: %q", err)
+			logger.Fatalf("Failed to obtain settings from \".terraform-version\" file: %v", err)
 		}
 	}
 
 	if isTerraformModule(params) {
 		params, err = GetVersionFromVersionsTF(params)
 		if err != nil {
-			logger.Fatalf("Failed to obtain settings from .tfversions: %q", err)
+			logger.Fatalf("Failed to obtain settings from Terraform module: %v", err)
 		}
 	}
 
 	if terraGruntFileExists(params) {
 		params, err = GetVersionFromTerragrunt(params)
 		if err != nil {
-			logger.Fatalf("Error parsing configuration file: %q", err)
+			logger.Fatalf("Failed to obtain settings from Terragrunt configuration: %v", err)
 		}
 	}
 
 	params = GetParamsFromEnvironment(params)
-
-	if err != nil {
-		logger.Fatalf("Error parsing configuration file: %q", err)
-	}
 
 	// Logger config was changed by the config files. Reinitialise.
 	if params.LogLevel != oldLogLevel {
