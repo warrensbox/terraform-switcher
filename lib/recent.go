@@ -38,11 +38,7 @@ func addRecentVersion(product Product, requestedVersion string, installPath stri
 	// Obtain pre-existing latest version
 	recentData := getRecentFileData(installPath)
 
-	if product.GetId() == "terraform" {
-		recentData.Terraform = appendRecentVersionToList(recentData.Terraform, requestedVersion)
-	} else if product.GetId() == "opentofu" {
-		recentData.OpenTofu = appendRecentVersionToList(recentData.OpenTofu, requestedVersion)
-	}
+	product.SetRecentVersionProduct(&recentData, appendRecentVersionToList(product.GetRecentVersionProduct(&recentData), requestedVersion))
 
 	// Write new versions back to recent files
 	recentVersionFh, err := os.OpenFile(recentFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -100,14 +96,6 @@ func getRecentFileData(installPath string) RecentFile {
 
 // getRecentVersions : get recent version from file
 func getRecentVersions(product Product, installPath string) []string {
-	outputRecent := getRecentFileData(installPath)
-
-	if product.GetId() == "terraform" {
-		return outputRecent.Terraform
-	} else if product.GetId() == "opentofu" {
-		return outputRecent.OpenTofu
-	}
-
-	// Catch-all for unmatched product
-	return []string{}
+	recentData := getRecentFileData(installPath)
+	return product.GetRecentVersionProduct(&recentData)
 }

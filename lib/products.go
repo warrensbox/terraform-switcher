@@ -34,6 +34,8 @@ type Product interface {
 	GetPublicKeyUrl() string
 	GetShaSignatureSuffix() string
 	GetArtifactUrl(mirrorURL string, version string) string
+	GetRecentVersionProduct(recentFile *RecentFile) []string
+	SetRecentVersionProduct(recentFile *RecentFile, versions []string)
 }
 
 // Terraform Product
@@ -67,6 +69,12 @@ func (p TerraformProduct) GetPublicKeyUrl() string {
 func (p TerraformProduct) GetShaSignatureSuffix() string {
 	return p.GetPublicKeyId() + ".sig"
 }
+func (p TerraformProduct) GetRecentVersionProduct(recentFile *RecentFile) []string {
+	return recentFile.Terraform
+}
+func (p TerraformProduct) SetRecentVersionProduct(recentFile *RecentFile, versions []string) {
+	recentFile.Terraform = versions
+}
 
 // OpenTofu methods
 func (p OpenTofuProduct) GetId() string {
@@ -98,6 +106,12 @@ func (p OpenTofuProduct) GetPublicKeyUrl() string {
 }
 func (p OpenTofuProduct) GetShaSignatureSuffix() string {
 	return "gpgsig"
+}
+func (p OpenTofuProduct) GetRecentVersionProduct(recentFile *RecentFile) []string {
+	return recentFile.OpenTofu
+}
+func (p OpenTofuProduct) SetRecentVersionProduct(recentFile *RecentFile, versions []string) {
+	recentFile.OpenTofu = versions
 }
 
 // Factory methods
