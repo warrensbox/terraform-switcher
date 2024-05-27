@@ -51,12 +51,12 @@ func addRecentVersion(product Product, requestedVersion string, installPath stri
 	// Marhsall data and write to file
 	jsonData, err := json.Marshal(recentData)
 	if err != nil {
-		logger.Warnf("Error during marshalling recent versions data from %s file: %v. Ignoring", recentFilePath, err)
+		logger.Errorf("Error during marshalling recent versions data from %s file: %v", recentFilePath, err)
 	}
 
 	_, err = recentVersionFh.Write(jsonData)
 	if err != nil {
-		logger.Warnf("Error writing recent versions file (%q): %v. Ignoring", recentFilePath, err)
+		logger.Errorf("Error writing recent versions file (%q): %v", recentFilePath, err)
 	}
 }
 
