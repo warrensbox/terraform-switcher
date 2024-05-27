@@ -140,19 +140,12 @@ func install(product Product, tfversion string, binPath string, installPath stri
 	return
 }
 
-// getRecentFileName : Obtain recent version filename for product
-func getRecentFileName(product Product) string {
-	return recentFilePrefix + product.GetId() + ".json"
+type RecentFile struct {
+	Terraform []string
+	OpenTofu  []string
 }
 
-// addRecent : add to recent file
-func addRecentVersion(product Product, requestedVersion string, installPath string) {
-	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	recentFilePath := filepath.Join(installLocation, getRecentFileName(product))
-
-	// Obtain pre-existing latest version
-	versions := getRecentVersions(product, installPath)
-
+func appendRecentVersionToList(versions []string, requestedVersion string) []string {
 	// Check for requestedVersion in versions list
 	for versionIndex, versionVal := range versions {
 		if versionVal == requestedVersion {
@@ -166,6 +159,23 @@ func addRecentVersion(product Product, requestedVersion string, installPath stri
 		versions = versions[0:2]
 	}
 
+	return versions
+}
+
+// addRecent : add to recent file
+func addRecentVersion(product Product, requestedVersion string, installPath string) {
+	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
+	recentFilePath := filepath.Join(installLocation, recentFile)
+
+	// Obtain pre-existing latest version
+	recentData := getRecentFileData(installPath)
+
+	if product.GetId() == "terraform" {
+		recentData.Terraform = appendRecentVersionToList(recentData.Terraform, requestedVersion)
+	} else if product.GetId() == "opentofu" {
+		recentData.OpenTofu = appendRecentVersionToList(recentData.OpenTofu, requestedVersion)
+	}
+
 	// Write new versions back to recent files
 	recentVersionFh, err := os.OpenFile(recentFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -175,39 +185,50 @@ func addRecentVersion(product Product, requestedVersion string, installPath stri
 	defer recentVersionFh.Close()
 
 	// Marhsall data and write to file
-	jsonData, err := json.Marshal(versions)
+	jsonData, err := json.Marshal(recentData)
 	if err != nil {
-		logger.Errorf("Failed to marshal recent versions data: %v", err)
+		logger.Warnf("Error during marshalling recent versions data from %s file: %v. Ignoring", recentFilePath, err)
 	}
 
 	_, err = recentVersionFh.Write(jsonData)
 	if err != nil {
-		logger.Errorf("Failed to write recent versions file data: %v", err)
+		logger.Warnf("Error writing recent versions file (%q): %v. Ignoring", recentFilePath, err)
 	}
 }
 
-// getRecentVersions : get recent version from file
-func getRecentVersions(product Product, installPath string) []string {
-
+func getRecentFileData(installPath string) RecentFile {
 	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	recentVersionFile := filepath.Join(installLocation, getRecentFileName(product))
-	var outputRecent []string
+	recentFilePath := filepath.Join(installLocation, recentFile)
+	var outputRecent RecentFile
 
-	fileExist := CheckFileExist(recentVersionFile)
+	fileExist := CheckFileExist(recentFilePath)
 	if fileExist {
-		content, err := ioutil.ReadFile(recentVersionFile)
+		content, err := ioutil.ReadFile(recentFilePath)
 		if err != nil {
-			logger.Warnf("Error when opening recent version file (%s): %s", recentVersionFile, err)
+			logger.Warnf("Error opening recent versions file (%q): %v. Ignoring", recentFilePath, err)
 			return outputRecent
 		}
 
 		err = json.Unmarshal(content, &outputRecent)
 		if err != nil {
-			logger.Warnf("Error during unmarshalling recentVersionFile: ", err)
+			logger.Warnf("Error during unmarshalling recent versions data from %s file: %v. Ignoring", recentFilePath, err)
 		}
 	}
-
 	return outputRecent
+}
+
+// getRecentVersions : get recent version from file
+func getRecentVersions(product Product, installPath string) []string {
+	outputRecent := getRecentFileData(installPath)
+
+	if product.GetId() == "terraform" {
+		return outputRecent.Terraform
+	} else if product.GetId() == "opentofu" {
+		return outputRecent.OpenTofu
+	}
+
+	// Catch-all for unmatched product
+	return []string{}
 }
 
 // ConvertExecutableExt : convert excutable with local OS extension
