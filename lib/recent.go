@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type RecentFile struct {
@@ -63,6 +64,15 @@ func addRecentVersion(product Product, requestedVersion string, installPath stri
 	}
 }
 
+func convertLegacyRecentData(content []byte, recentFileContent *RecentFile) {
+	lines := strings.Split(string(content), "\n")
+	for _, s := range lines {
+		if s != "" {
+			recentFileContent.Terraform = append(recentFileContent.Terraform, s)
+		}
+	}
+}
+
 func getRecentFileData(installPath string) RecentFile {
 	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
 	recentFilePath := filepath.Join(installLocation, recentFile)
@@ -74,6 +84,10 @@ func getRecentFileData(installPath string) RecentFile {
 		if err != nil {
 			logger.Warnf("Error opening recent versions file (%q): %v. Ignoring", recentFilePath, err)
 			return outputRecent
+		}
+
+		if !strings.HasPrefix(string(content), "{") {
+			convertLegacyRecentData(content, &outputRecent)
 		}
 
 		err = json.Unmarshal(content, &outputRecent)
