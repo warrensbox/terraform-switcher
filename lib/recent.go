@@ -9,10 +9,10 @@ import (
 
 type RecentFiles struct {
 	Terraform []string `json:"terraform"`
-	Tofu      []string `json:"tofu"`
+	OpenTofu  []string `json:"openTofu"`
 }
 
-func addRecent(requestedVersion string, installPath string, dist string) {
+func addRecent(requestedVersion string, installPath string, distribution string) {
 	if !validVersionFormat(requestedVersion) {
 		logger.Errorf("The version %q is not a valid version string and won't be stored", requestedVersion)
 		return
@@ -21,48 +21,91 @@ func addRecent(requestedVersion string, installPath string, dist string) {
 	recentFilePath := filepath.Join(installLocation, recentFile)
 	var recentFileData RecentFiles
 	if CheckFileExist(recentFilePath) {
-		unmarshal(recentFilePath, &recentFileData)
+		unmarshalRecentFileData(recentFilePath, &recentFileData)
 	}
+
+	prependRecentVersionToList(requestedVersion, installPath, distribution, &recentFileData)
 	var sliceToCheck []string
-	if dist == distTerraform {
+	if distribution == distributionTerraform {
 		sliceToCheck = recentFileData.Terraform
-	} else if dist == distTofu {
-		sliceToCheck = recentFileData.Tofu
+	} else if distribution == distributionOpenTofu {
+		sliceToCheck = recentFileData.OpenTofu
 	}
 	for _, v := range sliceToCheck {
 		if v == requestedVersion {
-			// entry already exists. Nothing to do
+			// entry already exists. Nothing to add but move it first
 			return
 		}
 	}
-	if dist == distTerraform {
+	if distribution == distributionTerraform {
 		recentFileData.Terraform = append(recentFileData.Terraform, requestedVersion)
-	} else if dist == distTofu {
-		recentFileData.Tofu = append(recentFileData.Tofu, requestedVersion)
+	} else if distribution == distributionOpenTofu {
+		recentFileData.OpenTofu = append(recentFileData.OpenTofu, requestedVersion)
 	}
-	saveFile(recentFileData, recentFilePath)
+	saveRecentFile(recentFileData, recentFilePath)
+}
+
+func prependRecentVersionToList(version, installPath, distribution string, r *RecentFiles) {
+	var sliceToCheck []string
+	if distribution == distributionTerraform {
+		sliceToCheck = r.Terraform
+	} else if distribution == distributionOpenTofu {
+		sliceToCheck = r.OpenTofu
+	}
+	for versionIndex, versionValue := range sliceToCheck {
+		if versionValue == version {
+			sliceToCheck = append(sliceToCheck[:versionIndex], sliceToCheck[versionIndex+1:]...)
+		}
+	}
+	sliceToCheck = append([]string{version}, sliceToCheck...)
+
+	//TODO delete files that are falling of the first three slice elements
+	//if len(sliceToCheck) > 3 {
+	//	deleteDownloadedBinaries(installPath, distribution, sliceToCheck[3:])
+	//	sliceToCheck = sliceToCheck[0:2]
+	//}
+
+	if distribution == distributionTerraform {
+		r.Terraform = sliceToCheck
+	} else if distribution == distributionOpenTofu {
+		r.OpenTofu = sliceToCheck
+	}
+
+}
+
+func deleteDownloadedBinaries(installPath, distribution string, versions []string) {
+	installLocation := GetInstallLocation(installPath)
+	for _, versionToDelete := range versions {
+		var fileToDelete string
+		if distribution == distributionTerraform {
+			fileToDelete = ConvertExecutableExt(TerraformPrefix + versionToDelete)
+		}
+		filePathToDelete := filepath.Join(installLocation, fileToDelete)
+		logger.Debugf("Deleting obsolete binary %v", filePathToDelete)
+		_ = os.Remove(filePathToDelete)
+	}
 }
 
 func getRecentVersions(installPath string, dist string) ([]string, error) {
 	installLocation := GetInstallLocation(installPath)
 	recentFilePath := filepath.Join(installLocation, recentFile)
 	var recentFileData RecentFiles
-	unmarshal(recentFilePath, &recentFileData)
-	if dist == distTerraform {
+	unmarshalRecentFileData(recentFilePath, &recentFileData)
+	if dist == distributionTerraform {
 		return recentFileData.Terraform, nil
-	} else if dist == distTofu {
-		return recentFileData.Tofu, nil
+	} else if dist == distributionOpenTofu {
+		return recentFileData.OpenTofu, nil
 	}
 	return nil, nil
 }
 
-func unmarshal(recentFilePath string, recentFileData *RecentFiles) {
+func unmarshalRecentFileData(recentFilePath string, recentFileData *RecentFiles) {
 	recentFileContent, err := os.ReadFile(recentFilePath)
 	if err != nil {
 		logger.Errorf("Could not open recent versions file %q", recentFilePath)
 	}
 	if string(recentFileContent[0:1]) != "{" {
-		convertData(recentFileContent, recentFileData)
+		convertOldRecentFile(recentFileContent, recentFileData)
 	} else {
 		err = json.Unmarshal(recentFileContent, &recentFileData)
 		if err != nil {
@@ -71,7 +114,7 @@ func unmarshal(recentFilePath string, recentFileData *RecentFiles) {
 	}
 }
 
-func convertData(content []byte, recentFileData *RecentFiles) {
+func convertOldRecentFile(content []byte, recentFileData *RecentFiles) {
 	lines := strings.Split(string(content), "\n")
 	for _, s := range lines {
 		if s != "" {
@@ -80,7 +123,7 @@ func convertData(content []byte, recentFileData *RecentFiles) {
 	}
 }
 
-func saveFile(data RecentFiles, path string) {
+func saveRecentFile(data RecentFiles, path string) {
 	bytes, err := json.Marshal(data)
 	if err != nil {
 		logger.Errorf("Could not marshal data to JSON: %v", err)

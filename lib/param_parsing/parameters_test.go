@@ -79,7 +79,7 @@ func TestGetParameters_dry_run_wont_download_anything(t *testing.T) {
 	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/tmp", "--dry-run"}
 	params := GetParameters()
 	installLocation := lib.GetInstallLocation(params.InstallPath)
-	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, lib.VersionPrefix+params.Version))
+	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, lib.TerraformPrefix+params.Version))
 	// Make sure the file tfswitch WOULD download is absent
 	_ = os.Remove(installFileVersionPath)
 	lib.InstallVersion(params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL)

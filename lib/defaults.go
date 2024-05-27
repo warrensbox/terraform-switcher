@@ -23,12 +23,12 @@ func GetDefaultBin() string {
 const (
 	DefaultMirror             = "https://releases.hashicorp.com/terraform"
 	DefaultLatest             = ""
-	distTerraform             = "terraform"
-	distTofu                  = "tofu"
+	distributionTerraform     = "terraform"
+	distributionOpenTofu      = "opentofu"
 	installFile               = "terraform"
 	InstallDir                = ".terraform.versions"
 	pubKeySuffix              = ".asc"
 	recentFile                = "RECENT"
+	TerraformPrefix           = "terraform_"
 	tfDarwinArm64StartVersion = "1.0.2"
-	VersionPrefix             = "terraform_"
 )
