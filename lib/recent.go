@@ -23,7 +23,13 @@ func addRecentGeneric(requestedVersion string, installPath string, dist string) 
 	if CheckFileExist(recentFilePath) {
 		unmarshal(recentFilePath, recentFileData)
 	}
-	for _, v := range recentFileData.Terraform {
+	var sliceToCheck []string
+	if dist == "terraform" {
+		sliceToCheck = recentFileData.Terraform
+	} else if dist == "tofu" {
+		sliceToCheck = recentFileData.Tofu
+	}
+	for _, v := range sliceToCheck {
 		//TODO Check for valid version format
 		if v == requestedVersion {
 			// entry already exists. Nothing to do
