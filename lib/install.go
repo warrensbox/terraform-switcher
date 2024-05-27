@@ -154,9 +154,6 @@ func ConvertExecutableExt(fpath string) string {
 // installableBinLocation : Checks if terraform is installable in the location provided by the user.
 // If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
 func installableBinLocation(product Product, userBinPath string) string {
-
-	// @TODO Remove duplicate code in if homeBinExist and rationalise return to single instance
-
 	homedir := GetHomeDirectory()         //get user's home directory
 	binDir := Path(userBinPath)           //get path directory from binary path
 	binPathExist := CheckDirExist(binDir) //the default is /usr/local/bin but users can provide custom bin locations
@@ -170,18 +167,16 @@ func installableBinLocation(product Product, userBinPath string) string {
 
 		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terraform at the ~/bin location. See ELSE
 		if !binPathWritable {
-
-			homeBinExist := CheckDirExist(filepath.Join(homedir, "bin")) //check to see if ~/bin exist
-			if homeBinExist {                                            //if ~/bin exist, install at ~/bin/terraform
-				logger.Infof("Installing terraform at %q", filepath.Join(homedir, "bin"))
-				return filepath.Join(homedir, "bin", product.GetExecutableName())
-			} else { //if ~/bin directory does not exist, create ~/bin for terraform installation
+			homeBinDir := filepath.Join(homedir, "bin")
+			if !CheckDirExist(homeBinDir) { //if ~/bin exist, install at ~/bin/terraform
 				logger.Noticef("Unable to write to %q", userBinPath)
-				logger.Infof("Creating bin directory at %q", filepath.Join(homedir, "bin"))
-				createDirIfNotExist(filepath.Join(homedir, "bin")) //create ~/bin
-				logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append bin to $PATH", filepath.Join(homedir, "bin"))
-				return filepath.Join(homedir, "bin", product.GetExecutableName())
+				logger.Infof("Creating bin directory at %q", homeBinDir)
+				createDirIfNotExist(homeBinDir) //create ~/bin
+				logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append bin to $PATH", homeBinDir)
 			}
+			logger.Infof("Installing %s at %q", product.GetName(), homeBinDir)
+			return filepath.Join(homeBinDir, product.GetExecutableName())
+
 		} else { // ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
 			return filepath.Join(userBinPath)
 		}
@@ -193,10 +188,13 @@ func installableBinLocation(product Product, userBinPath string) string {
 }
 
 // InstallLatestVersion install latest stable tf version
+// This is a legacy method that is deprecated in favor of InstallLatestProductVersion
 func InstallLatestVersion(dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
 	product := getLegacyProduct()
 	InstallLatestProductVersion(product, dryRun, customBinaryPath, installPath, mirrorURL)
 }
+
+// InstallLatestProductVersion install latest stable tf version
 func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
 	tfversion, _ := getTFLatest(mirrorURL)
 	if !dryRun {
@@ -205,10 +203,13 @@ func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath,
 }
 
 // InstallLatestImplicitVersion install latest - argument (version) must be provided
+// This is a legacy method that is deprecated in favor of InstallLatestProductImplicitVersion
 func InstallLatestImplicitVersion(dryRun bool, requestedVersion, customBinaryPath, installPath string, mirrorURL string, preRelease bool) {
 	product := getLegacyProduct()
 	InstallLatestProductImplicitVersion(product, dryRun, requestedVersion, customBinaryPath, installPath, mirrorURL, preRelease)
 }
+
+// InstallLatestProductImplicitVersion install latest - argument (version) must be provided
 func InstallLatestProductImplicitVersion(product Product, dryRun bool, requestedVersion, customBinaryPath, installPath string, mirrorURL string, preRelease bool) {
 	_, err := version.NewConstraint(requestedVersion)
 	if err != nil {
@@ -222,13 +223,14 @@ func InstallLatestProductImplicitVersion(product Product, dryRun bool, requested
 	PrintInvalidMinorTFVersion()
 }
 
-// InstallVersion install product using legacy product
+// InstallVersion install Terraform product
+// This is a legacy method that is deprecated in favor of InstallProductVersion
 func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorURL string) {
 	product := getLegacyProduct()
 	InstallProductVersion(product, dryRun, version, customBinaryPath, installPath, mirrorURL)
 }
 
-// InstallVersion install with provided version as argument
+// InstallProductVersion install with provided version as argument
 func InstallProductVersion(product Product, dryRun bool, version, customBinaryPath, installPath, mirrorURL string) {
 	logger.Debugf("Install version %s. Dry run: %s", version, strconv.FormatBool(dryRun))
 	if !dryRun {
@@ -265,6 +267,10 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 	}
 }
 
+// InstallProductOption displays & installs tf version
+// This is a legacy method that will be deprecated in favor of InstallProductOption
+/* listAll = true - all versions including beta and rc will be displayed */
+/* listAll = false - only official stable release are displayed */
 func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
 	product := getLegacyProduct()
 	InstallProductOption(product, listAll, dryRun, customBinaryPath, installPath, mirrorURL)
@@ -275,7 +281,7 @@ type VersionSelector struct {
 	Label   string
 }
 
-// InstallOption displays & installs tf version
+// InstallProductOption displays & installs tf version
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
 func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
