@@ -145,7 +145,7 @@ func GetAllProducts() []Product {
 func getLegacyProduct() Product {
 	product := GetProductById(legacyProductId)
 	if product == nil {
-		logger.Fatalf("Default product could not be found")
+		logger.Fatal("Default product could not be found")
 	}
 	return product
 }
