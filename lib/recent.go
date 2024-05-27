@@ -79,7 +79,9 @@ func unmarshal(recentFilePath string, recentFileData RecentFiles) {
 func convertData(content []byte, recentFileData *RecentFiles) {
 	lines := strings.Split(string(content), "\n")
 	for _, s := range lines {
-		recentFileData.Terraform = append(recentFileData.Terraform, s)
+		if s != "" {
+			recentFileData.Terraform = append(recentFileData.Terraform, s)
+		}
 	}
 }
 
