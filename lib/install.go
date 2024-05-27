@@ -247,9 +247,6 @@ func ConvertExecutableExt(fpath string) string {
 // installableBinLocation : Checks if terraform is installable in the location provided by the user.
 // If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
 func installableBinLocation(product Product, userBinPath string) string {
-
-	// @TODO Remove duplicate code in if homeBinExist and rationalise return to single instance
-
 	homedir := GetHomeDirectory()         //get user's home directory
 	binDir := Path(userBinPath)           //get path directory from binary path
 	binPathExist := CheckDirExist(binDir) //the default is /usr/local/bin but users can provide custom bin locations
@@ -263,18 +260,16 @@ func installableBinLocation(product Product, userBinPath string) string {
 
 		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terraform at the ~/bin location. See ELSE
 		if !binPathWritable {
-
-			homeBinExist := CheckDirExist(filepath.Join(homedir, "bin")) //check to see if ~/bin exist
-			if homeBinExist {                                            //if ~/bin exist, install at ~/bin/terraform
-				logger.Infof("Installing terraform at %q", filepath.Join(homedir, "bin"))
-				return filepath.Join(homedir, "bin", product.GetExecutableName())
-			} else { //if ~/bin directory does not exist, create ~/bin for terraform installation
+			homeBinDir := filepath.Join(homedir, "bin")
+			if !CheckDirExist(homeBinDir) { //if ~/bin exist, install at ~/bin/terraform
 				logger.Noticef("Unable to write to %q", userBinPath)
-				logger.Infof("Creating bin directory at %q", filepath.Join(homedir, "bin"))
-				createDirIfNotExist(filepath.Join(homedir, "bin")) //create ~/bin
-				logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append bin to $PATH", filepath.Join(homedir, "bin"))
-				return filepath.Join(homedir, "bin", product.GetExecutableName())
+				logger.Infof("Creating bin directory at %q", homeBinDir)
+				createDirIfNotExist(homeBinDir) //create ~/bin
+				logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append bin to $PATH", homeBinDir)
 			}
+			logger.Infof("Installing terraform at %q", homeBinDir)
+			return filepath.Join(homeBinDir, product.GetExecutableName())
+
 		} else { // ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
 			return filepath.Join(userBinPath)
 		}
