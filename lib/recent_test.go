@@ -64,18 +64,26 @@ func Test_getRecentVersionsGenericForTofu(t *testing.T) {
 
 func Test_addRecentGenericForTerraform(t *testing.T) {
 	logger = InitLogger("DEBUG")
-	addRecentGeneric("3.7.0", "../test-data/recent/recent_as_json_to_modify/", "terraform")
-	bytes, err := os.ReadFile("../test-data/recent/recent_as_json_to_modify/.terraform.versions/RECENT")
+	temp, err := os.MkdirTemp("", "recent-test")
+	defer func(path string) {
+		_ = os.RemoveAll(path)
+	}(temp)
+	if err != nil {
+		t.Errorf("Could not create temporary directory")
+	}
+	addRecentGeneric("3.7.0", temp, "terraform")
+	bytes, err := os.ReadFile(filepath.Join(temp, ".terraform.versions/RECENT"))
 	if err != nil {
 		t.Error("Could not open file")
 		t.Error(err)
 	}
-	assert.Equal(t, "{\"terraform\":[\"1.2.3\",\"4.5.6\",\"3.7.0\"],\"tofu\":[\"6.6.6\"]}", string(bytes))
-	addRecentGeneric("1.1.1", "../test-data/recent/recent_as_json_to_modify/", "tofu")
-	bytes, err = os.ReadFile("../test-data/recent/recent_as_json_to_modify/.terraform.versions/RECENT")
+	assert.Equal(t, "{\"terraform\":[\"3.7.0\"],\"tofu\":null}", string(bytes))
+
+	addRecentGeneric("1.1.1", temp, "tofu")
+	bytes, err = os.ReadFile(filepath.Join(temp, ".terraform.versions/RECENT"))
 	if err != nil {
 		t.Error("Could not open file")
 		t.Error(err)
 	}
-	assert.Equal(t, "{\"terraform\":[\"1.2.3\",\"4.5.6\",\"3.7.0\"],\"tofu\":[\"6.6.6\",\"1.1.1\"]}", string(bytes))
+	assert.Equal(t, "{\"terraform\":[\"3.7.0\"],\"tofu\":[\"1.1.1\"]}", string(bytes))
 }
