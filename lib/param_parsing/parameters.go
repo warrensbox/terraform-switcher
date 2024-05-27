@@ -88,7 +88,7 @@ func GetParameters() Params {
 	// Set defaults based on product
 	product := lib.GetProductById(params.Product)
 	if product == nil {
-		logger.Fatalf("Invalid product: " + params.Product)
+		logger.Fatalf("Invalid \"product\" configuration value: %q", params.Product)
 	} else { // Use else as there is a warning that params maybe nil, as it does not see Fatalf as a break condition
 		params.MirrorURL = product.GetDefaultMirrorUrl()
 	}
