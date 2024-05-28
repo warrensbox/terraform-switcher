@@ -1,9 +1,10 @@
 package param_parsing
 
 import (
+	"path/filepath"
+
 	"github.com/spf13/viper"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"path/filepath"
 )
 
 const tfSwitchTOMLFileName = ".tfswitch.toml"
@@ -33,6 +34,9 @@ func getParamsTOML(params Params) (Params, error) {
 		}
 		if viperParser.Get("version") != nil {
 			params.Version = viperParser.GetString("version")
+		}
+		if configKey := "product"; viperParser.Get(configKey) != nil {
+			params.Product = viperParser.GetString(configKey)
 		}
 	}
 	return params, nil

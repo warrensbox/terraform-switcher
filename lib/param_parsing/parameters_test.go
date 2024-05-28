@@ -39,10 +39,17 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 	if actual != expected {
 		t.Error("CustomBinaryPath Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
+
 	expected = "0.11.4"
 	actual = params.Version
 	if actual != expected {
 		t.Error("Version Param was not as expected. Actual: " + actual + ", Expected: " + expected)
+	}
+
+	expected = "opentofu"
+	actual = params.Product
+	if actual != expected {
+		t.Error("Product Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
@@ -52,7 +59,7 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	expected := "../../test-data/integration-tests/test_tfswitchtoml"
-	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin"}
+	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin", "--product=terraform"}
 	params := GetParameters()
 	actual := params.ChDirPath
 	if actual != expected {
@@ -64,11 +71,22 @@ func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	if actual != expected {
 		t.Error("CustomBinaryPath Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
+
 	expected = "0.11.4"
 	actual = params.Version
 	if actual != expected {
 		t.Error("Version Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
+
+	expected = "terraform"
+	actual = params.Product
+	if actual != expected {
+		t.Error("Product Param was not as expected. Actual: " + actual + ", Expected: " + expected)
+	}
+
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
 }
 
 func TestGetParameters_set_product_entity(t *testing.T) {
@@ -99,10 +117,14 @@ func TestGetParameters_dry_run_wont_download_anything(t *testing.T) {
 	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/tmp", "--dry-run"}
 	params := GetParameters()
 	installLocation := lib.GetInstallLocation(params.InstallPath)
-	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, lib.VersionPrefix+params.Version))
+	product := lib.GetProductById(params.Product)
+	if product == nil {
+		t.Error("Nil product returned")
+	}
+	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+params.Version))
 	// Make sure the file tfswitch WOULD download is absent
 	_ = os.Remove(installFileVersionPath)
-	lib.InstallVersion(params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL)
+	lib.InstallProductVersion(product, params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL)
 	if lib.FileExistsAndIsNotDir(installFileVersionPath) {
 		t.Error("Dry run should NOT download any files.")
 	}
