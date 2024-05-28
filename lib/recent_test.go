@@ -50,7 +50,7 @@ func Test_getRecentVersionsForTerraform(t *testing.T) {
 	if err != nil {
 		t.Error("Unable to get versions from recent file")
 	}
-	assert.Equal(t, []string{"1.2.3", "4.5.6"}, strings)
+	assert.Equal(t, []string{"1.2.3 *recent", "4.5.6 *recent"}, strings)
 }
 
 func Test_getRecentVersionsForOpenTofu(t *testing.T) {
@@ -59,7 +59,7 @@ func Test_getRecentVersionsForOpenTofu(t *testing.T) {
 	if err != nil {
 		t.Error("Unable to get versions from recent file")
 	}
-	assert.Equal(t, []string{"6.6.6"}, strings)
+	assert.Equal(t, []string{"6.6.6 *recent"}, strings)
 }
 
 func Test_addRecent(t *testing.T) {
@@ -74,22 +74,28 @@ func Test_addRecent(t *testing.T) {
 	addRecent("3.7.0", temp, distributionTerraform)
 	addRecent("3.7.1", temp, distributionTerraform)
 	addRecent("3.7.2", temp, distributionTerraform)
-	bytes, err := os.ReadFile(filepath.Join(temp, ".terraform.versions", "RECENT"))
+	filePath := filepath.Join(temp, ".terraform.versions", "RECENT")
+	bytes, err := os.ReadFile(filePath)
 	if err != nil {
-		t.Error("Could not open file")
+		t.Errorf("Could not open file %v", filePath)
 		t.Error(err)
 	}
-	assert.Equal(t, "{\"terraform\":[\"3.7.0\",\"3.7.1\",\"3.7.2\"],\"openTofu\":null}", string(bytes))
-	addRecent("3.7.2", temp, distributionTerraform)
-	assert.Equal(t, "{\"terraform\":[\"3.7.2\",\"3.7.0\",\"3.7.1\"],\"openTofu\":null}", string(bytes))
+	assert.Equal(t, "{\"terraform\":[\"3.7.2\",\"3.7.1\",\"3.7.0\"],\"openTofu\":null}", string(bytes))
+	addRecent("3.7.0", temp, distributionTerraform)
+	bytes, err = os.ReadFile(filePath)
+	if err != nil {
+		t.Errorf("Could not open file %v", filePath)
+		t.Error(err)
+	}
+	assert.Equal(t, "{\"terraform\":[\"3.7.0\",\"3.7.2\",\"3.7.1\"],\"openTofu\":null}", string(bytes))
 
 	addRecent("1.1.1", temp, distributionOpenTofu)
-	bytes, err = os.ReadFile(filepath.Join(temp, ".terraform.versions", "RECENT"))
+	bytes, err = os.ReadFile(filePath)
 	if err != nil {
 		t.Error("Could not open file")
 		t.Error(err)
 	}
-	assert.Equal(t, "{\"terraform\":[\"3.7.2\",\"3.7.0\",\"3.7.1\"],\"openTofu\":[\"1.1.1\"]}", string(bytes))
+	assert.Equal(t, "{\"terraform\":[\"3.7.0\",\"3.7.2\",\"3.7.1\"],\"openTofu\":[\"1.1.1\"]}", string(bytes))
 }
 
 func Test_prependExistingVersionIsMovingToTop(t *testing.T) {

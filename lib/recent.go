@@ -23,25 +23,7 @@ func addRecent(requestedVersion string, installPath string, distribution string)
 	if CheckFileExist(recentFilePath) {
 		unmarshalRecentFileData(recentFilePath, &recentFileData)
 	}
-
 	prependRecentVersionToList(requestedVersion, installPath, distribution, &recentFileData)
-	var sliceToCheck []string
-	if distribution == distributionTerraform {
-		sliceToCheck = recentFileData.Terraform
-	} else if distribution == distributionOpenTofu {
-		sliceToCheck = recentFileData.OpenTofu
-	}
-	for _, v := range sliceToCheck {
-		if v == requestedVersion {
-			// entry already exists. Nothing to add but move it first
-			return
-		}
-	}
-	if distribution == distributionTerraform {
-		recentFileData.Terraform = append(recentFileData.Terraform, requestedVersion)
-	} else if distribution == distributionOpenTofu {
-		recentFileData.OpenTofu = append(recentFileData.OpenTofu, requestedVersion)
-	}
 	saveRecentFile(recentFileData, recentFilePath)
 }
 
@@ -70,7 +52,6 @@ func prependRecentVersionToList(version, installPath, distribution string, r *Re
 	} else if distribution == distributionOpenTofu {
 		r.OpenTofu = sliceToCheck
 	}
-
 }
 
 func deleteDownloadedBinaries(installPath, distribution string, versions []string) {
@@ -91,12 +72,16 @@ func getRecentVersions(installPath string, dist string) ([]string, error) {
 	recentFilePath := filepath.Join(installLocation, recentFile)
 	var recentFileData RecentFiles
 	unmarshalRecentFileData(recentFilePath, &recentFileData)
+	var listOfRecentVersions []string
 	if dist == distributionTerraform {
-		return recentFileData.Terraform, nil
+		listOfRecentVersions = recentFileData.Terraform
 	} else if dist == distributionOpenTofu {
-		return recentFileData.OpenTofu, nil
+		listOfRecentVersions = recentFileData.OpenTofu
 	}
-	return nil, nil
+	for index, versionString := range listOfRecentVersions {
+		listOfRecentVersions[index] = versionString + " *recent"
+	}
+	return listOfRecentVersions, nil
 }
 
 func unmarshalRecentFileData(recentFilePath string, recentFileData *RecentFiles) {
