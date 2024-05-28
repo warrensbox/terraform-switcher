@@ -54,12 +54,11 @@ func GetParameters() Params {
 	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: tfswitch --latest-stable 0.13.0 downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
 	getopt.BoolVarLong(&params.ListAllFlag, "list-all", 'l', "List all versions of terraform - including beta and rc")
 	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', "Set loglevel for tfswitch. One of (INFO, NOTICE, DEBUG, TRACE)")
-
 	getopt.StringVarLong(&params.MirrorURL, "mirror", 'm', "install from a remote API other than the default. Default (based on product):\n"+strings.Join(defaultMirrors, "\n"))
 	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
 	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
-	getopt.StringVarLong(&params.Product, "product", 'q', fmt.Sprintf("Specifies which product to use. Ex: `tfswitch --product terraform` will install Terraform. Options: (%s)", strings.Join(productIds, ", ")))
+	getopt.StringVarLong(&params.Product, "product", 'q', fmt.Sprintf("Specifies which product to use. Ex: `tfswitch --product opentofu` will install Terraform. Options: (%s). Default: %s", strings.Join(productIds, ", "), lib.DefaultProductId))
 	getopt.BoolVarLong(&params.VersionFlag, "version", 'v', "Displays the version of tfswitch")
 
 	// Parse the command line parameters to fetch stuff like chdir
@@ -89,7 +88,7 @@ func GetParameters() Params {
 	// Set defaults based on product
 	product := lib.GetProductById(params.Product)
 	if product == nil {
-		logger.Fatalf("Invalid product: " + params.Product)
+		logger.Fatalf("Invalid \"product\" configuration value: %q", params.Product)
 	} else { // Use else as there is a warning that params maybe nil, as it does not see Fatalf as a break condition
 		params.MirrorURL = product.GetDefaultMirrorUrl()
 	}
@@ -127,7 +126,7 @@ func initParams(params Params) Params {
 	params.ShowLatestPre = lib.DefaultLatest
 	params.ShowLatestStable = lib.DefaultLatest
 	params.Version = lib.DefaultLatest
-	params.Product = "terraform"
+	params.Product = lib.DefaultProductId
 	params.VersionFlag = false
 	return params
 }
