@@ -8,10 +8,7 @@ import (
 )
 
 func Test_convertData(t *testing.T) {
-	recentFileContent, err := os.ReadFile("../test-data/recent/RECENT_OLD_FORMAT")
-	if err != nil {
-		logger.Error("Could not open file ../test-data/recent/RECENT_OLD_FORMAT")
-	}
+	recentFileContent := []byte("1.5.6\n0.13.0-rc1\n1.0.11\n")
 
 	var recentFileData RecentFiles
 	convertOldRecentFile(recentFileContent, &recentFileData)
