@@ -242,7 +242,7 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 			installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+requestedVersion))
 			recentDownloadFile := CheckFileExist(installFileVersionPath)
 			if recentDownloadFile {
-				ChangeSymlink(product, installFileVersionPath, customBinaryPath)
+				ChangeProductSymlink(product, installFileVersionPath, customBinaryPath)
 				logger.Infof("Switched terraform to version %q", requestedVersion)
 				addRecentVersion(product, requestedVersion, installPath) //add to recent file for faster lookup
 				return
