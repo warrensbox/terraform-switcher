@@ -1,11 +1,12 @@
 package param_parsing
 
 import (
-	"github.com/pborman/getopt"
-	"github.com/warrensbox/terraform-switcher/lib"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/pborman/getopt"
+	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 func TestGetParameters_version_from_args(t *testing.T) {
@@ -68,6 +69,25 @@ func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	if actual != expected {
 		t.Error("Version Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
+}
+
+func TestGetParameters_set_product_entity(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	os.Args = []string{"cmd", "--product=opentofu"}
+	params := GetParameters()
+
+	if expected := "opentofu"; params.ProductEntity.GetId() != expected {
+		t.Errorf("Incorrect product entity set on params. Expected: %q, Actual: %q", expected, params.ProductEntity.GetId())
+	}
+
+	getopt.CommandLine = getopt.New()
+	os.Args = []string{"cmd", "--product=terraform"}
+	params = GetParameters()
+
+	if expected := "terraform"; params.ProductEntity.GetId() != expected {
+		t.Errorf("Incorrect product entity set on params. Expected: %q, Actual: %q", expected, params.ProductEntity.GetId())
+	}
+
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})

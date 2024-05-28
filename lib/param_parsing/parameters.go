@@ -26,6 +26,7 @@ type Params struct {
 	ShowLatestPre    string
 	ShowLatestStable string
 	Product          string
+	ProductEntity    lib.Product
 	Version          string
 	VersionFlag      bool
 }
@@ -91,6 +92,7 @@ func GetParameters() Params {
 		logger.Fatalf("Invalid \"product\" configuration value: %q", params.Product)
 	} else { // Use else as there is a warning that params maybe nil, as it does not see Fatalf as a break condition
 		params.MirrorURL = product.GetDefaultMirrorUrl()
+		params.ProductEntity = product
 	}
 
 	// Logger config was changed by the config files. Reinitialise.
