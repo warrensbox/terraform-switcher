@@ -23,7 +23,7 @@ func appendRecentVersionToList(versions []string, requestedVersion string) []str
 	// Add new version to start of slice
 	versions = append([]string{requestedVersion}, versions...)
 	if len(versions) > 3 {
-		versions = versions[0:2]
+		versions = versions[0:3]
 	}
 
 	return versions
