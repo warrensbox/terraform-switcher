@@ -154,6 +154,58 @@ func TestUnzip(t *testing.T) {
 	cleanUp(installLocation)
 }
 
+// TestUnzip_with_file_to_unzip : Test Unzip method with fileToUnzip argument
+func TestUnzip_with_file_to_unzip(t *testing.T) {
+	installPath := "/.terraform.versions_test/"
+	absPath, _ := filepath.Abs("../test-data/test-data.zip")
+
+	t.Logf("Absolute Path: %q", absPath)
+
+	homedir, errCurr := homedir.Dir()
+	if errCurr != nil {
+		t.Error(errCurr)
+	}
+	installLocation := filepath.Join(homedir, installPath)
+
+	createDirIfNotExist(installLocation)
+
+	files, errUnzip := Unzip(absPath, installLocation, "README")
+
+	if errUnzip != nil {
+		t.Errorf("Unable to unzip %q file: %v", absPath, errUnzip)
+	}
+
+	if fileCount := len(files); fileCount != 1 {
+		t.Errorf("Expected extracted files size is %d, expected 1", fileCount)
+	}
+
+	// Ensure terraform file exists
+	expectedExtractFile := filepath.Join(installLocation, "README")
+	if terraformFileExists := checkFileExist(expectedExtractFile); !terraformFileExists {
+		t.Errorf("File does not exist %v", expectedExtractFile)
+	}
+
+	expectedFileContent, err := ioutil.ReadFile(expectedExtractFile)
+	if err != nil {
+		t.Error(err)
+	}
+	// Ensure terraform file contains test content from
+	if string(expectedFileContent[:]) != "This is a README\n" {
+		t.Errorf("Extract test file (%q) content does not match expected value: %s", expectedExtractFile, string(expectedFileContent[:]))
+	}
+
+	// Ensure README and LICENSE files don't exist
+	nonExistentFiles := []string{"terraform", "LICENSE"}
+	for _, fileName := range nonExistentFiles {
+		filePath := filepath.Join(installLocation, fileName)
+		if fileExists := checkFileExist(filePath); fileExists {
+			t.Errorf("Zip archive file should not exist: %v", fileExists)
+		}
+	}
+
+	cleanUp(installLocation)
+}
+
 // TestCreateDirIfNotExist : Create a directory, check directory exist
 func TestCreateDirIfNotExist(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
