@@ -12,6 +12,7 @@ func TestGetVersionFromTerragrunt(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_terragrunt_hcl"
+	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
 		t.Fatalf("Got error '%s'", err)

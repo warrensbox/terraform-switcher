@@ -2,9 +2,10 @@ package param_parsing
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/hashicorp/go-version"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"testing"
 )
 
 func TestGetVersionFromVersionsTF_matches_version(t *testing.T) {
@@ -12,6 +13,7 @@ func TestGetVersionFromVersionsTF_matches_version(t *testing.T) {
 	var params Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_versiontf"
+	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
 	params, _ = GetVersionFromVersionsTF(params)
 	v1, _ := version.NewVersion("1.0.5")
 	actualVersion, _ := version.NewVersion(params.Version)
@@ -25,6 +27,7 @@ func TestGetVersionFromVersionsTF_impossible_constraints(t *testing.T) {
 	var params Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_matching_constraints"
+	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
 	expectedError := "did not find version matching constraint: ~> 1.0.0, =1.0.5, <= 1.0.4"
 	if err == nil {
@@ -43,6 +46,7 @@ func TestGetVersionFromVersionsTF_erroneous_file(t *testing.T) {
 	var params Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_error"
+	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
 	if err == nil {
 		t.Error("Expected error got nil")
@@ -59,6 +63,7 @@ func TestGetVersionFromVersionsTF_non_existent_constraint(t *testing.T) {
 	var params Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_existent"
+	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
 	if err == nil {
 		t.Error("Expected error got nil")
