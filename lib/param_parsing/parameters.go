@@ -69,22 +69,51 @@ func GetParameters() Params {
 	logger = lib.InitLogger(params.LogLevel)
 	var err error
 	// Read configuration files
-	if tomlFileExists(params) {
-		params, err = getParamsTOML(params)
-	} else if tfSwitchFileExists(params) {
+	// TOML from Homedir
+	if tomlFileExists(lib.GetHomeDirectory()) {
+		params, err = getParamsTOML(params, lib.GetHomeDirectory())
+		if err != nil {
+			logger.Fatalf("Failed to obtain settings from TOML config in home directory: %v", err)
+		}
+	}
+
+	// TOML from ChDirPath
+	if tomlFileExists(params.ChDirPath) {
+		params, err = getParamsTOML(params, params.ChDirPath)
+		if err != nil {
+			logger.Fatalf("Failed to obtain settings from TOML config in directory %q: %v", params.ChDirPath, err)
+		}
+	}
+
+	if tfSwitchFileExists(params) {
 		params, err = GetParamsFromTfSwitch(params)
-	} else if terraformVersionFileExists(params) {
+		if err != nil {
+			logger.Fatalf("Failed to obtain settings from \".tfswitch\" file: %v", err)
+		}
+	}
+
+	if terraformVersionFileExists(params) {
 		params, err = GetParamsFromTerraformVersion(params)
-	} else if isTerraformModule(params) {
+		if err != nil {
+			logger.Fatalf("Failed to obtain settings from \".terraform-version\" file: %v", err)
+		}
+	}
+
+	if isTerraformModule(params) {
 		params, err = GetVersionFromVersionsTF(params)
-	} else if terraGruntFileExists(params) {
+		if err != nil {
+			logger.Fatalf("Failed to obtain settings from Terraform module: %v", err)
+		}
+	}
+
+	if terraGruntFileExists(params) {
 		params, err = GetVersionFromTerragrunt(params)
-	} else {
-		params = GetParamsFromEnvironment(params)
+		if err != nil {
+			logger.Fatalf("Failed to obtain settings from Terragrunt configuration: %v", err)
+		}
 	}
-	if err != nil {
-		logger.Fatalf("Error parsing configuration file: %q", err)
-	}
+
+	params = GetParamsFromEnvironment(params)
 
 	// Set defaults based on product
 	product := lib.GetProductById(params.Product)

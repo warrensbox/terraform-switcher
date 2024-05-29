@@ -7,17 +7,35 @@ import (
 func TestGetParamsFromTerraformVersion(t *testing.T) {
 	var params Params
 	params.ChDirPath = "../../test-data/integration-tests/test_terraform-version"
-	params, _ = GetParamsFromTerraformVersion(params)
+	params, err := GetParamsFromTerraformVersion(params)
 	expected := "0.11.0"
+	if err != nil {
+		t.Fatalf("Got error '%s'", err)
+	}
 	if params.Version != expected {
 		t.Errorf("Version from .terraform-version not read correctly. Got: %v, Expect: %v", params.Version, expected)
+	}
+}
+
+func TestGetParamsFromTerraformVersion_no_version(t *testing.T) {
+	var params Params
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_no_version_constraint"
+	params, err := GetParamsFromTerraformVersion(params)
+	if err != nil {
+		t.Fatalf("Got error '%s'", err)
+	}
+	if params.Version != "" {
+		t.Errorf("Expected empty version string. Got: %v", params.Version)
 	}
 }
 
 func TestGetParamsFromTerraformVersion_no_file(t *testing.T) {
 	var params Params
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
-	params, _ = GetParamsFromTerraformVersion(params)
+	params, err := GetParamsFromTerraformVersion(params)
+	if err != nil {
+		t.Fatalf("Got error '%s'", err)
+	}
 	if params.Version != "" {
 		t.Errorf("Expected empty version string. Got: %v", params.Version)
 	}
