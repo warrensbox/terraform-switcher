@@ -3,12 +3,10 @@ package lib
 import (
 	"archive/zip"
 	"bytes"
-	"crypto"
-	"crypto/rand"
-	"crypto/rsa"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -19,10 +17,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/ProtonMail/gopenpgp/v2/crypto"
 	"github.com/mitchellh/go-homedir"
-	"golang.org/x/crypto/openpgp"
-	"golang.org/x/crypto/openpgp/armor"
-	"golang.org/x/crypto/openpgp/packet"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
@@ -107,57 +103,11 @@ func TestDownloadFromURL_Valid(t *testing.T) {
 
 // TestDownloadProductFromURL : Test DownloadProductFromURL
 func TestDownloadProductFromURL(t *testing.T) {
-
-	openpgpConfig := packet.Config{
-		DefaultHash:            crypto.SHA256,
-		DefaultCipher:          packet.CipherAES256,
-		DefaultCompressionAlgo: packet.CompressionZLIB,
-		CompressionConfig: &packet.CompressionConfig{
-			Level: 9,
-		},
-		RSABits: 1024,
-	}
-	privatekey, err := rsa.GenerateKey(rand.Reader, openpgpConfig.RSABits)
+	gpgKey, err := crypto.GenerateKey("TestProductSign", "example@localhost.com", "RSA", 1024)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	currentTime := openpgpConfig.Now()
-	uid := packet.NewUserId("TestProductSign", "Signing key for test product", "example@localhost.com")
-
-	packetPrivateKey := packet.NewRSAPrivateKey(openpgpConfig.Now(), privatekey)
-	packetPublicKey := packet.NewRSAPublicKey(openpgpConfig.Now(), &privatekey.PublicKey)
-
-	isPrimaryId := true
-	identity := openpgp.Identity{
-		Name:   uid.Name,
-		UserId: uid,
-		SelfSignature: &packet.Signature{
-			CreationTime: currentTime,
-			SigType:      packet.SigTypePositiveCert,
-			PubKeyAlgo:   packet.PubKeyAlgoRSA,
-			Hash:         openpgpConfig.Hash(),
-			IsPrimaryId:  &isPrimaryId,
-			FlagsValid:   true,
-			FlagSign:     true,
-			FlagCertify:  true,
-			IssuerKeyId:  &packetPublicKey.KeyId,
-		},
-	}
-	identity.SelfSignature.SignUserId(identity.UserId.Id, packetPublicKey, packetPrivateKey, &openpgpConfig)
-	gpgKeyEntity := openpgp.Entity{
-		PrimaryKey: packetPublicKey,
-		PrivateKey: packetPrivateKey,
-		Identities: map[string]*openpgp.Identity{
-			uid.Id: &identity,
-		},
-	}
-	// gpgKeyEntity, err := openpgp.NewEntity("TestProductSign", "Signing key for test product", "example@localhost.com", &openpgpConfig)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	gpgFingerprint := hex.EncodeToString(gpgKeyEntity.PrimaryKey.Fingerprint[:])[:8]
+	gpgFingerprint := gpgKey.GetFingerprint()[0:8]
 
 	zipFileBuffer := new(bytes.Buffer)
 	zipWriter := zip.NewWriter(zipFileBuffer)
@@ -170,38 +120,31 @@ func TestDownloadProductFromURL(t *testing.T) {
 	zipFileContentWriter.Write(mainExecutableBytes)
 	zipWriter.Flush()
 	zipWriter.Close()
-
-	var publicKeySerialiseBuffer bytes.Buffer
-	err = gpgKeyEntity.Serialize(&publicKeySerialiseBuffer)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var publicKeyBytes bytes.Buffer
-	publicKeyWriter, err := armor.Encode(&publicKeyBytes, openpgp.PublicKeyType, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	gppPublicKey := packet.NewRSAPublicKey(openpgpConfig.Now(), &privatekey.PublicKey)
-	err = gppPublicKey.Serialize(publicKeyWriter)
-	identity.SelfSignature.Serialize(publicKeyWriter)
-	if err != nil {
-		t.Fatal(err)
-	}
-	publicKeyWriter.Close()
-
 	zipFileBytes := zipFileBuffer.Bytes()
+
+	publicKey, err := gpgKey.GetArmoredPublicKey()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// Calculate SHA256 sum of ZIP file
 	sha256HashWriter := sha256.New()
-	sha256Hash := sha256HashWriter.Sum(zipFileBytes)
+	if _, err = io.Copy(sha256HashWriter, zipFileBuffer); err != nil {
+		t.Fatal(err)
+	}
+	sha256Hash := sha256HashWriter.Sum(nil)
 
 	// Create checksum file
-	checksumFileContent := string(sha256Hash) + "  " + "my_product_download_2.1.0_linux_amd64.zip"
-	checksumFileReader := bytes.NewBuffer([]byte(checksumFileContent))
+	checksumFileContent := hex.EncodeToString(sha256Hash) + "  " + "my_product_download_2.1.0_linux_amd64.zip"
 
 	// Create signature of checksum file
-	var sigFile bytes.Buffer
-	err = openpgp.DetachSign(&sigFile, &gpgKeyEntity, checksumFileReader, &openpgpConfig)
+	binMessage := crypto.NewPlainMessageFromFile([]byte(checksumFileContent), "my_product_download_2.1.0_SHA256SUMS", uint32(crypto.GetUnixTime()))
+	keyRing, err := crypto.NewKeyRing(gpgKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	signatureObj, err := keyRing.SignDetached(binMessage)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -212,7 +155,7 @@ func TestDownloadProductFromURL(t *testing.T) {
 		case "/testproduct/gpg-key.txt":
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(http.StatusOK)
-			w.Write(publicKeyBytes.Bytes())
+			w.Write([]byte(publicKey))
 		case "/productdownload/2.1.0/my_product_download_2.1.0_linux_amd64.zip":
 			w.Header().Set("Content-Type", "application/zip")
 			w.WriteHeader(http.StatusOK)
@@ -224,7 +167,7 @@ func TestDownloadProductFromURL(t *testing.T) {
 		case "/productdownload/2.1.0/my_product_download_2.1.0_SHA256SUMS." + gpgFingerprint + ".sig":
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
-			w.Write(sigFile.Bytes())
+			w.Write(signatureObj.GetBinary())
 		default:
 			http.NotFoundHandler().ServeHTTP(w, r)
 		}
@@ -255,7 +198,7 @@ func TestDownloadProductFromURL(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if expectedZipPath := ""; zipFilePath != expectedZipPath {
+	if expectedZipPath := tempDir + "/my_product_download_2.1.0_linux_amd64.zip"; zipFilePath != expectedZipPath {
 		t.Errorf("Returned zipFile not expected path. Expected: %q, actual: %q", expectedZipPath, zipFilePath)
 	}
 }
