@@ -85,6 +85,21 @@ func GetParameters() Params {
 		}
 	}
 
+	// Set defaults based on product
+	// This must be performed after TOML file, to obtain product.
+	// But the mirror URL, if set to default product URL,
+	// is used by some of the version getter methods, to
+	// obtain list of versions.
+	product := lib.GetProductById(params.Product)
+	if product == nil {
+		logger.Fatalf("Invalid \"product\" configuration value: %q", params.Product)
+	} else { // Use else as there is a warning that params maybe nil, as it does not see Fatalf as a break condition
+		if params.MirrorURL == "" {
+			params.MirrorURL = product.GetDefaultMirrorUrl()
+		}
+		params.ProductEntity = product
+	}
+
 	if tfSwitchFileExists(params) {
 		params, err = GetParamsFromTfSwitch(params)
 		if err != nil {
@@ -114,15 +129,6 @@ func GetParameters() Params {
 	}
 
 	params = GetParamsFromEnvironment(params)
-
-	// Set defaults based on product
-	product := lib.GetProductById(params.Product)
-	if product == nil {
-		logger.Fatalf("Invalid \"product\" configuration value: %q", params.Product)
-	} else { // Use else as there is a warning that params maybe nil, as it does not see Fatalf as a break condition
-		params.MirrorURL = product.GetDefaultMirrorUrl()
-		params.ProductEntity = product
-	}
 
 	// Logger config was changed by the config files. Reinitialise.
 	if params.LogLevel != oldLogLevel {
