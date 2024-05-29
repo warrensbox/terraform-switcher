@@ -4,6 +4,8 @@ import (
 	"archive/zip"
 	"bytes"
 	"crypto"
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -107,12 +109,50 @@ func TestDownloadFromURL_Valid(t *testing.T) {
 func TestDownloadProductFromURL(t *testing.T) {
 
 	openpgpConfig := packet.Config{
-		RSABits:                1024,
 		DefaultHash:            crypto.SHA256,
 		DefaultCipher:          packet.CipherAES256,
 		DefaultCompressionAlgo: packet.CompressionZLIB,
+		CompressionConfig: &packet.CompressionConfig{
+			Level: 9,
+		},
+		RSABits: 1024,
 	}
-	gpgKeyEntity, err := openpgp.NewEntity("TestProductSign", "Signing key for test product", "example@localhost.com", &openpgpConfig)
+	privatekey, err := rsa.GenerateKey(rand.Reader, openpgpConfig.RSABits)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	currentTime := openpgpConfig.Now()
+	uid := packet.NewUserId("TestProductSign", "Signing key for test product", "example@localhost.com")
+
+	packetPrivateKey := packet.NewRSAPrivateKey(openpgpConfig.Now(), privatekey)
+	packetPublicKey := packet.NewRSAPublicKey(openpgpConfig.Now(), &privatekey.PublicKey)
+
+	isPrimaryId := true
+	identity := openpgp.Identity{
+		Name:   uid.Name,
+		UserId: uid,
+		SelfSignature: &packet.Signature{
+			CreationTime: currentTime,
+			SigType:      packet.SigTypePositiveCert,
+			PubKeyAlgo:   packet.PubKeyAlgoRSA,
+			Hash:         openpgpConfig.Hash(),
+			IsPrimaryId:  &isPrimaryId,
+			FlagsValid:   true,
+			FlagSign:     true,
+			FlagCertify:  true,
+			IssuerKeyId:  &packetPublicKey.KeyId,
+		},
+	}
+	identity.SelfSignature.SignUserId(identity.UserId.Id, packetPublicKey, packetPrivateKey, &openpgpConfig)
+	gpgKeyEntity := openpgp.Entity{
+		PrimaryKey: packetPublicKey,
+		PrivateKey: packetPrivateKey,
+		Identities: map[string]*openpgp.Identity{
+			uid.Id: &identity,
+		},
+	}
+	// gpgKeyEntity, err := openpgp.NewEntity("TestProductSign", "Signing key for test product", "example@localhost.com", &openpgpConfig)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -136,8 +176,14 @@ func TestDownloadProductFromURL(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var publicKey bytes.Buffer
-	publicKeyWriter, err := armor.Encode(&publicKey, openpgp.PublicKeyType, nil)
+	var publicKeyBytes bytes.Buffer
+	publicKeyWriter, err := armor.Encode(&publicKeyBytes, openpgp.PublicKeyType, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	gppPublicKey := packet.NewRSAPublicKey(openpgpConfig.Now(), &privatekey.PublicKey)
+	err = gppPublicKey.Serialize(publicKeyWriter)
+	identity.SelfSignature.Serialize(publicKeyWriter)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,7 +201,7 @@ func TestDownloadProductFromURL(t *testing.T) {
 
 	// Create signature of checksum file
 	var sigFile bytes.Buffer
-	err = openpgp.DetachSign(&sigFile, gpgKeyEntity, checksumFileReader, &openpgpConfig)
+	err = openpgp.DetachSign(&sigFile, &gpgKeyEntity, checksumFileReader, &openpgpConfig)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -166,7 +212,7 @@ func TestDownloadProductFromURL(t *testing.T) {
 		case "/testproduct/gpg-key.txt":
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(http.StatusOK)
-			w.Write(publicKey.Bytes())
+			w.Write(publicKeyBytes.Bytes())
 		case "/productdownload/2.1.0/my_product_download_2.1.0_linux_amd64.zip":
 			w.Header().Set("Content-Type", "application/zip")
 			w.WriteHeader(http.StatusOK)
