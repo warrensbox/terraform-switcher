@@ -41,11 +41,10 @@ func prependRecentVersionToList(version, installPath, distribution string, r *Re
 	}
 	sliceToCheck = append([]string{version}, sliceToCheck...)
 
-	//TODO delete files that are falling of the first three slice elements
-	//if len(sliceToCheck) > 3 {
-	//	deleteDownloadedBinaries(installPath, distribution, sliceToCheck[3:])
-	//	sliceToCheck = sliceToCheck[0:2]
-	//}
+	if len(sliceToCheck) > 3 {
+		deleteDownloadedBinaries(installPath, distribution, sliceToCheck[3:])
+		sliceToCheck = sliceToCheck[0:2]
+	}
 
 	if distribution == distributionTerraform {
 		r.Terraform = sliceToCheck

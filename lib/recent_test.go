@@ -1,9 +1,11 @@
 package lib
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
 )
 
@@ -123,4 +125,26 @@ func Test_prependNewVersion(t *testing.T) {
 	assert.Equal(t, "7.7.7", recentFileData.Terraform[0])
 	assert.Equal(t, "1.2.3", recentFileData.Terraform[1])
 	assert.Equal(t, "4.5.6", recentFileData.Terraform[2])
+}
+
+func Test_deleteDownloadedBinaries(t *testing.T) {
+	logger = InitLogger("DEBUG")
+	temp, err := os.MkdirTemp("", "recent-test")
+	if err != nil {
+		t.Errorf("Could not create temporary directory")
+	}
+	defer func(path string) {
+		_ = os.RemoveAll(path)
+	}(temp)
+	// Create 4 file stubs
+	for i := 0; i < 4; i++ {
+		_, err = os.Create(filepath.Join(temp, ConvertExecutableExt(TerraformPrefix+strconv.Itoa(i)+".0.0")))
+		if err != nil {
+			t.Error("Could not create dummy file")
+			t.Error(err)
+		}
+	}
+	deleteDownloadedBinaries(temp, distributionTerraform, []string{"4.0.0"})
+	_, err = os.Stat(filepath.Join(temp, ConvertExecutableExt(TerraformPrefix+"4.0.0")))
+	assert.True(t, errors.Is(err, os.ErrNotExist))
 }
