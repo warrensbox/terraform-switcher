@@ -4,11 +4,12 @@ import (
 	"bufio"
 	"crypto/sha256"
 	"encoding/hex"
-	"golang.org/x/crypto/openpgp"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"golang.org/x/crypto/openpgp"
 )
 
 // getChecksumFromFile Extract the checksum from the signature file
@@ -24,7 +25,7 @@ func getChecksumFromHashFile(signatureFilePath string, terraformFileName string)
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
 		split := strings.Split(scanner.Text(), "  ")
-		if split[1] == terraformFileName {
+		if len(split) == 2 && split[1] == terraformFileName {
 			return split[0], nil
 		}
 	}
