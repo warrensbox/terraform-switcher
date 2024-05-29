@@ -1,6 +1,9 @@
 package lib
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 const legacyProductId = "terraform"
 
@@ -58,6 +61,7 @@ func (p TerraformProduct) GetArchivePrefix() string {
 	return p.ArchivePrefix
 }
 func (p TerraformProduct) GetArtifactUrl(mirrorURL string, version string) string {
+	mirrorURL = strings.TrimRight(mirrorURL, "/")
 	return fmt.Sprintf("%s/%s", mirrorURL, version)
 }
 func (p TerraformProduct) GetPublicKeyId() string {
