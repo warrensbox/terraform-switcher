@@ -90,7 +90,7 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 
 // TestDownloadFromURL_Valid : Test if https://releases.hashicorp.com/terraform/ is still valid
 func TestDownloadFromURL_Valid(t *testing.T) {
-
+	logger = InitLogger("DEBUG")
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 
 	url, err := url.ParseRequestURI(hashiURL)
@@ -103,6 +103,7 @@ func TestDownloadFromURL_Valid(t *testing.T) {
 
 // TestDownloadProductFromURL : Test DownloadProductFromURL
 func TestDownloadProductFromURL(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	gpgKey, err := crypto.GenerateKey("TestProductSign", "example@localhost.com", "RSA", 1024)
 	if err != nil {
 		t.Fatal(err)

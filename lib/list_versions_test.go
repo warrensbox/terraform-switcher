@@ -159,6 +159,7 @@ func TestGetTFLatest(t *testing.T) {
 
 // TestGetTFLatestImplicit : Test getTFLatestImplicit
 func TestGetTFLatestImplicit(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	tName := "version=%s_preRelease=%v"
 	t.Run(fmt.Sprintf(tName, "0.11.0", false), func(t *testing.T) { testGetTFLatestImplicit(t, "0.11.0", false, "0.11.13") })
 	// @TODO Couldn't get this test working
@@ -197,7 +198,7 @@ func TestGetTFURLBody(t *testing.T) {
 
 // TestRemoveDuplicateVersions :  test to removed duplicate
 func TestRemoveDuplicateVersions(t *testing.T) {
-
+	logger = InitLogger("DEBUG")
 	testArray := []string{"0.0.1", "0.0.2", "0.0.3", "0.0.1", "0.12.0-beta1", "0.12.0-beta1"}
 
 	list := removeDuplicateVersions(testArray)
