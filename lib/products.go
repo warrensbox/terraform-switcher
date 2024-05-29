@@ -58,7 +58,7 @@ func (p TerraformProduct) GetArchivePrefix() string {
 	return p.ArchivePrefix
 }
 func (p TerraformProduct) GetArtifactUrl(mirrorURL string, version string) string {
-	return fmt.Sprintf("%s%s", mirrorURL, version)
+	return fmt.Sprintf("%s/%s", mirrorURL, version)
 }
 func (p TerraformProduct) GetPublicKeyId() string {
 	return p.PublicKeyId

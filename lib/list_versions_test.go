@@ -89,7 +89,7 @@ func compareLists(actual []string, expected []string) error {
 	return nil
 }
 
-func getMockServer() *httptest.Server {
+func getMockListVersionServer() *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch strings.TrimSpace(r.URL.Path) {
 		case "/hashicorp/":
@@ -144,7 +144,7 @@ func TestGetVersionsFromBodyOpenTofu(t *testing.T) {
 
 // TestGetTFLatest : Test getTFLatest
 func TestGetTFLatest(t *testing.T) {
-	server := getMockServer()
+	server := getMockListVersionServer()
 	defer server.Close()
 
 	version, err := getTFLatest(fmt.Sprintf("%s/%s", server.URL, "hashicorp"))
@@ -167,7 +167,7 @@ func TestGetTFLatestImplicit(t *testing.T) {
 }
 
 func testGetTFLatestImplicit(t *testing.T, version string, preRelease bool, expectedVersion string) {
-	server := getMockServer()
+	server := getMockListVersionServer()
 	defer server.Close()
 
 	version, err := getTFLatestImplicit(fmt.Sprintf("%s/%s", server.URL, "hashicorp"), preRelease, version)
@@ -181,7 +181,7 @@ func testGetTFLatestImplicit(t *testing.T, version string, preRelease bool, expe
 
 // TestGetTFURLBody :  Test getTFURLBody method
 func TestGetTFURLBody(t *testing.T) {
-	server := getMockServer()
+	server := getMockListVersionServer()
 	defer server.Close()
 
 	body, err := getTFURLBody(fmt.Sprintf("%s/%s", server.URL, "hashicorp"))
