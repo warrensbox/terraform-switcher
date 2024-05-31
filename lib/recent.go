@@ -59,8 +59,14 @@ func getRecentVersions(installPath string, dist string) ([]string, error) {
 	} else if dist == distributionOpenTofu {
 		listOfRecentVersions = recentFileData.OpenTofu
 	}
-	for index, versionString := range listOfRecentVersions[:2] {
-		listOfRecentVersions[index] = versionString + " *recent"
+	var maxCount int
+	if len(listOfRecentVersions) >= 3 {
+		maxCount = 3
+	} else {
+		maxCount = len(listOfRecentVersions)
+	}
+	for i := 0; i < maxCount; i++ {
+		listOfRecentVersions[i] = listOfRecentVersions[i] + " *recent"
 	}
 	return listOfRecentVersions, nil
 }
