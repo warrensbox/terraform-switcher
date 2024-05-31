@@ -259,7 +259,7 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 			if exist {
 				install(product, requestedVersion, customBinaryPath, installPath, mirrorURL)
 			} else {
-				logger.Fatal("The provided terraform version does not exist.\n Try `tfswitch -l` to see all available versions")
+				logger.Fatalf("The provided terraform version does not exist: %q.\n Try `tfswitch -l` to see all available versions", requestedVersion)
 			}
 		} else {
 			PrintInvalidTFVersion()
