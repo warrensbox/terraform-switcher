@@ -23,11 +23,11 @@ func addRecent(requestedVersion string, installPath string, distribution string)
 	if CheckFileExist(recentFilePath) {
 		unmarshalRecentFileData(recentFilePath, &recentFileData)
 	}
-	prependRecentVersionToList(requestedVersion, installPath, distribution, &recentFileData)
+	prependRecentVersionToList(requestedVersion, distribution, &recentFileData)
 	saveRecentFile(recentFileData, recentFilePath)
 }
 
-func prependRecentVersionToList(version, installPath, distribution string, r *RecentFiles) {
+func prependRecentVersionToList(version, distribution string, r *RecentFiles) {
 	var sliceToCheck []string
 	if distribution == distributionTerraform {
 		sliceToCheck = r.Terraform
@@ -41,28 +41,10 @@ func prependRecentVersionToList(version, installPath, distribution string, r *Re
 	}
 	sliceToCheck = append([]string{version}, sliceToCheck...)
 
-	if len(sliceToCheck) > 3 {
-		deleteDownloadedBinaries(installPath, distribution, sliceToCheck[3:])
-		sliceToCheck = sliceToCheck[0:2]
-	}
-
 	if distribution == distributionTerraform {
 		r.Terraform = sliceToCheck
 	} else if distribution == distributionOpenTofu {
 		r.OpenTofu = sliceToCheck
-	}
-}
-
-func deleteDownloadedBinaries(installPath, distribution string, versions []string) {
-	installLocation := GetInstallLocation(installPath)
-	for _, versionToDelete := range versions {
-		var fileToDelete string
-		if distribution == distributionTerraform {
-			fileToDelete = ConvertExecutableExt(TerraformPrefix + versionToDelete)
-		}
-		filePathToDelete := filepath.Join(installLocation, fileToDelete)
-		logger.Debugf("Deleting obsolete binary %v", filePathToDelete)
-		_ = os.Remove(filePathToDelete)
 	}
 }
 
@@ -77,7 +59,7 @@ func getRecentVersions(installPath string, dist string) ([]string, error) {
 	} else if dist == distributionOpenTofu {
 		listOfRecentVersions = recentFileData.OpenTofu
 	}
-	for index, versionString := range listOfRecentVersions {
+	for index, versionString := range listOfRecentVersions[:2] {
 		listOfRecentVersions[index] = versionString + " *recent"
 	}
 	return listOfRecentVersions, nil
