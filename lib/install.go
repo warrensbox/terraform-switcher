@@ -188,7 +188,8 @@ func installableBinLocation(product Product, userBinPath string) string {
 }
 
 // InstallLatestVersion install latest stable tf version
-// This is a legacy method that is deprecated in favor of InstallLatestProductVersion
+//
+// Deprecated: This function has been deprecated in favor of InstallLatestProductVersion and will be removed in v2.0.0
 func InstallLatestVersion(dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
 	product := getLegacyProduct()
 	InstallLatestProductVersion(product, dryRun, customBinaryPath, installPath, mirrorURL)
@@ -203,7 +204,8 @@ func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath,
 }
 
 // InstallLatestImplicitVersion install latest - argument (version) must be provided
-// This is a legacy method that is deprecated in favor of InstallLatestProductImplicitVersion
+//
+// Deprecated: This function has been deprecated in favor of InstallLatestProductImplicitVersion and will be removed in v2.0.0
 func InstallLatestImplicitVersion(dryRun bool, requestedVersion, customBinaryPath, installPath string, mirrorURL string, preRelease bool) {
 	product := getLegacyProduct()
 	InstallLatestProductImplicitVersion(product, dryRun, requestedVersion, customBinaryPath, installPath, mirrorURL, preRelease)
@@ -224,7 +226,8 @@ func InstallLatestProductImplicitVersion(product Product, dryRun bool, requested
 }
 
 // InstallVersion install Terraform product
-// This is a legacy method that is deprecated in favor of InstallProductVersion
+//
+// Deprecated: This function has been deprecated in favor of InstallProductVersion and will be removed in v2.0.0
 func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorURL string) {
 	product := getLegacyProduct()
 	InstallProductVersion(product, dryRun, version, customBinaryPath, installPath, mirrorURL)
@@ -268,9 +271,10 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 }
 
 // InstallProductOption displays & installs tf version
-// This is a legacy method that will be deprecated in favor of InstallProductOption
-/* listAll = true - all versions including beta and rc will be displayed */
-/* listAll = false - only official stable release are displayed */
+// listAll = true - all versions including beta and rc will be displayed */
+// listAll = false - only official stable release are displayed */
+//
+// Deprecated: This function has been deprecated in favor of InstallProductOption and will be removed in v2.0.0
 func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
 	product := getLegacyProduct()
 	InstallProductOption(product, listAll, dryRun, customBinaryPath, installPath, mirrorURL)

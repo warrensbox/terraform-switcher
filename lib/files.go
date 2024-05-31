@@ -110,6 +110,8 @@ func createDirIfNotExist(dir string) {
 }
 
 // WriteLines : writes into file
+//
+// Deprecated: This method has been deprecated and will be removed in v2.0.0
 func WriteLines(lines []string, path string) (err error) {
 	var (
 		file *os.File
@@ -132,7 +134,8 @@ func WriteLines(lines []string, path string) (err error) {
 }
 
 // ReadLines : Read a whole file into the memory and store it as array of lines
-// @TODO This isn't used - should we keep it?
+//
+// Deprecated: This method has been deprecated and will be removed in v2.0.0
 func ReadLines(path string) (lines []string, err error) {
 	var (
 		file   *os.File
