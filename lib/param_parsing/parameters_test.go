@@ -40,7 +40,7 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 		t.Error("CustomBinaryPath Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
 
-	expected = "0.11.4"
+	expected = "1.6.2"
 	actual = params.Version
 	if actual != expected {
 		t.Error("Version Param was not as expected. Actual: " + actual + ", Expected: " + expected)
