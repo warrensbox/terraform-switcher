@@ -59,7 +59,7 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	expected := "../../test-data/integration-tests/test_tfswitchtoml"
-	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin", "--product=terraform"}
+	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin", "--product=terraform", "1.6.0"}
 	params := GetParameters()
 	actual := params.ChDirPath
 	if actual != expected {
@@ -72,7 +72,7 @@ func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 		t.Error("CustomBinaryPath Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
 
-	expected = "0.11.4"
+	expected = "1.6.0"
 	actual = params.Version
 	if actual != expected {
 		t.Error("Version Param was not as expected. Actual: " + actual + ", Expected: " + expected)
