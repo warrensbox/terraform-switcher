@@ -199,7 +199,7 @@ func TestDownloadProductFromURL(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if expectedZipPath := tempDir + "/my_product_download_2.1.0_linux_amd64.zip"; zipFilePath != expectedZipPath {
+	if expectedZipPath := filepath.Join(tempDir, "my_product_download_2.1.0_linux_amd64.zip"); zipFilePath != expectedZipPath {
 		t.Errorf("Returned zipFile not expected path. Expected: %q, actual: %q", expectedZipPath, zipFilePath)
 	}
 }
