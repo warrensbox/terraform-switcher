@@ -29,6 +29,6 @@ const (
 	InstallDir                = ".terraform.versions"
 	pubKeySuffix              = ".asc"
 	recentFile                = "RECENT"
-	TerraformPrefix           = "terraform_"
 	tfDarwinArm64StartVersion = "1.0.2"
+	VersionPrefix             = "terraform_"
 )

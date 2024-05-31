@@ -74,7 +74,7 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 	}
 
 	/* check if selected version already downloaded */
-	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, TerraformPrefix+tfversion))
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, VersionPrefix+tfversion))
 	fileExist := CheckFileExist(installFileVersionPath)
 
 	/* if selected version already exist, */
@@ -102,7 +102,7 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 
 	/* if selected version already exist, */
 	/* proceed to download it from the hashicorp release page */
-	zipFile, errDownload := DownloadFromURL(installLocation, mirrorURL, tfversion, TerraformPrefix, goos, goarch)
+	zipFile, errDownload := DownloadFromURL(installLocation, mirrorURL, tfversion, VersionPrefix, goos, goarch)
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
@@ -221,7 +221,7 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 
 			//check to see if the requested version has been downloaded before
 			installLocation := GetInstallLocation(installPath)
-			installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, TerraformPrefix+requestedVersion))
+			installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, VersionPrefix+requestedVersion))
 			recentDownloadFile := CheckFileExist(installFileVersionPath)
 			if recentDownloadFile {
 				ChangeSymlink(installFileVersionPath, customBinaryPath)
