@@ -21,7 +21,7 @@ Solution: You probably need to have privileges to install *tfswitch* at /usr/loc
 Try the following:
 
 ```sh
-wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh  #Get the installer on to your machine:
+wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh  #Get the installer on to your machine:
 
 chmod 755 install.sh #Make installer executable
 

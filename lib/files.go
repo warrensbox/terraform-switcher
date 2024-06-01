@@ -14,6 +14,10 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
+const (
+	TERRAFORM_BINARY_NAME = "terraform"
+)
+
 // RenameFile : rename file name
 func RenameFile(src string, dest string) {
 	logger.Debugf("Renaming file %q to %q", src, dest)
@@ -61,6 +65,12 @@ func Unzip(src string, dest string) ([]string, error) {
 	}
 	var unzipWaitGroup sync.WaitGroup
 	for _, f := range reader.File {
+		// Only extract the "terraform" binary
+		// from the archive, ignoring LICENSE and other files
+		if f.Name != TERRAFORM_BINARY_NAME {
+			continue
+		}
+
 		unzipWaitGroup.Add(1)
 		unzipErr := unzipFile(f, destination, &unzipWaitGroup)
 		if unzipErr != nil {
@@ -71,6 +81,13 @@ func Unzip(src string, dest string) ([]string, error) {
 	}
 	logger.Debug("Waiting for deferred functions.")
 	unzipWaitGroup.Wait()
+
+	if len(filenames) < 1 {
+		logger.Fatalf("Could not find terraform file in release archive to unzip")
+	} else if len(filenames) > 1 {
+		logger.Fatalf("Extracted more files than expected in release archive")
+	}
+
 	return filenames, nil
 }
 

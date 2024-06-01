@@ -2,7 +2,7 @@
 
 ### Homebrew
 
-```ruby
+```shell
 brew upgrade warrensbox/tap/tfswitch
 ```
 ### Linux
@@ -10,14 +10,14 @@ brew upgrade warrensbox/tap/tfswitch
 Rerun:
 
 ```sh
-curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | bash
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh | bash
 ```
 
 ## Uninstall:
 
 ### Homebrew
 
-```ruby
+```shell
 brew uninstall warrensbox/tap/tfswitch
 ```
 ### Linux
