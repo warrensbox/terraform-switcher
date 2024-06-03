@@ -22,6 +22,7 @@ type Params struct {
 	ShowLatestFlag   bool
 	ShowLatestPre    string
 	ShowLatestStable string
+	TomlDir          string
 	Version          string
 	VersionFlag      bool
 }
@@ -57,7 +58,7 @@ func GetParameters() Params {
 	var err error
 	// Read configuration files
 	// TOML from Homedir
-	if tomlFileExists() {
+	if tomlFileExists(params) {
 		params, err = getParamsTOML(params)
 		if err != nil {
 			logger.Fatalf("Failed to obtain settings from TOML config in home directory: %v", err)
@@ -125,6 +126,7 @@ func initParams(params Params) Params {
 	params.ShowLatestFlag = false
 	params.ShowLatestPre = lib.DefaultLatest
 	params.ShowLatestStable = lib.DefaultLatest
+	params.TomlDir = lib.GetHomeDirectory()
 	params.Version = lib.DefaultLatest
 	params.VersionFlag = false
 	return params

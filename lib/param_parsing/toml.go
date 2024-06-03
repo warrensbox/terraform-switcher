@@ -9,22 +9,16 @@ import (
 
 const tfSwitchTOMLFileName = ".tfswitch.toml"
 
-// Return base directory of TOML file
-func getTomlFileDirectory() string {
-	return lib.GetHomeDirectory()
-}
-
 // getParamsTOML parses everything in the toml file, return required version and bin path
 func getParamsTOML(params Params) (Params, error) {
-	baseDir := getTomlFileDirectory()
-	tomlPath := filepath.Join(baseDir, tfSwitchTOMLFileName)
-	if tomlFileExists() {
+	tomlPath := filepath.Join(params.TomlDir, tfSwitchTOMLFileName)
+	if tomlFileExists(params) {
 		logger.Infof("Reading configuration from %q", tomlPath)
 		configfileName := lib.GetFileName(tfSwitchTOMLFileName)
 		viperParser := viper.New()
 		viperParser.SetConfigType("toml")
 		viperParser.SetConfigName(configfileName)
-		viperParser.AddConfigPath(baseDir)
+		viperParser.AddConfigPath(params.TomlDir)
 
 		errs := viperParser.ReadInConfig() // Find and read the config file
 		if errs != nil {
@@ -45,8 +39,7 @@ func getParamsTOML(params Params) (Params, error) {
 	return params, nil
 }
 
-func tomlFileExists() bool {
-	baseDir := getTomlFileDirectory()
-	tomlPath := filepath.Join(baseDir, tfSwitchTOMLFileName)
+func tomlFileExists(params Params) bool {
+	tomlPath := filepath.Join(params.TomlDir, tfSwitchTOMLFileName)
 	return lib.CheckFileExist(tomlPath)
 }
