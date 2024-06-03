@@ -57,18 +57,10 @@ func GetParameters() Params {
 	var err error
 	// Read configuration files
 	// TOML from Homedir
-	if tomlFileExists(lib.GetHomeDirectory()) {
-		params, err = getParamsTOML(params, lib.GetHomeDirectory())
+	if tomlFileExists() {
+		params, err = getParamsTOML(params)
 		if err != nil {
 			logger.Fatalf("Failed to obtain settings from TOML config in home directory: %v", err)
-		}
-	}
-
-	// TOML from ChDirPath
-	if tomlFileExists(params.ChDirPath) {
-		params, err = getParamsTOML(params, params.ChDirPath)
-		if err != nil {
-			logger.Fatalf("Failed to obtain settings from TOML config in directory %q: %v", params.ChDirPath, err)
 		}
 	}
 
