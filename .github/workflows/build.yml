@@ -70,7 +70,7 @@ jobs:
         find ./test-data/integration-tests/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
             if test -f "${TEST_PATH}/.tfswitch.toml"
             then
-                ln -sf "${TEST_PATH}/.tfswitch.toml" ~/.tfswitch.toml
+                cp "${TEST_PATH}/.tfswitch.toml" ~/
             else
                 { test -f ~/.tfswitch.toml && rm ~/.tfswitch.toml; } || true
             fi
