@@ -28,7 +28,11 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 	})
 	expected := "../../test-data/integration-tests/test_tfswitchtoml"
 	os.Args = []string{"cmd", "--chdir=" + expected}
-	params := GetParameters()
+	params := Params{}
+	params = initParams(params)
+	params.TomlDir = "../../test-data/integration-tests/test_tfswitchtoml"
+	params = populateParams(params)
+
 	actual := params.ChDirPath
 	if actual != expected {
 		t.Error("ChDir Param was not parsed correctly. Actual: " + actual + ", Expected: " + expected)
@@ -53,7 +57,11 @@ func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	expected := "../../test-data/integration-tests/test_tfswitchtoml"
 	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin"}
-	params := GetParameters()
+	params := Params{}
+	params = initParams(params)
+	params.TomlDir = expected
+	params = populateParams(params)
+
 	actual := params.ChDirPath
 	if actual != expected {
 		t.Error("ChDir Param was not parsed correctly. Actual: " + actual + ", Expected: " + expected)
@@ -78,7 +86,11 @@ func TestGetParameters_dry_run_wont_download_anything(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	expected := "../../test-data/integration-tests/test_versiontf"
 	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/tmp", "--dry-run"}
-	params := GetParameters()
+	params := Params{}
+	params = initParams(params)
+	params.TomlDir = expected
+	params = populateParams(params)
+
 	installLocation := lib.GetInstallLocation(params.InstallPath)
 	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, lib.VersionPrefix+params.Version))
 	// Make sure the file tfswitch WOULD download is absent
@@ -105,7 +117,10 @@ func writeTestFile(t *testing.T, basePath string, fileName string, fileContent s
 func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string) {
 	getopt.CommandLine = getopt.New()
 	os.Args = []string{"cmd", "--chdir=../../test-data/skip-integration-tests/test_precedence"}
-	parameters := GetParameters()
+	parameters := Params{}
+	parameters = initParams(parameters)
+	parameters.TomlDir = "../../test-data/skip-integration-tests/test_precedence"
+	parameters = populateParams(parameters)
 	if parameters.Version != expectedVersion {
 		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: " + expectedVersion)
 	}
