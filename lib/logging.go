@@ -10,6 +10,7 @@ var (
 	loggingTemplateDebug = "{{datetime}} {{level}} [{{caller}}] {{message}} {{data}} {{extra}}\n"
 	loggingTemplate      = "{{datetime}} {{level}} {{message}} {{data}} {{extra}}\n"
 	logger               *slog.Logger
+	ErrorLogging         = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel}
 	NormalLogging        = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel}
 	NoticeLogging        = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel}
 	DebugLogging         = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel}
@@ -24,6 +25,10 @@ func InitLogger(logLevel string) *slog.Logger {
 
 	var h *handler.ConsoleHandler
 	switch logLevel {
+	case "ERROR":
+		h = handler.NewConsoleHandler(ErrorLogging)
+		formatter.SetTemplate(loggingTemplateDebug)
+		break
 	case "TRACE":
 		h = handler.NewConsoleHandler(TraceLogging)
 		formatter.SetTemplate(loggingTemplateDebug)
