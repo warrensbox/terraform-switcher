@@ -9,7 +9,7 @@ import (
 
 type RecentFiles struct {
 	Terraform []string `json:"terraform"`
-	OpenTofu  []string `json:"openTofu"`
+	OpenTofu  []string `json:"opentofu"`
 }
 
 func addRecent(requestedVersion string, installPath string, distribution string) {

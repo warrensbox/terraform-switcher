@@ -38,7 +38,7 @@ func Test_saveFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("Could not read converted file %v", pathToTempFile)
 	}
-	assert.Equal(t, "{\"terraform\":[\"1.2.3\",\"4.5.6\"],\"openTofu\":[\"6.6.6\"]}", string(content))
+	assert.Equal(t, "{\"terraform\":[\"1.2.3\",\"4.5.6\"],\"opentofu\":[\"6.6.6\"]}", string(content))
 }
 
 func Test_getRecentVersionsForTerraform(t *testing.T) {
@@ -77,14 +77,14 @@ func Test_addRecent(t *testing.T) {
 		t.Errorf("Could not open file %v", filePath)
 		t.Error(err)
 	}
-	assert.Equal(t, "{\"terraform\":[\"3.7.2\",\"3.7.1\",\"3.7.0\"],\"openTofu\":null}", string(bytes))
+	assert.Equal(t, "{\"terraform\":[\"3.7.2\",\"3.7.1\",\"3.7.0\"],\"opentofu\":null}", string(bytes))
 	addRecent("3.7.0", temp, distributionTerraform)
 	bytes, err = os.ReadFile(filePath)
 	if err != nil {
 		t.Errorf("Could not open file %v", filePath)
 		t.Error(err)
 	}
-	assert.Equal(t, "{\"terraform\":[\"3.7.0\",\"3.7.2\",\"3.7.1\"],\"openTofu\":null}", string(bytes))
+	assert.Equal(t, "{\"terraform\":[\"3.7.0\",\"3.7.2\",\"3.7.1\"],\"opentofu\":null}", string(bytes))
 
 	addRecent("1.1.1", temp, distributionOpenTofu)
 	bytes, err = os.ReadFile(filePath)
@@ -92,7 +92,7 @@ func Test_addRecent(t *testing.T) {
 		t.Error("Could not open file")
 		t.Error(err)
 	}
-	assert.Equal(t, "{\"terraform\":[\"3.7.0\",\"3.7.2\",\"3.7.1\"],\"openTofu\":[\"1.1.1\"]}", string(bytes))
+	assert.Equal(t, "{\"terraform\":[\"3.7.0\",\"3.7.2\",\"3.7.1\"],\"opentofu\":[\"1.1.1\"]}", string(bytes))
 }
 
 func Test_prependExistingVersionIsMovingToTop(t *testing.T) {
