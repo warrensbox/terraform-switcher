@@ -1,6 +1,7 @@
 [![Build Status](https://github.com/warrensbox/terraform-switcher/actions/workflows/build.yml/badge.svg)](https://github.com/warrensbox/terraform-switcher/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher)](https://goreportcard.com/report/github.com/warrensbox/terraform-switcher)
 ![GitHub Release](https://img.shields.io/github/v/release/warrensbox/terraform-switcher)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/warrensbox/terraform-switcher/total)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/warrensbox/terraform-switcher)
 
 # Terraform Switcher
