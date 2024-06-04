@@ -52,32 +52,33 @@ func GetParameters() Params {
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
 
-	oldLogLevel := params.LogLevel
-	logger = lib.InitLogger(params.LogLevel)
-	var err error
-	// Read configuration files
-	if tomlFileExists(params) {
-		params, err = getParamsTOML(params)
-	} else if tfSwitchFileExists(params) {
-		params, err = GetParamsFromTfSwitch(params)
-	} else if terraformVersionFileExists(params) {
-		params, err = GetParamsFromTerraformVersion(params)
-	} else if isTerraformModule(params) {
-		params, err = GetVersionFromVersionsTF(params)
-	} else if terraGruntFileExists(params) {
-		params, err = GetVersionFromTerragrunt(params)
-	} else {
-		params = GetParamsFromEnvironment(params)
-	}
-	if err != nil {
-		logger.Fatalf("Error parsing configuration file: %q", err)
-	}
-
-	// Logger config was changed by the config files. Reinitialise.
-	if params.LogLevel != oldLogLevel {
+	if !params.VersionFlag {
+		oldLogLevel := params.LogLevel
 		logger = lib.InitLogger(params.LogLevel)
-	}
+		var err error
+		// Read configuration files
+		if tomlFileExists(params) {
+			params, err = getParamsTOML(params)
+		} else if tfSwitchFileExists(params) {
+			params, err = GetParamsFromTfSwitch(params)
+		} else if terraformVersionFileExists(params) {
+			params, err = GetParamsFromTerraformVersion(params)
+		} else if isTerraformModule(params) {
+			params, err = GetVersionFromVersionsTF(params)
+		} else if terraGruntFileExists(params) {
+			params, err = GetVersionFromTerragrunt(params)
+		} else {
+			params = GetParamsFromEnvironment(params)
+		}
+		if err != nil {
+			logger.Fatalf("Error parsing configuration file: %q", err)
+		}
 
+		// Logger config was changed by the config files. Reinitialise.
+		if params.LogLevel != oldLogLevel {
+			logger = lib.InitLogger(params.LogLevel)
+		}
+	}
 	// Parse again to overwrite anything that might by defined on the cli AND in any config file (CLI always wins)
 	getopt.Parse()
 	args := getopt.Args()
