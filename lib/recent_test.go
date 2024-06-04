@@ -47,7 +47,8 @@ func Test_getRecentVersionsForTerraform(t *testing.T) {
 	if err != nil {
 		t.Error("Unable to get versions from recent file")
 	}
-	assert.Equal(t, []string{"1.2.3 *recent", "4.5.6 *recent"}, strings)
+	assert.Equal(t, 5, len(strings))
+	assert.Equal(t, []string{"1.2.3 *recent", "4.5.6 *recent", "4.5.7 *recent", "4.5.8 *recent", "4.5.9 *recent"}, strings)
 }
 
 func Test_getRecentVersionsForOpenTofu(t *testing.T) {
@@ -115,11 +116,11 @@ func Test_prependExistingVersionIsMovingToTop(t *testing.T) {
 
 func Test_prependNewVersion(t *testing.T) {
 	var recentFileData = RecentFiles{
-		Terraform: []string{"1.2.3", "4.5.6"},
+		Terraform: []string{"1.2.3", "4.5.6", "4.5.7", "4.5.8", "4.5.9"},
 		OpenTofu:  []string{"6.6.6"},
 	}
 	prependRecentVersionToList("7.7.7", distributionTerraform, &recentFileData)
-	assert.Equal(t, 3, len(recentFileData.Terraform))
+	assert.Equal(t, 6, len(recentFileData.Terraform))
 	assert.Equal(t, "7.7.7", recentFileData.Terraform[0])
 	assert.Equal(t, "1.2.3", recentFileData.Terraform[1])
 	assert.Equal(t, "4.5.6", recentFileData.Terraform[2])

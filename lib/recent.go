@@ -63,15 +63,16 @@ func getRecentVersions(installPath string, dist string) ([]string, error) {
 		listOfRecentVersions = recentFileData.OpenTofu
 	}
 	var maxCount int
-	if len(listOfRecentVersions) >= 3 {
-		maxCount = 3
+	if len(listOfRecentVersions) >= 5 {
+		maxCount = 5
 	} else {
 		maxCount = len(listOfRecentVersions)
 	}
+	var returnedRecentVersions []string
 	for i := 0; i < maxCount; i++ {
-		listOfRecentVersions[i] = listOfRecentVersions[i] + " *recent"
+		returnedRecentVersions = append(returnedRecentVersions, listOfRecentVersions[i]+" *recent")
 	}
-	return listOfRecentVersions, nil
+	return returnedRecentVersions, nil
 }
 
 func unmarshalRecentFileData(recentFilePath string, recentFileData *RecentFiles) {
