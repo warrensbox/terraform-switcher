@@ -64,5 +64,8 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 
 func isTerraformModule(params Params) bool {
 	module, err := tfconfig.LoadModule(params.ChDirPath)
+	if err != nil {
+		logger.Warnf("Error whilst parsing Terraform: %q", err)
+	}
 	return err == nil && len(module.RequiredCore) > 0
 }
