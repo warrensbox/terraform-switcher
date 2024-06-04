@@ -29,9 +29,10 @@ func addRecent(requestedVersion string, installPath string, distribution string)
 
 func prependRecentVersionToList(version, distribution string, r *RecentFiles) {
 	var sliceToCheck []string
-	if distribution == distributionTerraform {
+	switch distribution {
+	case distributionTerraform:
 		sliceToCheck = r.Terraform
-	} else if distribution == distributionOpenTofu {
+	case distributionOpenTofu:
 		sliceToCheck = r.OpenTofu
 	}
 	for versionIndex, versionValue := range sliceToCheck {
@@ -41,9 +42,10 @@ func prependRecentVersionToList(version, distribution string, r *RecentFiles) {
 	}
 	sliceToCheck = append([]string{version}, sliceToCheck...)
 
-	if distribution == distributionTerraform {
+	switch distribution {
+	case distributionTerraform:
 		r.Terraform = sliceToCheck
-	} else if distribution == distributionOpenTofu {
+	case distributionOpenTofu:
 		r.OpenTofu = sliceToCheck
 	}
 }
@@ -54,9 +56,10 @@ func getRecentVersions(installPath string, dist string) ([]string, error) {
 	var recentFileData RecentFiles
 	unmarshalRecentFileData(recentFilePath, &recentFileData)
 	var listOfRecentVersions []string
-	if dist == distributionTerraform {
+	switch dist {
+	case distributionTerraform:
 		listOfRecentVersions = recentFileData.Terraform
-	} else if dist == distributionOpenTofu {
+	case distributionOpenTofu:
 		listOfRecentVersions = recentFileData.OpenTofu
 	}
 	var maxCount int
