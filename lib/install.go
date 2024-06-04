@@ -90,7 +90,7 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
 		logger.Infof("Switched terraform to version %q", tfversion)
-		addRecent(tfversion, installPath) //add to recent file for faster lookup
+		addRecent(tfversion, installPath, distributionTerraform) //add to recent file for faster lookup
 		return
 	}
 
@@ -134,99 +134,11 @@ func install(tfversion string, binPath string, installPath string, mirrorURL str
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
 	logger.Infof("Switched terraform to version %q", tfversion)
-	addRecent(tfversion, installPath) //add to recent file for faster lookup
+	addRecent(tfversion, installPath, distributionTerraform) //add to recent file for faster lookup
 	return
 }
 
-// addRecent : add to recent file
-func addRecent(requestedVersion string, installPath string) {
-
-	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	versionFile := filepath.Join(installLocation, recentFile)
-
-	fileExist := CheckFileExist(versionFile)
-	if fileExist {
-		lines, errRead := ReadLines(versionFile)
-
-		if errRead != nil {
-			logger.Errorf("Error reading %q file: %v", versionFile, errRead)
-			return
-		}
-
-		for _, line := range lines {
-			if !validVersionFormat(line) {
-				logger.Infof("File %q is dirty (recreating cache file)", versionFile)
-				RemoveFiles(versionFile)
-				CreateRecentFile(requestedVersion, installPath)
-				return
-			}
-		}
-
-		versionExist := versionExist(requestedVersion, lines)
-
-		if !versionExist {
-			if len(lines) >= 3 {
-				_, lines = lines[len(lines)-1], lines[:len(lines)-1]
-
-				lines = append([]string{requestedVersion}, lines...)
-				_ = WriteLines(lines, versionFile)
-			} else {
-				lines = append([]string{requestedVersion}, lines...)
-				_ = WriteLines(lines, versionFile)
-			}
-		}
-
-	} else {
-		CreateRecentFile(requestedVersion, installPath)
-	}
-}
-
-// getRecentVersions : get recent version from file
-func getRecentVersions(installPath string) ([]string, error) {
-
-	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	versionFile := filepath.Join(installLocation, recentFile)
-
-	fileExist := CheckFileExist(versionFile)
-	if fileExist {
-
-		lines, errRead := ReadLines(versionFile)
-		var outputRecent []string
-
-		if errRead != nil {
-			logger.Errorf("Error reading %q file: %f", versionFile, errRead)
-			return nil, errRead
-		}
-
-		for _, line := range lines {
-			/* 	checks if versions in the recent file are valid.
-			If any version is invalid, it will be considered dirty
-			and the recent file will be removed
-			*/
-			if !validVersionFormat(line) {
-				RemoveFiles(versionFile)
-				return nil, errRead
-			}
-
-			/* 	output can be confusing since it displays the 3 most recent used terraform version
-			append the string *recent to the output to make it more user friendly
-			*/
-			outputRecent = append(outputRecent, fmt.Sprintf("%s *recent", line))
-		}
-
-		return outputRecent, nil
-	}
-
-	return nil, nil
-}
-
-// CreateRecentFile : create RECENT file
-func CreateRecentFile(requestedVersion string, installPath string) {
-	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	_ = WriteLines([]string{requestedVersion}, filepath.Join(installLocation, recentFile))
-}
-
-// ConvertExecutableExt : convert excutable with local OS extension
+// ConvertExecutableExt : convert executable with local OS extension
 func ConvertExecutableExt(fpath string) string {
 	switch runtime.GOOS {
 	case "windows":
@@ -314,7 +226,7 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 			if recentDownloadFile {
 				ChangeSymlink(installFileVersionPath, customBinaryPath)
 				logger.Infof("Switched terraform to version %q", requestedVersion)
-				addRecent(requestedVersion, installPath) //add to recent file for faster lookup
+				addRecent(requestedVersion, installPath, distributionTerraform) //add to recent file for faster lookup
 				return
 			}
 
@@ -341,10 +253,10 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
 func InstallOption(listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
-	tflist, _ := getTFList(mirrorURL, listAll)          // Get list of versions
-	recentVersions, _ := getRecentVersions(installPath) // Get recent versions from RECENT file
-	tflist = append(recentVersions, tflist...)          // Append recent versions to the top of the list
-	tflist = removeDuplicateVersions(tflist)            // Remove duplicate version
+	tflist, _ := getTFList(mirrorURL, listAll)                                 // Get list of versions
+	recentVersions, _ := getRecentVersions(installPath, distributionTerraform) // Get recent versions from RECENT file
+	tflist = append(recentVersions, tflist...)                                 // Append recent versions to the top of the list
+	tflist = removeDuplicateVersions(tflist)                                   // Remove duplicate version
 
 	if len(tflist) == 0 {
 		logger.Fatalf("Terraform version list is empty: %s", mirrorURL)
