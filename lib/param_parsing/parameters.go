@@ -47,7 +47,7 @@ func populateParams(params Params) Params {
 	getopt.StringVarLong(&params.LatestPre, "latest-pre", 'p', "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: tfswitch --latest-stable 0.13.0 downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
 	getopt.BoolVarLong(&params.ListAllFlag, "list-all", 'l', "List all versions of terraform - including beta and rc")
-	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', "Set loglevel for tfswitch. One of (INFO, NOTICE, DEBUG, TRACE)")
+	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', "Set loglevel for tfswitch. One of (ERROR, INFO, NOTICE, DEBUG, TRACE)")
 	getopt.StringVarLong(&params.MirrorURL, "mirror", 'm', "install from a remote API other than the default. Default: "+lib.DefaultMirror)
 	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
 	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
@@ -57,53 +57,54 @@ func populateParams(params Params) Params {
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
 
-	oldLogLevel := params.LogLevel
-	logger = lib.InitLogger(params.LogLevel)
-	var err error
-	// Read configuration files
-	// TOML from Homedir
-	if tomlFileExists(params) {
-		params, err = getParamsTOML(params)
-		if err != nil {
-			logger.Fatalf("Failed to obtain settings from TOML config in home directory: %v", err)
-		}
-	}
-
-	if tfSwitchFileExists(params) {
-		params, err = GetParamsFromTfSwitch(params)
-		if err != nil {
-			logger.Fatalf("Failed to obtain settings from \".tfswitch\" file: %v", err)
-		}
-	}
-
-	if terraformVersionFileExists(params) {
-		params, err = GetParamsFromTerraformVersion(params)
-		if err != nil {
-			logger.Fatalf("Failed to obtain settings from \".terraform-version\" file: %v", err)
-		}
-	}
-
-	if isTerraformModule(params) {
-		params, err = GetVersionFromVersionsTF(params)
-		if err != nil {
-			logger.Fatalf("Failed to obtain settings from Terraform module: %v", err)
-		}
-	}
-
-	if terraGruntFileExists(params) {
-		params, err = GetVersionFromTerragrunt(params)
-		if err != nil {
-			logger.Fatalf("Failed to obtain settings from Terragrunt configuration: %v", err)
-		}
-	}
-
-	params = GetParamsFromEnvironment(params)
-
-	// Logger config was changed by the config files. Reinitialise.
-	if params.LogLevel != oldLogLevel {
+	if !params.VersionFlag {
+		oldLogLevel := params.LogLevel
 		logger = lib.InitLogger(params.LogLevel)
-	}
+		var err error
+		// Read configuration files
+		// TOML from Homedir
+		if tomlFileExists(params) {
+			params, err = getParamsTOML(params)
+			if err != nil {
+				logger.Fatalf("Failed to obtain settings from TOML config in home directory: %v", err)
+			}
+		}
 
+		if tfSwitchFileExists(params) {
+			params, err = GetParamsFromTfSwitch(params)
+			if err != nil {
+				logger.Fatalf("Failed to obtain settings from \".tfswitch\" file: %v", err)
+			}
+		}
+
+		if terraformVersionFileExists(params) {
+			params, err = GetParamsFromTerraformVersion(params)
+			if err != nil {
+				logger.Fatalf("Failed to obtain settings from \".terraform-version\" file: %v", err)
+			}
+		}
+
+		if isTerraformModule(params) {
+			params, err = GetVersionFromVersionsTF(params)
+			if err != nil {
+				logger.Fatalf("Failed to obtain settings from Terraform module: %v", err)
+			}
+		}
+
+		if terraGruntFileExists(params) {
+			params, err = GetVersionFromTerragrunt(params)
+			if err != nil {
+				logger.Fatalf("Failed to obtain settings from Terragrunt configuration: %v", err)
+			}
+		}
+
+		params = GetParamsFromEnvironment(params)
+
+		// Logger config was changed by the config files. Reinitialise.
+		if params.LogLevel != oldLogLevel {
+			logger = lib.InitLogger(params.LogLevel)
+		}
+	}
 	// Parse again to overwrite anything that might by defined on the cli AND in any config file (CLI always wins)
 	getopt.Parse()
 	args := getopt.Args()
