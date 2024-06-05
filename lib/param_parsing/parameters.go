@@ -84,6 +84,9 @@ func populateParams(params Params) Params {
 			}
 		}
 
+		// First pass to obtain environment variables to override product
+		params = GetParamsFromEnvironment(params)
+
 		// Set defaults based on product
 		// This must be performed after TOML file, to obtain product.
 		// But the mirror URL, if set to default product URL,

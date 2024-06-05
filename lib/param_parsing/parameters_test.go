@@ -1,6 +1,7 @@
 package param_parsing
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -218,6 +219,57 @@ terraform_version_constraint = ">= 0.13, < 0.14"
 	if parameters.Version != expectedVersion {
 		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: " + expectedVersion)
 	}
+
+	os.Unsetenv("TF_VERSION")
+}
+
+func checkExpectedPrecedenceProduct(t *testing.T, baseDir string, expectedProduct lib.Product) {
+	getopt.CommandLine = getopt.New()
+	os.Args = []string{"cmd", fmt.Sprintf("--chdir=%s", baseDir)}
+	parameters := Params{}
+	parameters = initParams(parameters)
+	parameters.TomlDir = baseDir
+	parameters = populateParams(parameters)
+	if parameters.Product != expectedProduct.GetId() {
+		t.Error("Product Param was not as expected. Actual: " + parameters.Product + ", Expected: " + expectedProduct.GetId())
+	}
+
+	// Check ProductEntity
+	if parameters.ProductEntity.GetId() != expectedProduct.GetId() {
+		t.Error("ProductEntity Param was not as expected. Actual: " + parameters.Product + ", Expected: " + expectedProduct.GetId())
+	}
+}
+
+func TestGetParameters_check_product_precedence(t *testing.T) {
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
+	// Create temp location
+	tempDir, err := os.MkdirTemp("", "addRecentVersion")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	terraformProduct := lib.GetProductById("terraform")
+	openTofuProduct := lib.GetProductById("opentofu")
+
+	t.Log("Testing without configuration")
+	checkExpectedPrecedenceProduct(t, tempDir, terraformProduct)
+
+	// Create TfSwitch TOML
+	tfSwitchTOMLContent := `
+bin = "/usr/local/bin/terraform_from_toml"
+product = "opentofu"
+`
+	writeTestFile(t, tempDir, ".tfswitch.toml", tfSwitchTOMLContent)
+	t.Log("Testing with TOML configuration")
+	checkExpectedPrecedenceProduct(t, tempDir, openTofuProduct)
+
+	// Test passing command line argument to override all
+	os.Setenv("TF_PRODUCT", "terraform")
+	t.Log("Testing with environment variable")
+	checkExpectedPrecedenceProduct(t, tempDir, terraformProduct)
 
 	os.Unsetenv("TF_VERSION")
 }
