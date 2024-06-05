@@ -90,7 +90,7 @@ func install(product Product, tfversion string, binPath string, installPath stri
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
 		logger.Infof("Switched terraform to version %q", tfversion)
-		addRecentVersion(product, tfversion, installPath) //add to recent file for faster lookup
+		addRecent(tfversion, installPath, product) //add to recent file for faster lookup
 		return
 	}
 
@@ -134,11 +134,11 @@ func install(product Product, tfversion string, binPath string, installPath stri
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
 	logger.Infof("Switched terraform to version %q", tfversion)
-	addRecentVersion(product, tfversion, installPath) //add to recent file for faster lookup
+	addRecent(tfversion, installPath, product) //add to recent file for faster lookup
 	return
 }
 
-// ConvertExecutableExt : convert excutable with local OS extension
+// ConvertExecutableExt : convert executable with local OS extension
 func ConvertExecutableExt(fpath string) string {
 	switch runtime.GOOS {
 	case "windows":
@@ -247,7 +247,7 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 			if recentDownloadFile {
 				ChangeProductSymlink(product, installFileVersionPath, customBinaryPath)
 				logger.Infof("Switched terraform to version %q", requestedVersion)
-				addRecentVersion(product, requestedVersion, installPath) //add to recent file for faster lookup
+				addRecent(requestedVersion, installPath, product) //add to recent file for faster lookup
 				return
 			}
 
@@ -292,7 +292,8 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	var selectVersions []VersionSelector
 
 	// Add recent versions
-	for _, version := range getRecentVersions(product, installPath) {
+	recentVersions, _ := getRecentVersions(installPath, product)
+	for _, version := range recentVersions {
 		selectVersions = append(selectVersions, VersionSelector{
 			Version: version,
 			Label:   version + " *recent",

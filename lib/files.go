@@ -74,7 +74,7 @@ func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error
 	for _, f := range reader.File {
 		// Only extract the "terraform" binary
 		// from the archive, ignoring LICENSE and other files
-		if f.Name != fileToUnzip {
+		if f.Name != ConvertExecutableExt(fileToUnzip) {
 			continue
 		}
 

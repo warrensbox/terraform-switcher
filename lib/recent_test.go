@@ -2,211 +2,133 @@ package lib
 
 import (
 	"os"
-	"path"
+	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-// Test_appendRecentVersionToList : Test appendRecentVersionToList method
-func Test_appendRecentVersionToList(t *testing.T) {
-	// Empty slice, adding first entry
-	var expected []string = []string{"1.5.3"}
-	actual := appendRecentVersionToList([]string{}, "1.5.3")
-	if err := compareLists(actual, expected); err != nil {
-		t.Error(err)
-	}
+func Test_convertData(t *testing.T) {
+	recentFileContent := []byte("1.5.6\n0.13.0-rc1\n1.0.11\n")
 
-	// Adding second entry
-	expected = []string{"1.5.3", "1.5.1"}
-	actual = appendRecentVersionToList([]string{"1.5.1"}, "1.5.3")
-	if err := compareLists(actual, expected); err != nil {
-		t.Error(err)
-	}
-
-	// Adding fourth, popping off last entry
-	expected = []string{"1.0.0", "1.5.3", "1.5.1"}
-	actual = appendRecentVersionToList([]string{"1.5.3", "1.5.1", "2.0.0"}, "1.0.0")
-	if err := compareLists(actual, expected); err != nil {
-		t.Error(err)
-	}
-
-	// Adding duplicate, ensure it's moved
-	expected = []string{"1.5.3", "1.5.1", "2.0.0"}
-	actual = appendRecentVersionToList([]string{"1.5.1", "1.5.3", "2.0.0"}, "1.5.3")
-	if err := compareLists(actual, expected); err != nil {
-		t.Error(err)
-	}
-
-	// Adding same version and ensure nothing changes
-	expected = []string{"1.5.3", "1.5.1", "2.0.0"}
-	actual = appendRecentVersionToList([]string{"1.5.3", "1.5.1", "2.0.0"}, "1.5.3")
-	if err := compareLists(actual, expected); err != nil {
-		t.Error(err)
-	}
+	var recentFileData RecentFile
+	convertOldRecentFile(recentFileContent, &recentFileData)
+	assert.Equal(t, 3, len(recentFileData.Terraform))
+	assert.Equal(t, 0, len(recentFileData.OpenTofu))
+	assert.Equal(t, "1.5.6", recentFileData.Terraform[0])
+	assert.Equal(t, "0.13.0-rc1", recentFileData.Terraform[1])
+	assert.Equal(t, "1.0.11", recentFileData.Terraform[2])
 }
 
-// Test_addRecentVersion_no_version : Test addRecentVersion with no recent version file
-func Test_addRecentVersion_no_file(t *testing.T) {
-	tempDir, err := os.MkdirTemp("", "addRecentVersion")
-	if err != nil {
-		t.Fatal(err)
+func Test_saveFile(t *testing.T) {
+	var recentFileData = RecentFile{
+		Terraform: []string{"1.2.3", "4.5.6"},
+		OpenTofu:  []string{"6.6.6"},
 	}
-	defer os.RemoveAll(tempDir)
+	temp, err := os.MkdirTemp("", "recent-test")
+	if err != nil {
+		t.Errorf("Could not create temporary directory")
+	}
+	defer func(path string) {
+		_ = os.RemoveAll(temp)
+	}(temp)
+	pathToTempFile := filepath.Join(temp, "recent.json")
+	saveRecentFile(recentFileData, pathToTempFile)
 
+	content, err := os.ReadFile(pathToTempFile)
+	if err != nil {
+		t.Errorf("Could not read converted file %v", pathToTempFile)
+	}
+	assert.Equal(t, "{\"terraform\":[\"1.2.3\",\"4.5.6\"],\"opentofu\":[\"6.6.6\"]}", string(content))
+}
+
+func Test_getRecentVersionsForTerraform(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	product := GetProductById("terraform")
-
-	addRecentVersion(product, "1.2.3", tempDir)
-
-	// Ensure recent versions file matches expected
-	recentData, err := os.ReadFile(path.Join(tempDir, ".terraform.versions", "RECENT"))
+	strings, err := getRecentVersions("../test-data/recent/recent_as_json/", product)
 	if err != nil {
-		t.Fatal(err)
+		t.Error("Unable to get versions from recent file")
 	}
-	expectedRecentData := "{\"Terraform\":[\"1.2.3\"],\"OpenTofu\":null}"
-	if string(recentData) != expectedRecentData {
-		t.Errorf("Recent file data does not match expected. Expected: %q, actual: %q", expectedRecentData, string(recentData))
-	}
+	assert.Equal(t, 5, len(strings))
+	assert.Equal(t, []string{"1.2.3 *recent", "4.5.6 *recent", "4.5.7 *recent", "4.5.8 *recent", "4.5.9 *recent"}, strings)
 }
 
-// Test_addRecentVersion_no_version : Test addRecentVersion with pre-existing configuration
-func Test_addRecentVersion_pre_existing(t *testing.T) {
-	tempDir, err := os.MkdirTemp("", "addRecentVersion")
+func Test_getRecentVersionsForOpenTofu(t *testing.T) {
+	logger = InitLogger("DEBUG")
+	product := GetProductById("opentofu")
+	strings, err := getRecentVersions("../test-data/recent/recent_as_json", product)
 	if err != nil {
-		t.Fatal(err)
+		t.Error("Unable to get versions from recent file")
 	}
-	defer os.RemoveAll(tempDir)
+	assert.Equal(t, []string{"6.6.6 *recent"}, strings)
+}
 
-	tfVersionsDir := path.Join(tempDir, ".terraform.versions")
-	os.Mkdir(tfVersionsDir, 0750)
-	recentFile := path.Join(tfVersionsDir, "RECENT")
-	os.WriteFile(recentFile, []byte("{\"Terraform\":[\"1.2.0\"],\"OpenTofu\":null}"), 0640)
+func Test_addRecent(t *testing.T) {
+	logger = InitLogger("DEBUG")
+	terraform := GetProductById("terraform")
+	opentofu := GetProductById("opentofu")
+	temp, err := os.MkdirTemp("", "recent-test")
+	defer func(path string) {
+		_ = os.RemoveAll(path)
+	}(temp)
+	if err != nil {
+		t.Errorf("Could not create temporary directory")
+	}
+	addRecent("3.7.0", temp, terraform)
+	addRecent("3.7.1", temp, terraform)
+	addRecent("3.7.2", temp, terraform)
+	filePath := filepath.Join(temp, ".terraform.versions", "RECENT")
+	bytes, err := os.ReadFile(filePath)
+	if err != nil {
+		t.Errorf("Could not open file %v", filePath)
+		t.Error(err)
+	}
+	assert.Equal(t, "{\"terraform\":[\"3.7.2\",\"3.7.1\",\"3.7.0\"],\"opentofu\":null}", string(bytes))
+	addRecent("3.7.0", temp, terraform)
+	bytes, err = os.ReadFile(filePath)
+	if err != nil {
+		t.Errorf("Could not open file %v", filePath)
+		t.Error(err)
+	}
+	assert.Equal(t, "{\"terraform\":[\"3.7.0\",\"3.7.2\",\"3.7.1\"],\"opentofu\":null}", string(bytes))
 
+	addRecent("1.1.1", temp, opentofu)
+	bytes, err = os.ReadFile(filePath)
+	if err != nil {
+		t.Error("Could not open file")
+		t.Error(err)
+	}
+	assert.Equal(t, "{\"terraform\":[\"3.7.0\",\"3.7.2\",\"3.7.1\"],\"opentofu\":[\"1.1.1\"]}", string(bytes))
+}
+
+func Test_prependExistingVersionIsMovingToTop(t *testing.T) {
 	product := GetProductById("terraform")
-
-	addRecentVersion(product, "1.2.1", tempDir)
-
-	// Ensure recent versions file matches expected
-	recentData, err := os.ReadFile(path.Join(tempDir, ".terraform.versions", "RECENT"))
-	if err != nil {
-		t.Fatal(err)
+	var recentFileData = RecentFile{
+		Terraform: []string{"1.2.3", "4.5.6", "7.7.7"},
+		OpenTofu:  []string{"6.6.6"},
 	}
-	expectedRecentData := "{\"Terraform\":[\"1.2.1\",\"1.2.0\"],\"OpenTofu\":null}"
-	if string(recentData) != expectedRecentData {
-		t.Errorf("Recent file data does not match expected. Expected: %q, actual: %q", expectedRecentData, string(recentData))
-	}
+	prependRecentVersionToList("7.7.7", product, &recentFileData)
+	assert.Equal(t, 3, len(recentFileData.Terraform))
+	assert.Equal(t, "7.7.7", recentFileData.Terraform[0])
+	assert.Equal(t, "1.2.3", recentFileData.Terraform[1])
+	assert.Equal(t, "4.5.6", recentFileData.Terraform[2])
+
+	prependRecentVersionToList("1.2.3", product, &recentFileData)
+	assert.Equal(t, 3, len(recentFileData.Terraform))
+	assert.Equal(t, "1.2.3", recentFileData.Terraform[0])
+	assert.Equal(t, "7.7.7", recentFileData.Terraform[1])
+	assert.Equal(t, "4.5.6", recentFileData.Terraform[2])
 }
 
-// Test_convertLegacyRecentData_empty_string : Test convertLegacyRecentData with empty string
-func Test_convertLegacyRecentData_empty_string(t *testing.T) {
-	var expected = []string{}
-	var recentFile RecentFile
-	convertLegacyRecentData([]byte(""), &recentFile)
-	if err := compareLists(recentFile.Terraform, expected); err != nil {
-		t.Error(err)
+func Test_prependNewVersion(t *testing.T) {
+	product := GetProductById("terraform")
+	var recentFileData = RecentFile{
+		Terraform: []string{"1.2.3", "4.5.6", "4.5.7", "4.5.8", "4.5.9"},
+		OpenTofu:  []string{"6.6.6"},
 	}
-}
-
-// Test_convertLegacyRecentData_only_affects_terraform : Test convertLegacyRecentData ensuring that it only modifies Terraform
-func Test_convertLegacyRecentData_only_affects_terraform(t *testing.T) {
-	var expected = []string{"2.0.0", "3.0.0"}
-	var recentFile RecentFile = RecentFile{
-		Terraform: []string{},
-		OpenTofu:  []string{"1.2.3", "1.2.4"},
-	}
-	convertLegacyRecentData([]byte("2.0.0\n3.0.0"), &recentFile)
-	if err := compareLists(recentFile.Terraform, expected); err != nil {
-		t.Error(err)
-	}
-}
-
-// Test_getRecentFileData : Test getRecentFileData with valid file
-func Test_getRecentFileData(t *testing.T) {
-	tempDir, err := os.MkdirTemp("", "addRecentVersion")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(tempDir)
-
-	tfVersionsDir := path.Join(tempDir, ".terraform.versions")
-	os.Mkdir(tfVersionsDir, 0750)
-	recentFilePath := path.Join(tfVersionsDir, "RECENT")
-	os.WriteFile(recentFilePath, []byte("{\"Terraform\":[\"1.2.0\",\"1.4.3\"],\"OpenTofu\":[\"2.0.0\", \"2.1.0\"]}"), 0640)
-
-	recentFile := getRecentFileData(tempDir)
-
-	var expected []string = []string{"1.2.0", "1.4.3"}
-	if err := compareLists(recentFile.Terraform, expected); err != nil {
-		t.Error(err)
-	}
-	expected = []string{"2.0.0", "2.1.0"}
-	if err := compareLists(recentFile.OpenTofu, expected); err != nil {
-		t.Error(err)
-	}
-}
-
-// Test_getRecentFileData_legacy_data : Test getRecentFileData with file with legacy format
-func Test_getRecentFileData_legacy_data(t *testing.T) {
-	tempDir, err := os.MkdirTemp("", "addRecentVersion")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(tempDir)
-
-	tfVersionsDir := path.Join(tempDir, ".terraform.versions")
-	os.Mkdir(tfVersionsDir, 0750)
-	recentFilePath := path.Join(tfVersionsDir, "RECENT")
-	os.WriteFile(recentFilePath, []byte("1.5.2\n1.6.1\n1.7.0"), 0640)
-
-	recentFile := getRecentFileData(tempDir)
-
-	var expected []string = []string{"1.5.2", "1.6.1", "1.7.0"}
-	if err := compareLists(recentFile.Terraform, expected); err != nil {
-		t.Error(err)
-	}
-	expected = []string{}
-	if err := compareLists(recentFile.OpenTofu, expected); err != nil {
-		t.Error(err)
-	}
-}
-
-// Test_getRecentFileData_no_file : Test getRecentFileData with no file
-func Test_getRecentFileData_no_file(t *testing.T) {
-	tempDir, err := os.MkdirTemp("", "addRecentVersion")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(tempDir)
-
-	recentFile := getRecentFileData(tempDir)
-
-	var expected []string = []string{}
-	if err := compareLists(recentFile.Terraform, expected); err != nil {
-		t.Error(err)
-	}
-	if err := compareLists(recentFile.OpenTofu, expected); err != nil {
-		t.Error(err)
-	}
-}
-
-// Test_getRecentFileData_invalid_file_data : Test getRecentFileData with invalid file data
-func Test_getRecentFileData_invalid_file_data(t *testing.T) {
-	tempDir, err := os.MkdirTemp("", "addRecentVersion")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(tempDir)
-
-	tfVersionsDir := path.Join(tempDir, ".terraform.versions")
-	os.Mkdir(tfVersionsDir, 0750)
-	recentFilePath := path.Join(tfVersionsDir, "RECENT")
-	os.WriteFile(recentFilePath, []byte("{NOTVALIDJSON}"), 0640)
-
-	recentFile := getRecentFileData(tempDir)
-
-	var expected []string = []string{}
-	if err := compareLists(recentFile.Terraform, expected); err != nil {
-		t.Error(err)
-	}
-	if err := compareLists(recentFile.OpenTofu, expected); err != nil {
-		t.Error(err)
-	}
+	prependRecentVersionToList("7.7.7", product, &recentFileData)
+	assert.Equal(t, 6, len(recentFileData.Terraform))
+	assert.Equal(t, "7.7.7", recentFileData.Terraform[0])
+	assert.Equal(t, "1.2.3", recentFileData.Terraform[1])
+	assert.Equal(t, "4.5.6", recentFileData.Terraform[2])
 }

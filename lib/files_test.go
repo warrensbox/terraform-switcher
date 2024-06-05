@@ -104,8 +104,16 @@ func TestRemoveFiles(t *testing.T) {
 // TestUnzip : Create a file, check file exist,
 // remove file, check file does not exist
 func TestUnzip(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	installPath := "/.terraform.versions_test/"
-	absPath, _ := filepath.Abs("../test-data/test-data.zip")
+	var pathToTestFile string
+	switch runtime.GOOS {
+	case "windows":
+		pathToTestFile = "../test-data/test-data_windows.zip"
+	default:
+		pathToTestFile = "../test-data/test-data.zip"
+	}
+	absPath, _ := filepath.Abs(pathToTestFile)
 
 	t.Logf("Absolute Path: %q", absPath)
 
@@ -128,12 +136,12 @@ func TestUnzip(t *testing.T) {
 	}
 
 	// Ensure terraform file exists
-	terraformFile := filepath.Join(installLocation, "terraform")
+	terraformFile := filepath.Join(installLocation, ConvertExecutableExt("terraform"))
 	if terraformFileExists := checkFileExist(terraformFile); !terraformFileExists {
 		t.Errorf("File does not exist %v", terraformFile)
 	}
 
-	terraformFileContent, err := ioutil.ReadFile(terraformFile)
+	terraformFileContent, err := os.ReadFile(terraformFile)
 	if err != nil {
 		t.Error(err)
 	}

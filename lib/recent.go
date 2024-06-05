@@ -8,93 +8,87 @@ import (
 )
 
 type RecentFile struct {
-	Terraform []string
-	OpenTofu  []string
+	Terraform []string `json:"terraform"`
+	OpenTofu  []string `json:"opentofu"`
 }
 
-func appendRecentVersionToList(versions []string, requestedVersion string) []string {
-	// Check for requestedVersion in versions list
-	for versionIndex, versionVal := range versions {
-		if versionVal == requestedVersion {
-			versions = append(versions[:versionIndex], versions[versionIndex+1:]...)
-		}
-	}
-
-	// Add new version to start of slice
-	versions = append([]string{requestedVersion}, versions...)
-	if len(versions) > 3 {
-		versions = versions[0:3]
-	}
-
-	return versions
-}
-
-// addRecent : add to recent file
-func addRecentVersion(product Product, requestedVersion string, installPath string) {
-	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	recentFilePath := filepath.Join(installLocation, recentFile)
-
-	// Obtain pre-existing latest version
-	recentData := getRecentFileData(installPath)
-
-	product.SetRecentVersionProduct(&recentData, appendRecentVersionToList(product.GetRecentVersionProduct(&recentData), requestedVersion))
-
-	// Write new versions back to recent files
-	recentVersionFh, err := os.OpenFile(recentFilePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		logger.Errorf("Error to open %q file for writing: %v", recentFilePath, err)
+func addRecent(requestedVersion string, installPath string, product Product) {
+	if !validVersionFormat(requestedVersion) {
+		logger.Errorf("The version %q is not a valid version string and won't be stored", requestedVersion)
 		return
 	}
-	defer recentVersionFh.Close()
-
-	// Marhsall data and write to file
-	jsonData, err := json.Marshal(recentData)
-	if err != nil {
-		logger.Errorf("Error during marshalling recent versions data from %s file: %v", recentFilePath, err)
+	installLocation := GetInstallLocation(installPath)
+	recentFilePath := filepath.Join(installLocation, recentFile)
+	var recentFileData RecentFile
+	if CheckFileExist(recentFilePath) {
+		unmarshalRecentFileData(recentFilePath, &recentFileData)
 	}
+	prependRecentVersionToList(requestedVersion, product, &recentFileData)
+	saveRecentFile(recentFileData, recentFilePath)
+}
 
-	_, err = recentVersionFh.Write(jsonData)
+func prependRecentVersionToList(version string, product Product, r *RecentFile) {
+	sliceToCheck := product.GetRecentVersionProduct(r)
+	for versionIndex, versionValue := range sliceToCheck {
+		if versionValue == version {
+			sliceToCheck = append(sliceToCheck[:versionIndex], sliceToCheck[versionIndex+1:]...)
+		}
+	}
+	sliceToCheck = append([]string{version}, sliceToCheck...)
+
+	product.SetRecentVersionProduct(r, sliceToCheck)
+}
+
+func getRecentVersions(installPath string, product Product) ([]string, error) {
+	installLocation := GetInstallLocation(installPath)
+	recentFilePath := filepath.Join(installLocation, recentFile)
+	var recentFileData RecentFile
+	unmarshalRecentFileData(recentFilePath, &recentFileData)
+	listOfRecentVersions := product.GetRecentVersionProduct(&recentFileData)
+	var maxCount int
+	if len(listOfRecentVersions) >= 5 {
+		maxCount = 5
+	} else {
+		maxCount = len(listOfRecentVersions)
+	}
+	var returnedRecentVersions []string
+	for i := 0; i < maxCount; i++ {
+		returnedRecentVersions = append(returnedRecentVersions, listOfRecentVersions[i]+" *recent")
+	}
+	return returnedRecentVersions, nil
+}
+
+func unmarshalRecentFileData(recentFilePath string, recentFileData *RecentFile) {
+	recentFileContent, err := os.ReadFile(recentFilePath)
 	if err != nil {
-		logger.Errorf("Error writing recent versions file (%q): %v", recentFilePath, err)
+		logger.Errorf("Could not open recent versions file %q", recentFilePath)
+	}
+	if string(recentFileContent[0:1]) != "{" {
+		convertOldRecentFile(recentFileContent, recentFileData)
+	} else {
+		err = json.Unmarshal(recentFileContent, &recentFileData)
+		if err != nil {
+			logger.Errorf("Could not unmarshal recent versions content from %q file", recentFilePath)
+		}
 	}
 }
 
-func convertLegacyRecentData(content []byte, recentFileContent *RecentFile) {
+func convertOldRecentFile(content []byte, recentFileData *RecentFile) {
 	lines := strings.Split(string(content), "\n")
 	for _, s := range lines {
 		if s != "" {
-			recentFileContent.Terraform = append(recentFileContent.Terraform, s)
+			recentFileData.Terraform = append(recentFileData.Terraform, s)
 		}
 	}
 }
 
-func getRecentFileData(installPath string) RecentFile {
-	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
-	recentFilePath := filepath.Join(installLocation, recentFile)
-	var outputRecent RecentFile
-
-	fileExist := CheckFileExist(recentFilePath)
-	if fileExist {
-		content, err := os.ReadFile(recentFilePath)
-		if err != nil {
-			logger.Warnf("Error opening recent versions file (%q): %v. Ignoring", recentFilePath, err)
-			return outputRecent
-		}
-
-		if !strings.HasPrefix(string(content), "{") {
-			convertLegacyRecentData(content, &outputRecent)
-		}
-
-		err = json.Unmarshal(content, &outputRecent)
-		if err != nil {
-			logger.Warnf("Error during unmarshalling recent versions data from %s file: %v. Ignoring", recentFilePath, err)
-		}
+func saveRecentFile(data RecentFile, path string) {
+	bytes, err := json.Marshal(data)
+	if err != nil {
+		logger.Errorf("Could not marshal data to JSON: %v", err)
 	}
-	return outputRecent
-}
-
-// getRecentVersions : get recent version from file
-func getRecentVersions(product Product, installPath string) []string {
-	recentData := getRecentFileData(installPath)
-	return product.GetRecentVersionProduct(&recentData)
+	err = os.WriteFile(path, bytes, 0644)
+	if err != nil {
+		logger.Errorf("Could not save file %q: %v", path, err)
+	}
 }
