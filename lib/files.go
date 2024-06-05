@@ -72,7 +72,7 @@ func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error
 	}
 	var unzipWaitGroup sync.WaitGroup
 	for _, f := range reader.File {
-		// Only extract the "terraform" binary
+		// Only extract the main binary binary
 		// from the archive, ignoring LICENSE and other files
 		if f.Name != ConvertExecutableExt(fileToUnzip) {
 			continue

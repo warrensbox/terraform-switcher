@@ -165,7 +165,18 @@ func TestUnzip(t *testing.T) {
 // TestUnzip_with_file_to_unzip : Test Unzip method with fileToUnzip argument
 func TestUnzip_with_file_to_unzip(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
-	absPath, _ := filepath.Abs("../test-data/test-data.zip")
+	var pathToTestFile string
+	var expectedFilename string
+	switch runtime.GOOS {
+	case "windows":
+		pathToTestFile = "../test-data/test-data_windows.zip"
+		expectedFilename = "another_file.exe"
+	default:
+		pathToTestFile = "../test-data/test-data.zip"
+		expectedFilename = "another_file"
+	}
+
+	absPath, _ := filepath.Abs(pathToTestFile)
 
 	t.Logf("Absolute Path: %q", absPath)
 
@@ -177,7 +188,7 @@ func TestUnzip_with_file_to_unzip(t *testing.T) {
 
 	createDirIfNotExist(installLocation)
 
-	files, errUnzip := Unzip(absPath, installLocation, "README")
+	files, errUnzip := Unzip(absPath, installLocation, "another_file")
 
 	if errUnzip != nil {
 		t.Errorf("Unable to unzip %q file: %v", absPath, errUnzip)
@@ -188,7 +199,7 @@ func TestUnzip_with_file_to_unzip(t *testing.T) {
 	}
 
 	// Ensure terraform file exists
-	expectedExtractFile := filepath.Join(installLocation, "README")
+	expectedExtractFile := filepath.Join(installLocation, expectedFilename)
 	if terraformFileExists := checkFileExist(expectedExtractFile); !terraformFileExists {
 		t.Errorf("File does not exist %v", expectedExtractFile)
 	}
@@ -198,12 +209,12 @@ func TestUnzip_with_file_to_unzip(t *testing.T) {
 		t.Error(err)
 	}
 	// Ensure terraform file contains test content from
-	if string(expectedFileContent[:]) != "This is a README\n" {
+	if !strings.Contains(string(expectedFileContent[:]), "This is another executable") {
 		t.Errorf("Extract test file (%q) content does not match expected value: %s", expectedExtractFile, string(expectedFileContent[:]))
 	}
 
 	// Ensure README and LICENSE files don't exist
-	nonExistentFiles := []string{"terraform", "LICENSE"}
+	nonExistentFiles := []string{"terraform", "terraform.exe", "LICENSE"}
 	for _, fileName := range nonExistentFiles {
 		filePath := filepath.Join(installLocation, fileName)
 		if fileExists := checkFileExist(filePath); fileExists {
