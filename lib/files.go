@@ -45,7 +45,7 @@ func CheckFileExist(file string) bool {
 
 // Unzip will decompress a zip archive, moving all files and folders
 // within the zip file (parameter 1) to an output directory (parameter 2).
-// fileToUnzip (parameter 3) specifices the file within the zipfile to be extracted.
+// fileToUnzip (parameter 3) specifies the file within the zipfile to be extracted.
 // This is optional and default to "terraform"
 func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error) {
 	logger.Debugf("Unzipping file %q", src)
