@@ -72,7 +72,7 @@ jobs:
             then
                 cp "${TEST_PATH}/.tfswitch.toml" ~/
             else
-                { test -f ~/.tfswitch.toml && rm ~/.tfswitch.toml; } || true
+                rm -f ~/.tfswitch.toml
             fi
             ./build/tfswitch -c "${TEST_PATH}" -b `pwd`/bin/terraform || exit 1
         done
