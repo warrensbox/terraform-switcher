@@ -64,6 +64,20 @@ version = "0.11.3"
 bin = "C:\\Users\\<%USRNAME%>\\bin\\terraform.exe"
 ```
 
+## Setting product using .tfswitch.toml file
+
+The .tfswitch.toml file can be configured with a `product` attribute to configure tfswitch to use Terraform or OpenTofu, by default:
+
+```toml
+product = "opentofu"
+```
+
+or
+
+```toml
+product = "terraform"
+```
+
 ## Use terragrunt.hcl file
 
 If a terragrunt.hcl file with the terraform constraint is included in the current directory, it should automatically download or switch to that terraform version.  
