@@ -63,7 +63,7 @@ func unmarshalRecentFileData(recentFilePath string, recentFileData *RecentFile) 
 	if err != nil {
 		logger.Errorf("Could not open recent versions file %q", recentFilePath)
 	}
-	if string(recentFileContent[0:1]) != "{" {
+	if len(string(recentFileContent)) >= 1 && string(recentFileContent[0:1]) != "{" {
 		convertOldRecentFile(recentFileContent, recentFileData)
 	} else {
 		err = json.Unmarshal(recentFileContent, &recentFileData)
