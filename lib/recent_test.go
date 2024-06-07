@@ -50,7 +50,7 @@ func Test_getRecentVersionsForTerraform(t *testing.T) {
 		t.Error("Unable to get versions from recent file")
 	}
 	assert.Equal(t, 5, len(strings))
-	assert.Equal(t, []string{"1.2.3 *recent", "4.5.6 *recent", "4.5.7 *recent", "4.5.8 *recent", "4.5.9 *recent"}, strings)
+	assert.Equal(t, []string{"1.2.3", "4.5.6", "4.5.7", "4.5.8", "4.5.9"}, strings)
 }
 
 func Test_getRecentVersionsForOpenTofu(t *testing.T) {
@@ -60,7 +60,7 @@ func Test_getRecentVersionsForOpenTofu(t *testing.T) {
 	if err != nil {
 		t.Error("Unable to get versions from recent file")
 	}
-	assert.Equal(t, []string{"6.6.6 *recent"}, strings)
+	assert.Equal(t, []string{"6.6.6"}, strings)
 }
 
 func Test_addRecent(t *testing.T) {

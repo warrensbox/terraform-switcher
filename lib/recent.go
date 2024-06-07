@@ -53,7 +53,7 @@ func getRecentVersions(installPath string, product Product) ([]string, error) {
 	}
 	var returnedRecentVersions []string
 	for i := 0; i < maxCount; i++ {
-		returnedRecentVersions = append(returnedRecentVersions, listOfRecentVersions[i]+" *recent")
+		returnedRecentVersions = append(returnedRecentVersions, listOfRecentVersions[i])
 	}
 	return returnedRecentVersions, nil
 }
