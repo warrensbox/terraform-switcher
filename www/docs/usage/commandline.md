@@ -23,11 +23,34 @@ The most recently selected versions are presented at the top of the dropdown.
 
 ## Use environment variables
 
-You can also set the `TF_VERSION` environment variable to your desired terraform version. For example:
+You can also set environment variables for tfswitch to override some configurations:
+
+### `TF_VERSION`
+
+`TF_VERSION` environment variable can be set to your desired terraform version.
+
+For example:
 
 ```bash
 export TF_VERSION=0.14.4
 tfswitch #will automatically switch to terraform version 0.14.4
+```
+
+
+### `TF_PRODUCT`
+
+`TF_PRODUCT` environment variable can be set to your desired product/tool.
+
+This can either be set to:
+
+ * `terraform`
+ * `opentofu`
+
+For example:
+
+```bash
+export TF_PRODUCT=opentofu
+tfswitch # Will install opentofu
 ```
 
 ## Install latest version only

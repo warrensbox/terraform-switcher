@@ -68,6 +68,12 @@ jobs:
         go build -v -o build/tfswitch
         mkdir `pwd`/bin/
         find ./test-data/integration-tests/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
+            if test -f "${TEST_PATH}/.tfswitch.toml"
+            then
+                cp "${TEST_PATH}/.tfswitch.toml" ~/
+            else
+                rm -f ~/.tfswitch.toml
+            fi
             ./build/tfswitch -c "${TEST_PATH}" -b `pwd`/bin/terraform || exit 1
         done
 

@@ -14,10 +14,6 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
-const (
-	TERRAFORM_BINARY_NAME = "terraform"
-)
-
 // RenameFile : rename file name
 func RenameFile(src string, dest string) {
 	logger.Debugf("Renaming file %q to %q", src, dest)
@@ -49,8 +45,19 @@ func CheckFileExist(file string) bool {
 
 // Unzip will decompress a zip archive, moving all files and folders
 // within the zip file (parameter 1) to an output directory (parameter 2).
-func Unzip(src string, dest string) ([]string, error) {
+// fileToUnzip (parameter 3) specifies the file within the zipfile to be extracted.
+// This is optional and default to "terraform"
+func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error) {
 	logger.Debugf("Unzipping file %q", src)
+
+	// Handle old signature of method, where fileToUnzip did not exist
+	legacyProduct := getLegacyProduct()
+	fileToUnzip := legacyProduct.GetExecutableName()
+	if len(fileToUnzipSlice) == 1 {
+		fileToUnzip = fileToUnzipSlice[0]
+	} else if len(fileToUnzipSlice) > 1 {
+		logger.Fatal("Too many args passed to Unzip")
+	}
 
 	var filenames []string
 
@@ -65,9 +72,9 @@ func Unzip(src string, dest string) ([]string, error) {
 	}
 	var unzipWaitGroup sync.WaitGroup
 	for _, f := range reader.File {
-		// Only extract the "terraform" binary
+		// Only extract the main binary binary
 		// from the archive, ignoring LICENSE and other files
-		if f.Name != ConvertExecutableExt(TERRAFORM_BINARY_NAME) {
+		if f.Name != ConvertExecutableExt(fileToUnzip) {
 			continue
 		}
 
@@ -83,9 +90,9 @@ func Unzip(src string, dest string) ([]string, error) {
 	unzipWaitGroup.Wait()
 
 	if len(filenames) < 1 {
-		logger.Fatalf("Could not find terraform file in release archive to unzip")
+		logger.Fatalf("Could not find %s file in release archive to unzip", fileToUnzip)
 	} else if len(filenames) > 1 {
-		logger.Fatalf("Extracted more files than expected in release archive")
+		logger.Fatal("Extracted more files than expected in release archive")
 	}
 
 	return filenames, nil
@@ -103,6 +110,8 @@ func createDirIfNotExist(dir string) {
 }
 
 // WriteLines : writes into file
+//
+// Deprecated: This method has been deprecated and will be removed in v2.0.0
 func WriteLines(lines []string, path string) (err error) {
 	var (
 		file *os.File
@@ -125,6 +134,8 @@ func WriteLines(lines []string, path string) (err error) {
 }
 
 // ReadLines : Read a whole file into the memory and store it as array of lines
+//
+// Deprecated: This method has been deprecated and will be removed in v2.0.0
 func ReadLines(path string) (lines []string, err error) {
 	var (
 		file   *os.File

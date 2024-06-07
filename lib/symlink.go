@@ -88,10 +88,18 @@ func CheckSymlink(symlinkPath string) bool {
 	return false
 }
 
-// ChangeSymlink : move symlink to existing binary
+// ChangeSymlink : move symlink to existing binary for Terraform
+//
+// Deprecated: This function has been deprecated in favor of ChangeProductSymlink and will be removed in v2.0.0
 func ChangeSymlink(binVersionPath string, binPath string) {
+	product := getLegacyProduct()
+	ChangeProductSymlink(product, binVersionPath, binPath)
+}
 
-	binPath = installableBinLocation(binPath)
+// ChangeProductSymlink : move symlink for product to existing binary
+func ChangeProductSymlink(product Product, binVersionPath string, binPath string) {
+
+	binPath = installableBinLocation(product, binPath)
 
 	/* remove current symlink if exist*/
 	symlinkExist := CheckSymlink(binPath)

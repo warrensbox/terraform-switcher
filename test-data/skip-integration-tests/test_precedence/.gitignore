@@ -1,0 +1,5 @@
+.terraform-version
+.tfswitchrc
+main.tf
+.tfswitch.toml
+terragrunt.hcl

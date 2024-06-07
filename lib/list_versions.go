@@ -14,15 +14,7 @@ type tfVersionList struct {
 	tflist []string
 }
 
-// getTFList :  Get the list of available terraform version given the hashicorp url
-func getTFList(mirrorURL string, preRelease bool) ([]string, error) {
-	logger.Debugf("Get list of terraform versions")
-	result, err := getTFURLBody(mirrorURL)
-	if err != nil {
-		return nil, err
-	}
-
-	var tfVersionList tfVersionList
+func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionList) {
 	var semver string
 	if preRelease {
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
@@ -33,13 +25,27 @@ func getTFList(mirrorURL string, preRelease bool) ([]string, error) {
 		semver = `\/?(\d+\.\d+\.\d+)\/?"`
 	}
 	r, _ := regexp.Compile(semver)
-	for i := range result {
-		if r.MatchString(result[i]) {
-			str := r.FindString(result[i])
-			trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
-			tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
-		}
+
+	matches := r.FindAllString(body, -1)
+	if matches == nil {
+		return
 	}
+	for _, match := range matches {
+		trimstr := strings.Trim(match, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
+		tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
+	}
+}
+
+// getTFList :  Get the list of available versions given the mirror URL
+func getTFList(mirrorURL string, preRelease bool) ([]string, error) {
+	logger.Debug("Getting list of versions")
+	result, err := getTFURLBody(mirrorURL)
+	if err != nil {
+		return nil, err
+	}
+
+	var tfVersionList tfVersionList
+	getVersionsFromBody(result, preRelease, &tfVersionList)
 
 	if len(tfVersionList.tflist) == 0 {
 		logger.Errorf("Cannot get version list from mirror: %s", mirrorURL)
@@ -56,9 +62,10 @@ func getTFLatest(mirrorURL string) (string, error) {
 	// Getting versions from body; should return match /X.X.X/ where X is a number
 	semver := `\/?(\d+\.\d+\.\d+)\/?"`
 	r, _ := regexp.Compile(semver)
+	bodyLines := strings.Split(result, "\n")
 	for i := range result {
-		if r.MatchString(result[i]) {
-			str := r.FindString(result[i])
+		if r.MatchString(bodyLines[i]) {
+			str := r.FindString(bodyLines[i])
 			trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
 			return trimstr, nil
 		}
@@ -70,7 +77,7 @@ func getTFLatest(mirrorURL string) (string, error) {
 func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
 	if preRelease {
 		//TODO: use getTFList() instead of getTFURLBody
-		versions, error := getTFURLBody(mirrorURL)
+		body, error := getTFURLBody(mirrorURL)
 		if error != nil {
 			return "", error
 		}
@@ -80,6 +87,7 @@ func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 		if err != nil {
 			return "", err
 		}
+		versions := strings.Split(body, "\n")
 		for i := range versions {
 			if r.MatchString(versions[i]) {
 				str := r.FindString(versions[i])
@@ -101,7 +109,7 @@ func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 }
 
 // getTFURLBody : Get list of terraform versions from hashicorp releases
-func getTFURLBody(mirrorURL string) ([]string, error) {
+func getTFURLBody(mirrorURL string) (string, error) {
 
 	hasSlash := strings.HasSuffix(mirrorURL, "/")
 	if !hasSlash {
@@ -124,9 +132,8 @@ func getTFURLBody(mirrorURL string) ([]string, error) {
 	}
 
 	bodyString := string(body)
-	result := strings.Split(bodyString, "\n")
 
-	return result, nil
+	return bodyString, nil
 }
 
 // versionExist : check if requested version exist
