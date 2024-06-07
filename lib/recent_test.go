@@ -54,6 +54,14 @@ func Test_unmarshalRecentFileData_conversion(t *testing.T) {
 	performUnmarshalRecentFileDataTest(t, "1.3.2\n1.2.3\n", &expectedRecentFileData)
 }
 
+// Test_unmarshalRecentFileData_invalid_data : Test unmarshalRecentFileData with invalid data in recentfile
+func Test_unmarshalRecentFileData_invalid_data(t *testing.T) {
+	expectedRecentFileData := RecentFile{}
+	performUnmarshalRecentFileDataTest(t, "{This Is not valid JSON}", &expectedRecentFileData)
+
+	performUnmarshalRecentFileDataTest(t, `{"valid": ["json", "but", "will"], "not": {"unmarshall": ["to", "RecentFile"]}}`, &expectedRecentFileData)
+}
+
 // Test_unmarshalRecentFileData : Test unmarshalRecentFileData
 func Test_unmarshalRecentFileData(t *testing.T) {
 	var expectedRecentFileData RecentFile
