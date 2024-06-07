@@ -291,6 +291,8 @@ type VersionSelector struct {
 func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
 	var selectVersions []VersionSelector
 
+	var versionMap map[string]bool = make(map[string]bool)
+
 	// Add recent versions
 	recentVersions, _ := getRecentVersions(installPath, product)
 	for _, version := range recentVersions {
@@ -298,19 +300,13 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 			Version: version,
 			Label:   version + " *recent",
 		})
+		versionMap[version] = true
 	}
 
 	// Add all versions
 	tfList, _ := getTFList(mirrorURL, listAll)
 	for _, version := range tfList {
-		isRecentVersion := false
-		for _, recentVersion := range recentVersions {
-			if recentVersion == version {
-				isRecentVersion = true
-				break
-			}
-		}
-		if !isRecentVersion {
+		if !versionMap[version] {
 			selectVersions = append(selectVersions, VersionSelector{
 				Version: version,
 				Label:   version,
