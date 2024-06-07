@@ -20,9 +20,7 @@ func addRecent(requestedVersion string, installPath string, product Product) {
 	installLocation := GetInstallLocation(installPath)
 	recentFilePath := filepath.Join(installLocation, recentFile)
 	var recentFileData RecentFile
-	if CheckFileExist(recentFilePath) {
-		unmarshalRecentFileData(recentFilePath, &recentFileData)
-	}
+	unmarshalRecentFileData(recentFilePath, &recentFileData)
 	prependRecentVersionToList(requestedVersion, product, &recentFileData)
 	saveRecentFile(recentFileData, recentFilePath)
 }
@@ -59,6 +57,10 @@ func getRecentVersions(installPath string, product Product) ([]string, error) {
 }
 
 func unmarshalRecentFileData(recentFilePath string, recentFileData *RecentFile) {
+	if !CheckFileExist(recentFilePath) {
+		return
+	}
+
 	recentFileContent, err := os.ReadFile(recentFilePath)
 	if err != nil {
 		logger.Errorf("Could not open recent versions file %q", recentFilePath)
