@@ -303,10 +303,19 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	// Add all versions
 	tfList, _ := getTFList(mirrorURL, listAll)
 	for _, version := range tfList {
-		selectVersions = append(selectVersions, VersionSelector{
-			Version: version,
-			Label:   version,
-		})
+		isRecentVersion := false
+		for _, recentVersion := range recentVersions {
+			if recentVersion == version {
+				isRecentVersion = true
+				break
+			}
+		}
+		if !isRecentVersion {
+			selectVersions = append(selectVersions, VersionSelector{
+				Version: version,
+				Label:   version,
+			})
+		}
 	}
 
 	if len(selectVersions) == 0 {
