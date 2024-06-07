@@ -89,7 +89,7 @@ func install(product Product, tfversion string, binPath string, installPath stri
 
 		/* set symlink to desired version */
 		CreateSymlink(installFileVersionPath, binPath)
-		logger.Infof("Switched terraform to version %q", tfversion)
+		logger.Infof("Switched %s to version %q", product.GetName(), tfversion)
 		addRecent(tfversion, installPath, product) //add to recent file for faster lookup
 		return
 	}
@@ -133,7 +133,7 @@ func install(product Product, tfversion string, binPath string, installPath stri
 
 	/* set symlink to desired version */
 	CreateSymlink(installFileVersionPath, binPath)
-	logger.Infof("Switched terraform to version %q", tfversion)
+	logger.Infof("Switched %s to version %q", product.GetName(), tfversion)
 	addRecent(tfversion, installPath, product) //add to recent file for faster lookup
 	return
 }
@@ -246,7 +246,7 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 			recentDownloadFile := CheckFileExist(installFileVersionPath)
 			if recentDownloadFile {
 				ChangeProductSymlink(product, installFileVersionPath, customBinaryPath)
-				logger.Infof("Switched terraform to version %q", requestedVersion)
+				logger.Infof("Switched %s to version %q", product.GetName(), requestedVersion)
 				addRecent(requestedVersion, installPath, product) //add to recent file for faster lookup
 				return
 			}
