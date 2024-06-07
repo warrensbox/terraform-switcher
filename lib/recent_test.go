@@ -18,6 +18,82 @@ func Test_convertData(t *testing.T) {
 	assert.Equal(t, "1.5.6", recentFileData.Terraform[0])
 	assert.Equal(t, "0.13.0-rc1", recentFileData.Terraform[1])
 	assert.Equal(t, "1.0.11", recentFileData.Terraform[2])
+
+	// Test with empty data
+	recentFileContent = []byte("")
+	recentFileData = RecentFile{}
+	convertOldRecentFile(recentFileContent, &recentFileData)
+	assert.Equal(t, 0, len(recentFileData.Terraform))
+	assert.Equal(t, 0, len(recentFileData.OpenTofu))
+}
+
+// Test_unmarshalRecentFileData_conversion : Test unmarshalRecentFileData with old version format
+func Test_unmarshalRecentFileData_conversion(t *testing.T) {
+	var expectedRecentFileData RecentFile
+
+	t.Log("Test empty file")
+	expectedRecentFileData = RecentFile{}
+	performUnmarshalRecentFileDataTest(t, "", &expectedRecentFileData)
+
+	t.Log("Test one version")
+	expectedRecentFileData = RecentFile{
+		Terraform: []string{"1.3.2"},
+	}
+	performUnmarshalRecentFileDataTest(t, "1.3.2", &expectedRecentFileData)
+
+	t.Log("Test trailing new line")
+	expectedRecentFileData = RecentFile{
+		Terraform: []string{"1.3.2"},
+	}
+	performUnmarshalRecentFileDataTest(t, "1.3.2\n", &expectedRecentFileData)
+
+	t.Log("Test multiple versions")
+	expectedRecentFileData = RecentFile{
+		Terraform: []string{"1.3.2", "1.2.3"},
+	}
+	performUnmarshalRecentFileDataTest(t, "1.3.2\n1.2.3\n", &expectedRecentFileData)
+}
+
+// Test_unmarshalRecentFileData : Test unmarshalRecentFileData
+func Test_unmarshalRecentFileData(t *testing.T) {
+	var expectedRecentFileData RecentFile
+
+	t.Log("Test only Terraform")
+	expectedRecentFileData = RecentFile{
+		Terraform: []string{"1.5.0", "1.6.0"},
+	}
+	performUnmarshalRecentFileDataTest(t, `{"terraform": ["1.5.0", "1.6.0"]}`, &expectedRecentFileData)
+
+	t.Log("Test only OpenTofu")
+	expectedRecentFileData = RecentFile{
+		OpenTofu: []string{"1.5.0", "1.6.0"},
+	}
+	performUnmarshalRecentFileDataTest(t, `{"opentofu": ["1.5.0", "1.6.0"]}`, &expectedRecentFileData)
+
+	t.Log("Test both")
+	expectedRecentFileData = RecentFile{
+		Terraform: []string{"1.2.3", "1.3.2"},
+		OpenTofu:  []string{"1.5.0", "1.6.0"},
+	}
+	performUnmarshalRecentFileDataTest(t, `{"terraform": ["1.2.3", "1.3.2"], "opentofu": ["1.5.0", "1.6.0"]}`, &expectedRecentFileData)
+}
+
+func performUnmarshalRecentFileDataTest(t *testing.T, recentFileContent string, expectedRecentFileData *RecentFile) {
+	temp, err := os.MkdirTemp("", "recent-test")
+	if err != nil {
+		t.Errorf("Could not create temporary directory")
+	}
+	defer os.RemoveAll(temp)
+	pathToTempFile := filepath.Join(temp, "recent.json")
+
+	os.WriteFile(pathToTempFile, []byte(recentFileContent), 0600)
+
+	var recentFileData = RecentFile{}
+	unmarshalRecentFileData(pathToTempFile, &recentFileData)
+	t.Log("Comparing Terraform versions")
+	assert.Equal(t, expectedRecentFileData.Terraform, recentFileData.Terraform)
+	t.Log("Comparing OpenTofu versions")
+	assert.Equal(t, expectedRecentFileData.OpenTofu, recentFileData.OpenTofu)
 }
 
 func Test_saveFile(t *testing.T) {
