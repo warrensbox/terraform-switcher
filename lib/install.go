@@ -216,15 +216,16 @@ func InstallLatestImplicitVersion(dryRun bool, requestedVersion, customBinaryPat
 func InstallLatestProductImplicitVersion(product Product, dryRun bool, requestedVersion, customBinaryPath, installPath string, mirrorURL string, preRelease bool) error {
 	_, err := version.NewConstraint(requestedVersion)
 	if err != nil {
+		// @TODO Should this return an error?
 		logger.Errorf("Error parsing constraint %q: %v", requestedVersion, err)
 	}
 	tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
 	if err == nil && tfversion != "" && !dryRun {
 		install(product, tfversion, customBinaryPath, installPath, mirrorURL)
+		return nil
 	}
-	logger.Errorf("Error parsing constraint %q: %v", requestedVersion, err)
 	PrintInvalidMinorTFVersion()
-	return nil
+	return fmt.Errorf("error parsing constraint %q: %v", requestedVersion, err)
 }
 
 // InstallVersion install Terraform product
@@ -261,13 +262,12 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 			if exist {
 				install(product, requestedVersion, customBinaryPath, installPath, mirrorURL)
 			} else {
-				logger.Fatalf("The provided terraform version does not exist: %q.\n Try `tfswitch -l` to see all available versions", requestedVersion)
+				return fmt.Errorf("the provided terraform version does not exist: %q.\n Try `tfswitch -l` to see all available versions", requestedVersion)
 			}
 		} else {
 			PrintInvalidTFVersion()
-			logger.Error("Args must be a valid terraform version")
 			UsageMessage()
-			os.Exit(1)
+			return fmt.Errorf("args must be a valid terraform version")
 		}
 	}
 	return nil
@@ -318,8 +318,7 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	}
 
 	if len(selectVersions) == 0 {
-		logger.Fatalf("%s version list is empty: %s", product.GetName(), mirrorURL)
-		os.Exit(1)
+		return fmt.Errorf("%s version list is empty: %s", product.GetName(), mirrorURL)
 	}
 
 	/* prompt user to select version of terraform */
@@ -341,14 +340,13 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	if errPrompt != nil {
 		if errPrompt.Error() == "^C" {
 			// Cancel execution
-			os.Exit(1)
+			return fmt.Errorf("user interupt")
 		} else {
-			logger.Fatalf("Prompt failed %v", errPrompt)
+			return fmt.Errorf("prompt failed %v", errPrompt)
 		}
 	}
 	if !dryRun {
 		install(product, selectVersions[selectedItx].Version, customBinaryPath, installPath, mirrorURL)
 	}
-	os.Exit(0)
 	return nil
 }
