@@ -196,11 +196,12 @@ func InstallLatestVersion(dryRun bool, customBinaryPath, installPath string, mir
 }
 
 // InstallLatestProductVersion install latest stable tf version
-func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
+func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath, installPath string, mirrorURL string) error {
 	tfversion, _ := getTFLatest(mirrorURL)
 	if !dryRun {
 		install(product, tfversion, customBinaryPath, installPath, mirrorURL)
 	}
+	return nil
 }
 
 // InstallLatestImplicitVersion install latest - argument (version) must be provided
