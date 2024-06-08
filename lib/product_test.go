@@ -24,6 +24,16 @@ func Test_GetProductById(t *testing.T) {
 		}
 	}
 
+	// Test case-insensitve match
+	product = GetProductById("oPeNtOfU")
+	if product == nil {
+		t.Errorf("Terraform product returned nil")
+	} else {
+		if expected := "opentofu"; product.GetId() != expected {
+			t.Errorf("Product ID does not match expected Id. Expected: %q, actual: %q", expected, product.GetId())
+		}
+	}
+
 	product = GetProductById("doesnotexist")
 	if product != nil {
 		t.Errorf("Unknown product returned non-nil response")
