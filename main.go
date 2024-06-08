@@ -31,6 +31,7 @@ var version string
 
 func main() {
 
+	var err error = nil
 	switch {
 	case parameters.VersionFlag:
 		if version != "" {
@@ -44,16 +45,16 @@ func main() {
 		os.Exit(0)
 	case parameters.ListAllFlag:
 		/* show all terraform version including betas and RCs*/
-		lib.InstallProductOption(parameters.ProductEntity, true, parameters.DryRun, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
+		err = lib.InstallProductOption(parameters.ProductEntity, true, parameters.DryRun, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	case parameters.LatestPre != "":
 		/* latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
-		lib.InstallLatestProductImplicitVersion(parameters.ProductEntity, parameters.DryRun, parameters.LatestPre, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, true)
+		err = lib.InstallLatestProductImplicitVersion(parameters.ProductEntity, parameters.DryRun, parameters.LatestPre, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, true)
 	case parameters.ShowLatestPre != "":
 		/* show latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
 		lib.ShowLatestImplicitVersion(parameters.ShowLatestPre, parameters.MirrorURL, true)
 	case parameters.LatestStable != "":
 		/* latest implicit version. Ex: tfswitch --latest-stable 0.13 downloads 0.13.5 (latest) */
-		lib.InstallLatestProductImplicitVersion(parameters.ProductEntity, parameters.DryRun, parameters.LatestStable, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, false)
+		err = lib.InstallLatestProductImplicitVersion(parameters.ProductEntity, parameters.DryRun, parameters.LatestStable, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, false)
 	case parameters.ShowLatestStable != "":
 		/* show latest implicit stable version. Ex: tfswitch --show-latest-stable 0.13 downloads 0.13.5 (latest) */
 		lib.ShowLatestImplicitVersion(parameters.ShowLatestStable, parameters.MirrorURL, false)
@@ -64,12 +65,16 @@ func main() {
 		/* show latest stable version */
 		lib.ShowLatestVersion(parameters.MirrorURL)
 	case parameters.Version != "":
-		lib.InstallProductVersion(parameters.ProductEntity, parameters.DryRun, parameters.Version, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
+		err = lib.InstallProductVersion(parameters.ProductEntity, parameters.DryRun, parameters.Version, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	case parameters.DefaultVersion != "":
 		/* if default version is provided - Pick this instead of going for prompt */
-		lib.InstallProductVersion(parameters.ProductEntity, parameters.DryRun, parameters.DefaultVersion, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
+		err = lib.InstallProductVersion(parameters.ProductEntity, parameters.DryRun, parameters.DefaultVersion, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	default:
 		// Set list all false - only official release will be displayed
-		lib.InstallProductOption(parameters.ProductEntity, false, parameters.DryRun, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
+		err = lib.InstallProductOption(parameters.ProductEntity, false, parameters.DryRun, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
+	}
+	if err != nil {
+		logger.Error(err)
+		os.Exit(1)
 	}
 }
