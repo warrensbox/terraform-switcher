@@ -149,7 +149,7 @@ var products = []Product{
 
 func GetProductById(id string) Product {
 	for _, product := range products {
-		if product.GetId() == id {
+		if strings.EqualFold(product.GetId(), id) {
 			return product
 		}
 	}
