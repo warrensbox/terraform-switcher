@@ -60,7 +60,7 @@ func main() {
 		lib.ShowLatestImplicitVersion(parameters.ShowLatestStable, parameters.MirrorURL, false)
 	case parameters.LatestFlag:
 		/* latest stable version */
-		lib.InstallLatestVersion(parameters.DryRun, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
+		err = lib.InstallLatestProductVersion(parameters.ProductEntity, parameters.DryRun, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	case parameters.ShowLatestFlag:
 		/* show latest stable version */
 		lib.ShowLatestVersion(parameters.MirrorURL)
