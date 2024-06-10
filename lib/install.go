@@ -340,7 +340,7 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	if errPrompt != nil {
 		if errPrompt.Error() == "^C" {
 			// Cancel execution
-			return fmt.Errorf("user interupt")
+			return fmt.Errorf("user interrupt")
 		} else {
 			return fmt.Errorf("prompt failed %v", errPrompt)
 		}
