@@ -169,6 +169,7 @@ func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string) {
 }
 
 func TestGetParameters_check_config_precedence(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})
