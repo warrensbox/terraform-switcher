@@ -2,10 +2,11 @@ package param_parsing
 
 import (
 	"fmt"
+	"path/filepath"
+
 	"github.com/hashicorp/hcl/v2/gohcl"
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/warrensbox/terraform-switcher/lib"
-	"path/filepath"
 )
 
 const terraGruntFileName = "terragrunt.hcl"
@@ -34,6 +35,7 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 			return params, fmt.Errorf("no version found matching %q", versionFromTerragrunt.TerraformVersionConstraint)
 		}
 		params.Version = version
+		logger.Debugf("Using version from Terragrunt file %q: %q", filePath, params.Version)
 	}
 	return params, nil
 }

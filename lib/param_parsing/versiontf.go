@@ -58,6 +58,7 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 		logger.Errorf("No version found matching %q", tfConstraint)
 		return params, err2
 	}
+	logger.Debugf("Using version from Terraform in %q: %q", relPath, params.Version)
 	params.Version = version
 	return params, nil
 }
@@ -66,6 +67,10 @@ func isTerraformModule(params Params) bool {
 	module, err := tfconfig.LoadModule(params.ChDirPath)
 	if err != nil {
 		logger.Warnf("Error parsing Terraform module: %v", err)
+		return false
+	}
+	if len(module.RequiredCore) == 0 {
+		logger.Debugf("No required versions specified by Terraform module: %q", params.ChDirPath)
 	}
 	return err == nil && len(module.RequiredCore) > 0
 }
