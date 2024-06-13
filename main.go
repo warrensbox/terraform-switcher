@@ -74,7 +74,6 @@ func main() {
 		err = lib.InstallProductOption(parameters.ProductEntity, false, parameters.DryRun, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL)
 	}
 	if err != nil {
-		logger.Error(err)
-		os.Exit(1)
+		logger.Fatal(err)
 	}
 }
