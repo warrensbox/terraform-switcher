@@ -28,18 +28,18 @@ func getParamsTOML(params Params) (Params, error) {
 
 		if viperParser.Get("bin") != nil {
 			params.CustomBinaryPath = viperParser.GetString("bin")
-			logger.Debugf("Using bin from toml file %q: %q", tomlPath, params.CustomBinaryPath)
+			logger.Debugf("Using \"bin\" from %q: %q", tomlPath, params.CustomBinaryPath)
 		}
 		if viperParser.Get("log-level") != nil {
 			params.LogLevel = viperParser.GetString("log-level")
 		}
 		if viperParser.Get("version") != nil {
 			params.Version = viperParser.GetString("version")
-			logger.Debugf("Using version from toml file %q: %q", tomlPath, params.Version)
+			logger.Debugf("Using \"version\" from %q: %q", tomlPath, params.Version)
 		}
 		if configKey := "product"; viperParser.Get(configKey) != nil {
 			params.Product = viperParser.GetString(configKey)
-			logger.Debugf("Using product from toml file %q: %q", tomlPath, params.Product)
+			logger.Debugf("Using %q from %q: %q", configKey, tomlPath, params.Product)
 		}
 	}
 	return params, nil

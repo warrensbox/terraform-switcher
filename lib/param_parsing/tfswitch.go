@@ -20,7 +20,7 @@ func GetParamsFromTfSwitch(params Params) (Params, error) {
 			return params, err
 		}
 		params.Version = strings.TrimSpace(string(content))
-		logger.Debugf("Found version .tfswitchrc file %q: %q", filePath, params.Version)
+		logger.Debugf("Using version from %q: %q", filePath, params.Version)
 	}
 	return params, nil
 }
