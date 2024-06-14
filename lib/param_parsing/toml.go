@@ -32,6 +32,7 @@ func getParamsTOML(params Params) (Params, error) {
 		}
 		if viperParser.Get("log-level") != nil {
 			params.LogLevel = viperParser.GetString("log-level")
+			logger.Debugf("Using \"log-level\" from %q: %q", tomlPath, params.LogLevel)
 		}
 		if viperParser.Get("version") != nil {
 			params.Version = viperParser.GetString("version")
