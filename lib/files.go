@@ -27,7 +27,6 @@ func RenameFile(src string, dest string) {
 func RemoveFiles(src string) {
 	files, err := filepath.Glob(src)
 	if err != nil {
-
 		panic(err)
 	}
 	for _, f := range files {
@@ -101,10 +100,10 @@ func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error
 // createDirIfNotExist : create directory if directory does not exist
 func createDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		logger.Infof("Creating directory for terraform binary at %q", dir)
+		logger.Infof("Creating %q directory", dir)
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
-			logger.Panicf("Unable to create %q directory for terraform: %v", dir, err)
+			logger.Panicf("Unable to create %q directory: %v", dir, err)
 		}
 	}
 }
@@ -113,9 +112,7 @@ func createDirIfNotExist(dir string) {
 //
 // Deprecated: This method has been deprecated and will be removed in v2.0.0
 func WriteLines(lines []string, path string) (err error) {
-	var (
-		file *os.File
-	)
+	var file *os.File
 
 	if file, err = os.Create(path); err != nil {
 		return err
@@ -166,14 +163,12 @@ func ReadLines(path string) (lines []string, err error) {
 }
 
 // IsDirEmpty : check if directory is empty (TODO UNIT TEST)
-func IsDirEmpty(name string) bool {
-
+func IsDirEmpty(dir string) bool {
 	exist := false
 
-	f, err := os.Open(name)
+	f, err := os.Open(dir)
 	if err != nil {
 		logger.Fatal(err)
-		os.Exit(1)
 	}
 	defer f.Close()
 
@@ -186,7 +181,6 @@ func IsDirEmpty(name string) bool {
 
 // CheckDirHasTGBin : // check binary exist (TODO UNIT TEST)
 func CheckDirHasTGBin(dir, prefix string) bool {
-
 	exist := false
 
 	files, err := os.ReadDir(dir)
@@ -208,6 +202,7 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 // return bool
 func CheckDirExist(dir string) bool {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		logger.Debugf("Directory %q doesn't exist", dir)
 		return false
 	}
 	return true
@@ -226,8 +221,7 @@ func GetFileName(configfile string) string {
 
 // GetCurrentDirectory : return the current directory
 func GetCurrentDirectory() string {
-
-	dir, err := os.Getwd() //get current directory
+	dir, err := os.Getwd() // get current directory
 	if err != nil {
 		logger.Fatalf("Failed to get current directory %v", err)
 	}
@@ -236,7 +230,6 @@ func GetCurrentDirectory() string {
 
 // GetHomeDirectory : return the user's home directory
 func GetHomeDirectory() string {
-
 	homedir, err := homedir.Dir()
 	if err != nil {
 		logger.Fatalf("Failed to get user's home directory %v", err)

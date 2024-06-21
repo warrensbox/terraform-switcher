@@ -37,6 +37,18 @@ func TestGetParamsTOML_Version(t *testing.T) {
 	}
 }
 
+func TestGetParamsTOML_Default_Version(t *testing.T) {
+	expected := "1.5.4"
+	params := prepare()
+	params, err := getParamsTOML(params)
+	if err != nil {
+		t.Fatalf("Got error '%s'", err)
+	}
+	if params.DefaultVersion != expected {
+		t.Errorf("Version not matching. Got %v, expected %v", params.DefaultVersion, expected)
+	}
+}
+
 func TestGetParamsTOML_log_level(t *testing.T) {
 	expected := "NOTICE"
 	params := prepare()

@@ -64,6 +64,14 @@ version = "0.11.3"
 bin = "C:\\Users\\<%USRNAME%>\\bin\\terraform.exe"
 ```
 
+## Setting the default version using .tfswitch.toml file
+
+The .tfswitch.toml file can be configured with a `default-version` attribute to configure tfswitch a particular version, if no other sources of versions are found
+
+```toml
+default-version = "1.5.4"
+```
+
 ## Setting product using .tfswitch.toml file
 
 The .tfswitch.toml file can be configured with a `product` attribute to configure tfswitch to use Terraform or OpenTofu, by default:

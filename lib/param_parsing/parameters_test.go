@@ -156,7 +156,7 @@ func writeTestFile(t *testing.T, basePath string, fileName string, fileContent s
 	})
 }
 
-func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string) {
+func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string, expectedDefaultVersion string) {
 	getopt.CommandLine = getopt.New()
 	os.Args = []string{"cmd", "--chdir=../../test-data/skip-integration-tests/test_precedence"}
 	parameters := Params{}
@@ -174,23 +174,24 @@ func TestGetParameters_check_config_precedence(t *testing.T) {
 		getopt.CommandLine = getopt.New()
 	})
 	chDir := "../../test-data/skip-integration-tests/test_precedence"
-	checkExpectedPrecedenceVersion(t, "")
+	checkExpectedPrecedenceVersion(t, "", "")
 
 	// Create TfSwitch TOML
 	tfSwitchTOMLContent := `
 bin = "/usr/local/bin/terraform_from_toml"
 version = "0.11.3"
+default-version = "0.12.1"
 `
 	writeTestFile(t, chDir, ".tfswitch.toml", tfSwitchTOMLContent)
-	checkExpectedPrecedenceVersion(t, "0.11.3")
+	checkExpectedPrecedenceVersion(t, "0.11.3", "0.12.1")
 
 	// Create tfswitchrc file
 	writeTestFile(t, chDir, ".tfswitchrc", "0.10.5")
-	checkExpectedPrecedenceVersion(t, "0.10.5")
+	checkExpectedPrecedenceVersion(t, "0.10.5", "0.12.1")
 
 	// Create terraform-version file
 	writeTestFile(t, chDir, ".terraform-version", "0.11.0")
-	checkExpectedPrecedenceVersion(t, "0.11.0")
+	checkExpectedPrecedenceVersion(t, "0.11.0", "0.12.1")
 
 	// Create terraform file
 	terraformFileContent := `
@@ -199,29 +200,34 @@ terraform {
 }
 `
 	writeTestFile(t, chDir, "main.tf", terraformFileContent)
-	checkExpectedPrecedenceVersion(t, "0.14.1")
+	checkExpectedPrecedenceVersion(t, "0.14.1", "0.12.1")
 
 	// Create terraform file
 	terragruntContent := `
 terraform_version_constraint = ">= 0.13, < 0.14"
 `
 	writeTestFile(t, chDir, "terragrunt.hcl", terragruntContent)
-	checkExpectedPrecedenceVersion(t, "0.13.7")
+	checkExpectedPrecedenceVersion(t, "0.13.7", "0.12.1")
 
 	// Test with environment variable
 	os.Setenv("TF_VERSION", "0.11.31.env")
-	checkExpectedPrecedenceVersion(t, "0.11.31.env")
+	checkExpectedPrecedenceVersion(t, "0.11.31.env", "0.12.1")
+	os.Setenv("TF_DEFAULT_VERSION", "0.12.2.env")
+	checkExpectedPrecedenceVersion(t, "0.11.31.env", "0.12.2.env")
 
 	// Test passing command line argument to override all
 	getopt.CommandLine = getopt.New()
-	os.Args = []string{"cmd", "--chdir=../../test-data/skip-integration-tests/test_precedence", "1.4.5"}
+	os.Args = []string{"cmd", "--chdir=../../test-data/skip-integration-tests/test_precedence", "--default=0.12.3", "1.4.5"}
 	parameters := GetParameters()
-	expectedVersion := "1.4.5"
-	if parameters.Version != expectedVersion {
+	if expectedVersion := "1.4.5"; parameters.Version != expectedVersion {
 		t.Error("Version Param was not as expected. Actual: " + parameters.Version + ", Expected: " + expectedVersion)
+	}
+	if expectedVersion := "0.12.3"; parameters.DefaultVersion != expectedVersion {
+		t.Error("DefaultVersion Param was not as expected. Actual: " + parameters.DefaultVersion + ", Expected: " + expectedVersion)
 	}
 
 	os.Unsetenv("TF_VERSION")
+	os.Unsetenv("TF_DEFAULT_VERSION")
 }
 
 func checkExpectedPrecedenceProduct(t *testing.T, baseDir string, expectedProduct lib.Product) {

@@ -1,6 +1,7 @@
 package param_parsing
 
 import (
+	"os"
 	"path/filepath"
 
 	"github.com/spf13/viper"
@@ -27,7 +28,7 @@ func getParamsTOML(params Params) (Params, error) {
 		}
 
 		if viperParser.Get("bin") != nil {
-			params.CustomBinaryPath = viperParser.GetString("bin")
+			params.CustomBinaryPath = os.ExpandEnv(viperParser.GetString("bin"))
 			logger.Debugf("Using \"bin\" from %q: %q", tomlPath, params.CustomBinaryPath)
 		}
 		if viperParser.Get("log-level") != nil {
@@ -37,6 +38,9 @@ func getParamsTOML(params Params) (Params, error) {
 		if viperParser.Get("version") != nil {
 			params.Version = viperParser.GetString("version")
 			logger.Debugf("Using \"version\" from %q: %q", tomlPath, params.Version)
+		}
+		if viperParser.Get("default-version") != nil {
+			params.DefaultVersion = viperParser.GetString("default-version")
 		}
 		if configKey := "product"; viperParser.Get(configKey) != nil {
 			params.Product = viperParser.GetString(configKey)

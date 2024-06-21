@@ -36,6 +36,16 @@ export TF_VERSION=0.14.4
 tfswitch #will automatically switch to terraform version 0.14.4
 ```
 
+### `TF_DEFAULT_VERSION`
+
+`TF_DEFAULT_VERSION` environment variable can be set to your desired terraform version that will be used as a fallback version, if not other sources are found.
+
+For example:
+
+```bash
+export TF_DEFAULT_VERSION=0.14.4
+tfswitch #will automatically switch to terraform version 0.14.4
+```
 
 ### `TF_PRODUCT`
 

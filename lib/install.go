@@ -196,11 +196,12 @@ func InstallLatestVersion(dryRun bool, customBinaryPath, installPath string, mir
 }
 
 // InstallLatestProductVersion install latest stable tf version
-func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
+func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath, installPath string, mirrorURL string) error {
 	tfversion, _ := getTFLatest(mirrorURL)
 	if !dryRun {
 		install(product, tfversion, customBinaryPath, installPath, mirrorURL)
 	}
+	return nil
 }
 
 // InstallLatestImplicitVersion install latest - argument (version) must be provided
@@ -212,17 +213,19 @@ func InstallLatestImplicitVersion(dryRun bool, requestedVersion, customBinaryPat
 }
 
 // InstallLatestProductImplicitVersion install latest - argument (version) must be provided
-func InstallLatestProductImplicitVersion(product Product, dryRun bool, requestedVersion, customBinaryPath, installPath string, mirrorURL string, preRelease bool) {
+func InstallLatestProductImplicitVersion(product Product, dryRun bool, requestedVersion, customBinaryPath, installPath string, mirrorURL string, preRelease bool) error {
 	_, err := version.NewConstraint(requestedVersion)
 	if err != nil {
+		// @TODO Should this return an error?
 		logger.Errorf("Error parsing constraint %q: %v", requestedVersion, err)
 	}
 	tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
 	if err == nil && tfversion != "" && !dryRun {
 		install(product, tfversion, customBinaryPath, installPath, mirrorURL)
+		return nil
 	}
-	logger.Errorf("Error parsing constraint %q: %v", requestedVersion, err)
 	PrintInvalidMinorTFVersion()
+	return fmt.Errorf("error parsing constraint %q: %v", requestedVersion, err)
 }
 
 // InstallVersion install Terraform product
@@ -234,7 +237,7 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 }
 
 // InstallProductVersion install with provided version as argument
-func InstallProductVersion(product Product, dryRun bool, version, customBinaryPath, installPath, mirrorURL string) {
+func InstallProductVersion(product Product, dryRun bool, version, customBinaryPath, installPath, mirrorURL string) error {
 	logger.Debugf("Install version %s. Dry run: %s", version, strconv.FormatBool(dryRun))
 	if !dryRun {
 		if validVersionFormat(version) {
@@ -248,7 +251,7 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 				ChangeProductSymlink(product, installFileVersionPath, customBinaryPath)
 				logger.Infof("Switched %s to version %q", product.GetName(), requestedVersion)
 				addRecent(requestedVersion, installPath, product) //add to recent file for faster lookup
-				return
+				return nil
 			}
 
 			// If the requested version had not been downloaded before
@@ -259,15 +262,15 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 			if exist {
 				install(product, requestedVersion, customBinaryPath, installPath, mirrorURL)
 			} else {
-				logger.Fatalf("The provided terraform version does not exist: %q.\n Try `tfswitch -l` to see all available versions", requestedVersion)
+				return fmt.Errorf("the provided terraform version does not exist: %q.\n Try `tfswitch -l` to see all available versions", requestedVersion)
 			}
 		} else {
 			PrintInvalidTFVersion()
-			logger.Error("Args must be a valid terraform version")
 			UsageMessage()
-			os.Exit(1)
+			return fmt.Errorf("args must be a valid terraform version")
 		}
 	}
+	return nil
 }
 
 // InstallProductOption displays & installs tf version
@@ -288,7 +291,7 @@ type VersionSelector struct {
 // InstallProductOption displays & installs tf version
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
-func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) {
+func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPath, installPath string, mirrorURL string) error {
 	var selectVersions []VersionSelector
 
 	var versionMap map[string]bool = make(map[string]bool)
@@ -315,8 +318,7 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	}
 
 	if len(selectVersions) == 0 {
-		logger.Fatalf("%s version list is empty: %s", product.GetName(), mirrorURL)
-		os.Exit(1)
+		return fmt.Errorf("%s version list is empty: %s", product.GetName(), mirrorURL)
 	}
 
 	/* prompt user to select version of terraform */
@@ -338,13 +340,13 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	if errPrompt != nil {
 		if errPrompt.Error() == "^C" {
 			// Cancel execution
-			os.Exit(1)
+			return fmt.Errorf("user interrupt")
 		} else {
-			logger.Fatalf("Prompt failed %v", errPrompt)
+			return fmt.Errorf("prompt failed %v", errPrompt)
 		}
 	}
 	if !dryRun {
 		install(product, selectVersions[selectedItx].Version, customBinaryPath, installPath, mirrorURL)
 	}
-	os.Exit(0)
+	return nil
 }
