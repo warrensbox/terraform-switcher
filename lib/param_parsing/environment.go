@@ -9,6 +9,7 @@ func GetParamsFromEnvironment(params Params) Params {
 	}
 	if envDefaultVersion := os.Getenv("TF_DEFAULT_VERSION"); envDefaultVersion != "" {
 		params.DefaultVersion = envDefaultVersion
+		logger.Debugf("Using default-version from environment variable \"TF_DEFAULT_VERSION\": %q", envDefaultVersion)
 	}
 	if envProduct := os.Getenv("TF_PRODUCT"); envProduct != "" {
 		params.Product = envProduct

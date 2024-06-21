@@ -41,6 +41,7 @@ func getParamsTOML(params Params) (Params, error) {
 		}
 		if viperParser.Get("default-version") != nil {
 			params.DefaultVersion = viperParser.GetString("default-version")
+			logger.Debugf("Using \"default-version\" from %q: %q", tomlPath, params.DefaultVersion)
 		}
 		if configKey := "product"; viperParser.Get(configKey) != nil {
 			params.Product = viperParser.GetString(configKey)
