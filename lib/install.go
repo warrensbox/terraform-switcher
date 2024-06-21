@@ -58,10 +58,7 @@ func install(product Product, tfversion string, binPath string, installPath stri
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+tfversion))
 	recentDownloadFile := CheckFileExist(installFileVersionPath)
 	if recentDownloadFile {
-		ChangeProductSymlink(product, installFileVersionPath, binPath)
-		logger.Infof("Switched %s to version %q", product.GetName(), tfversion)
-		addRecent(tfversion, installPath, product) //add to recent file for faster lookup
-		return nil
+		return switchToVersion(product, tfversion, binPath, installPath, installFileVersionPath)
 	}
 
 	// If the requested version had not been downloaded before
@@ -70,7 +67,7 @@ func install(product Product, tfversion string, binPath string, installPath stri
 	exist := versionExist(tfversion, tflist) // Check if version exists before downloading it
 
 	if !exist {
-		return fmt.Errorf("the provided terraform version does not exist: %q.\n Try `tfswitch -l` to see all available versions", tfversion)
+		return fmt.Errorf("the provided %s version does not exist: %q.\n Try `tfswitch -l` to see all available versions", product.GetId(), tfversion)
 	}
 
 	goarch := runtime.GOARCH
@@ -107,7 +104,15 @@ func install(product Product, tfversion string, binPath string, installPath stri
 	/* remove zipped file to clear clutter */
 	RemoveFiles(zipFile)
 
-	ChangeProductSymlink(product, installFileVersionPath, binPath)
+	return switchToVersion(product, tfversion, binPath, installPath, installFileVersionPath)
+}
+
+func switchToVersion(product Product, tfversion string, binPath string, installPath string, installFileVersionPath string) error {
+	err := ChangeProductSymlink(product, installFileVersionPath, binPath)
+	if err != nil {
+		return err
+	}
+
 	logger.Infof("Switched %s to version %q", product.GetName(), tfversion)
 	addRecent(tfversion, installPath, product) //add to recent file for faster lookup
 	return nil
