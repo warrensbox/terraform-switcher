@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/manifoldco/promptui"
@@ -51,17 +50,28 @@ func GetInstallLocation(installPath string) string {
 }
 
 // install : install the provided version in the argument
-func install(product Product, tfversion string, binPath string, installPath string, mirrorURL string) {
+func install(product Product, tfversion string, binPath string, installPath string, mirrorURL string) error {
 	var wg sync.WaitGroup
-	/* Check to see if user has permission to the default bin location which is  "/usr/local/bin/terraform"
-	 * If user does not have permission to default bin location, proceed to create $HOME/bin and install the tfswitch there
-	 * Inform user that they don't have permission to default location, therefore tfswitch was installed in $HOME/bin
-	 * Tell users to add $HOME/bin to their path
-	 */
-	binPath = installableBinLocation(product, binPath)
 
-	initialize(binPath)                               //initialize path
-	installLocation = GetInstallLocation(installPath) //get installation location -  this is where we will put our terraform binary file
+	//check to see if the requested version has been downloaded before
+	installLocation := GetInstallLocation(installPath)
+	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+tfversion))
+	recentDownloadFile := CheckFileExist(installFileVersionPath)
+	if recentDownloadFile {
+		ChangeProductSymlink(product, installFileVersionPath, binPath)
+		logger.Infof("Switched %s to version %q", product.GetName(), tfversion)
+		addRecent(tfversion, installPath, product) //add to recent file for faster lookup
+		return nil
+	}
+
+	// If the requested version had not been downloaded before
+	// Set list all true - all versions including beta and rc will be displayed
+	tflist, _ := getTFList(mirrorURL, true)  // Get list of versions
+	exist := versionExist(tfversion, tflist) // Check if version exists before downloading it
+
+	if !exist {
+		return fmt.Errorf("the provided terraform version does not exist: %q.\n Try `tfswitch -l` to see all available versions", tfversion)
+	}
 
 	goarch := runtime.GOARCH
 	goos := runtime.GOOS
@@ -71,33 +81,6 @@ func install(product Product, tfversion string, binPath string, installPath stri
 	tf102, _ := version.NewVersion(tfDarwinArm64StartVersion)
 	if goos == "darwin" && goarch == "arm64" && tfver.LessThan(tf102) {
 		goarch = "amd64"
-	}
-
-	/* check if selected version already downloaded */
-	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+tfversion))
-	fileExist := CheckFileExist(installFileVersionPath)
-
-	/* if selected version already exist, */
-	if fileExist {
-
-		/* remove current symlink if exist*/
-		symlinkExist := CheckSymlink(binPath)
-
-		if symlinkExist {
-			RemoveSymlink(binPath)
-		}
-
-		/* set symlink to desired version */
-		CreateSymlink(installFileVersionPath, binPath)
-		logger.Infof("Switched %s to version %q", product.GetName(), tfversion)
-		addRecent(tfversion, installPath, product) //add to recent file for faster lookup
-		return
-	}
-
-	//if does not have slash - append slash
-	hasSlash := strings.HasSuffix(mirrorURL, "/")
-	if !hasSlash {
-		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}
 
 	/* if selected version already exist, */
@@ -124,18 +107,10 @@ func install(product Product, tfversion string, binPath string, installPath stri
 	/* remove zipped file to clear clutter */
 	RemoveFiles(zipFile)
 
-	/* remove current symlink if exist*/
-	symlinkExist := CheckSymlink(binPath)
-
-	if symlinkExist {
-		RemoveSymlink(binPath)
-	}
-
-	/* set symlink to desired version */
-	CreateSymlink(installFileVersionPath, binPath)
+	ChangeProductSymlink(product, installFileVersionPath, binPath)
 	logger.Infof("Switched %s to version %q", product.GetName(), tfversion)
 	addRecent(tfversion, installPath, product) //add to recent file for faster lookup
-	return
+	return nil
 }
 
 // ConvertExecutableExt : convert executable with local OS extension
@@ -199,7 +174,7 @@ func InstallLatestVersion(dryRun bool, customBinaryPath, installPath string, mir
 func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath, installPath string, mirrorURL string) error {
 	tfversion, _ := getTFLatest(mirrorURL)
 	if !dryRun {
-		install(product, tfversion, customBinaryPath, installPath, mirrorURL)
+		return install(product, tfversion, customBinaryPath, installPath, mirrorURL)
 	}
 	return nil
 }
@@ -242,28 +217,7 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 	if !dryRun {
 		if validVersionFormat(version) {
 			requestedVersion := version
-
-			//check to see if the requested version has been downloaded before
-			installLocation := GetInstallLocation(installPath)
-			installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+requestedVersion))
-			recentDownloadFile := CheckFileExist(installFileVersionPath)
-			if recentDownloadFile {
-				ChangeProductSymlink(product, installFileVersionPath, customBinaryPath)
-				logger.Infof("Switched %s to version %q", product.GetName(), requestedVersion)
-				addRecent(requestedVersion, installPath, product) //add to recent file for faster lookup
-				return nil
-			}
-
-			// If the requested version had not been downloaded before
-			// Set list all true - all versions including beta and rc will be displayed
-			tflist, _ := getTFList(mirrorURL, true)         // Get list of versions
-			exist := versionExist(requestedVersion, tflist) // Check if version exists before downloading it
-
-			if exist {
-				install(product, requestedVersion, customBinaryPath, installPath, mirrorURL)
-			} else {
-				return fmt.Errorf("the provided terraform version does not exist: %q.\n Try `tfswitch -l` to see all available versions", requestedVersion)
-			}
+			return install(product, requestedVersion, customBinaryPath, installPath, mirrorURL)
 		} else {
 			PrintInvalidTFVersion()
 			UsageMessage()
@@ -346,7 +300,7 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 		}
 	}
 	if !dryRun {
-		install(product, selectVersions[selectedItx].Version, customBinaryPath, installPath, mirrorURL)
+		return install(product, selectVersions[selectedItx].Version, customBinaryPath, installPath, mirrorURL)
 	}
 	return nil
 }
