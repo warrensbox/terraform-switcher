@@ -3,9 +3,12 @@ package param_parsing
 import (
 	"os"
 	"testing"
+
+	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 func TestGetParamsFromEnvironment_version_from_env(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
 	var params Params
 	expected := "1.0.0_from_env"
 	_ = os.Setenv("TF_VERSION", expected)
@@ -30,6 +33,7 @@ func TestGetParamsFromEnvironment_default_version_from_env(t *testing.T) {
 }
 
 func TestGetParamsFromEnvironment_product_from_env(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
 	var params Params
 	expected := "opentofu"
 	_ = os.Setenv("TF_PRODUCT", expected)
