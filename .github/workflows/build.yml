@@ -96,3 +96,37 @@ jobs:
     - name: Running unit tests
       run: |
         go test -v ./...
+
+    - name: Running intergration tests
+      run: |
+        whoami
+        # Stop execution if any command fails
+        # $ErrorActionPreference = "Stop"
+
+        # # Create the build directory if it doesn't exist
+        # mkdir -p build
+
+        # # Build the Go project
+        # go build -v -o build/tfswitch
+
+        # # Create the bin directory in the current directory
+        # mkdir -Force (Join-Path (Get-Location) "bin")
+
+        # # Find all directories under ./test-data/integration-tests/
+        # $testPaths = Get-ChildItem -Path .\test-data\integration-tests-windows\* -Directory
+
+        # foreach ($testPath in $testPaths) {
+        #     $tfswitchToml = Join-Path $testPath ".tfswitch.toml"
+        #     if (Test-Path $tfswitchToml) {
+        #         Copy-Item -Path $tfswitchToml -Destination $HOME
+        #     } else {
+        #         Remove-Item -Path (Join-Path $HOME ".tfswitch.toml") -ErrorAction Ignore
+        #     }
+            
+        #     $tfswitchExe = Join-Path (Get-Location) "build\tfswitch"
+        #     $testPathAbsolute = (Resolve-Path $testPath).Path
+        #     $binPath = Join-Path (Get-Location) "bin\terraform"
+            
+        #     & $tfswitchExe -c $testPathAbsolute -b $binPath
+        # }
+
