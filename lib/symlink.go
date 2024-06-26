@@ -1,27 +1,28 @@
 package lib
 
 import (
+	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 // CreateSymlink : create symlink or copy file to bin directory if windows
-func CreateSymlink(cwd string, dir string) {
+func CreateSymlink(cwd string, dir string) error {
 	// If we are on windows the symlink is not working correctly.
 	// Copy the desired terraform binary to the path environment.
 	if runtime.GOOS == "windows" {
 		r, err := os.Open(cwd)
 		if err != nil {
-			logger.Fatalf("Unable to open source binary: %s", cwd)
-			os.Exit(1)
+			return fmt.Errorf("Unable to open source binary: %q", cwd)
 		}
 		defer r.Close()
 
 		w, err := os.Create(dir + ".exe")
 		if err != nil {
-			logger.Fatalf("Could not create target binary: %s", dir+".exe")
-			os.Exit(1)
+			return fmt.Errorf("Could not create target binary: %q.exe", dir)
 		}
 		defer func() {
 			if c := w.Close(); err == nil {
@@ -32,45 +33,44 @@ func CreateSymlink(cwd string, dir string) {
 	} else {
 		err := os.Symlink(cwd, dir)
 		if err != nil {
-			logger.Fatalf(`
+			return fmt.Errorf(`
 		Unable to create new symlink.
 		Maybe symlink already exist. Try removing existing symlink manually.
-		Try running "unlink %s" to remove existing symlink.
-		If error persist, you may not have the permission to create a symlink at %s.
-		Error: %s
+		Try running "unlink %q" to remove existing symlink.
+		If error persist, you may not have the permission to create a symlink at %q.
+		Error: %v
 		`, dir, dir, err)
-			os.Exit(1)
 		}
 	}
+	return nil
 }
 
 // RemoveSymlink : remove symlink
-func RemoveSymlink(symlinkPath string) {
+func RemoveSymlink(symlinkPath string) error {
 
 	_, err := os.Lstat(symlinkPath)
 	if err != nil {
-		logger.Fatalf(`
+		return fmt.Errorf(`
 		Unable to stat symlink.
 		Maybe symlink already exist. Try removing existing symlink manually.
-		Try running "unlink %s" to remove existing symlink.
-		If error persist, you may not have the permission to create a symlink at %s.
-		Error: %s
+		Try running "unlink %q" to remove existing symlink.
+		If error persist, you may not have the permission to create a symlink at %q.
+		Error: %v
 		`, symlinkPath, symlinkPath, err)
-		os.Exit(1)
 	} else {
 		errRemove := os.Remove(symlinkPath)
 
 		if errRemove != nil {
-			logger.Fatalf(`
+			return fmt.Errorf(`
 			Unable to remove symlink.
 			Maybe symlink already exist. Try removing existing symlink manually.
-			Try running "unlink %s" to remove existing symlink.
-			If error persist, you may not have the permission to create a symlink at %s.
-			Error: %s
+			Try running "unlink %q" to remove existing symlink.
+			If error persist, you may not have the permission to create a symlink at %q.
+			Error: %v
 			`, symlinkPath, symlinkPath, errRemove)
-			os.Exit(1)
 		}
 	}
+	return nil
 }
 
 // CheckSymlink : check file is symlink
@@ -93,21 +93,42 @@ func CheckSymlink(symlinkPath string) bool {
 // Deprecated: This function has been deprecated in favor of ChangeProductSymlink and will be removed in v2.0.0
 func ChangeSymlink(binVersionPath string, binPath string) {
 	product := getLegacyProduct()
-	ChangeProductSymlink(product, binVersionPath, binPath)
+	err := ChangeProductSymlink(product, binVersionPath, binPath)
+	if err != nil {
+		logger.Fatal(err)
+	}
 }
 
 // ChangeProductSymlink : move symlink for product to existing binary
-func ChangeProductSymlink(product Product, binVersionPath string, binPath string) {
+func ChangeProductSymlink(product Product, binVersionPath string, userBinPath string) error {
 
-	binPath = installableBinLocation(product, binPath)
+	homedir := GetHomeDirectory() //get user's home directory
+	homeBinPath := filepath.Join(homedir, "bin", product.GetExecutableName())
+	possibleInstallLocations := []string{userBinPath, homeBinPath}
+	var err error
 
-	/* remove current symlink if exist*/
-	symlinkExist := CheckSymlink(binPath)
-	if symlinkExist {
-		RemoveSymlink(binPath)
+	for _, location := range possibleInstallLocations {
+		if CheckDirExist(Path(location)) {
+			/* remove current symlink if exist*/
+			symlinkExist := CheckSymlink(location)
+			if symlinkExist {
+				_ = RemoveSymlink(location)
+			}
+
+			/* set symlink to desired version */
+			err = CreateSymlink(binVersionPath, location)
+			if err == nil {
+				logger.Debugf("Symlink created at %q", location)
+				return nil
+			}
+		}
 	}
 
-	/* set symlink to desired version */
-	CreateSymlink(binVersionPath, binPath)
+	if err == nil {
+		return fmt.Errorf("Unable to find existing directory in %q. %s",
+			strings. Join(possibleInstallLocations, " or "),
+			"Manually create one of them and try again.")
+	}
 
+	return err
 }
