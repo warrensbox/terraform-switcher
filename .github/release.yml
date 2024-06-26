@@ -1,0 +1,28 @@
+# https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+changelog:
+  categories:
+    - title: Added
+      labels:
+        - enhancement
+        - feature
+        - new feature
+    - title: Changed
+      labels:
+        - backwards-incompatible
+        - depricated
+    - title: Fixed
+      labels:
+        - bug
+        - bugfix
+        - fix
+        - fixed
+    - title: Documentation
+      labels:
+        - docs
+        - documentation
+    - title: Dependencies
+      labels:
+        - dependencies
+    - title: Other
+      labels:
+        - "*"
