@@ -6,6 +6,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
 
+## [v1.2.0-alpha1](https://github.com/warrensbox/terraform-switcher/tree/v1.2.0-alpha1) - 2024-06-22
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2-alpha1...v1.2.0-alpha1)
+
+### Added
+
+- Add debug logging when successfully obtaining parameter from location… [#464](https://github.com/warrensbox/terraform-switcher/pull/464) ([MatthewJohn](https://github.com/MatthewJohn))
+- Add TOML configuration and environment variable for "default version" [#463](https://github.com/warrensbox/terraform-switcher/pull/463) ([MatthewJohn](https://github.com/MatthewJohn))
+- feat: Allow for case-insensitve matching of products [#458](https://github.com/warrensbox/terraform-switcher/pull/458) ([MatthewJohn](https://github.com/MatthewJohn))
+
+### Fixed
+
+- fix: Allow Env vars in TOML `bin` value (re-introduce feature) [#467](https://github.com/warrensbox/terraform-switcher/pull/467) ([yermulnik](https://github.com/yermulnik))
+- Fix usage for product as passing opentofu to --product does not install Terraform [#461](https://github.com/warrensbox/terraform-switcher/pull/461) ([MatthewJohn](https://github.com/MatthewJohn))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.2.0-alpha` [#460](https://github.com/warrensbox/terraform-switcher/pull/460) ([yermulnik](https://github.com/yermulnik))
+- Add error return values to signatures of public methods to allow migrating to returning errors rather than Fatals in future [#457](https://github.com/warrensbox/terraform-switcher/pull/457) ([MatthewJohn](https://github.com/MatthewJohn))
+
 ## [v1.2.0-alpha](https://github.com/warrensbox/terraform-switcher/tree/v1.2.0-alpha) - 2024-06-08
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.1.1...v1.2.0-alpha)
