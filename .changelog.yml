@@ -1,0 +1,22 @@
+---
+file_name: CHANGELOG.md.new
+excluded_labels:
+  - maintenance
+  - dependencies
+sections:
+  added:
+    - enhancement
+    - feature
+    - new feature
+  changed:
+    - backwards-incompatible
+    - depricated
+  fixed:
+    - bug
+    - bugfix
+    - fix
+    - fixed
+skip_entries_without_label: false
+show_unreleased: true
+check_for_updates: true
+logger: console
