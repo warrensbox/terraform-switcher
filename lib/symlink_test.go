@@ -48,7 +48,7 @@ func TestCreateSymlink(t *testing.T) {
 	CreateSymlink(symlinkPathDest, symlinkPathSrc)
 
 	if runtime.GOOS == "windows" {
-		_, err := os.Stat(symlinkPathSrc + ".exe")
+		_, err := os.Stat(symlinkPathSrc)
 		if err != nil {
 			t.Logf("Could not stat file copy at %v. [unexpected]", symlinkPathSrc)
 			t.Error("File copy was not created.")
