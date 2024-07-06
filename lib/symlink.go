@@ -20,9 +20,9 @@ func CreateSymlink(cwd string, dir string) error {
 		}
 		defer r.Close()
 
-		w, err := os.Create(dir + ".exe")
+		w, err := os.Create(dir)
 		if err != nil {
-			return fmt.Errorf("Could not create target binary: %q.exe", dir)
+			return fmt.Errorf("Could not create target binary: %q", dir)
 		}
 		defer func() {
 			if c := w.Close(); err == nil {
