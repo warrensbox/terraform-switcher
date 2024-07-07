@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [v1.2.0](https://github.com/warrensbox/terraform-switcher/tree/v1.2.0) - 2024-07-05
 
-[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.0-alpha1...v1.2.0)
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.0-alpha2...v1.2.0)
 
 ### Fixed
 
@@ -41,7 +41,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [v1.2.0-alpha1](https://github.com/warrensbox/terraform-switcher/tree/v1.2.0-alpha1) - 2024-06-22
 
-[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2-alpha1...v1.2.0-alpha1)
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.0-alpha...v1.2.0-alpha1)
 
 ### Added
 
