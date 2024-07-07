@@ -6,6 +6,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
 
+## [v1.2.1](https://github.com/warrensbox/terraform-switcher/tree/v1.2.1) - 2024-07-06
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.0...v1.2.1)
+
+### Fixed
+
+- fix: Remove duplicate .exe extension added to paths for windows inside symlink, as this is already handled by ConvertExecutableExt [#481](https://github.com/warrensbox/terraform-switcher/pull/481) ([MatthewJohn](https://github.com/MatthewJohn))
+
+## [v1.2.0](https://github.com/warrensbox/terraform-switcher/tree/v1.2.0) - 2024-07-05
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.0-alpha1...v1.2.0)
+
+### Fixed
+
+- fix: Rectify typo from #468 (+ go fmt) [#478](https://github.com/warrensbox/terraform-switcher/pull/478) ([yermulnik](https://github.com/yermulnik))
+- Fix user bin path on windows [#468](https://github.com/warrensbox/terraform-switcher/pull/468) ([PierreTechoueyres](https://github.com/PierreTechoueyres))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.2.0-alpha2` [#479](https://github.com/warrensbox/terraform-switcher/pull/479) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.2.0-alpha2](https://github.com/warrensbox/terraform-switcher/tree/v1.2.0-alpha2) - 2024-07-05
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.0-alpha1...v1.2.0-alpha2)
@@ -18,9 +39,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - docs: Update CHANGELOG with `v1.2.0-alpha1` [#471](https://github.com/warrensbox/terraform-switcher/pull/471) ([yermulnik](https://github.com/yermulnik))
 
-## [v1.2.0-alpha1](https://github.com/warrensbox/terraform-switcher/tree/v1.2.0-alpha1) - 2024-06-22
-
-[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/ee6ab3adac79d07213e5c8e35022c4dd04d68a1a...v1.2.0-alpha1)
 ## [v1.2.0-alpha1](https://github.com/warrensbox/terraform-switcher/tree/v1.2.0-alpha1) - 2024-06-22
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2-alpha1...v1.2.0-alpha1)
