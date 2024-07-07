@@ -3,13 +3,14 @@ changelog:
   categories:
     - title: Added
       labels:
-        - enhancement
+        - experimental
         - feature
         - new feature
     - title: Changed
       labels:
         - backwards-incompatible
         - depricated
+        - enhancement
     - title: Fixed
       labels:
         - bug
@@ -20,6 +21,9 @@ changelog:
       labels:
         - docs
         - documentation
+    - title: Security
+      labels:
+        - security
     - title: Dependencies
       labels:
         - dependencies

@@ -5,7 +5,7 @@
 version: v1
 
 labels:
-  - label: 'dependency'
+  - label: 'dependencies'
     matcher:
       title: '^deps:'
       branch: '^deps/'
