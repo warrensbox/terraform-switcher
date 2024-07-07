@@ -68,7 +68,7 @@ brews:
 
     # Caveats for the user of your binary.
     # Default is empty.
-    caveats: "Type 'tfswitch' on your command line and choose the terraform version that you want from the dropdown. This command currently only works on macOS and Linux"
+    caveats: "Type 'tfswitch' on your command line and choose Terraform version that you want from the dropdown"
 
     # Your app's homepage.
     # Default is empty.
