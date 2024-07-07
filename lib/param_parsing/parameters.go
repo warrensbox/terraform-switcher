@@ -2,6 +2,8 @@ package param_parsing
 
 import (
 	"fmt"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/gookit/slog"
@@ -99,6 +101,15 @@ func populateParams(params Params) Params {
 			if params.MirrorURL == "" {
 				params.MirrorURL = product.GetDefaultMirrorUrl()
 			}
+
+			// Set default bin directory, if not configured
+			if params.CustomBinaryPath == "" {
+				if runtime.GOOS == "windows" {
+					params.CustomBinaryPath = filepath.Join(lib.GetHomeDirectory(), "bin", lib.ConvertExecutableExt(product.GetExecutableName()))
+				} else {
+					params.CustomBinaryPath = filepath.Join("/usr/local/bin", product.GetExecutableName())
+				}
+			}
 			params.ProductEntity = product
 		}
 
@@ -150,7 +161,7 @@ func populateParams(params Params) Params {
 
 func initParams(params Params) Params {
 	params.ChDirPath = lib.GetCurrentDirectory()
-	params.CustomBinaryPath = lib.ConvertExecutableExt(lib.GetDefaultBin())
+	params.CustomBinaryPath = ""
 	params.DefaultVersion = lib.DefaultLatest
 	params.DryRun = false
 	params.HelpFlag = false
