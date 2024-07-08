@@ -13,7 +13,7 @@ require (
 	github.com/pborman/getopt v1.1.0
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/crypto v0.24.0
+	golang.org/x/crypto v0.25.0
 	golang.org/x/sys v0.22.0
 )
 
