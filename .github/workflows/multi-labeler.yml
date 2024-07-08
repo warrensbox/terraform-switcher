@@ -1,0 +1,19 @@
+# https://github.com/fuxingloh/multi-labeler
+# https://www.conventionalcommits.org/
+# https://github.com/warrensbox/terraform-switcher/labels
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, ready_for_review]
+    branches: [master, main]
+
+  pull_request_target: # for OSS with public contributions (forked PR)
+    types: [opened, edited, synchronize, ready_for_review]
+    branches: [master, main]
+
+jobs:
+  labeler:
+    name: Multi Labeler
+    runs-on: ubuntu-latest
+    steps:
+      - uses: fuxingloh/multi-labeler@v4
