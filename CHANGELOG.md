@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.2.2](https://github.com/warrensbox/terraform-switcher/tree/v1.2.2) - 2024-07-07
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.1...v1.2.2)
+
+### Added
+
+- default: Fix default binary symlink name for Opentofu to be tofu.exe, rather than terraform.exe [#483](https://github.com/warrensbox/terraform-switcher/pull/483) ([MatthewJohn](https://github.com/MatthewJohn))
+
+### Other
+
+- chore: Add Multi Labeler workflow [#486](https://github.com/warrensbox/terraform-switcher/pull/486) ([yermulnik](https://github.com/yermulnik))
+- docs: Update CHANGELOG with `v1.2.0` and `v1.2.1` [#484](https://github.com/warrensbox/terraform-switcher/pull/484) ([yermulnik](https://github.com/yermulnik))
+- fix: Remove duplicate .exe extension added to paths for windows inside symlink, as this is already handled by ConvertExecutableExt [#481](https://github.com/warrensbox/terraform-switcher/pull/481) ([MatthewJohn](https://github.com/MatthewJohn))
+
 
 ## [v1.2.1](https://github.com/warrensbox/terraform-switcher/tree/v1.2.1) - 2024-07-06
 
