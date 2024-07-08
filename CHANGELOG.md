@@ -41,6 +41,74 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - docs: Update CHANGELOG with `v1.2.0-alpha2` [#479](https://github.com/warrensbox/terraform-switcher/pull/479) ([yermulnik](https://github.com/yermulnik))
 
+
+### This release (v1.2.0) containes changes from v1.2.0-alpha2, v1.2.0-alpha1 and v1.2.0-alpha
+
+#### v1.2.0-alpha2
+### Added
+
+- Added ERRORlog-level [#447](https://github.com/warrensbox/terraform-switcher/pull/447) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- skip any parsing of config files if the -v flag is provided [#446](https://github.com/warrensbox/terraform-switcher/pull/446) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- RECENT to JSON Proposal [#437](https://github.com/warrensbox/terraform-switcher/pull/437) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- Convert recent file to json [#436](https://github.com/warrensbox/terraform-switcher/pull/436) ([MatthewJohn](https://github.com/MatthewJohn))
+- OpenTofu support and JSON recentFile support [#435](https://github.com/warrensbox/terraform-switcher/pull/435) ([MatthewJohn](https://github.com/MatthewJohn))
+- Check version sources based on whether verison has been set [#429](https://github.com/warrensbox/terraform-switcher/pull/429) ([MatthewJohn](https://github.com/MatthewJohn))
+- 154 feature request option to dry run [#416](https://github.com/warrensbox/terraform-switcher/pull/416) ([MatrixCrawler](https://github.com/MatrixCrawler))
+
+### Fixed
+
+- Fix for #443 - Error unzipping on windows systems [#450](https://github.com/warrensbox/terraform-switcher/pull/450) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- fix: Only extract terraform file from Terraform release archive [#433](https://github.com/warrensbox/terraform-switcher/pull/433) ([MatthewJohn](https://github.com/MatthewJohn))
+- docs: Fix links to `install.sh` [#432](https://github.com/warrensbox/terraform-switcher/pull/432) ([yermulnik](https://github.com/yermulnik))
+- docs: Streamline/fix docu site files and README [#419](https://github.com/warrensbox/terraform-switcher/pull/419) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- Update README.md [#448](https://github.com/warrensbox/terraform-switcher/pull/448) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- feat(goreleaser): Enable Release Changelog [#418](https://github.com/warrensbox/terraform-switcher/pull/418) ([yermulnik](https://github.com/yermulnik))
+- added changelog [#415](https://github.com/warrensbox/terraform-switcher/pull/415) ([warrensbox](https://github.com/warrensbox))
+
+#### v1.2.0-alpha1
+### Added
+
+- Add debug logging when successfully obtaining parameter from location… [#464](https://github.com/warrensbox/terraform-switcher/pull/464) ([MatthewJohn](https://github.com/MatthewJohn))
+- Add TOML configuration and environment variable for "default version" [#463](https://github.com/warrensbox/terraform-switcher/pull/463) ([MatthewJohn](https://github.com/MatthewJohn))
+- feat: Allow for case-insensitve matching of products [#458](https://github.com/warrensbox/terraform-switcher/pull/458) ([MatthewJohn](https://github.com/MatthewJohn))
+
+### Fixed
+
+- fix: Allow Env vars in TOML `bin` value (re-introduce feature) [#467](https://github.com/warrensbox/terraform-switcher/pull/467) ([yermulnik](https://github.com/yermulnik))
+- Fix usage for product as passing opentofu to --product does not install Terraform [#461](https://github.com/warrensbox/terraform-switcher/pull/461) ([MatthewJohn](https://github.com/MatthewJohn))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.2.0-alpha` [#460](https://github.com/warrensbox/terraform-switcher/pull/460) ([yermulnik](https://github.com/yermulnik))
+- Add error return values to signatures of public methods to allow migrating to returning errors rather than Fatals in future [#457](https://github.com/warrensbox/terraform-switcher/pull/457) ([MatthewJohn](https://github.com/MatthewJohn))
+
+#### v1.2.0-alpha
+### Added
+
+- Added ERRORlog-level [#447](https://github.com/warrensbox/terraform-switcher/pull/447) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- skip any parsing of config files if the -v flag is provided [#446](https://github.com/warrensbox/terraform-switcher/pull/446) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- RECENT to JSON Proposal [#437](https://github.com/warrensbox/terraform-switcher/pull/437) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- Convert recent file to json [#436](https://github.com/warrensbox/terraform-switcher/pull/436) ([MatthewJohn](https://github.com/MatthewJohn))
+- OpenTofu support and JSON recentFile support [#435](https://github.com/warrensbox/terraform-switcher/pull/435) ([MatthewJohn](https://github.com/MatthewJohn))
+- Check version sources based on whether verison has been set [#429](https://github.com/warrensbox/terraform-switcher/pull/429) ([MatthewJohn](https://github.com/MatthewJohn))
+- 154 feature request option to dry run [#416](https://github.com/warrensbox/terraform-switcher/pull/416) ([MatrixCrawler](https://github.com/MatrixCrawler))
+
+### Fixed
+
+- Fix for #443 - Error unzipping on windows systems [#450](https://github.com/warrensbox/terraform-switcher/pull/450) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- fix: Only extract terraform file from Terraform release archive [#433](https://github.com/warrensbox/terraform-switcher/pull/433) ([MatthewJohn](https://github.com/MatthewJohn))
+- docs: Fix links to `install.sh` [#432](https://github.com/warrensbox/terraform-switcher/pull/432) ([yermulnik](https://github.com/yermulnik))
+- docs: Streamline/fix docu site files and README [#419](https://github.com/warrensbox/terraform-switcher/pull/419) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- Update README.md [#448](https://github.com/warrensbox/terraform-switcher/pull/448) ([MatrixCrawler](https://github.com/MatrixCrawler))
+- feat(goreleaser): Enable Release Changelog [#418](https://github.com/warrensbox/terraform-switcher/pull/418) ([yermulnik](https://github.com/yermulnik))
+- added changelog [#415](https://github.com/warrensbox/terraform-switcher/pull/415) ([warrensbox](https://github.com/warrensbox))
+
 ## [v1.2.0-alpha2](https://github.com/warrensbox/terraform-switcher/tree/v1.2.0-alpha2) - 2024-07-05
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.0-alpha1...v1.2.0-alpha2)
