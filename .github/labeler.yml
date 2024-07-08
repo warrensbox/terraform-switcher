@@ -1,0 +1,42 @@
+# https://github.com/fuxingloh/multi-labeler
+# https://www.conventionalcommits.org/
+# https://github.com/warrensbox/terraform-switcher/labels
+
+version: v1
+
+labels:
+  - label: 'chore'
+    matcher:
+      title: '^(c(hore|i)|style):'
+      branch: '^(c(hore|i)|style)/'
+      commits: '^(c(hore|i)|style):'
+
+  - label: 'dependencies'
+    matcher:
+      title: '^deps:'
+      branch: '^deps/'
+      commits: '^deps:'
+
+  - label: 'documentation'
+    matcher:
+      title: '^docs?:'
+      branch: '^docs?/'
+      commits: '^docs?:'
+
+  - label: 'enhancement'
+    matcher:
+      title: '^fix:'
+      branch: '^fix/'
+      commits: '^fix:'
+
+  - label: 'golang'
+    matcher:
+      title: '^go(lang)?:'
+      branch: '^go(lang)?/'
+      commits: '^go(lang)?:'
+
+  - label: 'new feature'
+    matcher:
+      title: '^feat(ure)?:'
+      branch: '^feat(ure)?/'
+      commits: '^feat(ure)?:'
