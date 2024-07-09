@@ -37,3 +37,6 @@ build-script.sh
 
 /vendor
 /www/site
+
+# Temp file used to update actual CHANGELOG.md (see CHANGELOG.howto.md)
+/CHANGELOG.md.new
