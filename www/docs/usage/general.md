@@ -10,5 +10,5 @@
 | 6 | `terragrunt.hcl` (`terraform_version_constraint` parameter) |
 | 7 | Environment variable (`TF_VERSION`) |
 
-With 1 being the highest precedence and 7 — the lowest  
+With 1 being the **lowest** precedence and 7 — the **highest**  
 *(If you disagree with this order of precedence, please open an issue)*
