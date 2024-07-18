@@ -102,9 +102,11 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 	homedir := GetHomeDirectory() // get user's home directory
 	homeBinPath := filepath.Join(homedir, "bin", product.GetExecutableName())
 	possibleInstallLocations := []string{userBinPath, homeBinPath}
+	possibleInstallDirs := []string{}
 	var err error
 
 	for _, location := range possibleInstallLocations {
+		possibleInstallDirs = append(possibleInstallDirs, Path(location))
 		if CheckDirExist(Path(location)) {
 			/* remove current symlink if exist*/
 			symlinkExist := CheckSymlink(location)
@@ -122,8 +124,8 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 	}
 
 	if err == nil {
-		return fmt.Errorf("Unable to find existing directory in %q. %s",
-			strings.Join(possibleInstallLocations, " or "),
+		return fmt.Errorf("None of the installation directories exist: \"%s\". %s\n",
+			strings.Join(possibleInstallDirs, `", "`),
 			"Manually create one of them and try again.")
 	}
 
