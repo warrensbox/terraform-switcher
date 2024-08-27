@@ -6,7 +6,7 @@ require (
 	github.com/ProtonMail/gopenpgp/v2 v2.7.5
 	github.com/gookit/slog v0.5.6
 	github.com/hashicorp/go-version v1.7.0
-	github.com/hashicorp/hcl/v2 v2.21.0
+	github.com/hashicorp/hcl/v2 v2.22.0
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20240509232506-4708120f8f30
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mitchellh/go-homedir v1.1.0
