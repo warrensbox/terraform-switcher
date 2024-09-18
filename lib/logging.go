@@ -1,9 +1,11 @@
 package lib
 
 import (
+	"os"
+
+	"github.com/gookit/color"
 	"github.com/gookit/slog"
 	"github.com/gookit/slog/handler"
-	"os"
 )
 
 var (
@@ -17,6 +19,22 @@ var (
 	TraceLogging         = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel, slog.TraceLevel}
 )
 
+func NewStderrConsoleWithLF(lf slog.LevelFormattable) *handler.ConsoleHandler {
+	h := handler.NewIOWriterWithLF(os.Stderr, lf)
+
+	// default use text formatter
+	f := slog.NewTextFormatter()
+	// default enable color on console
+	f.WithEnableColor(color.SupportColor())
+
+	h.SetFormatter(f)
+	return h
+}
+
+func NewStderrConsoleHandler(levels []slog.Level) *handler.ConsoleHandler {
+	return NewStderrConsoleWithLF(slog.NewLvsFormatter(levels))
+}
+
 func InitLogger(logLevel string) *slog.Logger {
 	formatter := slog.NewTextFormatter()
 	formatter.EnableColor = true
@@ -26,23 +44,23 @@ func InitLogger(logLevel string) *slog.Logger {
 	var h *handler.ConsoleHandler
 	switch logLevel {
 	case "ERROR":
-		h = handler.NewConsoleHandler(ErrorLogging)
+		h = NewStderrConsoleHandler(ErrorLogging)
 		formatter.SetTemplate(loggingTemplateDebug)
 		break
 	case "TRACE":
-		h = handler.NewConsoleHandler(TraceLogging)
+		h = NewStderrConsoleHandler(TraceLogging)
 		formatter.SetTemplate(loggingTemplateDebug)
 		break
 	case "DEBUG":
-		h = handler.NewConsoleHandler(DebugLogging)
+		h = NewStderrConsoleHandler(DebugLogging)
 		formatter.SetTemplate(loggingTemplateDebug)
 		break
 	case "NOTICE":
-		h = handler.NewConsoleHandler(NoticeLogging)
+		h = NewStderrConsoleHandler(NoticeLogging)
 		formatter.SetTemplate(loggingTemplateDebug)
 		break
 	default:
-		h = handler.NewConsoleHandler(NormalLogging)
+		h = NewStderrConsoleHandler(NormalLogging)
 		formatter.SetTemplate(loggingTemplate)
 	}
 
