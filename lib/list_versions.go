@@ -208,7 +208,7 @@ func validMinorVersionFormat(version string) bool {
 // ShowLatestVersion show install latest stable tf version
 func ShowLatestVersion(mirrorURL string) {
 	tfversion, _ := getTFLatest(mirrorURL)
-	logger.Infof("%s", tfversion)
+	fmt.Printf("%s\n", tfversion)
 }
 
 // ShowLatestImplicitVersion show latest - argument (version) must be provided
@@ -216,7 +216,7 @@ func ShowLatestImplicitVersion(requestedVersion, mirrorURL string, preRelease bo
 	if validMinorVersionFormat(requestedVersion) {
 		tfversion, _ := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
 		if len(tfversion) > 0 {
-			logger.Infof("%s", tfversion)
+			fmt.Printf("%s\n", tfversion)
 		} else {
 			logger.Fatal("The provided terraform version does not exist.\n Try `tfswitch -l` to see all available versions")
 			os.Exit(1)
