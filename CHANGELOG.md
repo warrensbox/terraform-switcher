@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.2.3](https://github.com/warrensbox/terraform-switcher/tree/v1.2.3) - 2024-09-30
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.2...v1.2.3)
+
+### Added
+
+- Split output and logs [#506](https://github.com/warrensbox/terraform-switcher/pull/506) ([MatthewJohn](https://github.com/MatthewJohn))
+
+### Fixed
+
+- fix: Improve wording when installing binary [#494](https://github.com/warrensbox/terraform-switcher/pull/494) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Adjust version definition order of precedence [#492](https://github.com/warrensbox/terraform-switcher/pull/492) ([yermulnik](https://github.com/yermulnik))
+- docs: Update CHANGELOG with v1.2.1 and v1.2.2 [#487](https://github.com/warrensbox/terraform-switcher/pull/487) ([warrensbox](https://github.com/warrensbox))
+
 ## [v1.2.2](https://github.com/warrensbox/terraform-switcher/tree/v1.2.2) - 2024-07-07
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.1...v1.2.2)

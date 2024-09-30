@@ -1,6 +1,9 @@
 # https://goreleaser.com/
+version: 2
+
 env:
   - CGO_ENABLED=0 # Build statically linked binaries
+
 builds:
   -
     ldflags:
@@ -22,6 +25,7 @@ builds:
     ignore:
       - goos: windows
         goarch: arm64    
+
 checksum:
   name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_checksums.txt'
 
