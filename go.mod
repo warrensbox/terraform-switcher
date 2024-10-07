@@ -4,6 +4,7 @@ go 1.22
 
 require (
 	github.com/ProtonMail/gopenpgp/v2 v2.7.5
+	github.com/gookit/color v1.5.4
 	github.com/gookit/slog v0.5.6
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/hcl/v2 v2.22.0
@@ -13,8 +14,8 @@ require (
 	github.com/pborman/getopt v1.1.0
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/crypto v0.27.0
-	golang.org/x/sys v0.25.0
+	golang.org/x/crypto v0.28.0
+	golang.org/x/sys v0.26.0
 )
 
 require (
@@ -27,7 +28,6 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/gookit/color v1.5.4 // indirect
 	github.com/gookit/goutil v0.6.15 // indirect
 	github.com/gookit/gsr v0.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.1-vault-5 // indirect
@@ -52,7 +52,7 @@ require (
 	golang.org/x/exp v0.0.0-20240531132922-fd00a4e0eefc // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/text v0.18.0 // indirect
+	golang.org/x/text v0.19.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
