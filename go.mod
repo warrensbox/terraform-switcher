@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/ProtonMail/gopenpgp/v2 v2.7.5
 	github.com/gookit/color v1.5.4
-	github.com/gookit/slog v0.5.6
+	github.com/gookit/slog v0.5.7
 	github.com/hashicorp/go-version v1.7.0
 	github.com/hashicorp/hcl/v2 v2.22.0
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20240509232506-4708120f8f30
@@ -28,7 +28,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
-	github.com/gookit/goutil v0.6.15 // indirect
+	github.com/gookit/goutil v0.6.17 // indirect
 	github.com/gookit/gsr v0.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.1-vault-5 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
