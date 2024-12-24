@@ -24,7 +24,7 @@ builds:
       - 7
     ignore:
       - goos: windows
-        goarch: arm64    
+        goarch: arm64
 
 checksum:
   name_template: '{{ .ProjectName }}_{{.Env.RELEASE_VERSION}}_checksums.txt'
@@ -37,6 +37,10 @@ archives:
       {{- .Os }}_
       {{- .Arch }}
       {{- if .Arm }}v{{ .Arm }}{{ end -}}
+    files:
+      - CHANGELOG.md
+      - LICENSE
+      - README.md
 
 brews:
   -
