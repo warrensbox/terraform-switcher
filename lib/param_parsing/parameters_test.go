@@ -11,7 +11,7 @@ import (
 )
 
 func TestGetParameters_arch_from_args(t *testing.T) {
-	expected := "amd64args"
+	expected := "amd64"
 	os.Args = []string{"cmd", expected}
 	params := GetParameters()
 	actual := params.Arch
