@@ -7,6 +7,19 @@ import (
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
+func TestGetParamsFromEnvironment_arch_from_env(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	var params Params
+	expected := "amd64_from_env"
+	_ = os.Setenv("TF_ARCH", expected)
+	params = initParams(params)
+	params = GetParamsFromEnvironment(params)
+	_ = os.Unsetenv("TF_ARCH")
+	if params.Version != expected {
+		t.Error("Determined arch is not matching. Got " + params.Arch + ", expected " + expected)
+	}
+}
+
 func TestGetParamsFromEnvironment_version_from_env(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	var params Params
