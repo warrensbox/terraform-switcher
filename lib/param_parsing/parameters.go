@@ -12,6 +12,7 @@ import (
 )
 
 type Params struct {
+	Arch             string
 	ChDirPath        string
 	CustomBinaryPath string
 	DefaultVersion   string
@@ -51,6 +52,7 @@ func populateParams(params Params) Params {
 		defaultMirrors = append(defaultMirrors, fmt.Sprintf("%s: %s", product.GetName(), product.GetDefaultMirrorUrl()))
 	}
 
+	getopt.StringVarLong(&params.Arch, "arch", 'A', fmt.Sprintf("Override CPU architecture type for downloaded binary. Ex: `tfswitch --arch amd64` will attempt to download the amd64 version of the binary. Default: %s", runtime.GOARCH))
 	getopt.StringVarLong(&params.ChDirPath, "chdir", 'c', "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	getopt.StringVarLong(&params.CustomBinaryPath, "bin", 'b', "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
 	getopt.StringVarLong(&params.DefaultVersion, "default", 'd', "Default to this version in case no other versions could be detected. Ex: tfswitch --default 1.2.4")
@@ -160,6 +162,7 @@ func populateParams(params Params) Params {
 }
 
 func initParams(params Params) Params {
+	params.Arch = runtime.GOARCH
 	params.ChDirPath = lib.GetCurrentDirectory()
 	params.CustomBinaryPath = ""
 	params.DefaultVersion = lib.DefaultLatest

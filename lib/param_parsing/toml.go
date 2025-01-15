@@ -27,6 +27,10 @@ func getParamsTOML(params Params) (Params, error) {
 			return params, errs
 		}
 
+		if viperParser.Get("arch") != nil {
+			params.Arch = os.ExpandEnv(viperParser.GetString("arch"))
+			logger.Debugf("Using \"arch\" from %q: %q", tomlPath, params.Arch)
+		}
 		if viperParser.Get("bin") != nil {
 			params.CustomBinaryPath = os.ExpandEnv(viperParser.GetString("bin"))
 			logger.Debugf("Using \"bin\" from %q: %q", tomlPath, params.CustomBinaryPath)
