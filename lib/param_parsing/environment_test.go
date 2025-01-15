@@ -15,7 +15,7 @@ func TestGetParamsFromEnvironment_arch_from_env(t *testing.T) {
 	params = initParams(params)
 	params = GetParamsFromEnvironment(params)
 	_ = os.Unsetenv("TF_ARCH")
-	if params.Version != expected {
+	if params.Arch != expected {
 		t.Error("Determined arch is not matching. Got " + params.Arch + ", expected " + expected)
 	}
 }
