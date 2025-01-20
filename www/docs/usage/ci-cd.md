@@ -7,7 +7,7 @@
 ## Automatically switch with bash
 
 Add the following to the end of your `~/.bashrc` file:
-(Use either `.tfswitchrc` or `.tfswitch.toml` or `.terraform-version`)
+(Use either `.tfswitchrc` or `.terraform-version`)
 
 ```sh
 cdtfswitch(){
