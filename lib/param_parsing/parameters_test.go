@@ -83,7 +83,7 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	expected := "../../test-data/integration-tests/test_tfswitchtoml"
-	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin", "--product=terraform", "--arch=amd64", "1.6.0"}
+	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin", "--product=terraform", "--arch=arch_from_args", "1.6.0"}
 	params := Params{}
 	params = initParams(params)
 	params.TomlDir = expected
@@ -112,7 +112,7 @@ func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 		t.Error("Product Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
 
-	expected = "amd64"
+	expected = "arch_from_args"
 	actual = params.Arch
 	if actual != expected {
 		t.Error("Arch Param was not as expected. Actual: " + actual + ", Expected: " + expected)
