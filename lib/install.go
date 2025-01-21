@@ -115,7 +115,9 @@ func switchToVersion(product Product, tfversion string, binPath string, installP
 	}
 
 	logger.Infof("Switched %s to version %q", product.GetName(), tfversion)
-	addRecent(tfversion, installPath, product) // add to recent file for faster lookup
+
+	// add to recent file for faster lookup
+	addRecent(tfversion, installPath, product)
 	return nil
 }
 
