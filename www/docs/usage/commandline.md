@@ -33,7 +33,7 @@ For example:
 
 ```bash
 export TF_VERSION=0.14.4
-tfswitch #will automatically switch to terraform version 0.14.4
+tfswitch # Will automatically switch to terraform version 0.14.4
 ```
 
 ### `TF_DEFAULT_VERSION`
@@ -44,7 +44,7 @@ For example:
 
 ```bash
 export TF_DEFAULT_VERSION=0.14.4
-tfswitch #will automatically switch to terraform version 0.14.4
+tfswitch # Will automatically switch to terraform version 0.14.4
 ```
 
 ### `TF_PRODUCT`
@@ -60,7 +60,24 @@ For example:
 
 ```bash
 export TF_PRODUCT=opentofu
-tfswitch # Will install opentofu
+tfswitch # Will install opentofu instead of terraform
+```
+
+### `TF_ARCH`
+
+`TF_ARCH` environment variable can be set to override default CPU architecture for downloaded Terraform binary.
+
+- This can be set to any string, though incorrect values will result in download failure.
+- Suggested values: `amd64`, `arm64`, `386`.
+- Check available Arch types at:
+  - [Terraform Downloads](https://releases.hashicorp.com/terraform/)
+  - [OpenTofu Downloads](https://get.opentofu.org/tofu/)
+
+For example:
+
+```bash
+export TF_ARCH=amd64
+tfswitch # Will install Terraform binary for amd64 architecture
 ```
 
 ## Install latest version only
@@ -119,4 +136,16 @@ The Terraform binaries will then be placed in the directory `.terraform.versions
 tfswitch -i /opt/terraform
 ```
 
-**NOTE** - The directory passed in `-i`/`--install` must be created before running `tfswitch`
+**NOTE**: The directory passed in `-i`/`--install` must be created before running `tfswitch`
+
+## Install binary for non-default architecture
+
+By default `tfswitch` will download the binary for the architecture of the host machine.
+
+If you want to download the binary for non-default CPU architecture then you can provide the `-A` or `--arch` command line argument to download binaries for custom CPU architecture. Useful if you need to override binary architecture for whatever reason.
+
+```bash
+tfswitch --arch amd64
+```
+
+**NOTE**: If the target file already exists in the download directory (See [Install to non-default location](#install-to-non-default-location) section above), it will be not downloaded. Downloaded files are stored without the architecture in the filename. Format of the filenames in download directory: `<product>_<version>`. E.g. `terraform_1.10.4`.
