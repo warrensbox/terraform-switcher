@@ -12,27 +12,28 @@ import (
 )
 
 type Params struct {
-	Arch             string
-	ChDirPath        string
-	CustomBinaryPath string
-	DefaultVersion   string
-	DryRun           bool
-	HelpFlag         bool
-	InstallPath      string
-	LatestFlag       bool
-	LatestPre        string
-	LatestStable     string
-	ListAllFlag      bool
-	LogLevel         string
-	MirrorURL        string
-	ShowLatestFlag   bool
-	ShowLatestPre    string
-	ShowLatestStable string
-	Product          string
-	ProductEntity    lib.Product
-	TomlDir          string
-	Version          string
-	VersionFlag      bool
+	Arch                   string
+	ChDirPath              string
+	CustomBinaryPath       string
+	DefaultVersion         string
+	DryRun                 bool
+	HelpFlag               bool
+	InstallPath            string
+	LatestFlag             bool
+	LatestPre              string
+	LatestStable           string
+	ListAllFlag            bool
+	LogLevel               string
+	MirrorURL              string
+	ShowLatestFlag         bool
+	ShowLatestPre          string
+	ShowLatestRequiredFlag bool
+	ShowLatestStable       string
+	Product                string
+	ProductEntity          lib.Product
+	TomlDir                string
+	Version                string
+	VersionFlag            bool
 }
 
 var logger *slog.Logger
@@ -66,6 +67,7 @@ func populateParams(params Params) Params {
 	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', "Set loglevel for tfswitch. One of (ERROR, INFO, NOTICE, DEBUG, TRACE)")
 	getopt.StringVarLong(&params.MirrorURL, "mirror", 'm', "install from a remote API other than the default. Default (based on product):\n"+strings.Join(defaultMirrors, "\n"))
 	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
+	getopt.BoolVarLong(&params.ShowLatestRequiredFlag, "show-latest-required", 'R', "Show latest stable version, which complies to constraints set by Terraform/Terragrunt")
 	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
 	getopt.StringVarLong(&params.Product, "product", 't', fmt.Sprintf("Specifies which product to use. Ex: `tfswitch --product opentofu` will install OpenTofu. Options: (%s). Default: %s", strings.Join(productIds, ", "), lib.DefaultProductId))
@@ -177,6 +179,7 @@ func initParams(params Params) Params {
 	params.MirrorURL = ""
 	params.ShowLatestFlag = false
 	params.ShowLatestPre = lib.DefaultLatest
+	params.ShowLatestRequiredFlag = false
 	params.ShowLatestStable = lib.DefaultLatest
 	params.TomlDir = lib.GetHomeDirectory()
 	params.Version = lib.DefaultLatest

@@ -65,6 +65,9 @@ func main() {
 	case parameters.ShowLatestFlag:
 		/* show latest stable version */
 		lib.ShowLatestVersion(parameters.MirrorURL)
+	case parameters.ShowLatestRequiredFlag:
+		/* show latest stable version within constraints */
+		lib.ShowLatestRequiredVersion(parameters.MirrorURL, parameters.Version)
 	case parameters.Version != "":
 		err = lib.InstallProductVersion(parameters.ProductEntity, parameters.DryRun, parameters.Version, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, parameters.Arch)
 	case parameters.DefaultVersion != "":
