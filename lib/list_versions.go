@@ -205,7 +205,7 @@ func validMinorVersionFormat(version string) bool {
 	return semverRegex.MatchString(version)
 }
 
-// ShowLatestVersion show install latest stable tf version
+// ShowLatestVersion show latest stable tf version
 func ShowLatestVersion(mirrorURL string) {
 	tfversion, _ := getTFLatest(mirrorURL)
 	fmt.Printf("%s\n", tfversion)
