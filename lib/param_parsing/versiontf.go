@@ -72,5 +72,5 @@ func isTerraformModule(params Params) bool {
 	if len(module.RequiredCore) == 0 {
 		logger.Debugf("No required version constraints defined by Terraform module at %q", params.ChDirPath)
 	}
-	return err == nil && len(module.RequiredCore) > 0
+	return len(module.RequiredCore) > 0
 }
