@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Other
 
+- docs: Update CHANGELOG with `v1.3.0` [#539](https://github.com/warrensbox/terraform-switcher/pull/539) ([yermulnik](https://github.com/yermulnik))
 - docs: TOML file belongs in Home dir only [#534](https://github.com/warrensbox/terraform-switcher/pull/534) ([yermulnik](https://github.com/yermulnik))
 - docs: Update CHANGELOG with `v1.2.4` [#520](https://github.com/warrensbox/terraform-switcher/pull/520) ([yermulnik](https://github.com/yermulnik))
 
