@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.3.0](https://github.com/warrensbox/terraform-switcher/tree/v1.3.0) - 2025-01-26
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.4...v1.3.0)
+
+### Added
+
+- feat: Allow to download binary with custom CPU arch [#532](https://github.com/warrensbox/terraform-switcher/pull/532) ([yermulnik](https://github.com/yermulnik))
+
+### Fixed
+
+- fix(Makefile): bring up to date [#535](https://github.com/warrensbox/terraform-switcher/pull/535) ([yermulnik](https://github.com/yermulnik))
+- fix: Exclude CHANGELOG howto from distribution archives [#528](https://github.com/warrensbox/terraform-switcher/pull/528) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: TOML file belongs in Home dir only [#534](https://github.com/warrensbox/terraform-switcher/pull/534) ([yermulnik](https://github.com/yermulnik))
+- docs: Update CHANGELOG with `v1.2.4` [#520](https://github.com/warrensbox/terraform-switcher/pull/520) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.2.4](https://github.com/warrensbox/terraform-switcher/tree/v1.2.4) - 2024-11-23
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.3...v1.2.4)
