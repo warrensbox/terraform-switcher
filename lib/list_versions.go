@@ -211,8 +211,8 @@ func ShowLatestVersion(mirrorURL string) {
 	fmt.Printf("%s\n", tfversion)
 }
 
-// ShowLatestRequiredVersion show latest version using constraints from TF
-func ShowLatestRequiredVersion(mirrorURL string, version string) {
+// ShowRequiredVersion show latest version using constraints from TF
+func ShowRequiredVersion(mirrorURL string, version string) {
 	if version == "" {
 		ShowLatestVersion(mirrorURL)
 		return
