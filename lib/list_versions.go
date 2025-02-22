@@ -223,7 +223,7 @@ func ShowRequiredVersion(mirrorURL string, version string) {
 		fmt.Printf("%s\n", version)
 		return
 	}
-	logger.Fatal("The provided terraform version does not exist.")
+	logger.Fatalf("The requested version (%q) does not exist.", version)
 }
 
 // ShowLatestImplicitVersion show latest - argument (version) must be provided
