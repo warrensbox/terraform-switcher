@@ -119,19 +119,17 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 				continue
 			}
 		}
-		if CheckDirExist(Path(location)) {
-			/* remove current symlink if exist*/
-			symlinkExist := CheckSymlink(location)
-			if symlinkExist {
-				_ = RemoveSymlink(location)
-			}
+		/* remove current symlink if exist*/
+		symlinkExist := CheckSymlink(location)
+		if symlinkExist {
+			_ = RemoveSymlink(location)
+		}
 
-			/* set symlink to desired version */
-			err = CreateSymlink(binVersionPath, location)
-			if err == nil {
-				logger.Debugf("Symlink created at %q", location)
-				return nil
-			}
+		/* set symlink to desired version */
+		err = CreateSymlink(binVersionPath, location)
+		if err == nil {
+			logger.Debugf("Symlink created at %q", location)
+			return nil
 		}
 	}
 
