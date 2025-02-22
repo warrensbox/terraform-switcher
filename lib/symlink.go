@@ -101,12 +101,24 @@ func ChangeSymlink(binVersionPath string, binPath string) {
 func ChangeProductSymlink(product Product, binVersionPath string, userBinPath string) error {
 	homedir := GetHomeDirectory() // get user's home directory
 	homeBinPath := filepath.Join(homedir, "bin", product.GetExecutableName())
-	possibleInstallLocations := []string{userBinPath, homeBinPath}
+	// List of possible directories with boolean property as to whether to attempt to create
+	possibleInstallLocations := map[string]bool{
+		userBinPath: false,
+		homeBinPath: true,
+	}
 	possibleInstallDirs := []string{}
 	var err error
 
-	for _, location := range possibleInstallLocations {
+	for location, shouldCreate := range possibleInstallLocations {
 		possibleInstallDirs = append(possibleInstallDirs, Path(location))
+		// If directory does not exist, check if we should create it, otherwise skip
+		if !CheckDirExist(Path(location)) {
+			if shouldCreate {
+				os.MkdirAll(Path(location), 0755)
+			} else {
+				continue
+			}
+		}
 		if CheckDirExist(Path(location)) {
 			/* remove current symlink if exist*/
 			symlinkExist := CheckSymlink(location)
