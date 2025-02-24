@@ -1,7 +1,8 @@
 module github.com/warrensbox/terraform-switcher
 
-go 1.22
-toolchain go1.23.6
+go 1.23.0
+
+toolchain go1.24.0
 
 require (
 	github.com/ProtonMail/gopenpgp/v2 v2.8.2
