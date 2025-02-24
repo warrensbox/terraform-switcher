@@ -1,6 +1,6 @@
 EXE  := tfswitch
 PKG  := github.com/warrensbox/terraform-switcher
-VER := $(shell git ls-remote --tags git@github.com:warrensbox/terraform-switcher.git | awk '{if ($$2 ~ "\\^\\{\\}$$") next; print vers[split($$2,vers,"\\/")]}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -1)
+VER := $(shell git ls-remote --tags --sort=version:refname git@github.com:warrensbox/terraform-switcher.git | awk '{if ($$2 ~ "\\^\\{\\}$$") next; print vers[split($$2,vers,"\\/")]}' | tail -1)
 PATH := build:$(PATH)
 GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
@@ -11,7 +11,7 @@ $(EXE): go.mod *.go lib/*.go
 .PHONY: release
 release: $(EXE) darwin linux
 
-.PHONY: darwin linux 
+.PHONY: darwin linux
 darwin linux:
 	GOOS=$@ go build -ldflags "-X main.version=$(VER)" -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
 
@@ -20,9 +20,13 @@ clean:
 	rm -f $(EXE) $(EXE)-*-*-*
 
 .PHONY: test
-test: $(EXE)
+test: vet $(EXE)
 	mv $(EXE) build
 	go test -v ./...
+
+.PHONY: vet
+vet:
+	go vet ./...
 
 .PHONY: install
 install: $(EXE)
@@ -31,5 +35,6 @@ install: $(EXE)
 
 .PHONY: docs
 docs:
-	cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+	#cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+	cd www && mkdocs gh-deploy --force
 
