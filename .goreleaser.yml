@@ -37,6 +37,10 @@ archives:
       {{- .Os }}_
       {{- .Arch }}
       {{- if .Arm }}v{{ .Arm }}{{ end -}}
+    files:
+      - CHANGELOG.md
+      - LICENSE
+      - README.md
     format_overrides:
       - goos: windows
         format: zip
