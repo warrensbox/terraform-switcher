@@ -1,6 +1,7 @@
 module github.com/warrensbox/terraform-switcher
 
 go 1.22
+toolchain go1.23.6
 
 require (
 	github.com/ProtonMail/gopenpgp/v2 v2.8.2
@@ -14,7 +15,7 @@ require (
 	github.com/pborman/getopt v1.1.0
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.34.0
 	golang.org/x/sys v0.30.0
 )
 
