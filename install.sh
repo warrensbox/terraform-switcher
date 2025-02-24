@@ -88,6 +88,10 @@ tag_to_version() {
 }
 adjust_format() {
   # change format (tar.gz or zip) based on ARCH
+  case ${OS} in
+    # zip archives for Windows appeared in tfswitch v1.3.1
+    windows) [ "$REALTAG" ">" "v1.3.0" ] && FORMAT=zip ;;
+  esac
   true
 }
 adjust_os() {
@@ -378,3 +382,5 @@ CHECKSUM=${PROJECT_NAME}_${REALTAG}_checksums.txt
 CHECKSUM_URL=${GITHUB_DOWNLOAD}/${REALTAG}/${CHECKSUM}
 
 execute
+
+# vim: set expandtab tabstop=2 shiftwidth=2:
