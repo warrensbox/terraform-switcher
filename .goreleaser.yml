@@ -43,7 +43,7 @@ archives:
       - README.md
     format_overrides:
       - goos: windows
-        format: zip
+        formats: ['zip']
 
 brews:
   -
