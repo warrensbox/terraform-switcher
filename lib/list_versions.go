@@ -31,7 +31,7 @@ func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionL
 		return
 	}
 	for _, match := range matches {
-		trimstr := strings.Trim(match, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
+		trimstr := strings.Trim(match, "/\"") // remove '/' or '"' from /X.X.X/" or /X.X.X"
 		tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
 	}
 }
@@ -66,7 +66,7 @@ func getTFLatest(mirrorURL string) (string, error) {
 	for i := range result {
 		if r.MatchString(bodyLines[i]) {
 			str := r.FindString(bodyLines[i])
-			trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
+			trimstr := strings.Trim(str, "/\"") // remove '/' or '"' from /X.X.X/" or /X.X.X"
 			return trimstr, nil
 		}
 	}
@@ -76,7 +76,7 @@ func getTFLatest(mirrorURL string) (string, error) {
 // getTFLatestImplicit :  Get the latest implicit terraform version given the hashicorp url
 func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
 	if preRelease {
-		//TODO: use getTFList() instead of getTFURLBody
+		// TODO: use getTFList() instead of getTFURLBody
 		body, error := getTFURLBody(mirrorURL)
 		if error != nil {
 			return "", error
@@ -91,13 +91,13 @@ func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 		for i := range versions {
 			if r.MatchString(versions[i]) {
 				str := r.FindString(versions[i])
-				trimstr := strings.Trim(str, "/\"") //remove '/' or '"' from /X.X.X/" or /X.X.X"
+				trimstr := strings.Trim(str, "/\"") // remove '/' or '"' from /X.X.X/" or /X.X.X"
 				return trimstr, nil
 			}
 		}
 	} else if !preRelease {
 		listAll := false
-		tflist, _ := getTFList(mirrorURL, listAll) //get list of versions
+		tflist, _ := getTFList(mirrorURL, listAll) // get list of versions
 		version = fmt.Sprintf("~> %v", version)
 		semv, err := SemVerParser(&version, tflist)
 		if err != nil {
@@ -110,10 +110,9 @@ func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 
 // getTFURLBody : Get list of terraform versions from hashicorp releases
 func getTFURLBody(mirrorURL string) (string, error) {
-
 	hasSlash := strings.HasSuffix(mirrorURL, "/")
 	if !hasSlash {
-		//if it does not have slash - append slash
+		// if it does not have slash - append slash
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}
 	resp, errURL := http.Get(mirrorURL)
@@ -184,7 +183,6 @@ func removeDuplicateVersions(elements []string) []string {
 // For example: 0.1. 2 = invalid
 */
 func validVersionFormat(version string) bool {
-
 	// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
 	// Follow https://semver.org/spec/v1.0.0-beta.html
 	// Check regular expression at https://rubular.com/r/ju3PxbaSBALpJB
@@ -198,7 +196,6 @@ func validVersionFormat(version string) bool {
 // For example: 0.1.2 = invalid
 */
 func validMinorVersionFormat(version string) bool {
-
 	// Getting versions from body; should return match /X.X./ where X is a number
 	semverRegex := regexp.MustCompile(`^(\d+\.\d+)$`)
 
@@ -218,7 +215,7 @@ func ShowLatestImplicitVersion(requestedVersion, mirrorURL string, preRelease bo
 		if len(tfversion) > 0 {
 			fmt.Printf("%s\n", tfversion)
 		} else {
-			logger.Fatal("The provided terraform version does not exist.\n Try `tfswitch -l` to see all available versions")
+			logger.Fatal("Requested version does not exist.\n\tTry `tfswitch -l` to see all available versions")
 			os.Exit(1)
 		}
 	} else {

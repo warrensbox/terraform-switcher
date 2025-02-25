@@ -126,7 +126,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 	if err == nil {
 		return fmt.Errorf("None of the installation directories exist: \"%s\". %s\n",
 			strings.Join(possibleInstallDirs, `", "`),
-			"Manually create one of them and try again.")
+			"Manually create one of them and try again")
 	}
 
 	return err

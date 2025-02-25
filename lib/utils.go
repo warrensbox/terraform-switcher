@@ -1,9 +1,9 @@
 package lib
 
 import (
-	"fmt"
-	"github.com/pborman/getopt"
 	"os"
+
+	"github.com/pborman/getopt"
 )
 
 // FileExistsAndIsNotDir checks if a file exists and is not a directory before we try using it to prevent further errors
@@ -23,7 +23,5 @@ func closeFileHandlers(handlers []*os.File) {
 }
 
 func UsageMessage() {
-	fmt.Print("\n\n")
 	getopt.PrintUsage(os.Stderr)
-	fmt.Println("Supply the terraform version as an argument, or choose from a menu")
 }
