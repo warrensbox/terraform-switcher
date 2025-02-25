@@ -38,7 +38,7 @@ func main() {
 		if version != "" {
 			fmt.Printf("Version: %s\n", version)
 		} else {
-			fmt.Println("Version not defined during build.")
+			fmt.Println("Version not defined during build")
 		}
 		os.Exit(0)
 	case parameters.HelpFlag:

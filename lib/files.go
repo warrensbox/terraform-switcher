@@ -85,7 +85,7 @@ func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error
 			filenames = append(filenames, filepath.Join(destination, f.Name))
 		}
 	}
-	logger.Debug("Waiting for deferred functions.")
+	logger.Debug("Waiting for deferred functions")
 	unzipWaitGroup.Wait()
 
 	if len(filenames) < 1 {
@@ -101,7 +101,7 @@ func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error
 func createDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		logger.Infof("Creating %q directory", dir)
-		err = os.MkdirAll(dir, 0755)
+		err = os.MkdirAll(dir, 0o755)
 		if err != nil {
 			logger.Panicf("Unable to create %q directory: %v", dir, err)
 		}
