@@ -29,7 +29,7 @@ func TestGetVersionFromVersionsTF_impossible_constraints(t *testing.T) {
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_matching_constraints"
 	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
-	expectedError := "did not find version matching constraint: ~> 1.0.0, =1.0.5, <= 1.0.4"
+	expectedError := "Did not find version matching constraint: ~> 1.0.0, =1.0.5, <= 1.0.4"
 	if err == nil {
 		t.Errorf("Expected error '%s', got nil", expectedError)
 	} else {
@@ -68,7 +68,7 @@ func TestGetVersionFromVersionsTF_non_existent_constraint(t *testing.T) {
 	if err == nil {
 		t.Error("Expected error got nil")
 	} else {
-		expected := "did not find version matching constraint: > 99999.0.0"
+		expected := "Did not find version matching constraint: > 99999.0.0"
 		if fmt.Sprint(err) != expected {
 			t.Errorf("Expected error %q, got %q", expected, err)
 		}

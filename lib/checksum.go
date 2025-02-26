@@ -66,7 +66,7 @@ func checkSignatureOfChecksums(keyRingReader *os.File, hashFile *os.File, signat
 	fileHandlersToClose = append(fileHandlersToClose, signatureFile)
 	defer closeFileHandlers(fileHandlersToClose)
 
-	logger.Info("Verifying signature of checksum file...")
+	logger.Info("Verifying signature of checksum file")
 	keyring, err := openpgp.ReadArmoredKeyRing(keyRingReader)
 	if err != nil {
 		logger.Errorf("Could not read armored key ring: %v", err)
@@ -78,6 +78,6 @@ func checkSignatureOfChecksums(keyRingReader *os.File, hashFile *os.File, signat
 		logger.Errorf("Could not check detached signature: %v", err)
 		return false
 	}
-	logger.Info("Checksum file signature verification successful.")
+	logger.Info("Checksum file signature verification successful")
 	return true
 }

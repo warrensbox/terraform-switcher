@@ -41,6 +41,9 @@ archives:
       - CHANGELOG.md
       - LICENSE
       - README.md
+    format_overrides:
+      - goos: windows
+        formats: ['zip']
 
 brews:
   -

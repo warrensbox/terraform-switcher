@@ -65,7 +65,7 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	exist := versionExist(tfversion, tflist) // Check if version exists before downloading it
 
 	if !exist {
-		return fmt.Errorf("the provided %s version does not exist: %q.\n Try `tfswitch -l` to see all available versions", product.GetId(), tfversion)
+		return fmt.Errorf("Provided %s version does not exist: %q.\n\tTry `tfswitch -l` to see all available versions", product.GetId(), tfversion)
 	}
 
 	if goarch != runtime.GOARCH {
@@ -96,7 +96,7 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 		logger.Fatalf("Unable to unzip %q file: %v", zipFile, errUnzip)
 	}
 
-	logger.Debug("Waiting for deferred functions.")
+	logger.Debug("Waiting for deferred functions")
 	wg.Wait()
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
 	installFilePath := ConvertExecutableExt(filepath.Join(installLocation, product.GetExecutableName()))
@@ -166,7 +166,7 @@ func installableBinLocation(product Product, userBinPath string) string {
 		}
 	}
 
-	logger.Fatalf("Binary path (%q) does not exist. Manually create bin directory %q and try again.", userBinPath, binDir)
+	logger.Fatalf("Binary path (%q) does not exist. Manually create bin directory %q and try again", userBinPath, binDir)
 	os.Exit(1)
 	return ""
 }
@@ -229,8 +229,7 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 			return install(product, requestedVersion, customBinaryPath, installPath, mirrorURL, arch)
 		} else {
 			PrintInvalidTFVersion()
-			UsageMessage()
-			return fmt.Errorf("args must be a valid terraform version")
+			return fmt.Errorf("Argument must be a valid %s version", product.GetName())
 		}
 	}
 	return nil
