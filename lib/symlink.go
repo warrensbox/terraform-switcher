@@ -101,25 +101,42 @@ func ChangeSymlink(binVersionPath string, binPath string) {
 func ChangeProductSymlink(product Product, binVersionPath string, userBinPath string) error {
 	homedir := GetHomeDirectory() // get user's home directory
 	homeBinPath := filepath.Join(homedir, "bin", product.GetExecutableName())
-	possibleInstallLocations := []string{userBinPath, homeBinPath}
+	// List of possible directories with boolean property as to whether to attempt to create
+	possibleInstallLocations := map[string]bool{
+		userBinPath: false,
+		homeBinPath: true,
+	}
 	possibleInstallDirs := []string{}
 	var err error
 
-	for _, location := range possibleInstallLocations {
+	for location, shouldCreate := range possibleInstallLocations {
 		possibleInstallDirs = append(possibleInstallDirs, Path(location))
-		if CheckDirExist(Path(location)) {
-			/* remove current symlink if exist*/
-			symlinkExist := CheckSymlink(location)
-			if symlinkExist {
-				_ = RemoveSymlink(location)
+		// If directory does not exist, check if we should create it, otherwise skip
+		dirPath := Path(location)
+		if !CheckDirExist(dirPath) {
+			if shouldCreate {
+				logger.Infof("Creating %q directory", dirPath)
+				err = os.MkdirAll(dirPath, 0o755)
+				if err != nil {
+					logger.Infof("Unable to create %q directory: %v", dirPath, err)
+					continue
+				}
+			} else {
+				continue
 			}
+		}
+		/* remove current symlink if exist*/
+		symlinkExist := CheckSymlink(location)
+		if symlinkExist {
+			_ = RemoveSymlink(location)
+		}
 
-			/* set symlink to desired version */
-			err = CreateSymlink(binVersionPath, location)
-			if err == nil {
-				logger.Debugf("Symlink created at %q", location)
-				return nil
-			}
+		/* set symlink to desired version */
+		err = CreateSymlink(binVersionPath, location)
+		if err == nil {
+			logger.Debugf("Symlink created at %q", location)
+			logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", dirPath, location)
+			return nil
 		}
 	}
 
