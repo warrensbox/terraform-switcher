@@ -112,7 +112,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 	for location, shouldCreate := range possibleInstallLocations {
 		possibleInstallDirs = append(possibleInstallDirs, Path(location))
 		// If directory does not exist, check if we should create it, otherwise skip
-		dirPath = Path(location)
+		dirPath := Path(location)
 		if !CheckDirExist(dirPath) {
 			if shouldCreate {
 				logger.Infof("Creating %q directory", dirPath)
