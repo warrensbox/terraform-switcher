@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Other
 
 - :warning: go: bump golang.org/x/crypto from 0.33.0 to 0.34.0 (`go.mod`: upgrade go directive to at least 1.23.0) [#545](https://github.com/warrensbox/terraform-switcher/pull/545) ([dependabot[bot]](https://github.com/apps/dependabot))
-- docs: Update CHANGELOG with `v1.4.0` [#547](https://github.com/warrensbox/terraform-switcher/pull/547) ([yermulnik](https://github.com/yermulnik))
+- docs: Update CHANGELOG with `v1.4.0` [#548](https://github.com/warrensbox/terraform-switcher/pull/548) ([yermulnik](https://github.com/yermulnik))
 
 ## [v1.3.0](https://github.com/warrensbox/terraform-switcher/tree/v1.3.0) - 2025-01-26
 
