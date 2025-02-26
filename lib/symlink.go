@@ -114,7 +114,12 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		// If directory does not exist, check if we should create it, otherwise skip
 		if !CheckDirExist(Path(location)) {
 			if shouldCreate {
-				os.MkdirAll(Path(location), 0755)
+				logger.Infof("Creating %q directory", dir)
+				err = os.MkdirAll(Path(location), 0o755)
+				if err != nil {
+					logger.Infof("Unable to create %q directory: %v", dir, err)
+					continue
+				}
 			} else {
 				continue
 			}
@@ -129,6 +134,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		err = CreateSymlink(binVersionPath, location)
 		if err == nil {
 			logger.Debugf("Symlink created at %q", location)
+			logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", location, location)
 			return nil
 		}
 	}
