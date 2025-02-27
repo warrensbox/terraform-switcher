@@ -139,7 +139,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 			var checkDirInPath bool = false
 			checkDirPath := strings.TrimRight(dirPath, "/")
 
-			for _, path := range strings.Split(os.Getenv("ZZZ"), ":") {
+			for _, path := range strings.Split(os.Getenv("PATH"), ":") {
 				checkPath := strings.TrimRight(strings.Replace(path, "~", homedir, 1), "/")
 
 				if checkPath == checkDirPath {
