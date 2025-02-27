@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.4.0](https://github.com/warrensbox/terraform-switcher/tree/v1.4.0) - 2025-02-26
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.3.0...v1.4.0)
+
+### Added
+
+- feat: Improve messaging [#546](https://github.com/warrensbox/terraform-switcher/pull/546) ([yermulnik](https://github.com/yermulnik))
+- fix: Create home bin directory if it does not already exist (reinstate historical behavior) [#544](https://github.com/warrensbox/terraform-switcher/pull/544) ([MatthewJohn](https://github.com/MatthewJohn))
+- feat: Override default build format to Zip when building for Windows [#527](https://github.com/warrensbox/terraform-switcher/pull/527) ([felipebraga](https://github.com/felipebraga))
+
+### Other
+
+- :warning: go: bump golang.org/x/crypto from 0.33.0 to 0.34.0 (`go.mod`: upgrade go directive to at least 1.23.0) [#545](https://github.com/warrensbox/terraform-switcher/pull/545) ([dependabot[bot]](https://github.com/apps/dependabot))
+- docs: Update CHANGELOG with `v1.4.0` [#548](https://github.com/warrensbox/terraform-switcher/pull/548) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.3.0](https://github.com/warrensbox/terraform-switcher/tree/v1.3.0) - 2025-01-26
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.4...v1.3.0)
