@@ -7,7 +7,7 @@ import (
 )
 
 // Create exclusive lock
-func acquireLock(lockFile string, LockWaitMaxAttempts int, LockWaitSleep time.Duration) error {
+func acquireLock(lockFile string, LockWaitMaxAttempts int, LockWaitInterval time.Duration) error {
 	var waitForLock bool = true
 	var LockWaitCount int = 0
 
@@ -27,7 +27,7 @@ func acquireLock(lockFile string, LockWaitMaxAttempts int, LockWaitSleep time.Du
 				logger.Warnf("Unable to get lock %q last modification time: %v", lockFile, err)
 			}
 
-			time.Sleep(LockWaitSleep)
+			time.Sleep(LockWaitInterval)
 		} else {
 			waitForLock = false
 			logger.Debugf("Acquired lock %q", lockFile)
