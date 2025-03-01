@@ -65,7 +65,7 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	exist := versionExist(tfversion, tflist) // Check if version exists before downloading it
 
 	if !exist {
-		return fmt.Errorf("Provided %s version does not exist: %q.\n\tTry `tfswitch -l` to see all available versions", product.GetId(), tfversion)
+		return fmt.Errorf("Requested version %s does not exist: %q.\n\tTry `tfswitch -l` to see all available versions", product.GetId(), tfversion)
 	}
 
 	if goarch != runtime.GOARCH {
