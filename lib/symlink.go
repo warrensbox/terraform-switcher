@@ -137,12 +137,11 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 			logger.Debugf("Symlink created at %q", location)
 
 			var isDirInPath bool = false
-			checkDirPath := strings.TrimRight(dirPath, "/")
 
-			for _, path := range strings.Split(os.Getenv("PATH"), ":") {
-				checkPath := strings.TrimRight(strings.Replace(path, "~", homedir, 1), "/")
+			for _, envPathElement := range strings.Split(os.Getenv("PATH"), ":") {
+				expandedEnvPathElement := strings.TrimRight(strings.Replace(envPathElement, "~", homedir, 1), "/")
 
-				if checkPath == checkDirPath {
+				if expandedEnvPathElement == strings.TrimRight(dirPath, "/") {
 					isDirInPath = true
 					break
 				}
