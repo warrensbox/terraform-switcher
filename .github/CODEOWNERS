@@ -5,4 +5,5 @@
 
 # The entries are placed in a historical order
 # 20240408: initial CODEOWNERS commit (added repo owner and all current collaborators)
-* @warrensbox @yermulnik @jukie @MatrixCrawler @crablab @MatthewJohn
+# 20250301: take code ownership for safekeeping after more than half a year of inactivity (@jukie @MatrixCrawler @crablab)
+* @warrensbox @yermulnik @MatthewJohn
