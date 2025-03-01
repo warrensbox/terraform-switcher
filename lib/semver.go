@@ -52,10 +52,10 @@ func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 
 // PrintInvalidTFVersion Print invalid TF version
 func PrintInvalidTFVersion() {
-	logger.Warn("Version does not exist or invalid terraform version format.\n\tFormat should be #.#.# or #.#.#-@# where # are numbers and @ are word characters.\n\tFor example, 0.11.7 and 0.11.9-beta1 are valid versions")
+	logger.Error("Version does not exist or invalid terraform version format.\n\tFormat should be #.#.# or #.#.#-@# where # are numbers and @ are word characters.\n\tFor example, -1.11.7 and 0.11.9-beta1 are valid versions")
 }
 
 // PrintInvalidMinorTFVersion Print invalid minor TF version
 func PrintInvalidMinorTFVersion() {
-	logger.Warn("Invalid minor terraform version format.\n\tFormat should be #.# where # are numbers. For example, 0.11 is valid version")
+	logger.Error("Invalid minor terraform version format.\n\tFormat should be #.# where # are numbers. For example, -1.11 is valid version")
 }

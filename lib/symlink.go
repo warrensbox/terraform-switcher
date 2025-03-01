@@ -135,7 +135,22 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		err = CreateSymlink(binVersionPath, location)
 		if err == nil {
 			logger.Debugf("Symlink created at %q", location)
-			logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", dirPath, location)
+
+			var isDirInPath bool = false
+
+			for _, envPathElement := range strings.Split(os.Getenv("PATH"), ":") {
+				expandedEnvPathElement := strings.TrimRight(strings.Replace(envPathElement, "~", homedir, 1), "/")
+
+				if expandedEnvPathElement == strings.TrimRight(dirPath, "/") {
+					isDirInPath = true
+					break
+				}
+			}
+
+			if !isDirInPath {
+				logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", dirPath, location)
+			}
+
 			return nil
 		}
 	}

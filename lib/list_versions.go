@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"reflect"
 	"regexp"
 	"strings"
@@ -215,8 +214,7 @@ func ShowLatestImplicitVersion(requestedVersion, mirrorURL string, preRelease bo
 		if len(tfversion) > 0 {
 			fmt.Printf("%s\n", tfversion)
 		} else {
-			logger.Fatal("Requested version does not exist.\n\tTry `tfswitch -l` to see all available versions")
-			os.Exit(1)
+			logger.Fatalf("Requested version does not exist: %q.\n\tTry `tfswitch -l` to see all available versions", requestedVersion)
 		}
 	} else {
 		PrintInvalidMinorTFVersion()
