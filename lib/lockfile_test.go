@@ -6,7 +6,7 @@ import (
 
 // Test Locking
 func TestLocking(t *testing.T) {
-	var lockFile string = "/tmp/lockfile.lock"
+	var lockFile string = "lockfile.lock"
 
 	// Acquire lock
 	if lockAcquireErr := acquireLock(lockFile, 1, 1); lockAcquireErr == nil {
