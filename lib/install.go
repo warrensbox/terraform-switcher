@@ -57,7 +57,6 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 
 	// Create exclusive lock to prevent multiple concurrent installations
 	lockFile := filepath.Join(installLocation, product.GetId()) + ".lock"
-	logger.Debugf("Attempting to acquire lock %q", lockFile)
 	// 90 attempts * 2 seconds = 3 minutes to acquire lock, otherwise bail out
 	if err := acquireLock(lockFile, 90, 2*time.Second); err != nil {
 		logger.Fatal(err)

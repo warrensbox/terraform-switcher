@@ -7,35 +7,31 @@ import (
 )
 
 // Create exclusive lock
-func acquireLock(lockFile string, LockWaitMaxAttempts int, LockWaitInterval time.Duration) error {
-	var waitForLock bool = true
-	var LockWaitCount int = 0
-
+func acquireLock(lockFile string, lockWaitMaxAttempts int, lockWaitInterval time.Duration) error {
 	logger.Debugf("Attempting to acquire lock %q", lockFile)
-	for waitForLock {
-		LockWaitCount++
-		if _, err := os.OpenFile(lockFile, os.O_CREATE|os.O_EXCL, 0o644); err != nil {
-			if LockWaitCount > LockWaitMaxAttempts {
-				return fmt.Errorf("Unable to acquire lock %q", lockFile)
-			}
 
-			logger.Infof("Waiting for lock %q to be released (attempt %d out of %d)", lockFile, LockWaitCount, LockWaitMaxAttempts)
+	for lockAttempt := range lockWaitMaxAttempts {
+		lockAttemptCounter := lockAttempt + 1
 
-			if lockFileInfo, err := os.Stat(lockFile); err == nil {
-				logger.Debugf("Lock %q last modification time: %s", lockFile, lockFileInfo.ModTime())
-			} else {
-				logger.Warnf("Unable to get lock %q last modification time: %v", lockFile, err)
-			}
-
-			time.Sleep(LockWaitInterval)
-		} else {
-			waitForLock = false
+		if _, err := os.OpenFile(lockFile, os.O_CREATE|os.O_EXCL, 0o644); err == nil {
 			logger.Debugf("Acquired lock %q", lockFile)
-			break
+			return nil
+		}
+
+		logger.Infof("Waiting for lock %q to be released (attempt %d out of %d)", lockFile, lockAttemptCounter, lockWaitMaxAttempts)
+
+		if lockFileInfo, err := os.Stat(lockFile); err == nil {
+			logger.Debugf("Lock %q last modification time: %s", lockFile, lockFileInfo.ModTime())
+		} else {
+			logger.Warnf("Unable to get lock %q last modification time: %v", lockFile, err)
+		}
+
+		if lockAttemptCounter < lockWaitMaxAttempts {
+			time.Sleep(lockWaitInterval)
 		}
 	}
 
-	return nil
+	return fmt.Errorf("Failed to acquire lock %q", lockFile)
 }
 
 // Release lock file
