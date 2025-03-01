@@ -17,12 +17,12 @@ darwin linux windows:
 
 .PHONY: clean
 clean:
-	rm -f $(EXE) $(EXE)-*-*-*
+	rm -vrf $(EXE) $(EXE)-*-*-* build/
 
 .PHONY: test
 test: vet $(EXE)
 	mkdir -p build
-	mv $(EXE) build/
+	mv $(EXE) build/ # can't figure what's this for (also `PATH' var) (c) @yermulnik 01-Mar-2025
 	go test -v ./...
 
 .PHONY: vet
