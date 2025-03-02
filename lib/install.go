@@ -58,11 +58,12 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	// Create exclusive lock to prevent multiple concurrent installations
 	lockFile := filepath.Join(installLocation, product.GetId()) + ".lock"
 	// 90 attempts * 2 seconds = 3 minutes to acquire lock, otherwise bail out
-	if err := acquireLock(lockFile, 90, 2*time.Second); err != nil {
+	lockedFile, err := acquireLock(lockFile, 90, 2*time.Second)
+	if err != nil {
 		logger.Fatal(err)
 	}
 	// Release lock when done
-	defer releaseLock(lockFile)
+	defer releaseLock(lockFile, lockedFile)
 
 	// check to see if the requested version has been downloaded before
 	if recentDownloadFile := CheckFileExist(installFileVersionPath); recentDownloadFile {
@@ -97,14 +98,18 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
-		releaseLock(lockFile)
+		// logger.Fatal doesn't invoke deferred functions,
+		// so need to release the lock explicitly
+		releaseLock(lockFile, lockedFile)
 		logger.Fatalf("Error downloading: %s", errDownload)
 	}
 
 	/* unzip the downloaded zipfile */
 	_, errUnzip := Unzip(zipFile, installLocation, product.GetExecutableName())
 	if errUnzip != nil {
-		releaseLock(lockFile)
+		// logger.Fatal doesn't invoke deferred functions,
+		// so need to release the lock explicitly
+		releaseLock(lockFile, lockedFile)
 		logger.Fatalf("Unable to unzip %q file: %v", zipFile, errUnzip)
 	}
 
