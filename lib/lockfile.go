@@ -4,18 +4,16 @@ import (
 	"fmt"
 	"os"
 	"time"
-
-	"github.com/rogpeppe/go-internal/lockedfile"
 )
 
 // Acquire exclusive lock
-func acquireLock(lockFile string, lockWaitMaxAttempts int, lockWaitInterval time.Duration) (*lockedfile.File, error) {
+func acquireLock(lockFile string, lockWaitMaxAttempts int, lockWaitInterval time.Duration) (*os.File, error) {
 	logger.Debugf("Attempting to acquire lock %q", lockFile)
 
 	for lockAttempt := range lockWaitMaxAttempts {
 		lockAttemptCounter := lockAttempt + 1
 
-		if file, err := lockedfile.OpenFile(lockFile, os.O_CREATE|os.O_EXCL, 0o644); err == nil {
+		if file, err := os.OpenFile(lockFile, os.O_CREATE|os.O_EXCL, 0o644); err == nil {
 			logger.Debugf("Acquired lock %q", lockFile)
 			return file, nil
 		}
@@ -36,13 +34,15 @@ func acquireLock(lockFile string, lockWaitMaxAttempts int, lockWaitInterval time
 	return nil, fmt.Errorf("Failed to acquire lock %q", lockFile)
 }
 
-// Release lock file
-func releaseLock(lockFile string, lockedFile *lockedfile.File) {
+// Release and remove lock
+func releaseLock(lockFile string, lockedFile *os.File) {
 	logger.Debugf("Releasing lock %q", lockFile)
 
 	if lockedFile == nil {
 		logger.Warnf("Lock is `nil` on %q", lockFile)
-		removeLock(lockFile)
+		if exist := CheckFileExist(lockFile); exist {
+			logger.Warnf("Lock %q exists. This is NOT expected!", lockFile)
+		}
 		return
 	}
 
@@ -52,11 +52,6 @@ func releaseLock(lockFile string, lockedFile *lockedfile.File) {
 		logger.Debugf("Released lock %q", lockFile)
 	}
 
-	removeLock(lockFile)
-}
-
-// Remove lock file
-func removeLock(lockFile string) {
 	logger.Debugf("Removing lock %q", lockFile)
 
 	if exist := CheckFileExist(lockFile); exist {
