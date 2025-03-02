@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"path/filepath"
 	"testing"
 )
 
@@ -8,14 +9,14 @@ import (
 func TestLocking(t *testing.T) {
 	var lockFile string = "lockfile.lock"
 	tmpDir := t.TempDir()
-	lockFilePath := os.path.Join(tmpDir, lockFile)
+	lockFilePath := filepath.Join(tmpDir, lockFile)
 
 	// Acquire lock
 	if lockedFile, err := acquireLock(lockFilePath, 1, 1); err == nil {
 		t.Logf("Lock acquired successfully: %s", err)
 
 		// Release lock
-		releaseLock(lockFilePath)
+		releaseLock(lockFilePath, lockedFile)
 		if CheckFileExist(lockFilePath) {
 			t.Errorf("Failed to release lock: %s", lockFilePath)
 		} else {
