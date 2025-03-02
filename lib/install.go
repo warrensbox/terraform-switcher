@@ -56,7 +56,8 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+tfversion))
 
 	// Create exclusive lock to prevent multiple concurrent installations
-	lockFile := filepath.Join(installLocation, product.GetId()) + ".lock"
+	// Put lockfile in temp directory to get it cleaned up on reboot
+	lockFile := filepath.Join(os.TempDir(), ".tfswitch."+product.GetId()+".lock")
 	// 90 attempts * 2 seconds = 3 minutes to acquire lock, otherwise bail out
 	lockedFile, err := acquireLock(lockFile, 90, 2*time.Second)
 	if err != nil {

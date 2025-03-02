@@ -7,7 +7,7 @@ import (
 
 // Test Locking
 func TestLocking(t *testing.T) {
-	var lockFile string = "lockfile.lock"
+	var lockFile string = ".tfswitch.lock"
 	tmpDir := t.TempDir()
 	lockFilePath := filepath.Join(tmpDir, lockFile)
 
