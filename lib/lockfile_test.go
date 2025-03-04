@@ -28,14 +28,9 @@ func TestLocking(t *testing.T) {
 		// Release lock
 		releaseLock(lockFilePath, lockedFile)
 		if CheckFileExist(lockFilePath) {
-			t.Errorf("Failed to release lock: %s", lockFilePath)
+			t.Errorf("Lock %s still exists. This is NOT expected!", lockFilePath)
 		} else {
 			t.Logf("Lock released successfully: %s", lockFilePath)
-		}
-
-		// Check lock was cleaned up
-		if exist := CheckFileExist(lockFilePath); exist {
-			t.Errorf("Lock %s still exists. This is NOT expected!", lockFilePath)
 		}
 	} else {
 		t.Errorf("Failed to acquire lock: %s", lockFilePath)
