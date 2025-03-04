@@ -33,10 +33,10 @@ func acquireLock(lockFile string, lockWaitMaxAttempts int, lockWaitInterval time
 }
 
 // Release and remove lock
-func releaseLock(lockFile string, lockedFile *os.File) {
+func releaseLock(lockFile string, lockedFH *os.File) {
 	logger.Debugf("Releasing lock %q", lockFile)
 
-	if lockedFile == nil {
+	if lockedFH == nil {
 		logger.Warnf("Lock is `nil` on %q", lockFile)
 		if exist := CheckFileExist(lockFile); exist {
 			logger.Warnf("Lock %q exists. This is NOT expected!", lockFile)
@@ -44,7 +44,7 @@ func releaseLock(lockFile string, lockedFile *os.File) {
 		return
 	}
 
-	if err := lockedFile.Close(); err != nil {
+	if err := lockedFH.Close(); err != nil {
 		logger.Warnf("Failed to release lock %q: %w", lockFile, err)
 	} else {
 		logger.Debugf("Released lock %q", lockFile)

@@ -59,12 +59,12 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	// Put lockfile in temp directory to get it cleaned up on reboot
 	lockFile := filepath.Join(os.TempDir(), ".tfswitch."+product.GetId()+".lock")
 	// 90 attempts * 2 seconds = 3 minutes to acquire lock, otherwise bail out
-	lockedFile, err := acquireLock(lockFile, 90, 2*time.Second)
+	lockedFH, err := acquireLock(lockFile, 90, 2*time.Second)
 	if err != nil {
 		logger.Fatal(err)
 	}
 	// Release lock when done
-	defer releaseLock(lockFile, lockedFile)
+	defer releaseLock(lockFile, lockedFH)
 
 	// check to see if the requested version has been downloaded before
 	if recentDownloadFile := CheckFileExist(installFileVersionPath); recentDownloadFile {
@@ -101,7 +101,7 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	if errDownload != nil {
 		// logger.Fatal doesn't invoke deferred functions,
 		// so need to release the lock explicitly
-		releaseLock(lockFile, lockedFile)
+		releaseLock(lockFile, lockedFH)
 		logger.Fatalf("Error downloading: %s", errDownload)
 	}
 
@@ -110,7 +110,7 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	if errUnzip != nil {
 		// logger.Fatal doesn't invoke deferred functions,
 		// so need to release the lock explicitly
-		releaseLock(lockFile, lockedFile)
+		releaseLock(lockFile, lockedFH)
 		logger.Fatalf("Unable to unzip %q file: %v", zipFile, errUnzip)
 	}
 
