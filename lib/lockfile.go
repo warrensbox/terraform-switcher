@@ -38,7 +38,7 @@ func releaseLock(lockFile string, lockedFH *os.File) {
 
 	if lockedFH == nil {
 		logger.Warnf("Lock is `nil` on %q", lockFile)
-		if exist := CheckFileExist(lockFile); exist {
+		if CheckFileExist(lockFile) {
 			logger.Warnf("Lock %q exists. This is NOT expected!", lockFile)
 		}
 		return
@@ -52,7 +52,7 @@ func releaseLock(lockFile string, lockedFH *os.File) {
 
 	logger.Debugf("Removing lock %q", lockFile)
 
-	if exist := CheckFileExist(lockFile); exist {
+	if CheckFileExist(lockFile) {
 		if err := os.Remove(lockFile); err != nil {
 			logger.Warnf("Failed to remove lock %q: %w", lockFile, err)
 		} else {

@@ -67,7 +67,7 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	defer releaseLock(lockFile, lockedFH)
 
 	// check to see if the requested version has been downloaded before
-	if recentDownloadFile := CheckFileExist(installFileVersionPath); recentDownloadFile {
+	if CheckFileExist(installFileVersionPath) {
 		return switchToVersion(product, tfversion, binPath, installPath, installFileVersionPath)
 	}
 
@@ -76,7 +76,7 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	tflist, _ := getTFList(mirrorURL, true) // Get list of versions
 
 	// Check if version exists before downloading it
-	if exist := versionExist(tfversion, tflist); !exist {
+	if !versionExist(tfversion, tflist) {
 		return fmt.Errorf("Provided %s version does not exist: %q.\n\tTry `tfswitch -l` to see all available versions", product.GetId(), tfversion)
 	}
 
