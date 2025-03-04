@@ -3,6 +3,7 @@ package lib
 import (
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 // Test Locking
@@ -13,12 +14,12 @@ func TestLocking(t *testing.T) {
 	t.Logf("Testing lock acquirement: %s", lockFilePath)
 
 	// Acquire lock
-	if lockedFile, err := acquireLock(lockFilePath, 1, 1); err == nil {
+	if lockedFile, err := acquireLock(lockFilePath, 1, 1*time.Second); err == nil {
 		t.Logf("Lock acquired successfully: %s", lockFilePath)
 
 		// Concurrent lock
 		t.Logf("Testing concurrent lock acquirement: %s", lockFilePath)
-		if _, err := acquireLock(lockFilePath, 1, 1); err == nil {
+		if _, err := acquireLock(lockFilePath, 1, 1*time.Second); err == nil {
 			t.Errorf("Concurrent lock acquired successfully: %s. This is NOT expected!", lockFilePath)
 		} else {
 			t.Logf("Concurrent lock failed: %s. This is expected.", lockFilePath)
