@@ -33,7 +33,7 @@ func TestLocking(t *testing.T) {
 		}
 
 		// Check lock was cleaned up
-		if exist := CheckFileExist(lockFile); exist {
+		if exist := CheckFileExist(lockFilePath); exist {
 			t.Errorf("Lock %s still exists. This is NOT expected!", lockFilePath)
 		}
 	} else {

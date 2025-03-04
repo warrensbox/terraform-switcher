@@ -10,15 +10,13 @@ import (
 func acquireLock(lockFile string, lockWaitMaxAttempts int, lockWaitInterval time.Duration) (*os.File, error) {
 	logger.Debugf("Attempting to acquire lock %q", lockFile)
 
-	for lockAttempt := range lockWaitMaxAttempts {
-		lockAttemptCounter := lockAttempt + 1
-
+	for lockAttempt := 1; lockAttempt <= lockWaitMaxAttempts; lockAttempt++ {
 		if file, err := os.OpenFile(lockFile, os.O_CREATE|os.O_EXCL, 0o644); err == nil {
 			logger.Debugf("Acquired lock %q", lockFile)
 			return file, nil
 		}
 
-		logger.Infof("Waiting for lock %q to be released (attempt %d out of %d)", lockFile, lockAttemptCounter, lockWaitMaxAttempts)
+		logger.Infof("Waiting for lock %q to be released (attempt %d out of %d)", lockFile, lockAttempt, lockWaitMaxAttempts)
 
 		if lockFileInfo, err := os.Stat(lockFile); err == nil {
 			logger.Debugf("Lock %q last modification time: %s", lockFile, lockFileInfo.ModTime())
@@ -26,7 +24,7 @@ func acquireLock(lockFile string, lockWaitMaxAttempts int, lockWaitInterval time
 			logger.Warnf("Unable to get lock %q last modification time: %w", lockFile, err)
 		}
 
-		if lockAttemptCounter < lockWaitMaxAttempts {
+		if lockAttempt < lockWaitMaxAttempts {
 			time.Sleep(lockWaitInterval)
 		}
 	}
