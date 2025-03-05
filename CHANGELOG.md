@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.4.1](https://github.com/warrensbox/terraform-switcher/tree/v1.4.1) - 2025-03-05
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.0...v1.4.1)
+
+### Added
+
+- feat: Implement exclusive locking during download and install [#551](https://github.com/warrensbox/terraform-switcher/pull/551) ([yermulnik](https://github.com/yermulnik))
+- feat: recommend updating `$PATH` only when necessary [#549](https://github.com/warrensbox/terraform-switcher/pull/549) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.4.1` [#554](https://github.com/warrensbox/terraform-switcher/pull/554) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.4.0](https://github.com/warrensbox/terraform-switcher/tree/v1.4.0) - 2025-02-26
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.3.0...v1.4.0)
