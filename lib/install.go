@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/manifoldco/promptui"
 
@@ -51,21 +52,32 @@ func GetInstallLocation(installPath string) string {
 func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch string) error {
 	var wg sync.WaitGroup
 
-	// check to see if the requested version has been downloaded before
 	installLocation := GetInstallLocation(installPath)
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+tfversion))
-	recentDownloadFile := CheckFileExist(installFileVersionPath)
-	if recentDownloadFile {
+
+	// Create exclusive lock to prevent multiple concurrent installations
+	// Put lockfile in temp directory to get it cleaned up on reboot
+	lockFile := filepath.Join(os.TempDir(), ".tfswitch."+product.GetId()+".lock")
+	// 90 attempts * 2 seconds = 3 minutes to acquire lock, otherwise bail out
+	lockedFH, err := acquireLock(lockFile, 90, 2*time.Second)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	// Release lock when done
+	defer releaseLock(lockFile, lockedFH)
+
+	// check to see if the requested version has been downloaded before
+	if CheckFileExist(installFileVersionPath) {
 		return switchToVersion(product, tfversion, binPath, installPath, installFileVersionPath)
 	}
 
 	// If the requested version had not been downloaded before
 	// Set list all true - all versions including beta and rc will be displayed
-	tflist, _ := getTFList(mirrorURL, true)  // Get list of versions
-	exist := versionExist(tfversion, tflist) // Check if version exists before downloading it
+	tflist, _ := getTFList(mirrorURL, true) // Get list of versions
 
-	if !exist {
-		return fmt.Errorf("Requested %s version does not exist: %q.\n\tTry `tfswitch -l` to see all available versions", product.GetId(), tfversion)
+	// Check if version exists before downloading it
+	if !versionExist(tfversion, tflist) {
+		return fmt.Errorf("Provided %s version does not exist: %q.\n\tTry `tfswitch -l` to see all available versions", product.GetId(), tfversion)
 	}
 
 	if goarch != runtime.GOARCH {
@@ -87,12 +99,18 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
+		// logger.Fatal doesn't invoke deferred functions,
+		// so need to release the lock explicitly
+		releaseLock(lockFile, lockedFH)
 		logger.Fatalf("Error downloading: %s", errDownload)
 	}
 
 	/* unzip the downloaded zipfile */
 	_, errUnzip := Unzip(zipFile, installLocation, product.GetExecutableName())
 	if errUnzip != nil {
+		// logger.Fatal doesn't invoke deferred functions,
+		// so need to release the lock explicitly
+		releaseLock(lockFile, lockedFH)
 		logger.Fatalf("Unable to unzip %q file: %v", zipFile, errUnzip)
 	}
 
