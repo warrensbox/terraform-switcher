@@ -101,54 +101,78 @@ func ChangeSymlink(binVersionPath string, binPath string) {
 func ChangeProductSymlink(product Product, binVersionPath string, userBinPath string) error {
 	homedir := GetHomeDirectory() // get user's home directory
 	homeBinPath := filepath.Join(homedir, "bin", product.GetExecutableName())
-	// List of possible directories with boolean property as to whether to attempt to create
-	possibleInstallLocations := map[string]bool{
+
+	possibleInstallLocations := []string{userBinPath, homeBinPath}
+	// Possible install locations with boolean property as to whether to attempt to create
+	installLocationsShouldCreate := map[string]bool{
 		userBinPath: false,
 		homeBinPath: true,
 	}
-	possibleInstallDirs := []string{}
 	var err error
+	var locationsFmt string
 
-	for location, shouldCreate := range possibleInstallLocations {
-		possibleInstallDirs = append(possibleInstallDirs, Path(location))
-		// If directory does not exist, check if we should create it, otherwise skip
+	for _, location := range possibleInstallLocations {
+		locationsFmt += fmt.Sprintf("\n\t• %q", location)
+	}
+	logger.Noticef("Possible install locations:%s", locationsFmt)
+
+	for idx, location := range possibleInstallLocations {
 		dirPath := Path(location)
-		if !CheckDirExist(dirPath) {
-			if shouldCreate {
+		attempt := idx + 1
+
+		if attempt > 1 {
+			logger.Warnf("Falling back to install to %q directory", dirPath)
+		}
+
+		logger.Noticef("Attempting to install to %q directory (possible install location №%d)", dirPath, attempt)
+
+		// If directory does not exist, check if we should create it, otherwise skip
+		dirFI, dirExist := CheckDirExist(dirPath)
+		if !dirExist {
+			logger.Warnf("Installation directory %q doesn't exist!", dirPath)
+			if installLocationsShouldCreate[location] {
 				logger.Infof("Creating %q directory", dirPath)
 				err = os.MkdirAll(dirPath, 0o755)
 				if err != nil {
-					logger.Infof("Unable to create %q directory: %v", dirPath, err)
+					logger.Errorf("Unable to create %q directory: %v", dirPath, err)
 					continue
 				}
 			} else {
 				continue
 			}
+		} else if !CheckIsDir(dirFI) {
+			logger.Warnf("The %q is not a directory!", dirPath)
+			continue
 		}
+		logger.Noticef("Installation location: %q", location)
+
 		/* remove current symlink if exist*/
-		symlinkExist := CheckSymlink(location)
-		if symlinkExist {
+		if CheckSymlink(location) {
 			_ = RemoveSymlink(location)
 		}
 
 		/* set symlink to desired version */
 		err = CreateSymlink(binVersionPath, location)
 		if err == nil {
-			logger.Debugf("Symlink created at %q", location)
+			logger.Noticef("Symlink created at %q", location)
 
-			var isDirInPath bool = false
+			// Print helper message to export PATH if the directory is not in PATH only for non-Windows systems,
+			// as it's all complicated on Windows. See https://github.com/warrensbox/terraform-switcher/issues/558
+			if runtime.GOOS != "windows" {
+				var isDirInPath bool = false
 
-			for _, envPathElement := range strings.Split(os.Getenv("PATH"), ":") {
-				expandedEnvPathElement := strings.TrimRight(strings.Replace(envPathElement, "~", homedir, 1), "/")
+				for _, envPathElement := range strings.Split(os.Getenv("PATH"), ":") {
+					expandedEnvPathElement := strings.TrimRight(strings.Replace(envPathElement, "~", homedir, 1), "/")
 
-				if expandedEnvPathElement == strings.TrimRight(dirPath, "/") {
-					isDirInPath = true
-					break
+					if expandedEnvPathElement == strings.TrimRight(dirPath, "/") {
+						isDirInPath = true
+						break
+					}
 				}
-			}
 
-			if !isDirInPath {
-				logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", dirPath, location)
+				if !isDirInPath {
+					logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", dirPath, location)
+				}
 			}
 
 			return nil
@@ -157,7 +181,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 
 	if err == nil {
 		return fmt.Errorf("None of the installation directories exist: \"%s\". %s\n",
-			strings.Join(possibleInstallDirs, `", "`),
+			strings.Join(possibleInstallLocations, `", "`),
 			"Manually create one of them and try again")
 	}
 

@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -200,11 +201,26 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 // CheckDirExist : check if directory exist
 // dir=path to file
 // return bool
-func CheckDirExist(dir string) bool {
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
+func CheckDirExist(dir string) (fs.FileInfo, bool) {
+	fi, err := os.Stat(dir)
+
+	if os.IsNotExist(err) {
 		logger.Debugf("Directory %q doesn't exist", dir)
+		return fi, false
+	}
+
+	return fi, true
+}
+
+// CheckIsDir: check if is directory
+// dir=path to file
+// return bool
+func CheckIsDir(dir fs.FileInfo) bool {
+	if !dir.IsDir() {
+		logger.Debugf("The %q is not a directory", dir.Name())
 		return false
 	}
+
 	return true
 }
 
