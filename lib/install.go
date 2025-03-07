@@ -155,9 +155,9 @@ func ConvertExecutableExt(fpath string) string {
 // If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
 // Deprecated: This function has been deprecated and will be removed in v2.0.0
 func installableBinLocation(product Product, userBinPath string) string {
-	homedir := GetHomeDirectory()            // get user's home directory
-	binDir := Path(userBinPath)              // get path directory from binary path
-	_, binPathExist := CheckDirExist(binDir) // the default is /usr/local/bin but users can provide custom bin locations
+	homedir := GetHomeDirectory()         // get user's home directory
+	binDir := Path(userBinPath)           // get path directory from binary path
+	binPathExist := CheckDirExist(binDir) // the default is /usr/local/bin but users can provide custom bin locations
 
 	if binPathExist { // if bin path exist - check if we can write to it
 
@@ -169,8 +169,7 @@ func installableBinLocation(product Product, userBinPath string) string {
 		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terraform at the ~/bin location. See ELSE
 		if !binPathWritable {
 			homeBinDir := filepath.Join(homedir, "bin")
-			_, homeBinExist := CheckDirExist(homeBinDir)
-			if !homeBinExist { // if ~/bin exist, install at ~/bin/terraform
+			if !CheckDirExist(homeBinDir) { // if ~/bin exist, install at ~/bin/terraform
 				logger.Noticef("Unable to write to %q", userBinPath)
 				logger.Infof("Creating bin directory at %q", homeBinDir)
 				createDirIfNotExist(homeBinDir) // create ~/bin

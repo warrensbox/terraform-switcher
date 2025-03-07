@@ -127,8 +127,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		logger.Noticef("Attempting to install to %q directory (possible install location №%d)", dirPath, attempt)
 
 		// If directory does not exist, check if we should create it, otherwise skip
-		dirFI, dirExist := CheckDirExist(dirPath)
-		if !dirExist {
+		if !CheckDirExist(dirPath) {
 			logger.Warnf("Installation directory %q doesn't exist!", dirPath)
 			if installLocationsShouldCreate[location] {
 				logger.Infof("Creating %q directory", dirPath)
@@ -140,7 +139,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 			} else {
 				continue
 			}
-		} else if !CheckIsDir(dirFI) {
+		} else if !CheckIsDir(dirPath) {
 			logger.Warnf("The %q is not a directory!", dirPath)
 			continue
 		}
