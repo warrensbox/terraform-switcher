@@ -36,7 +36,7 @@ install: $(EXE)
 
 .PHONY: docs
 docs:
-	#cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+	@#cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
 	cd www && mkdocs gh-deploy --force
 
 .PHONY: goreleaser-release-snapshot

@@ -25,6 +25,10 @@ nav:
   - How-to-Contribute.md
   - Troubleshoot.md
 
-google_analytics:
-  - UA-120055973-1
-  - auto
+# WARNING -  Config value 'google_analytics': The configuration option
+# google_analytics has been deprecated and will be removed in a future release
+# of MkDocs. See the options available on your theme for an alternative.
+# See https://squidfunk.github.io/mkdocs-material/setup/setting-up-site-analytics/ for new format
+#google_analytics:
+#  - UA-120055973-1
+#  - auto
