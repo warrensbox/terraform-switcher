@@ -120,7 +120,9 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		if idx > 0 {
 			isFallback = true
 		}
-		locationsFmt += fmt.Sprintf("\n\t• №%d: %q (create: %-5t, isFallack: %t)", idx+1, location.path, location.create, isFallback)
+		convertedPath := ConvertExecutableExt(location.path)
+		possibleInstallLocations[idx].path = convertedPath
+		locationsFmt += fmt.Sprintf("\n\t• №%d: %q (create: %-5t, isFallack: %t)", idx+1, convertedPath, location.create, isFallback)
 	}
 	logger.Noticef("Possible install locations:%s", locationsFmt)
 
