@@ -161,22 +161,25 @@ func populateParams(params Params) Params {
 		params.Version = args[0]
 	}
 
-	logger.Debugf("Resolved CPU architecture: %q", params.Arch)
-	if params.DryRun {
-		logger.Info("[DRY-RUN] No changes will be made")
-	} else {
-		logger.Debugf("Resolved dry-run: %t", params.DryRun)
+	if !params.VersionFlag && !params.HelpFlag {
+		logger.Debugf("Resolved CPU architecture: %q", params.Arch)
+		if params.DryRun {
+			logger.Info("[DRY-RUN] No changes will be made")
+		} else {
+			logger.Debugf("Resolved dry-run: %t", params.DryRun)
+		}
+		if params.DefaultVersion != "" {
+			logger.Debugf("Resolved fallback version: %q", params.DefaultVersion)
+		}
+		logger.Debugf("Resolved installation path: %q", path.Join(params.InstallPath, lib.InstallDir))
+		logger.Debugf("Resolved installation target: %q", params.CustomBinaryPath)
+		logger.Debugf("Resolved installation version: %q", params.Version)
+		logger.Debugf("Resolved log level: %q", params.LogLevel)
+		logger.Debugf("Resolved mirror URL: %q", params.MirrorURL)
+		logger.Debugf("Resolved product name: %q", params.Product)
+		logger.Debugf("Resolved target directory: %q", params.ChDirPath)
 	}
-	if params.DefaultVersion != "" {
-		logger.Debugf("Resolved fallback version: %q", params.DefaultVersion)
-	}
-	logger.Debugf("Resolved installation path: %q", path.Join(params.InstallPath, lib.InstallDir))
-	logger.Debugf("Resolved installation target: %q", params.CustomBinaryPath)
-	logger.Debugf("Resolved installation version: %q", params.Version)
-	logger.Debugf("Resolved log level: %q", params.LogLevel)
-	logger.Debugf("Resolved mirror URL: %q", params.MirrorURL)
-	logger.Debugf("Resolved product name: %q", params.Product)
-	logger.Debugf("Resolved target directory: %q", params.ChDirPath)
+
 	return params
 }
 
