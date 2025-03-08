@@ -5,7 +5,6 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"strings"
 
 	"github.com/gookit/slog"
@@ -166,7 +165,7 @@ func populateParams(params Params) Params {
 	if params.DryRun {
 		logger.Info("[DRY-RUN] No changes will be made")
 	} else {
-		logger.Debugf("Resolved dry-run: %q", strconv.FormatBool(params.DryRun))
+		logger.Debugf("Resolved dry-run: %t", params.DryRun)
 	}
 	if params.DefaultVersion != "" {
 		logger.Debugf("Resolved fallback version: %q", params.DefaultVersion)
