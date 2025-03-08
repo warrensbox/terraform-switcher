@@ -102,22 +102,30 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 	homedir := GetHomeDirectory() // get user's home directory
 	homeBinPath := filepath.Join(homedir, "bin", product.GetExecutableName())
 
-	possibleInstallLocations := []string{userBinPath, homeBinPath}
-	// Possible install locations with boolean property as to whether to attempt to create
-	installLocationsShouldCreate := map[string]bool{
-		userBinPath: false,
-		homeBinPath: true,
-	}
 	var err error
 	var locationsFmt string
 
-	for _, location := range possibleInstallLocations {
-		locationsFmt += fmt.Sprintf("\n\t• %q", location)
+	// Possible install locations with boolean property as to whether to attempt to create
+	type installLocations struct {
+		path   string
+		create bool
+	}
+	possibleInstallLocations := []installLocations{
+		{path: userBinPath, create: false},
+		{path: homeBinPath, create: true},
+	}
+
+	for idx, location := range possibleInstallLocations {
+		isFallback := false
+		if idx > 0 {
+			isFallback = true
+		}
+		locationsFmt += fmt.Sprintf("\n\t• №%d: %q (create: %-5t, isFallack: %t)", idx+1, location.path, location.create, isFallback)
 	}
 	logger.Noticef("Possible install locations:%s", locationsFmt)
 
 	for idx, location := range possibleInstallLocations {
-		dirPath := Path(location)
+		dirPath := Path(location.path)
 		attempt := idx + 1
 
 		if attempt > 1 {
@@ -129,7 +137,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		// If directory does not exist, check if we should create it, otherwise skip
 		if !CheckDirExist(dirPath) {
 			logger.Warnf("Installation directory %q doesn't exist!", dirPath)
-			if installLocationsShouldCreate[location] {
+			if location.create {
 				logger.Infof("Creating %q directory", dirPath)
 				err = os.MkdirAll(dirPath, 0o755)
 				if err != nil {
@@ -143,17 +151,17 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 			logger.Warnf("The %q is not a directory!", dirPath)
 			continue
 		}
-		logger.Noticef("Installation location: %q", location)
+		logger.Noticef("Installation location: %q", location.path)
 
 		/* remove current symlink if exist*/
-		if CheckSymlink(location) {
-			_ = RemoveSymlink(location)
+		if CheckSymlink(location.path) {
+			_ = RemoveSymlink(location.path)
 		}
 
 		/* set symlink to desired version */
-		err = CreateSymlink(binVersionPath, location)
+		err = CreateSymlink(binVersionPath, location.path)
 		if err == nil {
-			logger.Noticef("Symlink created at %q", location)
+			logger.Noticef("Symlink created at %q", location.path)
 
 			// Print helper message to export PATH if the directory is not in PATH only for non-Windows systems,
 			// as it's all complicated on Windows. See https://github.com/warrensbox/terraform-switcher/issues/558
@@ -170,7 +178,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 				}
 
 				if !isDirInPath {
-					logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", dirPath, location)
+					logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", dirPath, location.path)
 				}
 			}
 
@@ -179,8 +187,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 	}
 
 	if err == nil {
-		return fmt.Errorf("None of the installation directories exist: \"%s\". %s\n",
-			strings.Join(possibleInstallLocations, `", "`),
+		return fmt.Errorf("None of the installation directories exist:%s\n\t%s", locationsFmt,
 			"Manually create one of them and try again")
 	}
 
