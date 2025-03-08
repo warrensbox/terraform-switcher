@@ -21,7 +21,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.22
+          go-version: '1.23'
 
       - name: Check vet
         run: |
@@ -42,7 +42,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        go_version: ['1.22']
+        go_version: ['1.23']
     runs-on: ${{ matrix.os }}
     steps:
 
@@ -81,7 +81,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        go_version: ['1.22']
+        go_version: ['1.23']
     runs-on: ${{ matrix.os }}
     steps:
 
