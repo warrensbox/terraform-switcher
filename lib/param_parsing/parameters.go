@@ -75,7 +75,9 @@ func populateParams(params Params) Params {
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
 
-	if !params.VersionFlag && !params.HelpFlag {
+	isShortRun := !params.VersionFlag && !params.HelpFlag
+
+	if isShortRun {
 		oldLogLevel := params.LogLevel
 		logger = lib.InitLogger(params.LogLevel)
 
@@ -161,7 +163,7 @@ func populateParams(params Params) Params {
 		params.Version = args[0]
 	}
 
-	if !params.VersionFlag && !params.HelpFlag {
+	if isShortRun {
 		logger.Debugf("Resolved CPU architecture: %q", params.Arch)
 		if params.DryRun {
 			logger.Info("[DRY-RUN] No changes will be made")
