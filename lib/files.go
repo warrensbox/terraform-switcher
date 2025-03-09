@@ -26,7 +26,7 @@ func RenameFile(src string, dest string) {
 // RemoveFiles : remove file
 func RemoveFiles(src string) {
 	// Keep both identical functions for backward compatibility
-	// Need to plan deprecation of either of them
+	// FIXME: need to plan deprecation of either of them
 	// 09-Mar-2025
 	removeFiles(src)
 }
