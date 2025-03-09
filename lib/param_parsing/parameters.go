@@ -2,7 +2,6 @@ package param_parsing
 
 import (
 	"fmt"
-	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -173,7 +172,7 @@ func populateParams(params Params) Params {
 		if params.DefaultVersion != "" {
 			logger.Debugf("Resolved fallback version: %q", params.DefaultVersion)
 		}
-		logger.Debugf("Resolved installation path: %q", path.Join(params.InstallPath, lib.InstallDir))
+		logger.Debugf("Resolved installation path: %q", filepath.Join(params.InstallPath, lib.InstallDir))
 		logger.Debugf("Resolved installation target: %q", params.CustomBinaryPath)
 		logger.Debugf("Resolved installation version: %q", params.Version)
 		logger.Debugf("Resolved log level: %q", params.LogLevel)
