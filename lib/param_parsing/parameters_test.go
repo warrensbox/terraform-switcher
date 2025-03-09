@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -349,7 +350,7 @@ func TestHelpFlagOutput(t *testing.T) {
 func TestDryRunFlagOutput(t *testing.T) {
 	flagName := "--dry-run"
 	testVersion := "1.10.5"
-	expectedOutput := fmt.Sprintf(" \x1b[32mINFO\x1b[0m \x1b[32m[DRY-RUN] Would have attempted to install version %q\x1b[0m  \n", testVersion)
+	expectedOutput := fmt.Sprintf(" INFO [DRY-RUN] Would have attempted to install version %q  \n", testVersion)
 	goCommandArgs := []string{"run", "../../main.go", flagName, testVersion}
 
 	t.Logf("Testing %q flag output", flagName)
@@ -359,9 +360,14 @@ func TestDryRunFlagOutput(t *testing.T) {
 		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
 	}
 
-	if !strings.HasSuffix(string(out), expectedOutput) {
-		t.Fatalf("Expected %q, got: %q", expectedOutput, string(out))
+	var re *regexp.Regexp = regexp.MustCompile("[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))")
+	outNoANSI := func(str string) string {
+		return re.ReplaceAllString(str, "")
+	}(string(out))
+
+	if !strings.HasSuffix(outNoANSI, expectedOutput) {
+		t.Fatalf("Expected %q, got: %q", expectedOutput, outNoANSI)
 	}
 
-	t.Logf("Success: %q", string(out))
+	t.Logf("Success: %q", outNoANSI)
 }
