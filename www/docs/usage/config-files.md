@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD041 -->
+
 ## Get the version from a subdirectory
 
 While using the file configuration it might be necessary to change the working directory. You can do that with the `--chdir` or `-c` parameter.
@@ -10,7 +12,7 @@ tfswitch -c terraform_dir
 ## Use `version.tf` file
 
 If a .tf file with the terraform constraints is included in the current directory, it should automatically download or switch to that terraform version.  
-For example, the following should automatically switch terraform to the lastest version:  
+For example, the following should automatically switch terraform to the lastest version:
 
 ```hcl
 terraform {
@@ -33,9 +35,9 @@ terraform {
 2. For example, `echo "0.10.5" >> .tfswitchrc` for version 0.10.5 of terraform
 3. Run the command `tfswitch` in the same directory as your `.tfswitchrc`
 
-*Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
+_Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it_
 
-## Use `.tfswitch.toml` file  (For non-admin users with limited privilege on their computers)
+## Use `.tfswitch.toml` file (For non-admin users with limited privilege on their computers)
 
 This is similiar to using a `.tfswitchrc` file, but you can specify a custom binary path for your terraform installation
 
@@ -88,7 +90,7 @@ product = "terraform"
 
 ## Use `terragrunt.hcl` file
 
-If a terragrunt.hcl file with the terraform constraint is included in the current directory, it should automatically download or switch to that terraform version. 
+If a terragrunt.hcl file with the terraform constraint is included in the current directory, it should automatically download or switch to that terraform version.
 For example, the following should automatically switch terraform to the lastest version 0.13:
 
 ```hcl

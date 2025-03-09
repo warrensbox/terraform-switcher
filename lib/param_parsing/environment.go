@@ -1,3 +1,4 @@
+//nolint:revive // FIXME: don't use an underscore in package name
 package param_parsing
 
 import "os"

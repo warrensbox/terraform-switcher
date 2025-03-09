@@ -1,13 +1,17 @@
+<!-- markdownlint-disable MD041 -->
+
 ## Use dropdown menu to select version
+
 ![tfswitch](../static/tfswitch.gif "tfswitch")
 
-1.  You can switch between different versions of terraform by typing the command `tfswitch` on your terminal.
-2.  Select the version of terraform you require by using the up and down arrow.
-3.  Hit **Enter** to select the desired version.
+1. You can switch between different versions of terraform by typing the command `tfswitch` on your terminal.
+2. Select the version of terraform you require by using the up and down arrow.
+3. Hit **Enter** to select the desired version.
 
 The most recently selected versions are presented at the top of the dropdown.
 
 ## Supply version on command line
+
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v4.gif" alt="drawing" style="width: 600px;"/>
 
 1. You can also supply the desired version as an argument on the command line.
@@ -15,6 +19,7 @@ The most recently selected versions are presented at the top of the dropdown.
 3. Hit **Enter** to switch.
 
 ## See all versions including beta, alpha and release candidates(rc)
+
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v5.gif" alt="drawing" style="width: 600px;"/>
 
 1. Display all versions including beta, alpha and release candidates(rc).
@@ -53,8 +58,8 @@ tfswitch # Will automatically switch to terraform version 0.14.4
 
 This can either be set to:
 
- * `terraform`
- * `opentofu`
+- `terraform`
+- `opentofu`
 
 For example:
 
@@ -94,7 +99,7 @@ tfswitch # Will install Terraform binary for amd64 architecture
 
 ## Install latest implicit version for beta, alpha and release candidates(rc)
 
-1. Install the latest implicit pre-release version.
+1. Install the latest implicit prerelease version.
 2. Ex: `tfswitch -p 0.13` or `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1 (latest) version.
 3. Hit **Enter** to install.
 
@@ -112,13 +117,13 @@ tfswitch # Will install Terraform binary for amd64 architecture
 
 ## Show latest implicit version for beta, alpha and release candidates(rc)
 
-1. Show the latest implicit pre-release version.
+1. Show the latest implicit prerelease version.
 2. Ex: `tfswitch -P 0.13` or `tfswitch --show-latest-pre 0.13` shows 0.13.0-rc1 (latest) version.
 3. Hit **Enter** to show.
 
 ## Use custom mirror
 
-To install from a remote mirror other than the default(https://releases.hashicorp.com/terraform). Use the `-m` or `--mirror` parameter.
+To install from a remote mirror other than the default (<https://releases.hashicorp.com/terraform>). Use the `-m` or `--mirror` parameter.
 
 ```bash
 tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp`

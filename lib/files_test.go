@@ -113,7 +113,10 @@ func TestUnzip(t *testing.T) {
 	default:
 		pathToTestFile = "../test-data/test-data.zip"
 	}
-	absPath, _ := filepath.Abs(pathToTestFile)
+	absPath, err := filepath.Abs(pathToTestFile)
+	if err != nil {
+		t.Error(err)
+	}
 
 	t.Logf("Absolute Path: %q", absPath)
 
@@ -146,8 +149,8 @@ func TestUnzip(t *testing.T) {
 		t.Error(err)
 	}
 	// Ensure terraform file contains test content from
-	if string(terraformFileContent[:]) != "TerraformBinaryContent\n" {
-		t.Errorf("Terraform test file content does not match expected value: %s", string(terraformFileContent[:]))
+	if string(terraformFileContent) != "TerraformBinaryContent\n" {
+		t.Errorf("Terraform test file content does not match expected value: %s", string(terraformFileContent))
 	}
 
 	// Ensure README and LICENSE files don't exist
@@ -176,7 +179,10 @@ func TestUnzip_with_file_to_unzip(t *testing.T) {
 		expectedFilename = "another_file"
 	}
 
-	absPath, _ := filepath.Abs(pathToTestFile)
+	absPath, err := filepath.Abs(pathToTestFile)
+	if err != nil {
+		t.Error(err)
+	}
 
 	t.Logf("Absolute Path: %q", absPath)
 
@@ -209,8 +215,8 @@ func TestUnzip_with_file_to_unzip(t *testing.T) {
 		t.Error(err)
 	}
 	// Ensure terraform file contains test content from
-	if !strings.Contains(string(expectedFileContent[:]), "This is another executable") {
-		t.Errorf("Extract test file (%q) content does not match expected value: %s", expectedExtractFile, string(expectedFileContent[:]))
+	if !strings.Contains(string(expectedFileContent), "This is another executable") {
+		t.Errorf("Extract test file (%q) content does not match expected value: %s", expectedExtractFile, string(expectedFileContent))
 	}
 
 	// Ensure README and LICENSE files don't exist
@@ -262,7 +268,7 @@ func TestWriteLines(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 	recentFile := "RECENT"
 	semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}(-\w+\d*)?\z`)
-	//semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
+	// semverRegex := regexp.MustCompile(`\A\d+(\.\d+){2}\z`)
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
@@ -273,9 +279,9 @@ func TestWriteLines(t *testing.T) {
 	createDirIfNotExist(installLocation)
 
 	recentFilePath := filepath.Join(installLocation, recentFile)
-	test_array := []string{"0.1.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
+	testArray := []string{"0.1.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
 
-	errWrite := WriteLines(test_array, recentFilePath)
+	errWrite := WriteLines(testArray, recentFilePath)
 
 	if errWrite != nil {
 		t.Logf("Write should work %v (unexpected)", errWrite)
@@ -341,7 +347,7 @@ func TestReadLines(t *testing.T) {
 	createDirIfNotExist(installLocation)
 
 	recentFilePath := filepath.Join(installLocation, recentFile)
-	test_array := []string{"0.0.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
+	testArray := []string{"0.0.1", "0.0.2", "0.0.3", "0.12.0-rc1", "0.12.0-beta1"}
 
 	var (
 		file      *os.File
@@ -352,7 +358,7 @@ func TestReadLines(t *testing.T) {
 		t.Errorf("Error: %s", errCreate)
 	}
 
-	for _, item := range test_array {
+	for _, item := range testArray {
 		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
 		if err != nil {
 			t.Errorf("Error: %s", err)
@@ -390,17 +396,17 @@ func TestIsDirEmpty(t *testing.T) {
 	}
 	installLocation := filepath.Join(homedir, installPath)
 
-	test_dir := current.Format("2006-01-02")
-	test_dir_path := filepath.Join(installLocation, test_dir)
-	t.Logf("Create test dir: %v \n", test_dir)
+	testDir := current.Format("2006-01-02")
+	testDirPath := filepath.Join(installLocation, testDir)
+	t.Logf("Create test dir: %v \n", testDir)
 
 	createDirIfNotExist(installLocation)
 
-	createDirIfNotExist(test_dir_path)
+	createDirIfNotExist(testDirPath)
 
-	empty := IsDirEmpty(test_dir_path)
+	empty := IsDirEmpty(testDirPath)
 
-	t.Logf("Expected directory to be empty %v [expected]", test_dir_path)
+	t.Logf("Expected directory to be empty %v [expected]", testDirPath)
 
 	if empty == true {
 		t.Logf("Directory empty")
@@ -408,7 +414,7 @@ func TestIsDirEmpty(t *testing.T) {
 		t.Error("Directory not empty")
 	}
 
-	cleanUp(test_dir_path)
+	cleanUp(testDirPath)
 	cleanUp(installLocation)
 }
 
@@ -475,7 +481,6 @@ func TestPath(t *testing.T) {
 
 // TestGetFileName : remove file ext.  .tfswitch.config returns .tfswitch
 func TestGetFileName(t *testing.T) {
-
 	fileNameWithExt := "file.toml"
 
 	fileName := GetFileName(fileNameWithExt)
@@ -495,14 +500,14 @@ func TestConvertExecutableExt(t *testing.T) {
 	}
 
 	installPath := "/.terraform.versions_test/"
-	test_array := []string{
+	testArray := []string{
 		"terraform",
 		"terraform.exe",
 		filepath.Join(homedir, installPath, "terraform"),
 		filepath.Join(homedir, installPath, "terraform.exe"),
 	}
 
-	for _, fpath := range test_array {
+	for _, fpath := range testArray {
 		fpathExt := ConvertExecutableExt((fpath))
 		outputMsg := fpath + " converted to " + fpathExt + " on " + runtime.GOOS
 

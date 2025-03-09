@@ -44,6 +44,7 @@ func GetParameters() Params {
 	return params
 }
 
+//nolint:gocyclo
 func populateParams(params Params) Params {
 	var productIds []string
 	var defaultMirrors []string

@@ -23,7 +23,10 @@ func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionL
 		// without the ending '"' pre-release folders would be tried and break.
 		semver = `\/?(\d+\.\d+\.\d+)\/?"`
 	}
-	r, _ := regexp.Compile(semver)
+	r, err := regexp.Compile(semver)
+	if err != nil {
+		logger.Fatalf("Error compiling %q regex: %w", semver, err)
+	}
 
 	matches := r.FindAllString(body, -1)
 	if matches == nil {
@@ -60,7 +63,10 @@ func getTFLatest(mirrorURL string) (string, error) {
 	}
 	// Getting versions from body; should return match /X.X.X/ where X is a number
 	semver := `\/?(\d+\.\d+\.\d+)\/?"`
-	r, _ := regexp.Compile(semver)
+	r, errSemVer := regexp.Compile(semver)
+	if errSemVer != nil {
+		return "", fmt.Errorf("Error compiling %q regex: %w", semver, errSemVer)
+	}
 	bodyLines := strings.Split(result, "\n")
 	for i := range result {
 		if r.MatchString(bodyLines[i]) {
@@ -96,7 +102,11 @@ func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 		}
 	} else if !preRelease {
 		listAll := false
-		tflist, _ := getTFList(mirrorURL, listAll) // get list of versions
+		tflist, errTFList := getTFList(mirrorURL, listAll) // get list of versions
+		if errTFList != nil {
+			return "", fmt.Errorf("Error getting list of versions from %q: %w", mirrorURL, errTFList)
+		}
+
 		version = fmt.Sprintf("~> %v", version)
 		semv, err := SemVerParser(&version, tflist)
 		if err != nil {
@@ -203,14 +213,22 @@ func validMinorVersionFormat(version string) bool {
 
 // ShowLatestVersion show install latest stable tf version
 func ShowLatestVersion(mirrorURL string) {
-	tfversion, _ := getTFLatest(mirrorURL)
+	tfversion, err := getTFLatest(mirrorURL)
+	if err != nil {
+		logger.Fatalf("Error getting latest version from %q: %w", mirrorURL, err)
+	}
+
 	fmt.Printf("%s\n", tfversion)
 }
 
 // ShowLatestImplicitVersion show latest - argument (version) must be provided
 func ShowLatestImplicitVersion(requestedVersion, mirrorURL string, preRelease bool) {
 	if validMinorVersionFormat(requestedVersion) {
-		tfversion, _ := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
+		tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
+		if err != nil {
+			logger.Fatalf("Error getting latest implicit version %q from %q: %w", requestedVersion, mirrorURL, err)
+		}
+
 		if len(tfversion) > 0 {
 			fmt.Printf("%s\n", tfversion)
 		} else {

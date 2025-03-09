@@ -184,7 +184,8 @@ func writeTestFile(t *testing.T, basePath string, fileName string, fileContent s
 	})
 }
 
-func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string, expectedDefaultVersion string) {
+//nolint:revive // FIXME: the 3rd argument is not used %-/ 10-Mar-2025
+func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string, _ string) {
 	getopt.CommandLine = getopt.New()
 	os.Args = []string{"cmd", "--chdir=../../test-data/skip-integration-tests/test_precedence"}
 	parameters := Params{}

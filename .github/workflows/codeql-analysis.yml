@@ -10,12 +10,13 @@
 # supported CodeQL languages.
 #
 name: "CodeQL"
+permissions: {} # yamllint disable-line rule:braces
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
     paths-ignore:
       - "**/.*"
       - "**/*.md"
@@ -23,7 +24,7 @@ on:
       - "test-data/**/*"
       - "www/**/*"
   schedule:
-    - cron: '16 12 * * 1'
+    - cron: "16 12 * * 1"
 
 jobs:
   analyze:
@@ -64,7 +65,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version: "1.23"
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -76,7 +77,8 @@ jobs:
           # By default, queries listed here will override any specified in a config file.
           # Prefix the list here with "+" to use these queries and those in the config file.
 
-          # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+          # For more details on CodeQL's query packs, refer to:
+          # https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
           # queries: security-extended,security-and-quality
 
       # If the analyze step fails for one of the languages you are analyzing with

@@ -56,19 +56,18 @@ func RemoveSymlink(symlinkPath string) error {
 		If error persist, you may not have the permission to create a symlink at %q.
 		Error: %v
 		`, symlinkPath, symlinkPath, err)
-	} else {
-		errRemove := os.Remove(symlinkPath)
-
-		if errRemove != nil {
-			return fmt.Errorf(`
-			Unable to remove symlink.
-			Maybe symlink already exist. Try removing existing symlink manually.
-			Try running "unlink %q" to remove existing symlink.
-			If error persist, you may not have the permission to create a symlink at %q.
-			Error: %v
-			`, symlinkPath, symlinkPath, errRemove)
-		}
 	}
+
+	if errRemove := os.Remove(symlinkPath); errRemove != nil {
+		return fmt.Errorf(`
+		Unable to remove symlink.
+		Maybe symlink already exist. Try removing existing symlink manually.
+		Try running "unlink %q" to remove existing symlink.
+		If error persist, you may not have the permission to create a symlink at %q.
+		Error: %v
+		`, symlinkPath, symlinkPath, errRemove)
+	}
+
 	return nil
 }
 
@@ -98,6 +97,8 @@ func ChangeSymlink(binVersionPath string, binPath string) {
 }
 
 // ChangeProductSymlink : move symlink for product to existing binary
+//
+//nolint:gocyclo
 func ChangeProductSymlink(product Product, binVersionPath string, userBinPath string) error {
 	homedir := GetHomeDirectory() // get user's home directory
 	homeBinPath := filepath.Join(homedir, "bin", product.GetExecutableName())
@@ -168,7 +169,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 			// Print helper message to export PATH if the directory is not in PATH only for non-Windows systems,
 			// as it's all complicated on Windows. See https://github.com/warrensbox/terraform-switcher/issues/558
 			if runtime.GOOS != "windows" {
-				var isDirInPath bool = false
+				isDirInPath := false
 
 				for _, envPathElement := range strings.Split(os.Getenv("PATH"), ":") {
 					expandedEnvPathElement := strings.TrimRight(strings.Replace(envPathElement, "~", homedir, 1), "/")

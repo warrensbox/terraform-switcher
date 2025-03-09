@@ -51,14 +51,15 @@ const (
 
 // TestGetTFList : Get list from hashicorp
 func TestGetTFList(t *testing.T) {
-
-	list, _ := getTFList(hashiURL, true)
+	list, err := getTFList(hashiURL, true)
+	if err != nil {
+		t.Errorf("Error getting list of versions from %q: %v", hashiURL, err)
+	}
 
 	val := "0.1.0"
 	var exists bool
 
-	switch reflect.TypeOf(list).Kind() {
-	case reflect.Slice:
+	if reflect.TypeOf(list).Kind() == reflect.Slice {
 		s := reflect.ValueOf(list)
 
 		for i := 0; i < s.Len(); i++ {
@@ -73,7 +74,6 @@ func TestGetTFList(t *testing.T) {
 	} else {
 		t.Log("Write versions exist (expected)")
 	}
-
 }
 
 func compareLists(actual []string, expected []string) error {
@@ -95,11 +95,15 @@ func getMockListVersionServer() *httptest.Server {
 		case "/hashicorp/":
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(hashicorpBody))
+			if _, err := w.Write([]byte(hashicorpBody)); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 		case "/opentofu/":
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(openTofuBody))
+			if _, err := w.Write([]byte(openTofuBody)); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 		default:
 			http.NotFoundHandler().ServeHTTP(w, r)
 		}
@@ -213,7 +217,6 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 // TestValidVersionFormat : test if func returns valid version format
 // more regex testing at https://rubular.com/r/UvWXui7EU2icSb
 func TestValidVersionFormat(t *testing.T) {
-
 	var version string
 	version = "0.11.8"
 
@@ -304,5 +307,4 @@ func TestValidVersionFormat(t *testing.T) {
 	} else {
 		t.Errorf("Failed to verify version format: %s\n", version)
 	}
-
 }

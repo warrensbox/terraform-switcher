@@ -25,15 +25,10 @@ func RenameFile(src string, dest string) {
 
 // RemoveFiles : remove file
 func RemoveFiles(src string) {
-	files, err := filepath.Glob(src)
-	if err != nil {
-		panic(err)
-	}
-	for _, f := range files {
-		if err := os.Remove(f); err != nil {
-			panic(err)
-		}
-	}
+	// Keep both identical functions for backward compatibility
+	// Need to plan deprecation of either of them
+	// 09-Mar-2025
+	removeFiles(src)
 }
 
 // CheckFileExist : check if file exist in directory
@@ -187,10 +182,8 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	res := []string{}
 	for _, f := range files {
 		if !f.IsDir() && strings.HasPrefix(f.Name(), prefix) {
-			res = append(res, filepath.Join(dir, f.Name()))
 			exist = true
 		}
 	}
