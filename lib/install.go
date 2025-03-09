@@ -145,9 +145,7 @@ func ConvertExecutableExt(fpath string) string {
 		if filepath.Ext(fpath) == ".exe" {
 			return fpath
 		}
-		convertedPath := fpath + ".exe"
-		logger.Debugf("[Windows] Converting %q to %q", fpath, convertedPath)
-		return convertedPath
+		return fpath + ".exe"
 	default:
 		return fpath
 	}
