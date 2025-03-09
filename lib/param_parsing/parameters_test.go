@@ -3,7 +3,9 @@ package param_parsing
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/pborman/getopt"
@@ -304,4 +306,62 @@ product = "opentofu"
 	checkExpectedPrecedenceProduct(t, tempDir, terraformProduct)
 
 	os.Unsetenv("TF_VERSION")
+}
+
+func TestVersionFlagOutput(t *testing.T) {
+	flagName := "--version"
+	expectedOutput := "Version: "
+	goCommandArgs := []string{"run", "../../main.go", flagName}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if !strings.HasPrefix(string(out), expectedOutput) {
+		t.Fatalf("Expected %q, got: %q", expectedOutput, string(out))
+	}
+
+	t.Logf("Success: %q", string(out))
+}
+
+func TestHelpFlagOutput(t *testing.T) {
+	flagName := "--help"
+	expectedOutput := "Usage: "
+	goCommandArgs := []string{"run", "../../main.go", flagName}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if !strings.HasPrefix(string(out), expectedOutput) {
+		t.Fatalf("Expected %q, got: %q", expectedOutput, string(out))
+	}
+
+	t.Logf("Success: %q", string(out))
+}
+
+func TestDryRunFlagOutput(t *testing.T) {
+	flagName := "--dry-run"
+	testVersion := "1.10.5"
+	expectedOutput := fmt.Sprintf(" \x1b[32mINFO\x1b[0m \x1b[32m[DRY-RUN] Would have attempted to install version %q\x1b[0m  \n", testVersion)
+	goCommandArgs := []string{"run", "../../main.go", flagName, testVersion}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if !strings.HasSuffix(string(out), expectedOutput) {
+		t.Fatalf("Expected %q, got: %q", expectedOutput, string(out))
+	}
+
+	t.Logf("Success: %q", string(out))
 }

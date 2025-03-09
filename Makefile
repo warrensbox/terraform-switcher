@@ -28,6 +28,11 @@ clean:
 test: vet $(EXE)
 	$(GOBINARY) test -v ./...
 
+.PHONY: test-single-function
+test-single-function: vet
+	@([ -z "$(TEST_FUNC_NAME)" ] && echo "TEST_FUNC_NAME is not set" && false) || true
+	$(GOBINARY) test -v -run="$(TEST_FUNC_NAME)" ./...
+
 .PHONY: vet
 vet: version
 	$(GOBINARY) vet ./...
