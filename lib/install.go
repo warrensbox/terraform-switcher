@@ -155,7 +155,7 @@ func switchToVersion(product Product, tfversion string, binPath string, installP
 func ConvertExecutableExt(fpath string) string {
 	const winExt = ".exe"
 	switch runtime.GOOS {
-	case "windows":
+	case windows:
 		if filepath.Ext(fpath) == winExt {
 			return fpath
 		}
@@ -178,7 +178,7 @@ func installableBinLocation(product Product, userBinPath string) string {
 	if binPathExist { // if bin path exist - check if we can write to it
 
 		binPathWritable := false // assume bin path is not writable
-		if runtime.GOOS != "windows" {
+		if runtime.GOOS != windows {
 			binPathWritable = CheckDirWritable(binDir) // check if is writable on ( only works on LINUX)
 		}
 
@@ -355,10 +355,11 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 		}
 		return fmt.Errorf("prompt failed %v", errPrompt)
 	}
+
 	if !dryRun {
 		return install(product, selectVersions[selectedItx].Version, customBinaryPath, installPath, mirrorURL, arch)
-	} else {
-		logger.Infof("[DRY-RUN] Would have attempted to install version %q", selectVersions[selectedItx].Version)
 	}
+
+	logger.Infof("[DRY-RUN] Would have attempted to install version %q", selectVersions[selectedItx].Version)
 	return nil
 }

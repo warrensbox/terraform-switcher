@@ -12,10 +12,9 @@ import (
 // TestCreateSymlink : check if symlink exist-remove if exist,
 // create symlink, check if symlink exist, remove symlink
 func TestCreateSymlink(t *testing.T) {
-
 	testSymlinkDest := "/test-tfswitcher-dest"
 	testSymlinkSrc := "/test-tfswitcher-src"
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == windows {
 		testSymlinkSrc = "/test-tfswitcher-src.exe"
 	}
 
@@ -33,7 +32,7 @@ func TestCreateSymlink(t *testing.T) {
 	}
 	defer create.Close()
 
-	if runtime.GOOS != "windows" {
+	if runtime.GOOS != windows {
 		ln, _ := os.Readlink(symlinkPathSrc)
 
 		if ln != symlinkPathDest {
@@ -47,7 +46,7 @@ func TestCreateSymlink(t *testing.T) {
 
 	CreateSymlink(symlinkPathDest, symlinkPathSrc)
 
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == windows {
 		_, err := os.Stat(symlinkPathSrc)
 		if err != nil {
 			t.Logf("Could not stat file copy at %v. [unexpected]", symlinkPathSrc)
@@ -72,7 +71,6 @@ func TestCreateSymlink(t *testing.T) {
 // TestRemoveSymlink : check if symlink exist-create if does not exist,
 // remove symlink, check if symlink exist
 func TestRemoveSymlink(t *testing.T) {
-
 	testSymlinkSrc := "/test-tfswitcher-src"
 
 	testSymlinkDest := "/test-tfswitcher-dest"
@@ -107,7 +105,6 @@ func TestRemoveSymlink(t *testing.T) {
 
 // TestCheckSymlink : Create symlink, test if file is symlink
 func TestCheckSymlink(t *testing.T) {
-
 	testSymlinkSrc := "/test-tgshifter-src"
 
 	testSymlinkDest := "/test-tgshifter-dest"

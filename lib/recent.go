@@ -89,7 +89,7 @@ func saveRecentFile(data RecentFile, path string) {
 	if err != nil {
 		logger.Errorf("Could not marshal data to JSON: %v", err)
 	}
-	err = os.WriteFile(path, bytes, 0644)
+	err = os.WriteFile(path, bytes, 0o600)
 	if err != nil {
 		logger.Errorf("Could not save file %q: %v", path, err)
 	}

@@ -8,6 +8,9 @@ import (
 	"strings"
 )
 
+// string `windows` has 12 occurrences, make it a constant (goconst)
+const windows = "windows"
+
 // Command : type string
 type Command struct {
 	name string
@@ -42,11 +45,11 @@ func isExecutable(path string) bool {
 		return false
 	}
 
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == windows {
 		return true
 	}
 
-	if fileInfo.Mode()&0111 != 0 {
+	if fileInfo.Mode()&0o111 != 0 {
 		return true
 	}
 

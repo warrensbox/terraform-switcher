@@ -108,7 +108,7 @@ func TestUnzip(t *testing.T) {
 	installPath := "/.terraform.versions_test/"
 	var pathToTestFile string
 	switch runtime.GOOS {
-	case "windows":
+	case windows:
 		pathToTestFile = "../test-data/test-data_windows.zip"
 	default:
 		pathToTestFile = "../test-data/test-data.zip"
@@ -171,7 +171,7 @@ func TestUnzip_with_file_to_unzip(t *testing.T) {
 	var pathToTestFile string
 	var expectedFilename string
 	switch runtime.GOOS {
-	case "windows":
+	case windows:
 		pathToTestFile = "../test-data/test-data_windows.zip"
 		expectedFilename = "another_file.exe"
 	default:
@@ -512,7 +512,7 @@ func TestConvertExecutableExt(t *testing.T) {
 		outputMsg := fpath + " converted to " + fpathExt + " on " + runtime.GOOS
 
 		switch runtime.GOOS {
-		case "windows":
+		case windows:
 			if filepath.Ext(fpathExt) != ".exe" {
 				t.Error(outputMsg + " (unexpected)")
 				continue

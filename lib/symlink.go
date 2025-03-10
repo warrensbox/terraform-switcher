@@ -13,7 +13,7 @@ import (
 func CreateSymlink(cwd string, dir string) error {
 	// If we are on windows the symlink is not working correctly.
 	// Copy the desired terraform binary to the path environment.
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == windows {
 		r, err := os.Open(cwd)
 		if err != nil {
 			return fmt.Errorf("Unable to open source binary: %q", cwd)
@@ -168,7 +168,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 
 			// Print helper message to export PATH if the directory is not in PATH only for non-Windows systems,
 			// as it's all complicated on Windows. See https://github.com/warrensbox/terraform-switcher/issues/558
-			if runtime.GOOS != "windows" {
+			if runtime.GOOS != windows {
 				isDirInPath := false
 
 				for _, envPathElement := range strings.Split(os.Getenv("PATH"), ":") {

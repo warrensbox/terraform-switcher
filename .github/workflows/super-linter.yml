@@ -5,7 +5,7 @@ on: # yamllint disable-line rule:truthy
   push: null
   pull_request: null
 
-permissions: {}
+permissions: {} # yamllint disable-line rule:braces
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}

@@ -82,15 +82,15 @@ func getTFLatest(mirrorURL string) (string, error) {
 func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
 	if preRelease {
 		// TODO: use getTFList() instead of getTFURLBody
-		body, error := getTFURLBody(mirrorURL)
-		if error != nil {
-			return "", error
+		body, err := getTFURLBody(mirrorURL)
+		if err != nil {
+			return "", err
 		}
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
 		semver := fmt.Sprintf(`\/?(%s{1}\.\d+\-[a-zA-z]+\d*)\/?"`, version)
-		r, err := regexp.Compile(semver)
-		if err != nil {
-			return "", err
+		r, errReSemVer := regexp.Compile(semver)
+		if errReSemVer != nil {
+			return "", errReSemVer
 		}
 		versions := strings.Split(body, "\n")
 		for i := range versions {

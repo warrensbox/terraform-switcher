@@ -41,9 +41,8 @@ func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 			if validVersionFormat(tfversion) { // check if version format is correct
 				logger.Infof("Matched version: %q", tfversion)
 				return tfversion, nil
-			} else {
-				PrintInvalidTFVersion()
 			}
+			PrintInvalidTFVersion()
 		}
 	}
 
