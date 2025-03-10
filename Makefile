@@ -18,7 +18,7 @@ release: $(EXE) darwin linux windows
 
 .PHONY: darwin linux windows
 darwin linux windows: version
-	GOOS=$@ $(GOBINARY) build -ldflags "-X main.version=$(VER)" -o "$(BUILDPATH)/$(EXE)-$(VER)-$@-$(GOARCH)" $(PKG)
+	GOOS=$@ $(GOBINARY) build -ldflags "-X 'main.version=$(VER)'" -o "$(BUILDPATH)/$(EXE)-$(word 1, $(VER))-$@-$(GOARCH)" $(PKG)
 
 .PHONY: clean
 clean:
