@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	//lint:ignore SA1019 // TODO: https://github.com/warrensbox/terraform-switcher/issues/439
+	//nolint:staticcheck // TODO: https://github.com/warrensbox/terraform-switcher/issues/439
 	"golang.org/x/crypto/openpgp"
 )
 

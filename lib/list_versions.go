@@ -170,10 +170,8 @@ func removeDuplicateVersions(elements []string) []string {
 	result := []string{}
 
 	for _, val := range elements {
-		versionOnly := strings.Trim(val, " *recent")
-		if encountered[versionOnly] {
-			// Do not add duplicate.
-		} else {
+		versionOnly := strings.TrimSuffix(val, " *recent")
+		if !encountered[versionOnly] {
 			// Record this element as an encountered element.
 			encountered[versionOnly] = true
 			// Append to result slice.

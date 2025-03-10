@@ -182,7 +182,8 @@ func installableBinLocation(product Product, userBinPath string) string {
 			binPathWritable = CheckDirWritable(binDir) // check if is writable on ( only works on LINUX)
 		}
 
-		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terraform at the ~/bin location. See ELSE
+		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false),
+		// we will attempt to install terraform at the ~/bin location. See ELSE
 		if !binPathWritable {
 			homeBinDir := filepath.Join(homedir, "bin")
 			if !CheckDirExist(homeBinDir) { // if ~/bin exist, install at ~/bin/terraform
@@ -194,9 +195,9 @@ func installableBinLocation(product Product, userBinPath string) string {
 			logger.Infof("Installing %s at %q", product.GetName(), homeBinDir)
 			return filepath.Join(homeBinDir, product.GetExecutableName())
 
-		} else { // ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
-			return userBinPath
 		}
+		// ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
+		return userBinPath
 	}
 
 	logger.Fatalf("Binary path (%q) does not exist. Manually create bin directory %q and try again", userBinPath, binDir)
@@ -270,13 +271,11 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 		if validVersionFormat(version) {
 			requestedVersion := version
 			return install(product, requestedVersion, customBinaryPath, installPath, mirrorURL, arch)
-		} else {
-			PrintInvalidTFVersion()
-			return fmt.Errorf("Argument must be a valid %s version", product.GetName())
 		}
-	} else {
-		logger.Infof("[DRY-RUN] Would have attempted to install version %q", version)
+		PrintInvalidTFVersion()
+		return fmt.Errorf("Argument must be a valid %s version", product.GetName())
 	}
+	logger.Infof("[DRY-RUN] Would have attempted to install version %q", version)
 	return nil
 }
 
@@ -302,7 +301,7 @@ type VersionSelector struct {
 func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPath, installPath, mirrorURL, arch string) error {
 	var selectVersions []VersionSelector
 
-	var versionMap map[string]bool = make(map[string]bool)
+	versionMap := make(map[string]bool)
 
 	// Add recent versions
 	//nolint:errcheck // getRecentVersions always returns nil error %-/
@@ -353,9 +352,8 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 		if errPrompt.Error() == "^C" {
 			// Cancel execution
 			return fmt.Errorf("user interrupt")
-		} else {
-			return fmt.Errorf("prompt failed %v", errPrompt)
 		}
+		return fmt.Errorf("prompt failed %v", errPrompt)
 	}
 	if !dryRun {
 		return install(product, selectVersions[selectedItx].Version, customBinaryPath, installPath, mirrorURL, arch)
