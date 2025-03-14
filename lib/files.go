@@ -205,6 +205,24 @@ func CheckDirExist(dir string) bool {
 		logger.Debugf("Directory %q doesn't exist", dir)
 		return false
 	}
+
+	return true
+}
+
+// CheckIsDir: check if is directory
+// dir=path to file
+// return bool
+func CheckIsDir(dir string) bool {
+	fi, err := os.Stat(dir)
+
+	if err != nil {
+		logger.Debugf("Error checking %q: %w", dir, err)
+		return false
+	} else if !fi.IsDir() {
+		logger.Debugf("The %q is not a directory", dir)
+		return false
+	}
+
 	return true
 }
 

@@ -27,29 +27,29 @@ func getParamsTOML(params Params) (Params, error) {
 			return params, errs
 		}
 
-		if viperParser.Get("arch") != nil {
-			params.Arch = os.ExpandEnv(viperParser.GetString("arch"))
-			logger.Debugf("Using \"arch\" from %q: %q", tomlPath, params.Arch)
+		if configKey := "arch"; viperParser.Get(configKey) != nil {
+			params.Arch = os.ExpandEnv(viperParser.GetString(configKey))
+			logger.Debugf("OS architecture (%q) from %q: %q", configKey, tomlPath, params.Arch)
 		}
-		if viperParser.Get("bin") != nil {
-			params.CustomBinaryPath = os.ExpandEnv(viperParser.GetString("bin"))
-			logger.Debugf("Using \"bin\" from %q: %q", tomlPath, params.CustomBinaryPath)
+		if configKey := "bin"; viperParser.Get(configKey) != nil {
+			params.CustomBinaryPath = os.ExpandEnv(viperParser.GetString(configKey))
+			logger.Debugf("Installation target (%q) from %q: %q", configKey, tomlPath, params.CustomBinaryPath)
 		}
-		if viperParser.Get("log-level") != nil {
-			params.LogLevel = viperParser.GetString("log-level")
-			logger.Debugf("Using \"log-level\" from %q: %q", tomlPath, params.LogLevel)
+		if configKey := "log-level"; viperParser.Get(configKey) != nil {
+			params.LogLevel = viperParser.GetString(configKey)
+			logger.Debugf("Logging level (%q) from %q: %q", configKey, tomlPath, params.LogLevel)
 		}
-		if viperParser.Get("version") != nil {
-			params.Version = viperParser.GetString("version")
-			logger.Debugf("Using \"version\" from %q: %q", tomlPath, params.Version)
+		if configKey := "version"; viperParser.Get(configKey) != nil {
+			params.Version = viperParser.GetString(configKey)
+			logger.Debugf("Installation version (%q) from %q: %q", configKey, tomlPath, params.Version)
 		}
-		if viperParser.Get("default-version") != nil {
-			params.DefaultVersion = viperParser.GetString("default-version")
-			logger.Debugf("Using \"default-version\" from %q: %q", tomlPath, params.DefaultVersion)
+		if configKey := "default-version"; viperParser.Get(configKey) != nil {
+			params.DefaultVersion = viperParser.GetString(configKey)
+			logger.Debugf("Fallback version (%q) from %q: %q", configKey, tomlPath, params.DefaultVersion)
 		}
 		if configKey := "product"; viperParser.Get(configKey) != nil {
 			params.Product = viperParser.GetString(configKey)
-			logger.Debugf("Using %q from %q: %q", configKey, tomlPath, params.Product)
+			logger.Debugf("Product name (%q) from %q: %q", configKey, tomlPath, params.Product)
 		}
 	}
 	return params, nil

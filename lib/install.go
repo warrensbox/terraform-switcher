@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"sync"
 	"time"
 
@@ -240,8 +239,8 @@ func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorU
 
 // InstallProductVersion install with provided version as argument
 func InstallProductVersion(product Product, dryRun bool, version, customBinaryPath, installPath, mirrorURL, arch string) error {
-	logger.Debugf("Install version %s. Dry run: %s", version, strconv.FormatBool(dryRun))
 	if !dryRun {
+		logger.Debugf("Installing version %q", version)
 		if validVersionFormat(version) {
 			requestedVersion := version
 			return install(product, requestedVersion, customBinaryPath, installPath, mirrorURL, arch)
@@ -249,6 +248,8 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 			PrintInvalidTFVersion()
 			return fmt.Errorf("Argument must be a valid %s version", product.GetName())
 		}
+	} else {
+		logger.Infof("[DRY-RUN] Would have attempted to install version %q", version)
 	}
 	return nil
 }
@@ -327,6 +328,8 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	}
 	if !dryRun {
 		return install(product, selectVersions[selectedItx].Version, customBinaryPath, installPath, mirrorURL, arch)
+	} else {
+		logger.Infof("[DRY-RUN] Would have attempted to install version %q", selectVersions[selectedItx].Version)
 	}
 	return nil
 }

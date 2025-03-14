@@ -6,7 +6,7 @@ Feel free to look at the code, critique and make suggestions. Let's make `tfswit
 
 ## Required version
 ```sh
-go version 1.22
+go version 1.23
 ```
 
 ### Step 1 - Create workspace

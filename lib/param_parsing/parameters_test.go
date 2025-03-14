@@ -3,7 +3,10 @@ package param_parsing
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/pborman/getopt"
@@ -304,4 +307,67 @@ product = "opentofu"
 	checkExpectedPrecedenceProduct(t, tempDir, terraformProduct)
 
 	os.Unsetenv("TF_VERSION")
+}
+
+func TestVersionFlagOutput(t *testing.T) {
+	flagName := "--version"
+	expectedOutput := "Version: "
+	goCommandArgs := []string{"run", "../../main.go", flagName}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if !strings.HasPrefix(string(out), expectedOutput) {
+		t.Fatalf("Expected %q, got: %q", expectedOutput, string(out))
+	}
+
+	t.Logf("Success: %q", string(out))
+}
+
+func TestHelpFlagOutput(t *testing.T) {
+	flagName := "--help"
+	expectedOutput := "Usage: "
+	goCommandArgs := []string{"run", "../../main.go", flagName}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if !strings.HasPrefix(string(out), expectedOutput) {
+		t.Fatalf("Expected %q, got: %q", expectedOutput, string(out))
+	}
+
+	t.Logf("Success: %q", string(out))
+}
+
+func TestDryRunFlagOutput(t *testing.T) {
+	flagName := "--dry-run"
+	testVersion := "1.10.5"
+	expectedOutput := fmt.Sprintf(" INFO [DRY-RUN] Would have attempted to install version %q  \n", testVersion)
+	goCommandArgs := []string{"run", "../../main.go", flagName, testVersion}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	var re *regexp.Regexp = regexp.MustCompile("[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))")
+	outNoANSI := func(str string) string {
+		return re.ReplaceAllString(str, "")
+	}(string(out))
+
+	if !strings.HasSuffix(outNoANSI, expectedOutput) {
+		t.Fatalf("Expected %q, got: %q", expectedOutput, outNoANSI)
+	}
+
+	t.Logf("Success: %q", outNoANSI)
 }

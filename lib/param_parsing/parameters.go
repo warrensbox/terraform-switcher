@@ -74,7 +74,9 @@ func populateParams(params Params) Params {
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
 
-	if !params.VersionFlag && !params.HelpFlag {
+	isShortRun := !params.VersionFlag && !params.HelpFlag
+
+	if isShortRun {
 		oldLogLevel := params.LogLevel
 		logger = lib.InitLogger(params.LogLevel)
 
@@ -102,6 +104,7 @@ func populateParams(params Params) Params {
 		} else { // Use else as there is a warning that params maybe nil, as it does not see Fatalf as a break condition
 			if params.MirrorURL == "" {
 				params.MirrorURL = product.GetDefaultMirrorUrl()
+				logger.Debugf("Default mirror URL: %q", params.MirrorURL)
 			}
 
 			// Set default bin directory, if not configured
@@ -150,12 +153,32 @@ func populateParams(params Params) Params {
 			logger = lib.InitLogger(params.LogLevel)
 		}
 	}
+
 	// Parse again to overwrite anything that might by defined on the cli AND in any config file (CLI always wins)
 	getopt.Parse()
 	args := getopt.Args()
 	if len(args) == 1 {
 		/* version provided on command line as arg */
 		params.Version = args[0]
+	}
+
+	if isShortRun {
+		logger.Debugf("Resolved CPU architecture: %q", params.Arch)
+		if params.DryRun {
+			logger.Info("[DRY-RUN] No changes will be made")
+		} else {
+			logger.Debugf("Resolved dry-run: %t", params.DryRun)
+		}
+		if params.DefaultVersion != "" {
+			logger.Debugf("Resolved fallback version: %q", params.DefaultVersion)
+		}
+		logger.Debugf("Resolved installation path: %q", filepath.Join(params.InstallPath, lib.InstallDir))
+		logger.Debugf("Resolved installation target: %q", params.CustomBinaryPath)
+		logger.Debugf("Resolved installation version: %q", params.Version)
+		logger.Debugf("Resolved log level: %q", params.LogLevel)
+		logger.Debugf("Resolved mirror URL: %q", params.MirrorURL)
+		logger.Debugf("Resolved product name: %q", params.Product)
+		logger.Debugf("Resolved target directory: %q", params.ChDirPath)
 	}
 
 	return params

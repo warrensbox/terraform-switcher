@@ -57,7 +57,7 @@ func InitLogger(logLevel string) *slog.Logger {
 		break
 	case "NOTICE":
 		h = NewStderrConsoleHandler(NoticeLogging)
-		formatter.SetTemplate(loggingTemplateDebug)
+		formatter.SetTemplate(loggingTemplate)
 		break
 	default:
 		h = NewStderrConsoleHandler(NormalLogging)
