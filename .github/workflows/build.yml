@@ -23,6 +23,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
+          cache: false
 
       - name: Check vet
         run: |
@@ -53,6 +54,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version-file: 'go.mod'
+        cache: false
 
     - name: Build code
       run: go build -v ./...
@@ -91,6 +93,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version-file: 'go.mod'
+        cache: false
 
     - name: Running unit tests
       run: |
