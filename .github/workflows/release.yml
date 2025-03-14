@@ -1,4 +1,5 @@
 name: Release (Manual Step)
+permissions: {} # yamllint disable-line rule:braces
 
 on:
   workflow_dispatch:
@@ -10,8 +11,10 @@ on:
 jobs:
   tfswitch-release:
     runs-on: ubuntu-latest
-    steps:
+    permissions:
+      contents: write
 
+    steps:
     - name: Check if provided input is valid
       run: |
         echo "Semantic Version: ${{ github.event.inputs.name }}"
@@ -32,7 +35,7 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.23' # The Go version to download (if necessary) and use
+        go-version-file: 'go.mod'
 
     # Double check Go version
     - name: Go version
@@ -64,7 +67,7 @@ jobs:
         VERBOSE: false
 
     # Echo version
-    - name: Echo version 
+    - name: Echo version
       run: |
         echo ${{ steps.semver-tag-dry.outputs.tag }}
 

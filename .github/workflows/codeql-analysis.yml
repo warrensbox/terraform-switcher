@@ -10,6 +10,7 @@
 # supported CodeQL languages.
 #
 name: "CodeQL"
+permissions: {} # yamllint disable-line rule:braces
 
 on:
   push:
@@ -64,7 +65,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version-file: 'go.mod'
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
