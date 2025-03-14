@@ -33,7 +33,11 @@ func getParamsTOML(params Params) (Params, error) {
 		}
 		if configKey := "bin"; viperParser.Get(configKey) != nil {
 			params.CustomBinaryPath = os.ExpandEnv(viperParser.GetString(configKey))
-			logger.Debugf("Installation target (%q) from %q: %q", configKey, tomlPath, params.CustomBinaryPath)
+			logger.Debugf("Custom binary path (%q) from %q: %q", configKey, tomlPath, params.CustomBinaryPath)
+		}
+		if configKey := "install"; viperParser.Get(configKey) != nil {
+			params.InstallPath = viperParser.GetString(configKey)
+			logger.Debugf("Custom install path (%q) from %q: %q", configKey, tomlPath, params.InstallPath)
 		}
 		if configKey := "log-level"; viperParser.Get(configKey) != nil {
 			params.LogLevel = viperParser.GetString(configKey)

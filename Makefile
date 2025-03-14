@@ -11,7 +11,7 @@ GOARCH    ?= $(shell $(GOBINARY) env GOARCH)
 
 $(EXE): version go.mod *.go lib/*.go
 	mkdir -p "$(BUILDPATH)/"
-	$(GOBINARY) build -v -ldflags "-X main.version=$(VER)" -o "$(BUILDPATH)/$@" $(PKG)
+	$(GOBINARY) build -v -ldflags "-X 'main.version=$(VER)'" -o "$(BUILDPATH)/$@" $(PKG)
 
 .PHONY: release
 release: $(EXE) darwin linux windows

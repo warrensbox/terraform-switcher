@@ -1,8 +1,9 @@
 name: Run tests
+permissions: {} # yamllint disable-line rule:braces
 
 on:
   push:
-    branches: 
+    branches:
       - '*'       # matches every branch that doesn't contain a '/'
       - '*/*'     # matches every branch containing a single '/'
       - '**'      # matches every branch
@@ -21,7 +22,8 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23'
+          go-version-file: 'go.mod'
+          cache: false
 
       - name: Check vet
         run: |
@@ -42,7 +44,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        go_version: ['1.23']
     runs-on: ${{ matrix.os }}
     steps:
 
@@ -52,7 +53,8 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v5
       with:
-        go-version: ${{ matrix.go_version }}
+        go-version-file: 'go.mod'
+        cache: false
 
     - name: Build code
       run: go build -v ./...
@@ -81,7 +83,6 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        go_version: ['1.23']
     runs-on: ${{ matrix.os }}
     steps:
 
@@ -91,7 +92,8 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v5
       with:
-        go-version: ${{ matrix.go_version }}
+        go-version-file: 'go.mod'
+        cache: false
 
     - name: Running unit tests
       run: |
