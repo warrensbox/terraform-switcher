@@ -25,6 +25,18 @@ func TestGetParamsTOML_BinaryPath(t *testing.T) {
 	}
 }
 
+func TestGetParamsTOML_InstallPath(t *testing.T) {
+	expected := "/custom_install_path_from_toml"
+	params := prepare()
+	params, err := getParamsTOML(params)
+	if err != nil {
+		t.Fatalf("Got error %v", err)
+	}
+	if params.InstallPath != expected {
+		t.Errorf("InstallPath not matching. Got %q, expected %q", params.CustomBinaryPath, expected)
+	}
+}
+
 func TestGetParamsTOML_Version(t *testing.T) {
 	expected := "1.6.2"
 	params := prepare()

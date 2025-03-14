@@ -163,22 +163,23 @@ func populateParams(params Params) Params {
 	}
 
 	if isShortRun {
-		logger.Debugf("Resolved CPU architecture: %q", params.Arch)
 		if params.DryRun {
 			logger.Info("[DRY-RUN] No changes will be made")
 		} else {
 			logger.Debugf("Resolved dry-run: %t", params.DryRun)
 		}
+
+		logger.Debugf("Resolved CPU architecture: %q", params.Arch)
 		if params.DefaultVersion != "" {
 			logger.Debugf("Resolved fallback version: %q", params.DefaultVersion)
 		}
-		logger.Debugf("Resolved installation path: %q", filepath.Join(params.InstallPath, lib.InstallDir))
-		logger.Debugf("Resolved installation target: %q", params.CustomBinaryPath)
-		logger.Debugf("Resolved installation version: %q", params.Version)
+		logger.Debugf("Resolved binary path: %q", params.CustomBinaryPath)
+		logger.Debugf("Resolved install path: %q", filepath.Join(params.InstallPath, lib.InstallDir))
+		logger.Debugf("Resolved install version: %q", params.Version)
 		logger.Debugf("Resolved log level: %q", params.LogLevel)
 		logger.Debugf("Resolved mirror URL: %q", params.MirrorURL)
 		logger.Debugf("Resolved product name: %q", params.Product)
-		logger.Debugf("Resolved target directory: %q", params.ChDirPath)
+		logger.Debugf("Resolved working directory: %q", params.ChDirPath)
 	}
 
 	return params
