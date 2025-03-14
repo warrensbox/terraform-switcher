@@ -358,6 +358,8 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 
 	if !dryRun {
 		return install(product, selectVersions[selectedItx].Version, customBinaryPath, installPath, mirrorURL, arch)
+	} else {
+		logger.Infof("[DRY-RUN] Would have attempted to install version %q", selectVersions[selectedItx].Version)
 	}
 
 	logger.Infof("[DRY-RUN] Would have attempted to install version %q", selectVersions[selectedItx].Version)
