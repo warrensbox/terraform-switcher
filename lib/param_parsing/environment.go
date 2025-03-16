@@ -16,6 +16,7 @@ func GetParamsFromEnvironment(params Params) Params {
 		{name: "TF_BINARY_PATH", param: "CustomBinaryPath", description: "custom binary path"},
 		{name: "TF_DEFAULT_VERSION", param: "DefaultVersion", description: "default version"},
 		{name: "TF_INSTALL_PATH", param: "InstallPath", description: "custom install path"},
+		{name: "TF_LOG_LEVEL", param: "LogLevel", description: "log level"},
 		{name: "TF_PRODUCT", param: "Product", description: "product"},
 		{name: "TF_VERSION", param: "Version", description: "version"},
 	}

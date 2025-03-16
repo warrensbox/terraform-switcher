@@ -83,3 +83,16 @@ func TestGetParamsFromEnvironment_install_from_env(t *testing.T) {
 		t.Errorf("Determined custom install path is not matching. Got %q, expected %q", params.InstallPath, expected)
 	}
 }
+
+func TestGetParamsFromEnvironment_log_level_from_env(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	var params Params
+	expected := "DEBUG"
+	_ = os.Setenv("TF_LOG_LEVEL", expected)
+	params = initParams(params)
+	params = GetParamsFromEnvironment(params)
+	_ = os.Unsetenv("TF_LOG_LEVEL")
+	if params.InstallPath != expected {
+		t.Errorf("Determined log level is not matching. Got %q, expected %q", params.LogLevel, expected)
+	}
+}
