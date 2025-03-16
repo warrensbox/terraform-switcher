@@ -35,6 +35,24 @@ type Params struct {
 	VersionFlag      bool
 }
 
+type paramMapping struct {
+	description string
+	env         string
+	param       string
+	toml        string
+}
+
+// This is used to automatically instate Environment variables and TOML keys
+var paramMappings = []paramMapping{
+	{param: "Arch", env: "TF_ARCH", toml: "arch", description: "CPU architecture"},
+	{param: "CustomBinaryPath", env: "TF_BINARY_PATH", toml: "bin", description: "Custom binary path"},
+	{param: "DefaultVersion", env: "TF_DEFAULT_VERSION", toml: "default-version", description: "Default version"},
+	{param: "InstallPath", env: "TF_INSTALL_PATH", toml: "install", description: "Custom install path"},
+	{param: "LogLevel", env: "TF_LOG_LEVEL", toml: "log-level", description: "Log level"},
+	{param: "Product", env: "TF_PRODUCT", toml: "product", description: "Product"},
+	{param: "Version", env: "TF_VERSION", toml: "version", description: "Version"},
+}
+
 var logger *slog.Logger
 
 func GetParameters() Params {
