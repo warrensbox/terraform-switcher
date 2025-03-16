@@ -29,7 +29,7 @@ func getParamsTOML(params Params) (Params, error) {
 
 		if configKey := "arch"; viperParser.Get(configKey) != nil {
 			params.Arch = os.ExpandEnv(viperParser.GetString(configKey))
-			logger.Debugf("OS architecture (%q) from %q: %q", configKey, tomlPath, params.Arch)
+			logger.Debugf("CPU architecture (%q) from %q: %q", configKey, tomlPath, params.Arch)
 		}
 		if configKey := "bin"; viperParser.Get(configKey) != nil {
 			params.CustomBinaryPath = os.ExpandEnv(viperParser.GetString(configKey))

@@ -12,7 +12,7 @@ func GetParamsFromEnvironment(params Params) Params {
 		description string
 	}
 	envVars := []envVar{
-		{name: "TF_ARCH", param: "Arch", description: "architecture"},
+		{name: "TF_ARCH", param: "Arch", description: "CPU architecture"},
 		{name: "TF_BINARY_PATH", param: "CustomBinaryPath", description: "custom binary path"},
 		{name: "TF_DEFAULT_VERSION", param: "DefaultVersion", description: "default version"},
 		{name: "TF_INSTALL_PATH", param: "InstallPath", description: "custom install path"},
