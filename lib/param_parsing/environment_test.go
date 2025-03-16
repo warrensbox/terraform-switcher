@@ -92,7 +92,7 @@ func TestGetParamsFromEnvironment_log_level_from_env(t *testing.T) {
 	params = initParams(params)
 	params = GetParamsFromEnvironment(params)
 	_ = os.Unsetenv("TF_LOG_LEVEL")
-	if params.InstallPath != expected {
+	if params.LogLevel != expected {
 		t.Errorf("Determined log level is not matching. Got %q, expected %q", params.LogLevel, expected)
 	}
 }
