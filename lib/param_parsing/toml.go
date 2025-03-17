@@ -38,7 +38,7 @@ func getParamsTOML(params Params) (Params, error) {
 				continue
 			}
 			if len(param) == 0 {
-				logger.Errorf("Internal error: parameter name is empty for TMOL key %q mapping, skipping assignment", toml)
+				logger.Errorf("Internal error: parameter name is empty for TOML key %q mapping, skipping assignment", toml)
 				continue
 			}
 			if len(description) == 0 {

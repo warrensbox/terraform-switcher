@@ -114,7 +114,7 @@ tfswitch # Will install binary as $HOME/bin/terraform
 ### `TF_INSTALL_PATH`
 
 `tfswitch` defaults to download binaries to the `$HOME/.terraform.versions/` directory.  
-`TF_INSTALL_PATH`environment variable can be set to specify a parent directory for `.terraform.versions` directory. Current user must have write permissions to the target directory. If the target directory does not exist, `tfswitch` will create it.
+`TF_INSTALL_PATH` environment variable can be set to specify a parent directory for `.terraform.versions` directory. Current user must have write permissions to the target directory. If the target directory does not exist, `tfswitch` will create it.
 
 For example:
 
