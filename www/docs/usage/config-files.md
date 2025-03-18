@@ -66,7 +66,7 @@ bin = "C:\\Users\\<%USRNAME%>\\bin\\terraform.exe"
 
 ## Setting the default (fallback) version using `.tfswitch.toml` file
 
-If `tfswsitch` is unable to determine the version to use, it errors out.  
+By default, if `tfswsitch` is unable to determine the version to use, it errors out.  
 The `.tfswitch.toml` file can be configured with a `default-version` attribute for `tfswitch` to use a particular version, if no other sources of versions are found
 
 ```toml
