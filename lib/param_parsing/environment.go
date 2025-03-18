@@ -25,18 +25,18 @@ func GetParamsFromEnvironment(params Params) Params {
 			description = param
 		}
 
-		f := reflect.Indirect(reflectedParams).FieldByName(param)
-		if f.Kind() != reflect.String {
+		paramKey := reflect.Indirect(reflectedParams).FieldByName(param)
+		if paramKey.Kind() != reflect.String {
 			logger.Warnf("Parameter %q is not a string, skipping assignment from environment variable %q", param, env)
 			continue
 		}
 
 		if envVarValue := os.Getenv(env); envVarValue != "" {
 			logger.Debugf("%s (%q) from environment variable %q: %q", description, toml, env, envVarValue)
-			if !f.CanSet() {
+			if !paramKey.CanSet() {
 				logger.Warnf("Parameter %q cannot be set, skipping assignment from environment variable %q", param, env)
 			}
-			f.SetString(envVarValue)
+			paramKey.SetString(envVarValue)
 		}
 	}
 	return params

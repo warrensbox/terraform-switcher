@@ -45,18 +45,18 @@ func getParamsTOML(params Params) (Params, error) {
 				description = param
 			}
 
-			f := reflect.Indirect(reflectedParams).FieldByName(param)
-			if f.Kind() != reflect.String {
+			paramKey := reflect.Indirect(reflectedParams).FieldByName(param)
+			if paramKey.Kind() != reflect.String {
 				logger.Warnf("Parameter %q is not a string, skipping assignment from TOML key %q", param, toml)
 				continue
 			}
 			if viperParser.Get(toml) != nil {
 				configKeyValue := viperParser.GetString(toml)
 				logger.Debugf("%s (%q) from %q: %q", description, toml, tomlPath, configKeyValue)
-				if !f.CanSet() {
+				if !paramKey.CanSet() {
 					logger.Warnf("Parameter %q cannot be set, skipping assignment from TOML key %q", param, toml)
 				}
-				f.SetString(configKeyValue)
+				paramKey.SetString(configKeyValue)
 			}
 		}
 	}
