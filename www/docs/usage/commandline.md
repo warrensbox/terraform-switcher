@@ -119,8 +119,8 @@ tfswitch # Will install binary as $HOME/bin/terraform
 For example:
 
 ```bash
-export TF_INSTALL_PATH="/tmp" # Path to the directory where `.terraform.versions` directory resides
-tfswitch # Will download actual binary to /tmp/.terraform.versions/
+export TF_INSTALL_PATH="/var/cache" # Path to the directory where `.terraform.versions` directory resides
+tfswitch # Will download actual binary to /var/cache/.terraform.versions/
 ```
 
 ## Install latest version only
