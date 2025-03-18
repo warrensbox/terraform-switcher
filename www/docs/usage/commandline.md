@@ -68,8 +68,8 @@ tfswitch # Will install opentofu instead of terraform
 `TF_LOG_LEVEL` environment variable can be set to override default log level.
 
 - Supported log levels:
-  - `INFO`:   includes `PANIC`, `FATAL`, `ERROR`
-  - `ERROR`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO`
+  - `ERROR`:  includes `PANIC`, `FATAL`, `ERROR`
+  - `INFO`:   includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO` (default)
   - `NOTICE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`
   - `DEBUG`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`
   - `TRACE`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`, `TRACE`
