@@ -98,8 +98,8 @@ log-level = "INFO"
 ```
 
 - Supported log levels:
-  - `INFO`:   includes `PANIC`, `FATAL`, `ERROR`
-  - `ERROR`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO`
+  - `ERROR`:  includes `PANIC`, `FATAL`, `ERROR`
+  - `INFO`:   includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO` (default)
   - `NOTICE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`
   - `DEBUG`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`
   - `TRACE`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`, `TRACE`
@@ -123,10 +123,10 @@ arch = "arm64"
 ## Overriding installation directory, where actual binaries are stored, using `.tfswitch.toml` file
 
 `tfswitch` defaults to download binaries to the `$HOME/.terraform.versions/` directory.  
-The `.tfswitch.toml` file can be configured with a `install` attribute to specify a parent directory for `.terraform.versions` directory.
+The `.tfswitch.toml` file can be configured with a `install` attribute to specify the parent directory for `.terraform.versions` directory.
 
 ```toml
-install = "/tmp"
+install = "/var/cache"
 ```
 
 **NOTE**:
