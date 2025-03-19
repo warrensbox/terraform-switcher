@@ -1,8 +1,8 @@
 package param_parsing
 
 import (
-	"os"
 	"path/filepath"
+	"reflect"
 
 	"github.com/spf13/viper"
 	"github.com/warrensbox/terraform-switcher/lib"
@@ -27,29 +27,37 @@ func getParamsTOML(params Params) (Params, error) {
 			return params, errs
 		}
 
-		if configKey := "arch"; viperParser.Get(configKey) != nil {
-			params.Arch = os.ExpandEnv(viperParser.GetString(configKey))
-			logger.Debugf("OS architecture (%q) from %q: %q", configKey, tomlPath, params.Arch)
-		}
-		if configKey := "bin"; viperParser.Get(configKey) != nil {
-			params.CustomBinaryPath = os.ExpandEnv(viperParser.GetString(configKey))
-			logger.Debugf("Installation target (%q) from %q: %q", configKey, tomlPath, params.CustomBinaryPath)
-		}
-		if configKey := "log-level"; viperParser.Get(configKey) != nil {
-			params.LogLevel = viperParser.GetString(configKey)
-			logger.Debugf("Logging level (%q) from %q: %q", configKey, tomlPath, params.LogLevel)
-		}
-		if configKey := "version"; viperParser.Get(configKey) != nil {
-			params.Version = viperParser.GetString(configKey)
-			logger.Debugf("Installation version (%q) from %q: %q", configKey, tomlPath, params.Version)
-		}
-		if configKey := "default-version"; viperParser.Get(configKey) != nil {
-			params.DefaultVersion = viperParser.GetString(configKey)
-			logger.Debugf("Fallback version (%q) from %q: %q", configKey, tomlPath, params.DefaultVersion)
-		}
-		if configKey := "product"; viperParser.Get(configKey) != nil {
-			params.Product = viperParser.GetString(configKey)
-			logger.Debugf("Product name (%q) from %q: %q", configKey, tomlPath, params.Product)
+		reflectedParams := reflect.ValueOf(&params)
+		for _, configKey := range paramMappings {
+			description := configKey.description
+			param := configKey.param
+			toml := configKey.toml
+
+			if len(toml) == 0 {
+				logger.Errorf("Internal error: TOML key name is empty for parameter %q mapping, skipping assignment", param)
+				continue
+			}
+			if len(param) == 0 {
+				logger.Errorf("Internal error: parameter name is empty for TOML key %q mapping, skipping assignment", toml)
+				continue
+			}
+			if len(description) == 0 {
+				description = param
+			}
+
+			paramKey := reflect.Indirect(reflectedParams).FieldByName(param)
+			if paramKey.Kind() != reflect.String {
+				logger.Warnf("Parameter %q is not a string, skipping assignment from TOML key %q", param, toml)
+				continue
+			}
+			if viperParser.Get(toml) != nil {
+				configKeyValue := viperParser.GetString(toml)
+				logger.Debugf("%s (%q) from %q: %q", description, toml, tomlPath, configKeyValue)
+				if !paramKey.CanSet() {
+					logger.Warnf("Parameter %q cannot be set, skipping assignment from TOML key %q", param, toml)
+				}
+				paramKey.SetString(configKeyValue)
+			}
 		}
 	}
 	return params, nil
