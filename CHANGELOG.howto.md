@@ -12,7 +12,6 @@
        - dependencies
      sections:
        added:
-         - enhancement
          - feature
          - new feature
        changed:
@@ -21,6 +20,7 @@
        fixed:
          - bug
          - bugfix
+         - enhancement
          - fix
          - fixed
      skip_entries_without_label: false
