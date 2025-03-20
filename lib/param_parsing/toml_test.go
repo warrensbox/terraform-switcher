@@ -25,6 +25,7 @@ func TestGetParamsTOML_BinaryPath(t *testing.T) {
 	if params.CustomBinaryPath != expected {
 		t.Errorf("BinaryPath not matching. Got %v, expected %v", params.CustomBinaryPath, expected)
 	}
+	os.Unsetenv("BIN_DIR_FROM_TOML")
 }
 
 func TestGetParamsTOML_InstallPath(t *testing.T) {
@@ -38,6 +39,7 @@ func TestGetParamsTOML_InstallPath(t *testing.T) {
 	if params.InstallPath != expected {
 		t.Errorf("InstallPath not matching. Got %q, expected %q", params.InstallPath, expected)
 	}
+	os.Unsetenv("INSTALL_DIR_FROM_TOML")
 }
 
 func TestGetParamsTOML_Version(t *testing.T) {

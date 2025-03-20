@@ -101,6 +101,9 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 		t.Error("LogLevel Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
 
+	os.Unsetenv("BIN_DIR_FROM_TOML")
+	os.Unsetenv("INSTALL_DIR_FROM_TOML")
+
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})
