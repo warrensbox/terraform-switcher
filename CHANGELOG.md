@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 
 - feat: Add env vars for `install` and `bin` args [#566](https://github.com/warrensbox/terraform-switcher/pull/566) ([yermulnik](https://github.com/yermulnik))
+- fix: reinstate env var expansion in `bin` and add the same for `install` TOML params [#570](https://github.com/warrensbox/terraform-switcher/pull/570) ([yermulnik](https://github.com/yermulnik))
 
 ### Other
 
