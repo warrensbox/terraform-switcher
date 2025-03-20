@@ -61,8 +61,8 @@ func getParamsTOML(params Params) (Params, error) {
 				for _, envExpandableKey := range envExpandableKeys {
 					if toml == envExpandableKey {
 						envExpandedConfigKeyValue := os.ExpandEnv(configKeyValue)
-						configKeyValue = envExpandedConfigKeyValue
 						logger.Debugf("Expanded environment variables in %q TOML key value (if any): %q -> %q", toml, configKeyValue, envExpandedConfigKeyValue)
+						configKeyValue = envExpandedConfigKeyValue
 					}
 				}
 
