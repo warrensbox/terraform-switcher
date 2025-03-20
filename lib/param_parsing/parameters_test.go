@@ -43,6 +43,10 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})
+
+	os.Setenv("BIN_DIR_FROM_TOML", "/usr/local/bin")
+	os.Setenv("INSTALL_DIR_FROM_TOML", "/tmp")
+
 	expected := "../../test-data/integration-tests/test_tfswitchtoml"
 	os.Args = []string{"cmd", "--chdir=" + expected}
 	params := Params{}
@@ -61,6 +65,12 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 		t.Error("CustomBinaryPath Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
 
+	expected = "/tmp"
+	actual = params.InstallPath
+	if actual != expected {
+		t.Error("InstallPath Param was not as expected. Actual: " + actual + ", Expected: " + expected)
+	}
+
 	expected = "amd64"
 	actual = params.Arch
 	if actual != expected {
@@ -73,11 +83,24 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 		t.Error("Version Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
 
+	expected = "1.5.4"
+	actual = params.DefaultVersion
+	if actual != expected {
+		t.Error("DefaultVersion Param was not as expected. Actual: " + actual + ", Expected: " + expected)
+	}
+
 	expected = "opentofu"
 	actual = params.Product
 	if actual != expected {
 		t.Error("Product Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
+
+	expected = "NOTICE"
+	actual = params.LogLevel
+	if actual != expected {
+		t.Error("LogLevel Param was not as expected. Actual: " + actual + ", Expected: " + expected)
+	}
+
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})

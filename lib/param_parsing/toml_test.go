@@ -1,6 +1,7 @@
 package param_parsing
 
 import (
+	"os"
 	"testing"
 
 	"github.com/warrensbox/terraform-switcher/lib"
@@ -15,6 +16,7 @@ func prepare() Params {
 
 func TestGetParamsTOML_BinaryPath(t *testing.T) {
 	expected := "/usr/local/bin/terraform_from_toml"
+	os.Setenv("BIN_DIR_FROM_TOML", "/usr/local/bin")
 	params := prepare()
 	params, err := getParamsTOML(params)
 	if err != nil {
@@ -27,6 +29,7 @@ func TestGetParamsTOML_BinaryPath(t *testing.T) {
 
 func TestGetParamsTOML_InstallPath(t *testing.T) {
 	expected := "/tmp"
+	os.Setenv("INSTALL_DIR_FROM_TOML", "/tmp")
 	params := prepare()
 	params, err := getParamsTOML(params)
 	if err != nil {
