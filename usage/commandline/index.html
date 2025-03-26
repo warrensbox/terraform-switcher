@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../static/favicon_tfswitch_16.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.8">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.8608ea7d.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -435,9 +435,36 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tf_log_level" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_LOG_LEVEL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tf_arch" class="md-nav__link">
     <span class="md-ellipsis">
       TF_ARCH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_binary_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_BINARY_PATH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_install_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_INSTALL_PATH
     </span>
   </a>
   
@@ -762,9 +789,36 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tf_log_level" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_LOG_LEVEL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tf_arch" class="md-nav__link">
     <span class="md-ellipsis">
       TF_ARCH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_binary_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_BINARY_PATH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_install_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_INSTALL_PATH
     </span>
   </a>
   
@@ -904,13 +958,13 @@
 <h3 id="tf_version"><code>TF_VERSION</code></h3>
 <p><code>TF_VERSION</code> environment variable can be set to your desired terraform version.</p>
 <p>For example:</p>
-<pre><code class="language-bash">export TF_VERSION=0.14.4
+<pre><code class="language-bash">export TF_VERSION=&quot;0.14.4&quot;
 tfswitch # Will automatically switch to terraform version 0.14.4
 </code></pre>
 <h3 id="tf_default_version"><code>TF_DEFAULT_VERSION</code></h3>
 <p><code>TF_DEFAULT_VERSION</code> environment variable can be set to your desired terraform version that will be used as a fallback version, if not other sources are found.</p>
 <p>For example:</p>
-<pre><code class="language-bash">export TF_DEFAULT_VERSION=0.14.4
+<pre><code class="language-bash">export TF_DEFAULT_VERSION=&quot;0.14.4&quot;
 tfswitch # Will automatically switch to terraform version 0.14.4
 </code></pre>
 <h3 id="tf_product"><code>TF_PRODUCT</code></h3>
@@ -921,11 +975,26 @@ tfswitch # Will automatically switch to terraform version 0.14.4
 <li><code>opentofu</code></li>
 </ul>
 <p>For example:</p>
-<pre><code class="language-bash">export TF_PRODUCT=opentofu
+<pre><code class="language-bash">export TF_PRODUCT=&quot;opentofu&quot;
 tfswitch # Will install opentofu instead of terraform
 </code></pre>
+<h3 id="tf_log_level"><code>TF_LOG_LEVEL</code></h3>
+<p><code>TF_LOG_LEVEL</code> environment variable can be set to override default log level.</p>
+<ul>
+<li>Supported log levels:</li>
+<li><code>ERROR</code>:  includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code></li>
+<li><code>INFO</code>:   includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>INFO</code> (default)</li>
+<li><code>NOTICE</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code></li>
+<li><code>DEBUG</code>:  includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code></li>
+<li><code>TRACE</code>:  includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code>, <code>TRACE</code></li>
+<li>Any other log level value falls under default logging level</li>
+</ul>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_LOG_LEVEL=&quot;DEBUG&quot;
+tfswitch # Will output debug logs
+</code></pre>
 <h3 id="tf_arch"><code>TF_ARCH</code></h3>
-<p><code>TF_ARCH</code> environment variable can be set to override default CPU architecture for downloaded Terraform binary.</p>
+<p><code>TF_ARCH</code> environment variable can be set to override default CPU architecture of downloaded binaries.</p>
 <ul>
 <li>This can be set to any string, though incorrect values will result in download failure.</li>
 <li>Suggested values: <code>amd64</code>, <code>arm64</code>, <code>386</code>.</li>
@@ -934,8 +1003,22 @@ tfswitch # Will install opentofu instead of terraform
 <li><a href="https://get.opentofu.org/tofu/">OpenTofu Downloads</a></li>
 </ul>
 <p>For example:</p>
-<pre><code class="language-bash">export TF_ARCH=amd64
-tfswitch # Will install Terraform binary for amd64 architecture
+<pre><code class="language-bash">export TF_ARCH=&quot;amd64&quot;
+tfswitch # Will install binary for amd64 architecture
+</code></pre>
+<h3 id="tf_binary_path"><code>TF_BINARY_PATH</code></h3>
+<p><code>tfswitch</code> defaults to install to the <code>/usr/local/bin/</code> directory (and falls back to <code>$HOME/bin/</code> otherwise). The target filename is resolved automatically based on the <code>product</code> parameter.<br />
+<code>TF_BINARY_PATH</code> environment variable can be set to specify a <strong>full installation path</strong> (directory + file name). If target directory does not exist, <code>tfswitch</code> falls back to <code>$HOME/bin/</code> directory.</p>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_BINARY_PATH=&quot;$HOME/bin/terraform&quot; # Path to the file
+tfswitch # Will install binary as $HOME/bin/terraform
+</code></pre>
+<h3 id="tf_install_path"><code>TF_INSTALL_PATH</code></h3>
+<p><code>tfswitch</code> defaults to download binaries to the <code>$HOME/.terraform.versions/</code> directory.<br />
+<code>TF_INSTALL_PATH</code> environment variable can be set to specify the parent directory for <code>.terraform.versions</code> directory. Current user must have write permissions to the target directory. If the target directory does not exist, <code>tfswitch</code> will create it.</p>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_INSTALL_PATH=&quot;/var/cache&quot; # Path to the directory where `.terraform.versions` directory resides
+tfswitch # Will download actual binary to /var/cache/.terraform.versions/
 </code></pre>
 <h2 id="install-latest-version-only">Install latest version only</h2>
 <ol>
