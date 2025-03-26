@@ -1,6 +1,6 @@
 arch = "amd64"
-bin = "/usr/local/bin/terraform_from_toml"
-install = "/tmp"
+bin = "$BIN_DIR_FROM_TOML/terraform_from_toml"
+install = "$INSTALL_DIR_FROM_TOML"
 default-version = "1.5.4"
 log-level = "NOTICE"
 product = "opentofu"

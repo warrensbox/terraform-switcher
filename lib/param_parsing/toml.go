@@ -1,6 +1,7 @@
 package param_parsing
 
 import (
+	"os"
 	"path/filepath"
 	"reflect"
 
@@ -52,6 +53,14 @@ func getParamsTOML(params Params) (Params, error) {
 			}
 			if viperParser.Get(toml) != nil {
 				configKeyValue := viperParser.GetString(toml)
+
+				switch toml {
+				case "bin", "install":
+					envExpandedConfigKeyValue := os.ExpandEnv(configKeyValue)
+					logger.Debugf("Expanded environment variables in %q TOML key value (if any): %q -> %q", toml, configKeyValue, envExpandedConfigKeyValue)
+					configKeyValue = envExpandedConfigKeyValue
+				}
+
 				logger.Debugf("%s (%q) from %q: %q", description, toml, tomlPath, configKeyValue)
 				if !paramKey.CanSet() {
 					logger.Warnf("Parameter %q cannot be set, skipping assignment from TOML key %q", param, toml)
