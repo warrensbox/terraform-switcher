@@ -37,7 +37,7 @@ You can also set environment variables for tfswitch to override some configurati
 For example:
 
 ```bash
-export TF_VERSION=0.14.4
+export TF_VERSION="0.14.4"
 tfswitch # Will automatically switch to terraform version 0.14.4
 ```
 
@@ -48,7 +48,7 @@ tfswitch # Will automatically switch to terraform version 0.14.4
 For example:
 
 ```bash
-export TF_DEFAULT_VERSION=0.14.4
+export TF_DEFAULT_VERSION="0.14.4"
 tfswitch # Will automatically switch to terraform version 0.14.4
 ```
 
@@ -64,13 +64,32 @@ This can either be set to:
 For example:
 
 ```bash
-export TF_PRODUCT=opentofu
+export TF_PRODUCT="opentofu"
 tfswitch # Will install opentofu instead of terraform
+```
+
+### `TF_LOG_LEVEL`
+
+`TF_LOG_LEVEL` environment variable can be set to override default log level.
+
+- Supported log levels:
+  - `ERROR`:  includes `PANIC`, `FATAL`, `ERROR`
+  - `INFO`:   includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO` (default)
+  - `NOTICE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`
+  - `DEBUG`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`
+  - `TRACE`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`, `TRACE`
+  - Any other log level value falls under default logging level
+
+For example:
+
+```bash
+export TF_LOG_LEVEL="DEBUG"
+tfswitch # Will output debug logs
 ```
 
 ### `TF_ARCH`
 
-`TF_ARCH` environment variable can be set to override default CPU architecture for downloaded Terraform binary.
+`TF_ARCH` environment variable can be set to override default CPU architecture of downloaded binaries.
 
 - This can be set to any string, though incorrect values will result in download failure.
 - Suggested values: `amd64`, `arm64`, `386`.
@@ -81,8 +100,32 @@ tfswitch # Will install opentofu instead of terraform
 For example:
 
 ```bash
-export TF_ARCH=amd64
-tfswitch # Will install Terraform binary for amd64 architecture
+export TF_ARCH="amd64"
+tfswitch # Will install binary for amd64 architecture
+```
+
+### `TF_BINARY_PATH`
+
+`tfswitch` defaults to install to the `/usr/local/bin/` directory (and falls back to `$HOME/bin/` otherwise). The target filename is resolved automatically based on the `product` parameter.  
+`TF_BINARY_PATH` environment variable can be set to specify a **full installation path** (directory + file name). If target directory does not exist, `tfswitch` falls back to `$HOME/bin/` directory.
+
+For example:
+
+```bash
+export TF_BINARY_PATH="$HOME/bin/terraform" # Path to the file
+tfswitch # Will install binary as $HOME/bin/terraform
+```
+
+### `TF_INSTALL_PATH`
+
+`tfswitch` defaults to download binaries to the `$HOME/.terraform.versions/` directory.  
+`TF_INSTALL_PATH` environment variable can be set to specify the parent directory for `.terraform.versions` directory. Current user must have write permissions to the target directory. If the target directory does not exist, `tfswitch` will create it.
+
+For example:
+
+```bash
+export TF_INSTALL_PATH="/var/cache" # Path to the directory where `.terraform.versions` directory resides
+tfswitch # Will download actual binary to /var/cache/.terraform.versions/
 ```
 
 ## Install latest version only

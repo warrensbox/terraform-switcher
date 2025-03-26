@@ -55,6 +55,45 @@ func TestGetParamsFromEnvironment_product_from_env(t *testing.T) {
 	params = GetParamsFromEnvironment(params)
 	_ = os.Unsetenv("TF_PRODUCT")
 	if params.Product != expected {
-		t.Error("Determined version is not matching. Got " + params.Product + ", expected " + expected)
+		t.Error("Determined product is not matching. Got " + params.Product + ", expected " + expected)
+	}
+}
+
+func TestGetParamsFromEnvironment_bin_from_env(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	var params Params
+	expected := "custom_binary_path_from_env"
+	_ = os.Setenv("TF_BINARY_PATH", expected)
+	params = initParams(params)
+	params = GetParamsFromEnvironment(params)
+	_ = os.Unsetenv("TF_BINARY_PATH")
+	if params.CustomBinaryPath != expected {
+		t.Errorf("Determined custom binary path is not matching. Got %q, expected %q", params.CustomBinaryPath, expected)
+	}
+}
+
+func TestGetParamsFromEnvironment_install_from_env(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	var params Params
+	expected := "/custom_install_path_from_env"
+	_ = os.Setenv("TF_INSTALL_PATH", expected)
+	params = initParams(params)
+	params = GetParamsFromEnvironment(params)
+	_ = os.Unsetenv("TF_INSTALL_PATH")
+	if params.InstallPath != expected {
+		t.Errorf("Determined custom install path is not matching. Got %q, expected %q", params.InstallPath, expected)
+	}
+}
+
+func TestGetParamsFromEnvironment_log_level_from_env(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	var params Params
+	expected := "DEBUG"
+	_ = os.Setenv("TF_LOG_LEVEL", expected)
+	params = initParams(params)
+	params = GetParamsFromEnvironment(params)
+	_ = os.Unsetenv("TF_LOG_LEVEL")
+	if params.LogLevel != expected {
+		t.Errorf("Determined log level is not matching. Got %q, expected %q", params.LogLevel, expected)
 	}
 }

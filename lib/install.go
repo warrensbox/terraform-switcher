@@ -87,7 +87,7 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	}
 
 	if goarch != runtime.GOARCH {
-		logger.Warnf("Installing for %q architecture on %q!", goarch, runtime.GOARCH)
+		logger.Warnf("Installing for %q CPU architecture on %q!", goarch, runtime.GOARCH)
 	}
 
 	goos := runtime.GOOS
