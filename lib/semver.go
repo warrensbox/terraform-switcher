@@ -12,7 +12,7 @@ func GetSemver(tfconstraint string, mirrorURL string) (string, error) {
 	listAll := true
 	tflist, errTFList := getTFList(mirrorURL, listAll) // get list of versions
 	if errTFList != nil {
-		return "", fmt.Errorf("Error getting list of versions from %q: %w", mirrorURL, errTFList)
+		return "", fmt.Errorf("Error getting list of versions from %q: %v", mirrorURL, errTFList)
 	}
 	logger.Infof("Reading required version from constraint: %q", tfconstraint)
 	tfversion, err := SemVerParser(&tfconstraint, tflist)

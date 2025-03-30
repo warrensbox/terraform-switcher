@@ -35,7 +35,7 @@ func initialize(binPath string) {
 	/* remove current symlink if exists */
 	if symlinkExist {
 		if err := RemoveSymlink(binPath); err != nil {
-			logger.Errorf("Error removing symlink: %w", err)
+			logger.Errorf("Error removing symlink: %v", err)
 		}
 	}
 }
@@ -78,7 +78,7 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	// Set list all true - all versions including beta and rc will be displayed
 	tflist, errTFList := getTFList(mirrorURL, true) // Get list of versions
 	if errTFList != nil {
-		return fmt.Errorf("Error getting list of %s versions from %q: %w", product.GetName(), mirrorURL, errTFList)
+		return fmt.Errorf("Error getting list of %s versions from %q: %v", product.GetName(), mirrorURL, errTFList)
 	}
 
 	// Check if version exists before downloading it
@@ -95,11 +95,11 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 	// Terraform darwin arm64 comes with 1.0.2 and next version
 	tfver, tfverErr := version.NewVersion(tfversion)
 	if tfverErr != nil {
-		return fmt.Errorf("Error parsing %q version: %w", tfversion, tfverErr)
+		return fmt.Errorf("Error parsing %q version: %v", tfversion, tfverErr)
 	}
 	tf102, tf102Err := version.NewVersion(tfDarwinArm64StartVersion)
 	if tf102Err != nil {
-		return fmt.Errorf("Error parsing %q version: %w", tfDarwinArm64StartVersion, tf102Err)
+		return fmt.Errorf("Error parsing %q version: %v", tfDarwinArm64StartVersion, tf102Err)
 	}
 	if goos == "darwin" && goarch == "arm64" && tfver.LessThan(tf102) {
 		goarch = "amd64"
@@ -218,7 +218,7 @@ func InstallLatestVersion(dryRun bool, customBinaryPath, installPath, mirrorURL,
 func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath, installPath, mirrorURL, arch string) error {
 	tfversion, err := getTFLatest(mirrorURL)
 	if err != nil {
-		return fmt.Errorf("Error getting latest %s version from %q: %w", product.GetName(), mirrorURL, err)
+		return fmt.Errorf("Error getting latest %s version from %q: %v", product.GetName(), mirrorURL, err)
 	}
 
 	if !dryRun {
@@ -247,7 +247,7 @@ func InstallLatestProductImplicitVersion(product Product, dryRun bool, requested
 	tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
 	if err == nil && tfversion != "" && !dryRun {
 		if err := install(product, tfversion, customBinaryPath, installPath, mirrorURL, arch); err != nil {
-			return fmt.Errorf("Error installing %s version %q: %w", product.GetName(), tfversion, err)
+			return fmt.Errorf("Error installing %s version %q: %v", product.GetName(), tfversion, err)
 		}
 		return nil
 	}
@@ -317,7 +317,7 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	// Add all versions
 	tfList, errTFList := getTFList(mirrorURL, listAll)
 	if errTFList != nil {
-		return fmt.Errorf("Error getting list of %s versions from %q: %w", product.GetName(), mirrorURL, errTFList)
+		return fmt.Errorf("Error getting list of %s versions from %q: %v", product.GetName(), mirrorURL, errTFList)
 	}
 	for _, version := range tfList {
 		if !versionMap[version] {

@@ -21,7 +21,7 @@ func acquireLock(lockFile string, lockWaitMaxAttempts int, lockWaitInterval time
 		if lockFileInfo, err := os.Stat(lockFile); err == nil {
 			logger.Debugf("Lock %q last modification time: %s", lockFile, lockFileInfo.ModTime())
 		} else {
-			logger.Warnf("Unable to get lock %q last modification time: %w", lockFile, err)
+			logger.Warnf("Unable to get lock %q last modification time: %v", lockFile, err)
 		}
 
 		if lockAttempt < lockWaitMaxAttempts {
@@ -45,7 +45,7 @@ func releaseLock(lockFile string, lockedFH *os.File) {
 	}
 
 	if err := lockedFH.Close(); err != nil {
-		logger.Warnf("Failed to release lock %q: %w", lockFile, err)
+		logger.Warnf("Failed to release lock %q: %v", lockFile, err)
 	} else {
 		logger.Debugf("Released lock %q", lockFile)
 	}
@@ -54,7 +54,7 @@ func releaseLock(lockFile string, lockedFH *os.File) {
 
 	if CheckFileExist(lockFile) {
 		if err := os.Remove(lockFile); err != nil {
-			logger.Warnf("Failed to remove lock %q: %w", lockFile, err)
+			logger.Warnf("Failed to remove lock %q: %v", lockFile, err)
 		} else {
 			logger.Debugf("Removed lock %q", lockFile)
 		}

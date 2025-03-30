@@ -25,7 +25,7 @@ func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionL
 	}
 	r, err := regexp.Compile(semver)
 	if err != nil {
-		logger.Fatalf("Error compiling %q regex: %w", semver, err)
+		logger.Fatalf("Error compiling %q regex: %v", semver, err)
 	}
 
 	matches := r.FindAllString(body, -1)
@@ -65,7 +65,7 @@ func getTFLatest(mirrorURL string) (string, error) {
 	semver := `\/?(\d+\.\d+\.\d+)\/?"`
 	r, errSemVer := regexp.Compile(semver)
 	if errSemVer != nil {
-		return "", fmt.Errorf("Error compiling %q regex: %w", semver, errSemVer)
+		return "", fmt.Errorf("Error compiling %q regex: %v", semver, errSemVer)
 	}
 	bodyLines := strings.Split(result, "\n")
 	for i := range result {
@@ -104,7 +104,7 @@ func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 		listAll := false
 		tflist, errTFList := getTFList(mirrorURL, listAll) // get list of versions
 		if errTFList != nil {
-			return "", fmt.Errorf("Error getting list of versions from %q: %w", mirrorURL, errTFList)
+			return "", fmt.Errorf("Error getting list of versions from %q: %v", mirrorURL, errTFList)
 		}
 
 		version = fmt.Sprintf("~> %v", version)
@@ -213,7 +213,7 @@ func validMinorVersionFormat(version string) bool {
 func ShowLatestVersion(mirrorURL string) {
 	tfversion, err := getTFLatest(mirrorURL)
 	if err != nil {
-		logger.Fatalf("Error getting latest version from %q: %w", mirrorURL, err)
+		logger.Fatalf("Error getting latest version from %q: %v", mirrorURL, err)
 	}
 
 	fmt.Printf("%s\n", tfversion)
@@ -224,7 +224,7 @@ func ShowLatestImplicitVersion(requestedVersion, mirrorURL string, preRelease bo
 	if validMinorVersionFormat(requestedVersion) {
 		tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
 		if err != nil {
-			logger.Fatalf("Error getting latest implicit version %q from %q: %w", requestedVersion, mirrorURL, err)
+			logger.Fatalf("Error getting latest implicit version %q from %q: %v", requestedVersion, mirrorURL, err)
 		}
 
 		if len(tfversion) > 0 {

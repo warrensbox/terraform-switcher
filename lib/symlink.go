@@ -160,7 +160,7 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		if CheckSymlink(location.path) {
 			logger.Debugf("Clearing away symlink before re-creating it: %q", location.path)
 			if err := RemoveSymlink(location.path); err != nil {
-				return fmt.Errorf("Error removing symlink %q: %w", location.path, err)
+				return fmt.Errorf("Error removing symlink %q: %v", location.path, err)
 			}
 		}
 
