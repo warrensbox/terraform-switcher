@@ -13,7 +13,7 @@ tfswitch -c terraform_dir
 
 If a `.tf` file with the version constraints is included in the current directory, `tfswitch` should automatically download or switch to that terraform version.  
 Also please refer to [Order of Terraform version definition precedence](general.md) page for more information on how `tfswitch` determines the version to use.  
-For example, the following should automatically switch to the latest available version newer than `0.12.8`:  
+For example, the following should automatically switch to the latest available version newer than `0.12.8`:
 
 ```hcl
 terraform {
@@ -100,11 +100,11 @@ log-level = "INFO"
 ```
 
 - Supported log levels:
-  - `ERROR`:  includes `PANIC`, `FATAL`, `ERROR`
-  - `INFO`:   includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO` (default)
+  - `ERROR`: includes `PANIC`, `FATAL`, `ERROR`
+  - `INFO`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO` (default)
   - `NOTICE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`
-  - `DEBUG`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`
-  - `TRACE`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`, `TRACE`
+  - `DEBUG`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`
+  - `TRACE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`, `TRACE`
   - Any other log level value falls under default logging level
 
 ## Overriding CPU architecture type for the downloaded binary using `.tfswitch.toml` file
@@ -132,6 +132,7 @@ install = "/var/cache"
 ```
 
 **NOTE**:
+
 - Current user must have write permissions to the target directory
 - If the target directory does not exist, `tfswitch` will create it
 
