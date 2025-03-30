@@ -40,7 +40,7 @@ _Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for co
 
 ## Use `.tfswitch.toml` file (For non-admin users with limited privilege on their computers)
 
-`tfswitch` defaults to install to the `/usr/local/bin/` directory (and falls back to `$HOME/bin/` otherwise). The target filename is resolved automatically based on the `product` attribute ([see below](#setting-product-using-tfswitchtoml-file)). If you do not have write access to `/usr/local/bin/` directory, you can use the `.tfswitch.toml` file to specify a **full installation path** (directory + file name).  
+`tfswitch` defaults to install to the `/usr/local/bin/` directory (and falls back to `$HOME/bin/` otherwise). The target filename is resolved automatically based on the `product` attribute ([see below](#setting-product-using-tfswitchtoml-file)). If you do not have write access to `/usr/local/bin/` directory, you can use the `.tfswitch.toml` file to specify a **full installation path** (directory + filename).  
 This is similar to using a `.tfswitchrc` file, but you specify a custom binary path for the installation:
 
 ![toml1](../static/tfswitch-v7.gif)

@@ -107,7 +107,7 @@ tfswitch # Will install binary for amd64 architecture
 ### `TF_BINARY_PATH`
 
 `tfswitch` defaults to install to the `/usr/local/bin/` directory (and falls back to `$HOME/bin/` otherwise). The target filename is resolved automatically based on the `product` parameter.  
-`TF_BINARY_PATH` environment variable can be set to specify a **full installation path** (directory + file name). If target directory does not exist, `tfswitch` falls back to `$HOME/bin/` directory.
+`TF_BINARY_PATH` environment variable can be set to specify a **full installation path** (directory + filename). If target directory does not exist, `tfswitch` falls back to `$HOME/bin/` directory.
 
 For example:
 
