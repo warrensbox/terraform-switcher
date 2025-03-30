@@ -297,7 +297,7 @@ func unzipFile(f *zip.File, destination string, wg *sync.WaitGroup) error {
 	for {
 		copied, err := io.CopyN(destinationFile, zippedFile, 1024*1024)
 		totalCopied += copied
-		if totalCopied%10 == 0 { // Print stats every 10 MB
+		if totalCopied%(10*1024*1024) == 0 { // Print stats every 10 MB
 			logger.Debugf("Size copied so far: %3.d MB\r", totalCopied/1024/1024)
 		}
 		if err != nil {
