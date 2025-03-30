@@ -16,7 +16,7 @@ func TestGetVersionFromTerragrunt(t *testing.T) {
 	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
-		t.Fatalf("Got error %v", err)
+		t.Errorf("Unexpected error: %v", err)
 	}
 	v1, v1Err := version.NewVersion("0.13")
 	if v1Err != nil {
@@ -40,7 +40,10 @@ func TestGetVersionTerragrunt_with_no_terragrunt_file(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
-	params, _ = GetVersionFromTerragrunt(params)
+	params, err = GetVersionFromTerragrunt(params)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
 	if params.Version != "" {
 		t.Error("Version should be empty")
 	}
@@ -53,7 +56,7 @@ func TestGetVersionTerragrunt_with_no_version(t *testing.T) {
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_terragrunt_no_version"
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
-		t.Fatalf("Got error '%s'", err)
+		t.Errorf("Unexpected error: %v", err)
 	}
 	if params.Version != "" {
 		t.Error("Version should be empty")
@@ -67,10 +70,10 @@ func TestGetVersionFromTerragrunt_erroneous_file(t *testing.T) {
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_terragrunt_error_hcl"
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
-		t.Error(err)
+		t.Errorf("Unexpected error: %v", err)
 	}
 	expected := ""
 	if params.Version != expected {
-		t.Errorf("Expected version '%s', got '%s'", expected, params.Version)
+		t.Errorf("Expected version %q, got %q", expected, params.Version)
 	}
 }
