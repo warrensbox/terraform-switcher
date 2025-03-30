@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -13,13 +12,11 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strings"
 	"sync"
 	"testing"
 
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
-	"github.com/mitchellh/go-homedir"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
@@ -28,26 +25,21 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installVersion := "terraform_"
 	tempDir := t.TempDir()
-	installPath := fmt.Sprintf(tempDir + string(os.PathSeparator) + ".terraform.versions_test")
+	installLocation := filepath.Join(tempDir, ".terraform.versions_test")
 	macOS := "_darwin_amd64.zip"
 
-	home, err := homedir.Dir()
-	if err != nil {
-		logger.Fatalf("Could not detect home directory")
-	}
-
-	t.Logf("Current home directory: %q", home)
-	if runtime.GOOS != windows {
-		installLocation = filepath.Join(home, installPath)
-	} else {
-		installLocation = installPath
-	}
 	t.Logf("install Location: %v", installLocation)
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
 		t.Logf("Creating directory for terraform: %v", installLocation)
 		err = os.MkdirAll(installLocation, 0o755)
+
+		t.Cleanup(func() {
+			defer os.Remove(tempDir)
+			t.Logf("Cleanup temporary directory %q", tempDir)
+		})
+
 		if err != nil {
 			t.Logf("Unable to create directory for terraform: %v", installLocation)
 			t.Error("Test fail")
@@ -78,15 +70,10 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	}
 
 	// check file name is what is expected
-	_, err = os.Stat(expectedFile)
-	if err != nil {
+	_, checkErr := os.Stat(expectedFile)
+	if checkErr != nil {
 		t.Logf("Expected file does not exist %v", expectedFile)
 	}
-
-	t.Cleanup(func() {
-		defer os.Remove(tempDir)
-		t.Logf("Cleanup temporary directory %q", tempDir)
-	})
 }
 
 // TestDownloadFromURL_Valid : Test if https://releases.hashicorp.com/terraform/ is still valid

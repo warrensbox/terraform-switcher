@@ -156,9 +156,12 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		}
 		logger.Noticef("Installation location: %q", location.path)
 
-		/* remove current symlink if exist*/
+		/* remove current symlink if exist */
 		if CheckSymlink(location.path) {
-			_ = RemoveSymlink(location.path)
+			logger.Debugf("Clearing away symlink: %q", location.path)
+			if err := RemoveSymlink(location.path); err != nil {
+				return fmt.Errorf("Error removing symlink %q: %w", location.path, err)
+			}
 		}
 
 		/* set symlink to desired version */
