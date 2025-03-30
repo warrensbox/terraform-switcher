@@ -15,7 +15,7 @@ func TestCreateSymlink(t *testing.T) {
 	testSymlinkDest := "/test-tfswitcher-dest"
 	testSymlinkSrc := "/test-tfswitcher-src"
 	if runtime.GOOS == windows {
-		testSymlinkSrc = testSymlinkSrc + ".exe"
+		testSymlinkSrc += ".exe"
 	}
 
 	home, err := homedir.Dir()

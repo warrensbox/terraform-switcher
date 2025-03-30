@@ -124,7 +124,7 @@ func getTFURLBody(mirrorURL string) (string, error) {
 		// if it does not have slash - append slash
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}
-	resp, errURL := http.Get(mirrorURL)
+	resp, errURL := http.Get(mirrorURL) // nolint:gosec // `mirrorURL' is expected to be variable
 	if errURL != nil {
 		logger.Fatalf("Error getting url: %v", errURL)
 	}
