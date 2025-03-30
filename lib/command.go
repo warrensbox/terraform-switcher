@@ -1,7 +1,6 @@
 package lib
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -64,7 +63,7 @@ func (cmd *Command) Find() func() string {
 			if !isDir(p) {
 				continue
 			}
-			fileList, err := ioutil.ReadDir(p)
+			fileList, err := os.ReadDir(p)
 			if err != nil {
 				continue
 			}

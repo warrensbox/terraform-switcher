@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -210,7 +209,7 @@ func TestUnzip_with_file_to_unzip(t *testing.T) {
 		t.Errorf("File does not exist %v", expectedExtractFile)
 	}
 
-	expectedFileContent, err := ioutil.ReadFile(expectedExtractFile)
+	expectedFileContent, err := os.ReadFile(expectedExtractFile)
 	if err != nil {
 		t.Error(err)
 	}
