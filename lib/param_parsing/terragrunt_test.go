@@ -16,11 +16,20 @@ func TestGetVersionFromTerragrunt(t *testing.T) {
 	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
-		t.Fatalf("Got error '%s'", err)
+		t.Fatalf("Got error %v", err)
 	}
-	v1, _ := version.NewVersion("0.13")
-	v2, _ := version.NewVersion("0.14")
-	actualVersion, _ := version.NewVersion(params.Version)
+	v1, v1Err := version.NewVersion("0.13")
+	if v1Err != nil {
+		t.Errorf("Error parsing v1 version: %v", v1Err)
+	}
+	v2, v2Err := version.NewVersion("0.14")
+	if v2Err != nil {
+		t.Errorf("Error parsing v2 version: %v", v2Err)
+	}
+	actualVersion, actualVersionErr := version.NewVersion(params.Version)
+	if actualVersionErr != nil {
+		t.Errorf("Error parsing actualVersion version: %v", actualVersionErr)
+	}
 	if !actualVersion.GreaterThanOrEqual(v1) || !actualVersion.LessThan(v2) {
 		t.Error("Determined version is not between 0.13 and 0.14")
 	}

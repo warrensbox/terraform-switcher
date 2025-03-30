@@ -12,12 +12,22 @@ import (
 func TestGetVersionFromVersionsTF_matches_version(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	var params Params
+	var getVerErr error
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_versiontf"
 	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
-	params, _ = GetVersionFromVersionsTF(params)
-	v1, _ := version.NewVersion("1.0.5")
-	actualVersion, _ := version.NewVersion(params.Version)
+	params, getVerErr = GetVersionFromVersionsTF(params)
+	if getVerErr != nil {
+		t.Errorf("Error getting version from Terraform module: %v", getVerErr)
+	}
+	v1, v1Err := version.NewVersion("1.0.5")
+	if v1Err != nil {
+		t.Errorf("Error parsing v1 version: %v", v1Err)
+	}
+	actualVersion, actualVersionErr := version.NewVersion(params.Version)
+	if actualVersionErr != nil {
+		t.Errorf("Error parsing actualVersion version: %v", actualVersionErr)
+	}
 	if !actualVersion.Equal(v1) {
 		t.Errorf("Determined version is not 1.0.5, but %s", params.Version)
 	}

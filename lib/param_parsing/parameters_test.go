@@ -192,9 +192,9 @@ func TestGetParameters_dry_run_wont_download_anything(t *testing.T) {
 	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+params.Version))
 	// Make sure the file tfswitch WOULD download is absent
 	_ = os.Remove(installFileVersionPath)
-	lib.InstallProductVersion(product, params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL, params.Arch)
-	if lib.FileExistsAndIsNotDir(installFileVersionPath) {
-		t.Error("Dry run should NOT download any files.")
+	err := lib.InstallProductVersion(product, params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL, params.Arch)
+	if err != nil || lib.FileExistsAndIsNotDir(installFileVersionPath) {
+		t.Error("Dry run should NOT install any files.")
 	}
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()

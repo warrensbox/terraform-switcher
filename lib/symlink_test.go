@@ -100,8 +100,7 @@ func TestRemoveSymlink(t *testing.T) {
 		}
 	}
 
-	RemoveSymlink(symlinkPathSrc)
-
+	RemoveSymlink(symlinkPathSrc)             // nolint:errcheck // covered by conditional below
 	lnCheck, _ := os.Readlink(symlinkPathSrc) // nolint:errcheck // covered by conditional below
 	if lnCheck == symlinkPathDest {
 		t.Logf("Symlink should not exist %v [unexpected]", lnCheck)

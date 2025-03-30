@@ -99,7 +99,7 @@ func downloadFromURL(installLocation string, url string, wg *sync.WaitGroup) (st
 	fileName := tokens[len(tokens)-1]
 	logger.Infof("Downloading to %q", filepath.Join(installLocation, "/", fileName))
 
-	response, err := http.Get(url)
+	response, err := http.Get(url) // nolint:gosec // `url' is expected to be variable
 	if err != nil {
 		logger.Errorf("Error downloading %s: %v", url, err)
 		return "", err
