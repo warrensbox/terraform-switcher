@@ -1,3 +1,4 @@
+//nolint:revive // FIXME: don't use an underscore in package name
 package param_parsing
 
 import (
@@ -25,7 +26,12 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 			return params, fmt.Errorf("unable to parse HCL file %q", filePath)
 		}
 		var versionFromTerragrunt terragruntVersionConstraints
-		_ = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
+		diagnostics = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
+		// do not fail on failure to decode the body, as it may f.e. miss a required block,
+		// though we don't want to fail execution because of that
+		if diagnostics.HasErrors() {
+			logger.Errorf(diagnostics.Error())
+		}
 		if versionFromTerragrunt.TerraformVersionConstraint == "" {
 			logger.Infof("No terraform version constraint in %q", filePath)
 			return params, nil

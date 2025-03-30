@@ -1,8 +1,10 @@
+<!-- markdownlint-disable MD041 -->
+
 ## Set a default TF version for CI/CD pipeline
 
 1. When using a CI/CD pipeline, you may want a default or fallback version to avoid the pipeline from hanging.
 2. Ex: `tfswitch -d 1.2.3` or `tfswitch --default 1.2.3` installs version `1.2.3` when no other versions could be detected.
-[Also, see CICD example](../Continuous-Integration.md)
+   [Also, see CICD example](../Continuous-Integration.md)
 
 ## Automatically switch with bash
 
@@ -20,7 +22,7 @@ cdtfswitch(){
 alias cd='cdtfswitch'
 ```
 
-## Automatically switch with zsh
+## Automatically switch with Zsh
 
 Add the following to the end of your `~/.zshrc` file:
 
@@ -37,11 +39,12 @@ load-tfswitch
 ```
 
 > NOTE: if you see an error like this: `command not found: add-zsh-hook`, then you might be on an older version of zsh (see below), or you simply need to load `add-zsh-hook` by adding this to your `.zshrc`:
->    ```
->    autoload -U add-zsh-hook
->    ```
+>
+> ```sh
+> autoload -U add-zsh-hook
+> ```
 
-### Older version of zsh
+### Older version of Zsh
 
 ```sh
 cd(){
@@ -67,7 +70,7 @@ function switch_terraform --on-event fish_postexec
 
         grep -c "required_version" *.tf > /dev/null
         set --local tf_contains_version $status
-        
+
         if test $tf_contains_version -eq 0
             command tfswitch
         end

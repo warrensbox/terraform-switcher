@@ -1,9 +1,10 @@
 name: Update goreport card
+permissions: {} # yamllint disable-line rule:braces
 
 on:
   push:
     branches:
-      - 'master'
+      - "master"
 
 jobs:
   goreport:

@@ -12,11 +12,10 @@ import (
 // TestCreateSymlink : check if symlink exist-remove if exist,
 // create symlink, check if symlink exist, remove symlink
 func TestCreateSymlink(t *testing.T) {
-
 	testSymlinkDest := "/test-tfswitcher-dest"
 	testSymlinkSrc := "/test-tfswitcher-src"
-	if runtime.GOOS == "windows" {
-		testSymlinkSrc = "/test-tfswitcher-src.exe"
+	if runtime.GOOS == windows {
+		testSymlinkSrc += ".exe"
 	}
 
 	home, err := homedir.Dir()
@@ -33,8 +32,8 @@ func TestCreateSymlink(t *testing.T) {
 	}
 	defer create.Close()
 
-	if runtime.GOOS != "windows" {
-		ln, _ := os.Readlink(symlinkPathSrc)
+	if runtime.GOOS != windows {
+		ln, _ := os.Readlink(symlinkPathSrc) // nolint:errcheck // covered by conditional below
 
 		if ln != symlinkPathDest {
 			t.Logf("Symlink does not exist %v [expected]", ln)
@@ -45,9 +44,12 @@ func TestCreateSymlink(t *testing.T) {
 		}
 	}
 
-	CreateSymlink(symlinkPathDest, symlinkPathSrc)
+	lnCreateErr := CreateSymlink(symlinkPathDest, symlinkPathSrc)
+	if lnCreateErr != nil {
+		t.Errorf("Could not create symlink at %q to %q: %v", symlinkPathSrc, symlinkPathDest, lnCreateErr)
+	}
 
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == windows {
 		_, err := os.Stat(symlinkPathSrc)
 		if err != nil {
 			t.Logf("Could not stat file copy at %v. [unexpected]", symlinkPathSrc)
@@ -56,7 +58,7 @@ func TestCreateSymlink(t *testing.T) {
 			t.Logf("File copy exists at %v [expected]", symlinkPathSrc)
 		}
 	} else {
-		lnCheck, _ := os.Readlink(symlinkPathSrc)
+		lnCheck, _ := os.Readlink(symlinkPathSrc) // nolint:errcheck // covered by conditional below
 		if lnCheck == symlinkPathDest {
 			t.Logf("Symlink exist %v [expected]", lnCheck)
 		} else {
@@ -65,16 +67,20 @@ func TestCreateSymlink(t *testing.T) {
 		}
 	}
 
-	_ = os.Remove(symlinkPathSrc)
-	_ = os.Remove(symlinkPathDest)
+	symlinkPathSrcErr := os.Remove(symlinkPathSrc)
+	if symlinkPathSrcErr != nil {
+		t.Logf("Could not remove %q: %v [internal failure]", symlinkPathSrc, symlinkPathSrcErr)
+	}
+	symlinkPathDestErr := os.Remove(symlinkPathDest)
+	if symlinkPathDestErr != nil {
+		t.Logf("Could not remove %q: %v [internal failure]", symlinkPathDest, symlinkPathDestErr)
+	}
 }
 
 // TestRemoveSymlink : check if symlink exist-create if does not exist,
 // remove symlink, check if symlink exist
 func TestRemoveSymlink(t *testing.T) {
-
 	testSymlinkSrc := "/test-tfswitcher-src"
-
 	testSymlinkDest := "/test-tfswitcher-dest"
 
 	homedir, errCurr := homedir.Dir()
@@ -84,7 +90,7 @@ func TestRemoveSymlink(t *testing.T) {
 	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
 
-	ln, _ := os.Readlink(symlinkPathSrc)
+	ln, _ := os.Readlink(symlinkPathSrc) // nolint:errcheck // covered by conditional below
 
 	if ln != symlinkPathDest {
 		t.Logf("Symlink does exist %v [expected]", ln)
@@ -94,9 +100,8 @@ func TestRemoveSymlink(t *testing.T) {
 		}
 	}
 
-	RemoveSymlink(symlinkPathSrc)
-
-	lnCheck, _ := os.Readlink(symlinkPathSrc)
+	RemoveSymlink(symlinkPathSrc)             // nolint:errcheck // covered by conditional below
+	lnCheck, _ := os.Readlink(symlinkPathSrc) // nolint:errcheck // covered by conditional below
 	if lnCheck == symlinkPathDest {
 		t.Logf("Symlink should not exist %v [unexpected]", lnCheck)
 		t.Error("Symlink was not removed")
@@ -107,10 +112,8 @@ func TestRemoveSymlink(t *testing.T) {
 
 // TestCheckSymlink : Create symlink, test if file is symlink
 func TestCheckSymlink(t *testing.T) {
-
-	testSymlinkSrc := "/test-tgshifter-src"
-
-	testSymlinkDest := "/test-tgshifter-dest"
+	testSymlinkSrc := "/test-tfswitcher-src"
+	testSymlinkDest := "/test-tfswitcher-dest"
 
 	homedir, errCurr := homedir.Dir()
 	if errCurr != nil {
@@ -119,7 +122,7 @@ func TestCheckSymlink(t *testing.T) {
 	symlinkPathSrc := filepath.Join(homedir, testSymlinkSrc)
 	symlinkPathDest := filepath.Join(homedir, testSymlinkDest)
 
-	ln, _ := os.Readlink(symlinkPathSrc)
+	ln, _ := os.Readlink(symlinkPathSrc) // nolint:errcheck // it is okay to ignore error here
 
 	if ln != symlinkPathDest {
 		t.Log("Creating symlink")
@@ -136,5 +139,8 @@ func TestCheckSymlink(t *testing.T) {
 		t.Logf("Symlink does not exist %v [unexpected]", ln)
 	}
 
-	_ = os.Remove(symlinkPathSrc)
+	symlinkPathSrcErr := os.Remove(symlinkPathSrc)
+	if symlinkPathSrcErr != nil {
+		t.Logf("Could not remove %q: %v [internal failure]", symlinkPathSrc, symlinkPathSrcErr)
+	}
 }

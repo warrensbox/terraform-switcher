@@ -1,10 +1,13 @@
-## Upgrade:
+<!-- markdownlint-disable MD041 MD024 -->
+
+## Upgrade
 
 ### Homebrew
 
 ```shell
 brew upgrade warrensbox/tap/tfswitch
 ```
+
 ### Linux
 
 Rerun:
@@ -13,13 +16,14 @@ Rerun:
 curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh | bash
 ```
 
-## Uninstall:
+## Uninstall
 
 ### Homebrew
 
 ```shell
 brew uninstall warrensbox/tap/tfswitch
 ```
+
 ### Linux
 
 Run (replace `/usr/local/bin` if you installed `tfswitch` to a custom location):

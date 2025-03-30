@@ -12,7 +12,7 @@ func checkFileExist(file string) bool {
 
 func createFile(path string) {
 	// detect if file exists
-	var _, err = os.Stat(path)
+	_, err := os.Stat(path)
 
 	// create file if not exists
 	if os.IsNotExist(err) {
@@ -28,7 +28,10 @@ func createFile(path string) {
 }
 
 func cleanUp(path string) {
-	removeContents(path)
+	err := removeContents(path)
+	if err != nil {
+		logger.Error(err)
+	}
 	removeFiles(path)
 }
 

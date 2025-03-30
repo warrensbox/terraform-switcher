@@ -1,9 +1,10 @@
+name: Update Go Module Index
+permissions: {} # yamllint disable-line rule:braces
+
 on:
   release:
     types:
       - published
-
-name: Update Go Module Index
 
 jobs:
   bump-index:

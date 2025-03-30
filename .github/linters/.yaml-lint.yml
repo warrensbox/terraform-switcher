@@ -1,0 +1,53 @@
+---
+# This config is used by `super-linter`
+# https://github.com/super-linter/super-linter/blob/main/README.md?plain=1#L409
+# https://github.com/super-linter/super-linter/blob/main/TEMPLATES/.yaml-lint.yml
+rules:
+  braces:
+    level: warning
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: 1
+    max-spaces-inside-empty: 5
+  brackets:
+    level: warning
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: 1
+    max-spaces-inside-empty: 5
+  colons:
+    level: warning
+    max-spaces-before: 0
+    max-spaces-after: 1
+  commas:
+    level: warning
+    max-spaces-before: 0
+    min-spaces-after: 1
+    max-spaces-after: 1
+  comments: disable
+  comments-indentation: disable
+  document-end: disable
+  document-start: disable
+  empty-lines:
+    level: warning
+    max: 2
+    max-start: 0
+    max-end: 0
+  hyphens:
+    level: warning
+    max-spaces-after: 1
+  indentation:
+    level: warning
+    spaces: consistent
+    indent-sequences: true
+    check-multi-line-strings: false
+  key-duplicates: enable
+  line-length:
+    level: warning
+    max: 185
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+  new-line-at-end-of-file: enable
+  new-lines:
+    type: unix
+  trailing-spaces: disable

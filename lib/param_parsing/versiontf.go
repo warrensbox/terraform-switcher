@@ -1,3 +1,4 @@
+//nolint:revive // FIXME: don't use an underscore in package name
 package param_parsing
 
 import (
@@ -33,7 +34,7 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 	}
 
 	logger.Infof("Reading version from Terraform module at %q", relPath)
-	module, _ := tfconfig.LoadModule(params.ChDirPath)
+	module, _ := tfconfig.LoadModule(params.ChDirPath) // nolint:errcheck // covered by conditional below
 	if module.Diagnostics.HasErrors() {
 		logger.Fatalf("Could not load Terraform module at %q", params.ChDirPath)
 	}

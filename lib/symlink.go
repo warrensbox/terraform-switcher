@@ -13,7 +13,7 @@ import (
 func CreateSymlink(cwd string, dir string) error {
 	// If we are on windows the symlink is not working correctly.
 	// Copy the desired terraform binary to the path environment.
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == windows {
 		r, err := os.Open(cwd)
 		if err != nil {
 			return fmt.Errorf("Unable to open source binary: %q", cwd)
@@ -56,19 +56,18 @@ func RemoveSymlink(symlinkPath string) error {
 		If error persist, you may not have the permission to create a symlink at %q.
 		Error: %v
 		`, symlinkPath, symlinkPath, err)
-	} else {
-		errRemove := os.Remove(symlinkPath)
-
-		if errRemove != nil {
-			return fmt.Errorf(`
-			Unable to remove symlink.
-			Maybe symlink already exist. Try removing existing symlink manually.
-			Try running "unlink %q" to remove existing symlink.
-			If error persist, you may not have the permission to create a symlink at %q.
-			Error: %v
-			`, symlinkPath, symlinkPath, errRemove)
-		}
 	}
+
+	if errRemove := os.Remove(symlinkPath); errRemove != nil {
+		return fmt.Errorf(`
+		Unable to remove symlink.
+		Maybe symlink already exist. Try removing existing symlink manually.
+		Try running "unlink %q" to remove existing symlink.
+		If error persist, you may not have the permission to create a symlink at %q.
+		Error: %v
+		`, symlinkPath, symlinkPath, errRemove)
+	}
+
 	return nil
 }
 
@@ -98,6 +97,8 @@ func ChangeSymlink(binVersionPath string, binPath string) {
 }
 
 // ChangeProductSymlink : move symlink for product to existing binary
+//
+//nolint:gocyclo
 func ChangeProductSymlink(product Product, binVersionPath string, userBinPath string) error {
 	homedir := GetHomeDirectory() // get user's home directory
 	homeBinPath := filepath.Join(homedir, "bin", product.GetExecutableName())
@@ -155,9 +156,12 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		}
 		logger.Noticef("Installation location: %q", location.path)
 
-		/* remove current symlink if exist*/
+		/* remove current symlink if exist */
 		if CheckSymlink(location.path) {
-			_ = RemoveSymlink(location.path)
+			logger.Debugf("Clearing away symlink before re-creating it: %q", location.path)
+			if err := RemoveSymlink(location.path); err != nil {
+				return fmt.Errorf("Error removing symlink %q: %v", location.path, err)
+			}
 		}
 
 		/* set symlink to desired version */
@@ -167,8 +171,8 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 
 			// Print helper message to export PATH if the directory is not in PATH only for non-Windows systems,
 			// as it's all complicated on Windows. See https://github.com/warrensbox/terraform-switcher/issues/558
-			if runtime.GOOS != "windows" {
-				var isDirInPath bool = false
+			if runtime.GOOS != windows {
+				isDirInPath := false
 
 				for _, envPathElement := range strings.Split(os.Getenv("PATH"), ":") {
 					expandedEnvPathElement := strings.TrimRight(strings.Replace(envPathElement, "~", homedir, 1), "/")

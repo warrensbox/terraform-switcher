@@ -1,9 +1,9 @@
 # How to update CHANGELOG with info on latest release
 
 1. [Install GH CLI](https://github.com/cli/cli?tab=readme-ov-file#installation).
-   * [Configure it](https://cli.github.com/manual/#configuration)
+   - [Configure it](https://cli.github.com/manual/#configuration)
 1. [Install `gh-changelog`](https://github.com/chelnak/gh-changelog?tab=readme-ov-file#installation-and-usage)
-   * Ensure the `.changelog.yml` file is in the root of the repo:
+   - Ensure the `.changelog.yml` file is in the root of the repository:
      ```yaml
      ---
      file_name: CHANGELOG.md.new

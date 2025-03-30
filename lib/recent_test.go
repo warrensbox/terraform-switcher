@@ -94,9 +94,11 @@ func performUnmarshalRecentFileDataTest(t *testing.T, recentFileContent string, 
 	defer os.RemoveAll(temp)
 	pathToTempFile := filepath.Join(temp, "recent.json")
 
-	os.WriteFile(pathToTempFile, []byte(recentFileContent), 0600)
+	if err := os.WriteFile(pathToTempFile, []byte(recentFileContent), 0o600); err != nil {
+		t.Errorf("Could not write to temporary file %q: %v", pathToTempFile, err)
+	}
 
-	var recentFileData = RecentFile{}
+	recentFileData := RecentFile{}
 	unmarshalRecentFileData(pathToTempFile, &recentFileData)
 	t.Log("Comparing Terraform versions")
 	assert.Equal(t, expectedRecentFileData.Terraform, recentFileData.Terraform)
@@ -105,7 +107,7 @@ func performUnmarshalRecentFileDataTest(t *testing.T, recentFileContent string, 
 }
 
 func Test_saveFile(t *testing.T) {
-	var recentFileData = RecentFile{
+	recentFileData := RecentFile{
 		Terraform: []string{"1.2.3", "4.5.6"},
 		OpenTofu:  []string{"6.6.6"},
 	}
@@ -114,7 +116,7 @@ func Test_saveFile(t *testing.T) {
 		t.Errorf("Could not create temporary directory")
 	}
 	defer func(path string) {
-		_ = os.RemoveAll(temp)
+		_ = os.RemoveAll(path)
 	}(temp)
 	pathToTempFile := filepath.Join(temp, "recent.json")
 	saveRecentFile(recentFileData, pathToTempFile)
@@ -187,7 +189,7 @@ func Test_addRecent(t *testing.T) {
 
 func Test_prependExistingVersionIsMovingToTop(t *testing.T) {
 	product := GetProductById("terraform")
-	var recentFileData = RecentFile{
+	recentFileData := RecentFile{
 		Terraform: []string{"1.2.3", "4.5.6", "7.7.7"},
 		OpenTofu:  []string{"6.6.6"},
 	}
@@ -206,7 +208,7 @@ func Test_prependExistingVersionIsMovingToTop(t *testing.T) {
 
 func Test_prependNewVersion(t *testing.T) {
 	product := GetProductById("terraform")
-	var recentFileData = RecentFile{
+	recentFileData := RecentFile{
 		Terraform: []string{"1.2.3", "4.5.6", "4.5.7", "4.5.8", "4.5.9"},
 		OpenTofu:  []string{"6.6.6"},
 	}
