@@ -19,8 +19,11 @@ func DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos,
 func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch string) (string, error) {
 	var wg sync.WaitGroup
 	defer wg.Done()
+	// nolint:revive // FIXME: var-naming: var zipUrl should be zipURL (revive)
 	zipUrl := mirrorURL + "/" + versionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
+	// nolint:revive // FIXME: var-naming: var hashUrl should be hashURL (revive)
 	hashUrl := mirrorURL + "/" + versionPrefix + tfversion + "_SHA256SUMS"
+	// nolint:revive // FIXME: var-naming: var hashSignatureUrl should be hashSignatureURL (revive)
 	hashSignatureUrl := mirrorURL + "/" + versionPrefix + tfversion + "_SHA256SUMS." + product.GetShaSignatureSuffix()
 
 	pubKeyFilename, err := downloadPublicKey(product, installLocation, &wg)

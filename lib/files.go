@@ -76,10 +76,9 @@ func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error
 		unzipErr := unzipFile(f, destination, &unzipWaitGroup)
 		if unzipErr != nil {
 			return nil, fmt.Errorf("Error unzipping: %v", unzipErr)
-		} else {
-			// nolint:gosec // The "G305: File traversal when extracting zip/tar archive" is handled by unzipFile()
-			filenames = append(filenames, filepath.Join(destination, f.Name))
 		}
+		// nolint:gosec // The "G305: File traversal when extracting zip/tar archive" is handled by unzipFile()
+		filenames = append(filenames, filepath.Join(destination, f.Name))
 	}
 	logger.Debug("Waiting for deferred functions")
 	unzipWaitGroup.Wait()

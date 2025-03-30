@@ -5,8 +5,11 @@ import (
 	"strings"
 )
 
+// nolint:revive // FIXME: var-naming: const legacyProductId should be legacyProductID (revive)
 const legacyProductId = "terraform"
 
+// nolint:revive // FIXME: var-naming: struct field PublicKeyId should be PublicKeyID (revive)
+// nolint:revive // FIXME: var-naming: struct field PublicKeyUrl should be PublicKeyURL (revive)
 type ProductDetails struct {
 	ID                    string
 	Name                  string
@@ -26,6 +29,11 @@ type OpenTofuProduct struct {
 	ProductDetails
 }
 
+// nolint:revive // FIXME: var-naming: method GetId should be GetID (revive)
+// nolint:revive // FIXME: var-naming: method GetDefaultMirrorUrl should be GetDefaultMirrorURL (revive)
+// nolint:revive // FIXME: var-naming: method GetArtifactUrl should be GetArtifactURL (revive)
+// nolint:revive // FIXME: var-naming: method GetPublicKeyId should be GetPublicKeyID (revive)
+// nolint:revive // FIXME: var-naming: method GetPublicKeyUrl should be GetPublicKeyURL (revive)
 type Product interface {
 	GetId() string
 	GetName() string
@@ -42,6 +50,7 @@ type Product interface {
 }
 
 // Terraform Product
+// nolint:revive // FIXME: var-naming: method GetId should be GetID (revive)
 func (p TerraformProduct) GetId() string {
 	return p.ID
 }
@@ -50,6 +59,7 @@ func (p TerraformProduct) GetName() string {
 	return p.Name
 }
 
+// nolint:revive // FIXME: var-naming: method GetDefaultMirrorUrl should be GetDefaultMirrorURL (revive)
 func (p TerraformProduct) GetDefaultMirrorUrl() string {
 	return p.DefaultMirror
 }
@@ -66,15 +76,18 @@ func (p TerraformProduct) GetArchivePrefix() string {
 	return p.ArchivePrefix
 }
 
+// nolint:revive // FIXME: var-naming: method GetArtifactUrl should be GetArtifactURL (revive)
 func (p TerraformProduct) GetArtifactUrl(mirrorURL string, version string) string {
 	mirrorURL = strings.TrimRight(mirrorURL, "/")
 	return fmt.Sprintf("%s/%s", mirrorURL, version)
 }
 
+// nolint:revive // FIXME: var-naming: method GetPublicKeyId should be GetPublicKeyID (revive)
 func (p TerraformProduct) GetPublicKeyId() string {
 	return p.PublicKeyId
 }
 
+// nolint:revive // FIXME: var-naming: method GetPublicKeyUrl should be GetPublicKeyURL (revive)
 func (p TerraformProduct) GetPublicKeyUrl() string {
 	return p.PublicKeyUrl
 }
@@ -92,6 +105,7 @@ func (p TerraformProduct) SetRecentVersionProduct(recentFile *RecentFile, versio
 }
 
 // OpenTofu methods
+// nolint:revive // FIXME: var-naming: method GetId should be GetID (revive)
 func (p OpenTofuProduct) GetId() string {
 	return p.ID
 }
@@ -100,6 +114,7 @@ func (p OpenTofuProduct) GetName() string {
 	return p.Name
 }
 
+// nolint:revive // FIXME: var-naming: method GetDefaultMirrorUrl should be GetDefaultMirrorURL (revive)
 func (p OpenTofuProduct) GetDefaultMirrorUrl() string {
 	return p.DefaultMirror
 }
@@ -116,15 +131,18 @@ func (p OpenTofuProduct) GetArchivePrefix() string {
 	return p.ArchivePrefix
 }
 
-//nolint:revive // FIXME: parameter 'mirrorURL' is not used (custom Mirror URL is not implemented for OpenTofu? 10-Mar-2025)
+// nolint:revive // FIXME: parameter 'mirrorURL' is not used (custom Mirror URL is not implemented for OpenTofu? 10-Mar-2025)
+// nolint:revive // FIXME: var-naming: method GetArtifactUrl should be GetArtifactURL (revive)
 func (p OpenTofuProduct) GetArtifactUrl(mirrorURL string, version string) string {
 	return fmt.Sprintf("%s/v%s", p.DefaultDownloadMirror, version)
 }
 
+// nolint:revive // FIXME: var-naming: method GetPublicKeyId should be GetPublicKeyID (revive)
 func (p OpenTofuProduct) GetPublicKeyId() string {
 	return p.PublicKeyId
 }
 
+// nolint:revive // FIXME: var-naming: method GetPublicKeyUrl should be GetPublicKeyURL (revive)
 func (p OpenTofuProduct) GetPublicKeyUrl() string {
 	return p.PublicKeyUrl
 }
@@ -170,6 +188,7 @@ var products = []Product{
 	},
 }
 
+// nolint:revive // FIXME: var-naming: func GetProductById should be GetProductByID (revive)
 func GetProductById(id string) Product {
 	for _, product := range products {
 		if strings.EqualFold(product.GetId(), id) {

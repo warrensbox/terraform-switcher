@@ -40,7 +40,7 @@ func TestGetVersionTerragrunt_with_no_terragrunt_file(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
-	params, err = GetVersionFromTerragrunt(params)
+	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
