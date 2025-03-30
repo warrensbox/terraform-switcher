@@ -22,7 +22,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
           cache: false
 
       - name: Check vet
@@ -52,7 +52,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
           cache: false
 
       - name: Build code
@@ -90,7 +90,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
           cache: false
 
       - name: Running unit tests
