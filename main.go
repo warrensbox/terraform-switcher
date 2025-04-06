@@ -20,7 +20,7 @@ var (
 )
 
 func main() {
-	var err error = nil
+	var err error
 	switch {
 	case parameters.VersionFlag:
 		fmt.Printf("Version: ")

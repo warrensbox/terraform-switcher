@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD041 -->
+
 [![Build Status](https://github.com/warrensbox/terraform-switcher/actions/workflows/build.yml/badge.svg)](https://github.com/warrensbox/terraform-switcher/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher)](https://goreportcard.com/report/github.com/warrensbox/terraform-switcher)
 ![GitHub Release](https://img.shields.io/github/v/release/warrensbox/terraform-switcher)
@@ -8,7 +10,7 @@
 
 <img style="text-align:center" src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/smallerlogo.png" alt="drawing" width="120" height="130"/>
 
-The `tfswitch` command line tool lets you switch between different versions of [Terraform](https://www.terraform.io/).  
+The `tfswitch` command-line tool lets you switch between different versions of [Terraform](https://www.terraform.io/).  
 If you do not have a particular version of Terraform installed, `tfswitch` will download and verify the version you desire.  
 The installation is minimal and easy.  
 Once installed, simply select the version you require from the dropdown and start using Terraform.
@@ -36,7 +38,7 @@ See the [release page](https://github.com/warrensbox/terraform-switcher/releases
 
 ## Homebrew
 
-For macOS or various Linux distributions, Homebrew offers the simplest installation process. <a href="https://brew.sh/" target="_blank">If you do not have homebrew installed, click here</a>.
+For macOS or various Linux distributions, Homebrew offers the simplest installation process. <a href="https://brew.sh/" target="_blank">If you do not have Homebrew installed, click here</a>.
 
 ```shell
 brew install warrensbox/tap/tfswitch
@@ -73,7 +75,7 @@ See [our installation documentation](https://tfswitch.warrensbox.com/Installatio
 >
 > Please change any automated implementations relying on the `tfswitch` version string.
 >
-> **Old version string:** `0.1.2412`
+> **Old version string:** `0.1.2412`  
 > **New version string:** `v1.0.3`
 
 [Having trouble installing](https://tfswitch.warrensbox.com/Troubleshoot/)
@@ -99,8 +101,8 @@ See step-by-step instructions on how to contribute here: [Contribute](https://tf
 
 ## Additional Info
 
-See how to [*upgrade* and *uninstall*](https://tfswitch.warrensbox.com/Upgrade-or-Uninstall/) or [*troubleshoot*](https://tfswitch.warrensbox.com/Troubleshoot/)
+See how to [_upgrade_ and _uninstall_](https://tfswitch.warrensbox.com/Upgrade-or-Uninstall/) or [_troubleshoot_](https://tfswitch.warrensbox.com/Troubleshoot/)
 
 ## Issues
 
-Please open *issues* here: [New Issue](https://github.com/warrensbox/terraform-switcher/issues)
+Please open _issues_ here: [New Issue](https://github.com/warrensbox/terraform-switcher/issues)

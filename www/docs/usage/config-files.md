@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD041 -->
+
 ## Get the version from a subdirectory
 
 While using the file configuration it might be necessary to change the working directory. You can do that with the `--chdir` or `-c` parameter.
@@ -11,7 +13,7 @@ tfswitch -c terraform_dir
 
 If a `.tf` file with the version constraints is included in the current directory, `tfswitch` should automatically download or switch to that terraform version.  
 Also please refer to [Order of Terraform version definition precedence](general.md) page for more information on how `tfswitch` determines the version to use.  
-For example, the following should automatically switch to the latest available version newer than `0.12.8`:  
+For example, the following should automatically switch to the latest available version newer than `0.12.8`:
 
 ```hcl
 terraform {
@@ -34,11 +36,11 @@ terraform {
 2. For example, `echo "0.10.5" >> .tfswitchrc` for version `0.10.5`
 3. Run the command `tfswitch` in the same directory as this `.tfswitchrc` file
 
-*Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
+_Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it_
 
-## Use `.tfswitch.toml` file  (For non-admin users with limited privilege on their computers)
+## Use `.tfswitch.toml` file (For non-admin users with limited privilege on their computers)
 
-`tfswitch` defaults to install to the `/usr/local/bin/` directory (and falls back to `$HOME/bin/` otherwise). The target filename is resolved automatically based on the `product` attribute ([see below](#setting-product-using-tfswitchtoml-file)). If you do not have write access to `/usr/local/bin/` directory, you can use the `.tfswitch.toml` file to specify a **full installation path** (directory + file name).  
+`tfswitch` defaults to install to the `/usr/local/bin/` directory (and falls back to `$HOME/bin/` otherwise). The target filename is resolved automatically based on the `product` attribute ([see below](#setting-product-using-tfswitchtoml-file)). If you do not have write access to `/usr/local/bin/` directory, you can use the `.tfswitch.toml` file to specify a **full installation path** (directory + filename).  
 This is similar to using a `.tfswitchrc` file, but you specify a custom binary path for the installation:
 
 ![toml1](../static/tfswitch-v7.gif)
@@ -98,11 +100,11 @@ log-level = "INFO"
 ```
 
 - Supported log levels:
-  - `ERROR`:  includes `PANIC`, `FATAL`, `ERROR`
-  - `INFO`:   includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO` (default)
+  - `ERROR`: includes `PANIC`, `FATAL`, `ERROR`
+  - `INFO`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO` (default)
   - `NOTICE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`
-  - `DEBUG`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`
-  - `TRACE`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`, `TRACE`
+  - `DEBUG`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`
+  - `TRACE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`, `TRACE`
   - Any other log level value falls under default logging level
 
 ## Overriding CPU architecture type for the downloaded binary using `.tfswitch.toml` file
@@ -130,6 +132,7 @@ install = "/var/cache"
 ```
 
 **NOTE**:
+
 - Current user must have write permissions to the target directory
 - If the target directory does not exist, `tfswitch` will create it
 

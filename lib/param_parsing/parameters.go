@@ -1,3 +1,4 @@
+//nolint:revive // FIXME: don't use an underscore in package name
 package param_parsing
 
 import (
@@ -62,6 +63,7 @@ func GetParameters() Params {
 	return params
 }
 
+//nolint:gocyclo
 func populateParams(params Params) Params {
 	var productIds []string
 	var defaultMirrors []string

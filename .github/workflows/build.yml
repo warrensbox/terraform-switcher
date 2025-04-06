@@ -4,10 +4,10 @@ permissions: {} # yamllint disable-line rule:braces
 on:
   push:
     branches:
-      - '*'       # matches every branch that doesn't contain a '/'
-      - '*/*'     # matches every branch containing a single '/'
-      - '**'      # matches every branch
-      - '!master' # excludes `master` branch
+      - "*" # matches every branch that doesn't contain a '/'
+      - "*/*" # matches every branch containing a single '/'
+      - "**" # matches every branch
+      - "!master" # excludes `master` branch
 
 env:
   CGO_ENABLED: 0 # Build statically linked binaries
@@ -22,7 +22,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
           cache: false
 
       - name: Check vet
@@ -46,38 +46,37 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    - name: Checkout repo
-      uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+          cache: false
 
-    - name: Install Go
-      uses: actions/setup-go@v5
-      with:
-        go-version-file: 'go.mod'
-        cache: false
+      - name: Build code
+        run: go build -v ./...
 
-    - name: Build code
-      run: go build -v ./...
+      - name: Running unit tests
+        run: |
+          go test -v ./...
 
-    - name: Running unit tests
-      run: |
-        go test -v ./...
-
-    - name: Running integration tests
-      run: |
-        set -e
-        mkdir -p build
-        go build -v -o build/tfswitch
-        mkdir `pwd`/bin/
-        find ./test-data/integration-tests/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
-            if test -f "${TEST_PATH}/.tfswitch.toml"
-            then
-                cp "${TEST_PATH}/.tfswitch.toml" ~/
-            else
-                rm -f ~/.tfswitch.toml
-            fi
-            ./build/tfswitch -c "${TEST_PATH}" -b `pwd`/bin/terraform || exit 1
-        done
+      - name: Running integration tests
+        run: |
+          set -e
+          mkdir -p build
+          go build -v -o build/tfswitch
+          mkdir "$(pwd)/bin/"
+          find ./test-data/integration-tests/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
+              if test -f "${TEST_PATH}/.tfswitch.toml"
+              then
+                  cp "${TEST_PATH}/.tfswitch.toml" ~/
+              else
+                  rm -f ~/.tfswitch.toml
+              fi
+              ./build/tfswitch -c "${TEST_PATH}" -b "$(pwd)/bin/terraform" || exit 1
+          done
 
   integration_tests_windows:
     strategy:
@@ -85,16 +84,15 @@ jobs:
         os: [windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    - name: Checkout repo
-      uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+          cache: false
 
-    - name: Install Go
-      uses: actions/setup-go@v5
-      with:
-        go-version-file: 'go.mod'
-        cache: false
-
-    - name: Running unit tests
-      run: |
-        go test -v ./...
+      - name: Running unit tests
+        run: |
+          go test -v ./...

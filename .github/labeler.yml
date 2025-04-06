@@ -5,38 +5,38 @@
 version: v1
 
 labels:
-  - label: 'chore'
+  - label: "chore"
     matcher:
-      title: '^(c(hore|i)|style):'
-      branch: '^(c(hore|i)|style)/'
-      commits: '^(c(hore|i)|style):'
+      title: "^(c(hore|i)|style):"
+      branch: "^(c(hore|i)|style)/"
+      commits: "^(c(hore|i)|style):"
 
-  - label: 'dependencies'
+  - label: "dependencies"
     matcher:
-      title: '^deps:'
-      branch: '^deps/'
-      commits: '^deps:'
+      title: "^deps:"
+      branch: "^deps/"
+      commits: "^deps:"
 
-  - label: 'documentation'
+  - label: "documentation"
     matcher:
-      title: '^docs?:'
-      branch: '^docs?/'
-      commits: '^docs?:'
+      title: "^docs?:"
+      branch: "^docs?/"
+      commits: "^docs?:"
 
-  - label: 'enhancement'
+  - label: "enhancement"
     matcher:
-      title: '^fix:'
-      branch: '^fix/'
-      commits: '^fix:'
+      title: "^fix:"
+      branch: "^fix/"
+      commits: "^fix:"
 
-  - label: 'golang'
+  - label: "golang"
     matcher:
-      title: '^go(lang)?:'
-      branch: '^go(lang)?/'
-      commits: '^go(lang)?:'
+      title: "^go(lang)?:"
+      branch: "^go(lang)?/"
+      commits: "^go(lang)?:"
 
-  - label: 'new feature'
+  - label: "new feature"
     matcher:
-      title: '^feat(ure)?:'
-      branch: '^feat(ure)?/'
-      commits: '^feat(ure)?:'
+      title: "^feat(ure)?:"
+      branch: "^feat(ure)?/"
+      commits: "^feat(ure)?:"

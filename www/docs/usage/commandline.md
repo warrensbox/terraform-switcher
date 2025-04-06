@@ -1,13 +1,17 @@
+<!-- markdownlint-disable MD041 -->
+
 ## Use dropdown menu to select version
+
 ![tfswitch](../static/tfswitch.gif "tfswitch")
 
-1.  You can switch between different versions of terraform by typing the command `tfswitch` on your terminal.
-2.  Select the version of terraform you require by using the up and down arrow.
-3.  Hit **Enter** to select the desired version.
+1. You can switch between different versions of terraform by typing the command `tfswitch` on your terminal.
+2. Select the version of terraform you require by using the up and down arrow.
+3. Hit **Enter** to select the desired version.
 
 The most recently selected versions are presented at the top of the dropdown.
 
 ## Supply version on command line
+
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v4.gif" alt="drawing" style="width: 600px;"/>
 
 1. You can also supply the desired version as an argument on the command line.
@@ -15,6 +19,7 @@ The most recently selected versions are presented at the top of the dropdown.
 3. Hit **Enter** to switch.
 
 ## See all versions including beta, alpha and release candidates(rc)
+
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v5.gif" alt="drawing" style="width: 600px;"/>
 
 1. Display all versions including beta, alpha and release candidates(rc).
@@ -53,8 +58,8 @@ tfswitch # Will automatically switch to terraform version 0.14.4
 
 This can either be set to:
 
- * `terraform`
- * `opentofu`
+- `terraform`
+- `opentofu`
 
 For example:
 
@@ -68,11 +73,11 @@ tfswitch # Will install opentofu instead of terraform
 `TF_LOG_LEVEL` environment variable can be set to override default log level.
 
 - Supported log levels:
-  - `ERROR`:  includes `PANIC`, `FATAL`, `ERROR`
-  - `INFO`:   includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO` (default)
+  - `ERROR`: includes `PANIC`, `FATAL`, `ERROR`
+  - `INFO`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO` (default)
   - `NOTICE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`
-  - `DEBUG`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`
-  - `TRACE`:  includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`, `TRACE`
+  - `DEBUG`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`
+  - `TRACE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`, `TRACE`
   - Any other log level value falls under default logging level
 
 For example:
@@ -102,7 +107,7 @@ tfswitch # Will install binary for amd64 architecture
 ### `TF_BINARY_PATH`
 
 `tfswitch` defaults to install to the `/usr/local/bin/` directory (and falls back to `$HOME/bin/` otherwise). The target filename is resolved automatically based on the `product` parameter.  
-`TF_BINARY_PATH` environment variable can be set to specify a **full installation path** (directory + file name). If target directory does not exist, `tfswitch` falls back to `$HOME/bin/` directory.
+`TF_BINARY_PATH` environment variable can be set to specify a **full installation path** (directory + filename). If target directory does not exist, `tfswitch` falls back to `$HOME/bin/` directory.
 
 For example:
 
@@ -137,7 +142,7 @@ tfswitch # Will download actual binary to /var/cache/.terraform.versions/
 
 ## Install latest implicit version for beta, alpha and release candidates(rc)
 
-1. Install the latest implicit pre-release version.
+1. Install the latest implicit prerelease version.
 2. Ex: `tfswitch -p 0.13` or `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1 (latest) version.
 3. Hit **Enter** to install.
 
@@ -155,13 +160,13 @@ tfswitch # Will download actual binary to /var/cache/.terraform.versions/
 
 ## Show latest implicit version for beta, alpha and release candidates(rc)
 
-1. Show the latest implicit pre-release version.
+1. Show the latest implicit prerelease version.
 2. Ex: `tfswitch -P 0.13` or `tfswitch --show-latest-pre 0.13` shows 0.13.0-rc1 (latest) version.
 3. Hit **Enter** to show.
 
 ## Use custom mirror
 
-To install from a remote mirror other than the default(https://releases.hashicorp.com/terraform). Use the `-m` or `--mirror` parameter.
+To install from a remote mirror other than the default (<https://releases.hashicorp.com/terraform>). Use the `-m` or `--mirror` parameter.
 
 ```bash
 tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp`

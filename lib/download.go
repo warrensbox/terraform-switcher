@@ -19,8 +19,11 @@ func DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos,
 func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch string) (string, error) {
 	var wg sync.WaitGroup
 	defer wg.Done()
+	// nolint:revive // FIXME: var-naming: var zipUrl should be zipURL (revive)
 	zipUrl := mirrorURL + "/" + versionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
+	// nolint:revive // FIXME: var-naming: var hashUrl should be hashURL (revive)
 	hashUrl := mirrorURL + "/" + versionPrefix + tfversion + "_SHA256SUMS"
+	// nolint:revive // FIXME: var-naming: var hashSignatureUrl should be hashSignatureURL (revive)
 	hashSignatureUrl := mirrorURL + "/" + versionPrefix + tfversion + "_SHA256SUMS." + product.GetShaSignatureSuffix()
 
 	pubKeyFilename, err := downloadPublicKey(product, installLocation, &wg)
@@ -99,7 +102,7 @@ func downloadFromURL(installLocation string, url string, wg *sync.WaitGroup) (st
 	fileName := tokens[len(tokens)-1]
 	logger.Infof("Downloading to %q", filepath.Join(installLocation, "/", fileName))
 
-	response, err := http.Get(url)
+	response, err := http.Get(url) // nolint:gosec // `url' is expected to be variable
 	if err != nil {
 		logger.Errorf("Error downloading %s: %v", url, err)
 		return "", err

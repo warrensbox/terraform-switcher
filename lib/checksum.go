@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	//nolint:staticcheck // TODO: https://github.com/warrensbox/terraform-switcher/issues/439
 	"golang.org/x/crypto/openpgp"
 )
 

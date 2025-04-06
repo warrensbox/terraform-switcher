@@ -1,5 +1,7 @@
+<!-- markdownlint-disable MD041 -->
 
 Problem:
+
 ```sh
 install: can't change permissions of /usr/local/bin: Operation not permitted
 ```
@@ -16,7 +18,7 @@ install: can't change permissions of /usr/local/bin: Operation not permitted
 install: cannot create regular file '/usr/local/bin/tfswitch': Permission denied
 ```
 
-Solution: You probably need to have privileges to install *tfswitch* at /usr/local/bin.
+Solution: You probably need to have privileges to install _tfswitch_ at /usr/local/bin.
 
 Try the following:
 
@@ -34,9 +36,9 @@ export PATH=$PATH:$HOME/.bin #Export your .bin into your path
 #You should probably add step 4 in your `.bash_profile` in your $HOME directory.
 
 #Next, try:
-`tfswitch -b $HOME/.bin/terraform 0.11.7` 
+`tfswitch -b $HOME/.bin/terraform 0.11.7`
 
-#or simply 
+#or simply
 
 `tfswitch -b $HOME/.bin/terraform`
 

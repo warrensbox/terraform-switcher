@@ -1,3 +1,4 @@
+//nolint:revive // FIXME: don't use an underscore in package name
 package param_parsing
 
 import (
@@ -191,9 +192,9 @@ func TestGetParameters_dry_run_wont_download_anything(t *testing.T) {
 	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+params.Version))
 	// Make sure the file tfswitch WOULD download is absent
 	_ = os.Remove(installFileVersionPath)
-	lib.InstallProductVersion(product, params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL, params.Arch)
-	if lib.FileExistsAndIsNotDir(installFileVersionPath) {
-		t.Error("Dry run should NOT download any files.")
+	err := lib.InstallProductVersion(product, params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL, params.Arch)
+	if err != nil || lib.FileExistsAndIsNotDir(installFileVersionPath) {
+		t.Error("Dry run should NOT install any files.")
 	}
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
@@ -210,7 +211,8 @@ func writeTestFile(t *testing.T, basePath string, fileName string, fileContent s
 	})
 }
 
-func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string, expectedDefaultVersion string) {
+//nolint:revive // FIXME: the 3rd argument is not used %-/ 10-Mar-2025
+func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string, _ string) {
 	getopt.CommandLine = getopt.New()
 	os.Args = []string{"cmd", "--chdir=../../test-data/skip-integration-tests/test_precedence"}
 	parameters := Params{}
