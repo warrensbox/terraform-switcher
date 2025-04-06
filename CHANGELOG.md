@@ -7,6 +7,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.4.4](https://github.com/warrensbox/terraform-switcher/tree/v1.4.4) - 2025-04-07
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.3...v1.4.4)
+
+### Fixed
+
+- chore: Add `super-linter` [#573](https://github.com/warrensbox/terraform-switcher/pull/573) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.4.4` [#575](https://github.com/warrensbox/terraform-switcher/pull/575) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.4.3](https://github.com/warrensbox/terraform-switcher/tree/v1.4.3) - 2025-03-19
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.2...v1.4.3)
