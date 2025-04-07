@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../static/favicon_tfswitch_16.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
     
     
       
@@ -121,11 +121,13 @@
     
     
     
-      <label class="md-header__button md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-      </label>
-      <div class="md-search" data-md-component="search" role="dialog">
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -157,6 +159,7 @@
     </div>
   </div>
 </div>
+      
     
     
       <div class="md-header__source">
@@ -228,6 +231,7 @@
       <a href="../.." class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Home
     
@@ -248,6 +252,7 @@
     <li class="md-nav__item">
       <a href="../../Installation/" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Installation
@@ -272,6 +277,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
@@ -281,6 +287,7 @@
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
+  
   
   <span class="md-ellipsis">
     Usage
@@ -308,6 +315,7 @@
       <a href="../general/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     General
     
@@ -329,6 +337,7 @@
     <li class="md-nav__item">
       <a href="../commandline/" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Command line
@@ -359,6 +368,7 @@
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
   
+  
   <span class="md-ellipsis">
     Config files
     
@@ -370,6 +380,7 @@
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
+  
   
   <span class="md-ellipsis">
     Config files
@@ -501,6 +512,7 @@
       <a href="../ci-cd/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     CI/CD
     
@@ -530,6 +542,7 @@
       <a href="../../Continuous-Integration/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     CI/CD Examples
     
@@ -550,6 +563,7 @@
     <li class="md-nav__item">
       <a href="../../Upgrade-or-Uninstall/" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Upgrade or Uninstall
@@ -572,6 +586,7 @@
       <a href="../../How-to-Contribute/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     How to Contribute
     
@@ -592,6 +607,7 @@
     <li class="md-nav__item">
       <a href="../../Troubleshoot/" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Troubleshoot
@@ -739,6 +755,8 @@
 
   <h1>Config files</h1>
 
+<!-- markdownlint-disable MD041 -->
+
 <h2 id="get-the-version-from-a-subdirectory">Get the version from a subdirectory</h2>
 <p>While using the file configuration it might be necessary to change the working directory. You can do that with the <code>--chdir</code> or <code>-c</code> parameter.</p>
 <pre><code class="language-bash">tfswitch --chdir terraform_dir
@@ -747,7 +765,7 @@ tfswitch -c terraform_dir
 <h2 id="use-versiontf-file">Use <code>version.tf</code> file</h2>
 <p>If a <code>.tf</code> file with the version constraints is included in the current directory, <code>tfswitch</code> should automatically download or switch to that terraform version.<br />
 Also please refer to <a href="../general/">Order of Terraform version definition precedence</a> page for more information on how <code>tfswitch</code> determines the version to use.<br />
-For example, the following should automatically switch to the latest available version newer than <code>0.12.8</code>:  </p>
+For example, the following should automatically switch to the latest available version newer than <code>0.12.8</code>:</p>
 <pre><code class="language-hcl">terraform {
   required_version = &quot;&gt;= 0.12.9&quot;
 
@@ -766,8 +784,8 @@ For example, the following should automatically switch to the latest available v
 <li>Run the command <code>tfswitch</code> in the same directory as this <code>.tfswitchrc</code> file</li>
 </ol>
 <p><em>Instead of a <code>.tfswitchrc</code> file, a <code>.terraform-version</code> file may be used for compatibility with <a href="https://github.com/tfutils/tfenv#terraform-version-file"><code>tfenv</code></a> and other tools which use it</em></p>
-<h2 id="use-tfswitchtoml-file-for-non-admin-users-with-limited-privilege-on-their-computers">Use <code>.tfswitch.toml</code> file  (For non-admin users with limited privilege on their computers)</h2>
-<p><code>tfswitch</code> defaults to install to the <code>/usr/local/bin/</code> directory (and falls back to <code>$HOME/bin/</code> otherwise). The target filename is resolved automatically based on the <code>product</code> attribute (<a href="#setting-product-using-tfswitchtoml-file">see below</a>). If you do not have write access to <code>/usr/local/bin/</code> directory, you can use the <code>.tfswitch.toml</code> file to specify a <strong>full installation path</strong> (directory + file name).<br />
+<h2 id="use-tfswitchtoml-file-for-non-admin-users-with-limited-privilege-on-their-computers">Use <code>.tfswitch.toml</code> file (For non-admin users with limited privilege on their computers)</h2>
+<p><code>tfswitch</code> defaults to install to the <code>/usr/local/bin/</code> directory (and falls back to <code>$HOME/bin/</code> otherwise). The target filename is resolved automatically based on the <code>product</code> attribute (<a href="#setting-product-using-tfswitchtoml-file">see below</a>). If you do not have write access to <code>/usr/local/bin/</code> directory, you can use the <code>.tfswitch.toml</code> file to specify a <strong>full installation path</strong> (directory + filename).<br />
 This is similar to using a <code>.tfswitchrc</code> file, but you specify a custom binary path for the installation:</p>
 <p><img alt="toml1" src="../../static/tfswitch-v7.gif" />
 <img alt="toml2" src="../../static/tfswitch-v8.gif" /></p>
@@ -808,11 +826,11 @@ The <code>.tfswitch.toml</code> file can be configured with a <code>log-level</c
 </code></pre>
 <ul>
 <li>Supported log levels:</li>
-<li><code>ERROR</code>:  includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code></li>
-<li><code>INFO</code>:   includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>INFO</code> (default)</li>
+<li><code>ERROR</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code></li>
+<li><code>INFO</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>INFO</code> (default)</li>
 <li><code>NOTICE</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code></li>
-<li><code>DEBUG</code>:  includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code></li>
-<li><code>TRACE</code>:  includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code>, <code>TRACE</code></li>
+<li><code>DEBUG</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code></li>
+<li><code>TRACE</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code>, <code>TRACE</code></li>
 <li>Any other log level value falls under default logging level</li>
 </ul>
 <h2 id="overriding-cpu-architecture-type-for-the-downloaded-binary-using-tfswitchtoml-file">Overriding CPU architecture type for the downloaded binary using <code>.tfswitch.toml</code> file</h2>
@@ -832,9 +850,11 @@ The <code>.tfswitch.toml</code> file can be configured with a <code>arch</code> 
 The <code>.tfswitch.toml</code> file can be configured with a <code>install</code> attribute to specify the parent directory for <code>.terraform.versions</code> directory.</p>
 <pre><code class="language-toml">install = &quot;/var/cache&quot;
 </code></pre>
-<p><strong>NOTE</strong>:
-- Current user must have write permissions to the target directory
-- If the target directory does not exist, <code>tfswitch</code> will create it</p>
+<p><strong>NOTE</strong>:</p>
+<ul>
+<li>Current user must have write permissions to the target directory</li>
+<li>If the target directory does not exist, <code>tfswitch</code> will create it</li>
+</ul>
 <h2 id="use-terragrunthcl-file">Use <code>terragrunt.hcl</code> file</h2>
 <p>If a terragrunt.hcl file with the terraform constraint is included in the current directory, it should automatically download or switch to that terraform version.<br />
 For example, the following should automatically switch Terraform to the latest version 0.13:</p>
@@ -892,7 +912,9 @@ terraform_version_constraint  = &quot;&gt;= 0.13, &lt; 0.14&quot;
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>

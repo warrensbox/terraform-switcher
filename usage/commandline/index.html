@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../static/favicon_tfswitch_16.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
     
     
       
@@ -121,11 +121,13 @@
     
     
     
-      <label class="md-header__button md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-      </label>
-      <div class="md-search" data-md-component="search" role="dialog">
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -157,6 +159,7 @@
     </div>
   </div>
 </div>
+      
     
     
       <div class="md-header__source">
@@ -228,6 +231,7 @@
       <a href="../.." class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Home
     
@@ -248,6 +252,7 @@
     <li class="md-nav__item">
       <a href="../../Installation/" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Installation
@@ -272,6 +277,7 @@
     
     
     
+    
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
@@ -281,6 +287,7 @@
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
+  
   
   <span class="md-ellipsis">
     Usage
@@ -307,6 +314,7 @@
     <li class="md-nav__item">
       <a href="../general/" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     General
@@ -337,6 +345,7 @@
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
   
+  
   <span class="md-ellipsis">
     Command line
     
@@ -348,6 +357,7 @@
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
+  
   
   <span class="md-ellipsis">
     Command line
@@ -575,6 +585,7 @@
       <a href="../config-files/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Config files
     
@@ -596,6 +607,7 @@
     <li class="md-nav__item">
       <a href="../ci-cd/" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     CI/CD
@@ -626,6 +638,7 @@
       <a href="../../Continuous-Integration/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     CI/CD Examples
     
@@ -646,6 +659,7 @@
     <li class="md-nav__item">
       <a href="../../Upgrade-or-Uninstall/" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Upgrade or Uninstall
@@ -668,6 +682,7 @@
       <a href="../../How-to-Contribute/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     How to Contribute
     
@@ -688,6 +703,7 @@
     <li class="md-nav__item">
       <a href="../../Troubleshoot/" class="md-nav__link">
         
+  
   
   <span class="md-ellipsis">
     Troubleshoot
@@ -931,6 +947,8 @@
 
   <h1>Command line</h1>
 
+<!-- markdownlint-disable MD041 -->
+
 <h2 id="use-dropdown-menu-to-select-version">Use dropdown menu to select version</h2>
 <p><img alt="tfswitch" src="../../static/tfswitch.gif" title="tfswitch" /></p>
 <ol>
@@ -982,11 +1000,11 @@ tfswitch # Will install opentofu instead of terraform
 <p><code>TF_LOG_LEVEL</code> environment variable can be set to override default log level.</p>
 <ul>
 <li>Supported log levels:</li>
-<li><code>ERROR</code>:  includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code></li>
-<li><code>INFO</code>:   includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>INFO</code> (default)</li>
+<li><code>ERROR</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code></li>
+<li><code>INFO</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>INFO</code> (default)</li>
 <li><code>NOTICE</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code></li>
-<li><code>DEBUG</code>:  includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code></li>
-<li><code>TRACE</code>:  includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code>, <code>TRACE</code></li>
+<li><code>DEBUG</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code></li>
+<li><code>TRACE</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code>, <code>TRACE</code></li>
 <li>Any other log level value falls under default logging level</li>
 </ul>
 <p>For example:</p>
@@ -1008,7 +1026,7 @@ tfswitch # Will install binary for amd64 architecture
 </code></pre>
 <h3 id="tf_binary_path"><code>TF_BINARY_PATH</code></h3>
 <p><code>tfswitch</code> defaults to install to the <code>/usr/local/bin/</code> directory (and falls back to <code>$HOME/bin/</code> otherwise). The target filename is resolved automatically based on the <code>product</code> parameter.<br />
-<code>TF_BINARY_PATH</code> environment variable can be set to specify a <strong>full installation path</strong> (directory + file name). If target directory does not exist, <code>tfswitch</code> falls back to <code>$HOME/bin/</code> directory.</p>
+<code>TF_BINARY_PATH</code> environment variable can be set to specify a <strong>full installation path</strong> (directory + filename). If target directory does not exist, <code>tfswitch</code> falls back to <code>$HOME/bin/</code> directory.</p>
 <p>For example:</p>
 <pre><code class="language-bash">export TF_BINARY_PATH=&quot;$HOME/bin/terraform&quot; # Path to the file
 tfswitch # Will install binary as $HOME/bin/terraform
@@ -1034,7 +1052,7 @@ tfswitch # Will download actual binary to /var/cache/.terraform.versions/
 </ol>
 <h2 id="install-latest-implicit-version-for-beta-alpha-and-release-candidatesrc">Install latest implicit version for beta, alpha and release candidates(rc)</h2>
 <ol>
-<li>Install the latest implicit pre-release version.</li>
+<li>Install the latest implicit prerelease version.</li>
 <li>Ex: <code>tfswitch -p 0.13</code> or <code>tfswitch --latest-pre 0.13</code> downloads 0.13.0-rc1 (latest) version.</li>
 <li>Hit <strong>Enter</strong> to install.</li>
 </ol>
@@ -1052,12 +1070,12 @@ tfswitch # Will download actual binary to /var/cache/.terraform.versions/
 </ol>
 <h2 id="show-latest-implicit-version-for-beta-alpha-and-release-candidatesrc">Show latest implicit version for beta, alpha and release candidates(rc)</h2>
 <ol>
-<li>Show the latest implicit pre-release version.</li>
+<li>Show the latest implicit prerelease version.</li>
 <li>Ex: <code>tfswitch -P 0.13</code> or <code>tfswitch --show-latest-pre 0.13</code> shows 0.13.0-rc1 (latest) version.</li>
 <li>Hit <strong>Enter</strong> to show.</li>
 </ol>
 <h2 id="use-custom-mirror">Use custom mirror</h2>
-<p>To install from a remote mirror other than the default(https://releases.hashicorp.com/terraform). Use the <code>-m</code> or <code>--mirror</code> parameter.</p>
+<p>To install from a remote mirror other than the default (<a href="https://releases.hashicorp.com/terraform">https://releases.hashicorp.com/terraform</a>). Use the <code>-m</code> or <code>--mirror</code> parameter.</p>
 <pre><code class="language-bash">tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp`
 </code></pre>
 <h2 id="install-to-non-default-location">Install to non-default location</h2>
@@ -1123,7 +1141,9 @@ tfswitch # Will download actual binary to /var/cache/.terraform.versions/
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
