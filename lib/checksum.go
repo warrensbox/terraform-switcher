@@ -70,7 +70,7 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 
 	keyFileContent, err := io.ReadAll(keyFile)
 	if err != nil {
-		logger.Errorf("Could not read PGP key file %q: %v", keyFile, err)
+		logger.Errorf("Could not read PGP key file %q: %v", keyFile.Name(), err)
 		return false
 	}
 
@@ -88,13 +88,13 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 
 	hashFileContent, err := io.ReadAll(hashFile)
 	if err != nil {
-		logger.Errorf("Could not read hash file %q: %v", hashFile, err)
+		logger.Errorf("Could not read hash file %q: %v", hashFile.Name(), err)
 		return false
 	}
 
 	signatureContent, err := io.ReadAll(signatureFile)
 	if err != nil {
-		logger.Errorf("Could not read PGP signature file %q: %v", signatureFile, err)
+		logger.Errorf("Could not read PGP signature file %q: %v", signatureFile.Name(), err)
 		return false
 	}
 
