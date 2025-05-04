@@ -16,7 +16,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/ProtonMail/gopenpgp/v2/crypto"
+	"github.com/ProtonMail/gopenpgp/v3/constants"
+	"github.com/ProtonMail/gopenpgp/v3/crypto"
+	"github.com/ProtonMail/gopenpgp/v3/profile"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
@@ -100,7 +102,9 @@ type DownloadProductTestConfig struct {
 //nolint:gocyclo
 func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadProductTestConfig) *httptest.Server {
 	logger = InitLogger("DEBUG")
-	gpgKey, err := crypto.GenerateKey("TestProductSign", "example@localhost.com", "RSA", 1024)
+	pgp4880 := crypto.PGPWithProfile(profile.RFC4880())
+	keyGenHandle := pgp4880.KeyGeneration().AddUserId("TestProductSign", "example@localhost.com").New()
+	gpgKey, err := keyGenHandle.GenerateKeyWithSecurity(constants.HighSecurity) // RSA 4096 bits
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -154,13 +158,12 @@ func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadPr
 	}
 
 	// Create signature of checksum file
-	binMessage := crypto.NewPlainMessageFromFile([]byte(downloadProductTestConfig.ChecksumFileContent), "my_product_download_2.1.0_SHA256SUMS", uint32(crypto.GetUnixTime()))
-	keyRing, err := crypto.NewKeyRing(gpgKey)
+	keyRing, err := crypto.PGP().Sign().SigningKey(gpgKey).Detached().New()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	signatureObj, err := keyRing.SignDetached(binMessage)
+	signatureObj, err := keyRing.Sign([]byte(downloadProductTestConfig.ChecksumFileContent), crypto.Auto)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -189,7 +192,7 @@ func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadPr
 		case "/productdownload/2.1.0/my_product_download_2.1.0_SHA256SUMS." + downloadProductTestConfig.GpgFingerprint + ".sig":
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
-			if _, err := w.Write(signatureObj.GetBinary()); err != nil {
+			if _, err := w.Write(signatureObj); err != nil {
 				t.Error(err)
 			}
 		default:

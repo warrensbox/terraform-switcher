@@ -9,8 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	//nolint:staticcheck // TODO: https://github.com/warrensbox/terraform-switcher/issues/439
-	"golang.org/x/crypto/openpgp"
+	"github.com/ProtonMail/gopenpgp/v3/crypto"
 )
 
 // getChecksumFromFile Extract the checksum from the signature file
@@ -60,25 +59,56 @@ func checkChecksumMatches(hashFile string, targetFile *os.File) bool {
 }
 
 // checkSignatureOfChecksums This will verify the signature of the file containing the hash sums
-func checkSignatureOfChecksums(keyRingReader *os.File, hashFile *os.File, signatureFile *os.File) bool {
+func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFile *os.File) bool {
 	var fileHandlersToClose []*os.File
-	fileHandlersToClose = append(fileHandlersToClose, keyRingReader)
+	fileHandlersToClose = append(fileHandlersToClose, keyFile)
 	fileHandlersToClose = append(fileHandlersToClose, hashFile)
 	fileHandlersToClose = append(fileHandlersToClose, signatureFile)
 	defer closeFileHandlers(fileHandlersToClose)
 
-	logger.Info("Verifying signature of checksum file")
-	keyring, err := openpgp.ReadArmoredKeyRing(keyRingReader)
+	logger.Infof("Verifying PGP signature of checksum file: %q", hashFile.Name())
+
+	keyFileContent, err := io.ReadAll(keyFile)
 	if err != nil {
-		logger.Errorf("Could not read armored key ring: %v", err)
+		logger.Errorf("Could not read PGP key file %q: %v", keyFile, err)
 		return false
 	}
 
-	_, err = openpgp.CheckDetachedSignature(keyring, hashFile, signatureFile)
+	keyFromArmored, err := crypto.NewKeyFromArmored(string(keyFileContent))
 	if err != nil {
-		logger.Errorf("Could not check detached signature: %v", err)
+		logger.Errorf("Could not read PGP armored key: %v", err)
 		return false
 	}
-	logger.Info("Checksum file signature verification successful")
+
+	signingKey, err := crypto.PGP().Verify().VerificationKey(keyFromArmored).New()
+	if err != nil {
+		logger.Errorf("Could not read PGP signing key: %v", err)
+		return false
+	}
+
+	hashFileContent, err := io.ReadAll(hashFile)
+	if err != nil {
+		logger.Errorf("Could not read hash file %q: %v", hashFile, err)
+		return false
+	}
+
+	signatureContent, err := io.ReadAll(signatureFile)
+	if err != nil {
+		logger.Errorf("Could not read PGP signature file %q: %v", signatureFile, err)
+		return false
+	}
+
+	verifyRes, err := signingKey.VerifyDetached(hashFileContent, signatureContent, crypto.Auto)
+	if err != nil {
+		logger.Errorf("Could not verify detached signature PGP message: %v", err)
+		return false
+	}
+
+	if err := verifyRes.SignatureError(); err != nil {
+		logger.Errorf("Could not verify PGP signature: %v", err)
+		return false
+	}
+
+	logger.Info("Checksum file PGP signature verification successful")
 	return true
 }
