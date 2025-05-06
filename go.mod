@@ -16,7 +16,7 @@ require (
 	github.com/pborman/getopt v1.1.0
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/sys v0.32.0
+	golang.org/x/sys v0.33.0
 )
 
 require (
