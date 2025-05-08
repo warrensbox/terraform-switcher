@@ -7,6 +7,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.4.5](https://github.com/warrensbox/terraform-switcher/tree/v1.4.5) - 2025-05-05
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.4...v1.4.5)
+
+### Changed
+
+- feat(gpg): Switch from deprecated Go `crypto` to `ProtonMail/gopenpgp@v3` [#579](https://github.com/warrensbox/terraform-switcher/pull/579) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.4.5` [#580](https://github.com/warrensbox/terraform-switcher/pull/580) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.4.4](https://github.com/warrensbox/terraform-switcher/tree/v1.4.4) - 2025-04-07
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.3...v1.4.4)
