@@ -40,3 +40,4 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_JSCPD: false
           VALIDATE_GO: false
+          BASH_EXEC_IGNORE_LIBRARIES: false
