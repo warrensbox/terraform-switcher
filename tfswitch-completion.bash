@@ -16,11 +16,11 @@ _tfswitch() {
 		return 0
 		;;
 	-b | --bin)
-        [[ $(type -t _comp_compgen) == "function" ]] && _comp_compgen -a filedir || _filedir
+		[[ $(type -t _comp_compgen) == "function" ]] && _comp_compgen -a filedir || _filedir
 		return 0
 		;;
 	-c | --chdir | -i | --install)
-        [[ $(type -t _comp_compgen) == "function" ]] && _comp_compgen -a filedir -d || _filedir -d
+		[[ $(type -t _comp_compgen) == "function" ]] && _comp_compgen -a filedir -d || _filedir -d
 		return 0
 		;;
 	-g | --log-level)
@@ -35,4 +35,4 @@ _tfswitch() {
 
 } && complete -F _tfswitch tfswitch
 
-# vim: filetype=bash shiftwidth=4 tabstop=4 expandtab autoindent:
+# vim: filetype=bash shiftwidth=4 tabstop=4 noexpandtab autoindent:
