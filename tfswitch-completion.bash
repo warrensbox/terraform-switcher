@@ -16,11 +16,11 @@ _tfswitch() {
 		return 0
 		;;
 	-b | --bin)
-		_filedir
+        [[ $(type -t _comp_compgen) == "function" ]] && _comp_compgen -a filedir || _filedir
 		return 0
 		;;
 	-c | --chdir | -i | --install)
-		_filedir -d
+        [[ $(type -t _comp_compgen) == "function" ]] && _comp_compgen -a filedir -d || _filedir -d
 		return 0
 		;;
 	-g | --log-level)
