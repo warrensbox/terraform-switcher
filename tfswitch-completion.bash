@@ -35,4 +35,4 @@ _tfswitch() {
 
 } && complete -F _tfswitch tfswitch
 
-# vim: filetype=bash shiftwidth=4 tabstop=4 noexpandtab autoindent:
+# vim: set filetype=bash shiftwidth=4 tabstop=4 noexpandtab autoindent:
