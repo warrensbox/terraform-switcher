@@ -41,6 +41,7 @@ archives:
       - CHANGELOG.md
       - LICENSE
       - README.md
+      - tfswitch-completion.*
     format_overrides:
       - goos: windows
         formats: ['zip']
