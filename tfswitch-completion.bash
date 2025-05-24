@@ -33,6 +33,7 @@ _tfswitch() {
 		;;
 	esac
 
-} && complete -F _tfswitch tfswitch
+}
+complete -F _tfswitch tfswitch
 
 # vim: set filetype=bash shiftwidth=4 tabstop=4 noexpandtab autoindent:
