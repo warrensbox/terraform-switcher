@@ -1,5 +1,7 @@
 # Remove once https://github.com/warrensbox/terraform-switcher/issues/537 is implemented
-# shellcheck disable=SC2207 # W: Prefer mapfile or read -a to split command output (or quote to avoid splitting).
+# - SC2015 (info): Note that A && B || C is not if-then-else. C may run when A is true.
+# - SC2207 W: Prefer mapfile or read -a to split command output (or quote to avoid splitting).
+# shellcheck disable=SC2015,SC2207
 _tfswitch() {
 	local cur prev
 	cur=${COMP_WORDS[COMP_CWORD]}
