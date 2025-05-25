@@ -30,6 +30,7 @@ docs/.bundle/**
 .sass-cache
 
 tfswitch*
+!tfswitch-completion.*
 
 build-script.sh
 
