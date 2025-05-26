@@ -108,6 +108,7 @@ brews:
     # Default is 'bin.install "program"'.
     install: |
       bin.install "tfswitch"
+      bash_completion.install "tfswitch-completion.bash" => "tfswitch"
 
 changelog:
   # Set this to true if you don't want any changelog at all.
