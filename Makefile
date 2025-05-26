@@ -43,11 +43,11 @@ version:
 
 .PHONY: vulncheck
 vulncheck:
-	@which govulncheck >/dev/null 2>&1 && govulncheck -show color ./... || echo "govulncheck not found, skipping vulnerability check"
+	@command -v govulncheck >/dev/null 2>&1 && govulncheck -show color ./... || echo "govulncheck not found, skipping vulnerability check"
 
 .PHONY: vulncheck-verbose
 vulncheck-verbose:
-	@which govulncheck >/dev/null 2>&1 && govulncheck -show traces,color,version,verbose ./... || echo "govulncheck not found, skipping vulnerability check"
+	@command -v govulncheck >/dev/null 2>&1 && govulncheck -show traces,color,version,verbose ./... || echo "govulncheck not found, skipping vulnerability check"
 
 .PHONY: install
 install: $(EXE)
