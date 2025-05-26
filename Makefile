@@ -25,7 +25,7 @@ clean:
 	rm -vrf "$(BUILDPATH)/"
 
 .PHONY: test
-test: vet $(EXE)
+test: vet vulncheck $(EXE)
 	$(GOBINARY) test -v ./...
 
 .PHONY: test-single-function
@@ -40,6 +40,14 @@ vet: version
 .PHONY: version
 version:
 	@echo "Running $(GOBINARY) ($(shell $(GOBINARY) version))"
+
+.PHONY: vulncheck
+vulncheck:
+	@which govulncheck >/dev/null 2>&1 && govulncheck -show color ./... || echo "govulncheck not found, skipping vulnerability check"
+
+.PHONY: vulncheck-verbose
+vulncheck-verbose:
+	@which govulncheck >/dev/null 2>&1 && govulncheck -show traces,color,version,verbose ./... || echo "govulncheck not found, skipping vulnerability check"
 
 .PHONY: install
 install: $(EXE)
