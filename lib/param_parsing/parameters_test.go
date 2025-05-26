@@ -388,7 +388,7 @@ func TestDryRunFlagOutput(t *testing.T) {
 		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
 	}
 
-	var re *regexp.Regexp = regexp.MustCompile("[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))")
+	re := regexp.MustCompile("[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))")
 	outNoANSI := func(str string) string {
 		return re.ReplaceAllString(str, "")
 	}(string(out))
