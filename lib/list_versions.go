@@ -210,7 +210,7 @@ func validMinorVersionFormat(version string) bool {
 	return semverRegex.MatchString(version)
 }
 
-// ShowLatestVersion show install latest stable tf version
+// ShowLatestVersion show latest stable tf version
 func ShowLatestVersion(mirrorURL string) {
 	tfversion, err := getTFLatest(mirrorURL)
 	if err != nil {
@@ -218,6 +218,21 @@ func ShowLatestVersion(mirrorURL string) {
 	}
 
 	fmt.Printf("%s\n", tfversion)
+}
+
+// ShowRequiredVersion show latest version using constraints from TF
+func ShowRequiredVersion(mirrorURL string, version string) {
+	if version == "" {
+		ShowLatestVersion(mirrorURL)
+		return
+	}
+	// Ensure version passed in valid and didn't come from an argument
+	tflist, _ := getTFList(mirrorURL, true)
+	if versionExist(version, tflist) {
+		fmt.Printf("%s\n", version)
+		return
+	}
+	logger.Fatalf("The requested version (%q) does not exist.", version)
 }
 
 // ShowLatestImplicitVersion show latest - argument (version) must be provided
