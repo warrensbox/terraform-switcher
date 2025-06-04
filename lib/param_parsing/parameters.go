@@ -146,7 +146,7 @@ func populateParams(params Params) Params {
 			// Re-init logger
 			logger = lib.InitLogger(params.LogLevel)
 
-			// Update assignment in case values changes by TOML
+			// Update assignment in case values changed by TOML
 			oldForceColor = params.ForceColor
 			oldNoColor = params.NoColor
 		}
