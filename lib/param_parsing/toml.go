@@ -23,16 +23,17 @@ func getParamsTOML(params Params) (Params, error) {
 		viperParser.SetConfigName(configfileName)
 		viperParser.AddConfigPath(params.TomlDir)
 
-		errs := viperParser.ReadInConfig() // Find and read the config file
-		if errs != nil {
-			logger.Errorf("Could not to read %q: %v", tomlPath, errs)
-			return params, errs
+		// Find and read the config file
+		if err := viperParser.ReadInConfig(); err != nil {
+			logger.Errorf("Could not to read %q: %v", tomlPath, err)
+			return params, err
 		}
 
 		reflectedParams := reflect.ValueOf(&params)
 		for _, configKey := range paramMappings {
 			description := configKey.description
 			param := configKey.param
+			ptype := configKey.ptype
 			toml := configKey.toml
 
 			if len(toml) == 0 {
@@ -48,25 +49,46 @@ func getParamsTOML(params Params) (Params, error) {
 			}
 
 			paramKey := reflect.Indirect(reflectedParams).FieldByName(param)
-			if paramKey.Kind() != reflect.String {
-				logger.Warnf("Parameter %q is not a string, skipping assignment from TOML key %q", param, toml)
+			if !paramKey.CanSet() {
+				logger.Errorf("Internal error: parameter %q cannot be set, skipping assignment from TOML key %q", param, toml)
 				continue
 			}
+
 			if viperParser.Get(toml) != nil {
-				configKeyValue := viperParser.GetString(toml)
+				configKeyValue := viperParser.Get(toml)
+
+				if reflect.TypeOf(configKeyValue).Kind() != ptype {
+					logger.Warnf(
+						"TOML key %q is not a %s but a %s, skipping assignment of %q patrameter from TOML",
+						toml, ptype.String(), reflect.TypeOf(configKeyValue).Kind(), param,
+					)
+					continue
+				}
 
 				switch toml {
 				case "bin", "install":
-					envExpandedConfigKeyValue := os.ExpandEnv(configKeyValue)
-					logger.Debugf("Expanded environment variables in %q TOML key value (if any): %q -> %q", toml, configKeyValue, envExpandedConfigKeyValue)
+					envExpandedConfigKeyValue := os.ExpandEnv(configKeyValue.(string))
+					logger.Debugf(
+						"Expanded environment variables in %q TOML key value (if any): %q -> %q",
+						toml, configKeyValue, envExpandedConfigKeyValue,
+					)
 					configKeyValue = envExpandedConfigKeyValue
 				}
 
-				logger.Debugf("%s (%q) from %q: %q", description, toml, tomlPath, configKeyValue)
-				if !paramKey.CanSet() {
-					logger.Warnf("Parameter %q cannot be set, skipping assignment from TOML key %q", param, toml)
+				logger.Debugf("%s (%q) from %q: %v", description, toml, tomlPath, configKeyValue)
+
+				switch ptype {
+				case reflect.Bool:
+					paramKey.SetBool(configKeyValue.(bool))
+				case reflect.String:
+					paramKey.SetString(configKeyValue.(string))
+				default:
+					logger.Errorf(
+						"Internal error: unhandled switch case for \"%T\" type of %q parameter (TOML key %q)",
+						ptype, param, toml,
+					)
+					continue
 				}
-				paramKey.SetString(configKeyValue)
 			}
 		}
 	}
