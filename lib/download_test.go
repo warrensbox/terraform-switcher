@@ -117,7 +117,7 @@ func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadPr
 		zipWriter := zip.NewWriter(zipFileBuffer)
 
 		executableBytes := []byte("This is the main executable")
-		zipFileContentWriter, err := zipWriter.Create("myprod")
+		zipFileContentWriter, err := zipWriter.Create("myprod") //nolint:govet
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -140,7 +140,7 @@ func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadPr
 	if downloadProductTestConfig.ZipFileChecksum == "" {
 		sha256HashWriter := sha256.New()
 		zipFileReadBuffer := new(bytes.Buffer)
-		_, err := zipFileReadBuffer.Write(downloadProductTestConfig.ZipFileContent)
+		_, err := zipFileReadBuffer.Write(downloadProductTestConfig.ZipFileContent) //nolint:govet
 		if err != nil {
 			t.Fatal(err)
 		}

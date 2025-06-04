@@ -1,3 +1,4 @@
+//nolint:staticcheck //ST1005: error strings should not be capitalized (staticcheck)
 package lib
 
 import (
@@ -246,8 +247,8 @@ func InstallLatestProductImplicitVersion(product Product, dryRun bool, requested
 	}
 	tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
 	if err == nil && tfversion != "" && !dryRun {
-		if err := install(product, tfversion, customBinaryPath, installPath, mirrorURL, arch); err != nil {
-			return fmt.Errorf("Error installing %s version %q: %v", product.GetName(), tfversion, err)
+		if errInstall := install(product, tfversion, customBinaryPath, installPath, mirrorURL, arch); errInstall != nil {
+			return fmt.Errorf("Error installing %s version %q: %v", product.GetName(), tfversion, errInstall)
 		}
 		return nil
 	}
