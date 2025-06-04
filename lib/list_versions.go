@@ -1,3 +1,4 @@
+//nolint:staticcheck //ST1005: error strings should not be capitalized (staticcheck)
 package lib
 
 import (
@@ -46,13 +47,13 @@ func getTFList(mirrorURL string, preRelease bool) ([]string, error) {
 		return nil, err
 	}
 
-	var tfVersionList tfVersionList
-	getVersionsFromBody(result, preRelease, &tfVersionList)
+	var tfVerList tfVersionList
+	getVersionsFromBody(result, preRelease, &tfVerList)
 
-	if len(tfVersionList.tflist) == 0 {
+	if len(tfVerList.tflist) == 0 {
 		logger.Errorf("Cannot get version list from mirror: %s", mirrorURL)
 	}
-	return tfVersionList.tflist, nil
+	return tfVerList.tflist, nil
 }
 
 // getTFLatest :  Get the latest terraform version given the hashicorp url

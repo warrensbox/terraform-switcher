@@ -1,3 +1,4 @@
+//nolint:staticcheck //ST1005: error strings should not be capitalized (staticcheck)
 package lib
 
 import (
@@ -159,8 +160,8 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		/* remove current symlink if exist */
 		if CheckSymlink(location.path) {
 			logger.Debugf("Clearing away symlink before re-creating it: %q", location.path)
-			if err := RemoveSymlink(location.path); err != nil {
-				return fmt.Errorf("Error removing symlink %q: %v", location.path, err)
+			if errRemoveSymlink := RemoveSymlink(location.path); errRemoveSymlink != nil {
+				return fmt.Errorf("Error removing symlink %q: %v", location.path, errRemoveSymlink)
 			}
 		}
 
