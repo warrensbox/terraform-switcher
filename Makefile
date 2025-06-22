@@ -65,6 +65,10 @@ docs-deploy:
 
 .PHONY: docs-serve
 docs-serve:
+	cd www && mkdocs serve
+
+.PHONY: docs-serve-public
+docs-serve-public:
 	cd www && mkdocs serve --dev-addr 0.0.0.0:8000
 
 .PHONY: goreleaser-release-snapshot
