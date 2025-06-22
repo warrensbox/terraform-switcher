@@ -1,13 +1,14 @@
-EXE       := tfswitch
-PKG       := github.com/warrensbox/terraform-switcher
-BUILDPATH := build
-PATH      := $(BUILDPATH):$(PATH)
-VER       ?= $(shell git ls-remote --tags --sort=version:refname git@github.com:warrensbox/terraform-switcher.git | awk '{if ($$2 ~ "\\^\\{\\}$$") next; print vers[split($$2,vers,"\\/")]}' | tail -1)
+EXE              := tfswitch
+PKG              := github.com/warrensbox/terraform-switcher
+BUILDPATH        := build
+PATH             := $(BUILDPATH):$(PATH)
+VER              ?= $(shell git ls-remote --tags --sort=version:refname git@github.com:warrensbox/terraform-switcher.git | awk '{if ($$2 ~ "\\^\\{\\}$$") next; print vers[split($$2,vers,"\\/")]}' | tail -1)
 # Managing Go installations: Installing multiple Go versions
 # https://go.dev/doc/manage-install
-GOBINARY  ?= $(shell (egrep -m1 '^go[[:space:]]+[[:digit:]]+\.' go.mod | tr -d '[:space:]' | xargs which) || echo go)
-GOOS      ?= $(shell $(GOBINARY) env GOOS)
-GOARCH    ?= $(shell $(GOBINARY) env GOARCH)
+GOBINARY         ?= $(shell (egrep -m1 '^go[[:space:]]+[[:digit:]]+\.' go.mod | tr -d '[:space:]' | xargs which) || echo go)
+GOOS             ?= $(shell $(GOBINARY) env GOOS)
+GOARCH           ?= $(shell $(GOBINARY) env GOARCH)
+CONTAINER_ENGINE ?= $(shell command -v podman || command -v docker || echo "NONE")
 
 $(EXE): version go.mod *.go lib/*.go
 	mkdir -p "$(BUILDPATH)/"
@@ -69,3 +70,24 @@ docs-serve:
 .PHONY: goreleaser-release-snapshot
 goreleaser-release-snapshot:
 	RELEASE_VERSION=$(VER) goreleaser release --config ./.goreleaser.yml --snapshot --clean
+
+.PHONY: super-linter
+super-linter:
+ifeq ($(CONTAINER_ENGINE),NONE)
+	$(error "No container engine found. Please install Podman or Docker.")
+else
+	# Keep `--env' vars below the `VALIDATE_ALL_CODEBASE' in sync with .github/workflows/super-linter.yml
+	$(CONTAINER_ENGINE) run \
+		--name super-linter \
+		--volume "$(shell git rev-parse --show-toplevel):$(shell git rev-parse --show-toplevel)" \
+		--volume "$(shell git rev-parse --git-common-dir):$(shell git rev-parse --git-common-dir)" \
+		--workdir "$(shell git rev-parse --show-toplevel)" \
+		--env GITHUB_WORKSPACE="$(shell git rev-parse --show-toplevel)" \
+		--env RUN_LOCAL=true \
+		--env VALIDATE_ALL_CODEBASE=false \
+		--env FILTER_REGEX_EXCLUDE='^$$PWD/test-data/' \
+		--env BASH_EXEC_IGNORE_LIBRARIES=true \
+		--env VALIDATE_GO=false \
+		--env VALIDATE_JSCPD=false \
+		--rm ghcr.io/super-linter/super-linter:slim-latest
+endif
