@@ -1,4 +1,5 @@
 <!-- markdownlint-disable MD041 -->
+
 ## Environment variables
 
 You can set environment variables for `tfswitch` to override some configurations:
