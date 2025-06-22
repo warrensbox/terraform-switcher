@@ -117,3 +117,17 @@ tfswitch --arch amd64
 above), it will be not downloaded. Downloaded files are stored without the
 architecture in the filename. Format of the filenames in download directory:
 `<product>_<version>`. E.g. `terraform_1.10.4`.
+
+## Disable color output / Force color output
+
+`tfswitch` defaults to color output if the terminal supports it and if the TTY
+is allocated (interactive session).
+
+Disabling color output can be useful in non-interactive sessions, such as when
+running scripts in CI/CD pipeline or when piping output to other commands.
+
+If you want to disable color output you can use the `--no-color` (`-k`) flag.  
+If you want to force color output even if the TTY is not allocated
+(non-interactive session), you can use the `--force-color` (`-K`) flag.
+
+**NOTE**: the `--no-color` takes precedence over the `--force-color` flag.
