@@ -54,9 +54,12 @@ install: $(EXE)
 	mkdir -p ~/bin
 	mv "$(BUILDPATH)/$(EXE)" ~/bin/
 
-.PHONY: docs
-docs:
-	@#cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+.PHONY: docs-build
+docs-build:
+	cd www && mkdocs build
+
+.PHONY: docs-deploy
+docs-deploy:
 	cd www && mkdocs gh-deploy --force
 
 .PHONY: goreleaser-release-snapshot
