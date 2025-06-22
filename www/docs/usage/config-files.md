@@ -53,8 +53,7 @@ tools which use it_
 
 `tfswitch` defaults to install to the `/usr/local/bin/` directory (and falls
 back to `$HOME/bin/` otherwise). The target filename is resolved automatically
-based on the `product` parameter ([see
-below](#setting-product-using-tfswitchtoml-file)).  
+based on the `product` parameter ([see below](#setting-product-using-tfswitchtoml-file)).  
 If you do not have write access to `/usr/local/bin/` directory, you can use the
 `.tfswitch.toml` file to specify a **full installation path** (directory +
 filename) Ex: `$HOME/bin/terraform`  
@@ -72,7 +71,7 @@ path for the installation:
    must be a first level pointer inside the directory from above). Ex:
    `tfswitch -b "$HOME/bin/terraform" 0.10.8`  
    • If target directory for custom binary path does not exist, `tfswitch`
-     falls back to `$HOME/bin/` directory
+   falls back to `$HOME/bin/` directory
 4. Optionally, you can create a `.tfswitch.toml` file in your home directory
    (`~/.tfswitch.toml`)
 5. Your `~/.tfswitch.toml` file should have a line like this:
