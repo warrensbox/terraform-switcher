@@ -62,6 +62,10 @@ docs-build:
 docs-deploy:
 	cd www && mkdocs gh-deploy --force
 
+.PHONY: docs-serve
+docs-serve:
+	cd www && mkdocs serve --dev-addr 0.0.0.0:8000
+
 .PHONY: goreleaser-release-snapshot
 goreleaser-release-snapshot:
 	RELEASE_VERSION=$(VER) goreleaser release --config ./.goreleaser.yml --snapshot --clean
