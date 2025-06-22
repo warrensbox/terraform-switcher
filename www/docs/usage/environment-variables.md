@@ -4,6 +4,27 @@
 
 You can set environment variables for `tfswitch` to override some configurations:
 
+### `FORCE_COLOR`
+
+`tfswitch` defaults to color output if the terminal supports it and if the TTY
+is allocated (interactive session).  
+`FORCE_COLOR` environment variable can be set to force color output even if the
+TTY is **not** allocated (non-interactive session).
+
+- Has lower precedence than `NO_COLOR` environment variable (see [`NO_COLOR`](#no_color)).
+- Any non-empty value enables color output.
+
+### `NO_COLOR`
+
+`tfswitch` defaults to color output if the terminal supports it and if the TTY
+is allocated (interactive session).  
+`NO_COLOR` environment variable can be set to disable color output forcefully.
+
+- Can be useful in CI/CD pipelines or other non-interactive sessions where ASCII
+  color codes are not desired or are not supported.
+- Has higher precedence than `FORCE_COLOR` environment variable (see [`FORCE_COLOR`](#force_color)).
+- Any non-empty value disables color output.
+
 ### `TF_ARCH`
 
 `TF_ARCH` environment variable can be set to override default CPU architecture
