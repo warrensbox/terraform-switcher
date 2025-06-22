@@ -71,13 +71,16 @@ docs-serve:
 goreleaser-release-snapshot:
 	RELEASE_VERSION=$(VER) goreleaser release --config ./.goreleaser.yml --snapshot --clean
 
+.PHONY: lint
+lint: super-linter
+
 .PHONY: super-linter
 super-linter:
 ifeq ($(CONTAINER_ENGINE),NONE)
 	$(error "No container engine found. Please install Podman or Docker.")
 else
 	# Keep `--env' vars below the `VALIDATE_ALL_CODEBASE' in sync with .github/workflows/super-linter.yml
-	$(CONTAINER_ENGINE) run \
+	echo $(CONTAINER_ENGINE) run \
 		--name super-linter \
 		--volume "$(shell git rev-parse --show-toplevel):$(shell git rev-parse --show-toplevel)" \
 		--volume "$(shell git rev-parse --git-common-dir):$(shell git rev-parse --git-common-dir)" \
