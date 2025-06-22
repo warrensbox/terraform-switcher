@@ -18,6 +18,7 @@ nav:
   - Usage:
       - General: usage/general.md
       - Command line: usage/commandline.md
+      - Environment variables: usage/environment-variables.md
       - Config files: usage/config-files.md
       - CI/CD: usage/ci-cd.md
   - CI/CD Examples: Continuous-Integration.md
