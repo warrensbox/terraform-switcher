@@ -447,3 +447,22 @@ func TestForceColorFlagOutput(t *testing.T) {
 		t.Log("Success: found ANSI color codes in output")
 	}
 }
+
+func TestNoAndForceColorFlagsOutput(t *testing.T) {
+	flagNameForceColor := "--force-color"
+	flagNameNoColor := "--no-color"
+
+	expectedOutput := "FATAL (init) Cannot force color and disable color at the same time. Please choose either of them."
+
+	goCommandArgs := []string{"run", "../../main.go", "--dry-run", flagNameForceColor, flagNameNoColor, "1.10.5"}
+
+	t.Logf("Testing %q and %q flags both present", flagNameForceColor, flagNameNoColor)
+
+	out, _ := exec.Command("go", goCommandArgs...).CombinedOutput()
+
+	if !strings.Contains(string(out), expectedOutput) {
+		t.Errorf("Expected %q, got: %q", expectedOutput, out)
+	} else {
+		t.Logf("Success: %q", expectedOutput)
+	}
+}

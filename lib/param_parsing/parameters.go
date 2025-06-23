@@ -137,7 +137,7 @@ func populateParams(params Params) Params {
 			}
 
 			if params.ForceColor && params.NoColor {
-				logger.Fatal("(toml) Cannot force color and disable color at the same time. Please choose one of them.")
+				logger.Fatal("(toml) Cannot force color and disable color at the same time. Please choose either of them.")
 			}
 
 			if !oldForceColor && params.ForceColor {
@@ -157,7 +157,7 @@ func populateParams(params Params) Params {
 		params = GetParamsFromEnvironment(params)
 
 		if params.ForceColor && params.NoColor {
-			logger.Fatal("(env) Cannot force color and disable color at the same time. Please choose one of them.")
+			logger.Fatal("(env) Cannot force color and disable color at the same time. Please choose either of them.")
 		}
 
 		if !oldForceColor && params.ForceColor {
