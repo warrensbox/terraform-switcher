@@ -10,6 +10,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/mattn/go-isatty"
 	"github.com/pborman/getopt"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
@@ -427,24 +428,28 @@ func TestNoColorFlagOutput(t *testing.T) {
 
 func TestForceColorFlagOutput(t *testing.T) {
 	flagName := "--force-color"
-	goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", "1.10.5"}
+	if isatty.IsTerminal(os.Stdout.Fd()) {
+		goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", "1.10.5"}
 
-	t.Logf("Testing %q flag output", flagName)
+		t.Logf("Testing %q flag output", flagName)
 
-	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
-	if err != nil {
-		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
-	}
+		out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+		if err != nil {
+			t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+		}
 
-	matched, err := regexp.MatchString(ansiCodesRegex, string(out))
-	if err != nil {
-		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
-	}
+		matched, err := regexp.MatchString(ansiCodesRegex, string(out))
+		if err != nil {
+			t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+		}
 
-	if !matched {
-		t.Fatalf("Expected ANSI color codes in output, but found none: %q", string(out))
+		if !matched {
+			t.Fatalf("Expected ANSI color codes in output, but found none: %q", string(out))
+		} else {
+			t.Log("Success: found ANSI color codes in output")
+		}
 	} else {
-		t.Log("Success: found ANSI color codes in output")
+		t.Logf("Skipping test for %q flag as TTY is not allocated", flagName)
 	}
 }
 
