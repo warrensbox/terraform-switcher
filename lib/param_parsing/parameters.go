@@ -110,7 +110,9 @@ func populateParams(params Params) Params {
 
 	if isNotShortRun {
 		if params.ForceColor && params.NoColor {
-			logger.Fatal("(init) Cannot force color and disable color at the same time. Please choose one of them.")
+			os.Setenv("NO_COLOR", "true") // Prefer no color in this case
+			logger = lib.InitLogger(params.LogLevel)
+			logger.Fatal("(init) Cannot force color and disable color at the same time. Please choose either of them.")
 		}
 
 		if params.ForceColor {
