@@ -3,6 +3,5 @@ bin = "$BIN_DIR_FROM_TOML/terraform_from_toml"
 install = "$INSTALL_DIR_FROM_TOML"
 default-version = "1.5.4"
 log-level = "NOTICE"
-no-color = false
 product = "opentofu"
 version = "1.6.2"
