@@ -449,7 +449,7 @@ func TestForceColorFlagOutput(t *testing.T) {
 			t.Log("Success: found ANSI color codes in output")
 		}
 	} else {
-		t.Logf("Skipping test for %q flag as terminal doesn't support colors", flagName)
+		t.Skipf("Skipping test for %q flag as terminal doesn't support colors", flagName)
 	}
 }
 
