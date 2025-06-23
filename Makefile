@@ -84,7 +84,7 @@ ifeq ($(CONTAINER_ENGINE),NONE)
 	$(error "No container engine found. Please install Podman or Docker.")
 else
 	# Keep `--env' vars below the `VALIDATE_ALL_CODEBASE' in sync with .github/workflows/super-linter.yml
-	echo $(CONTAINER_ENGINE) run \
+	$(CONTAINER_ENGINE) run \
 		--name super-linter \
 		--volume "$(shell git rev-parse --show-toplevel):$(shell git rev-parse --show-toplevel)" \
 		--volume "$(shell git rev-parse --git-common-dir):$(shell git rev-parse --git-common-dir)" \

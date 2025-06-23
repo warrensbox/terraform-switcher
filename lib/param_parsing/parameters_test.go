@@ -463,7 +463,7 @@ func TestNoAndForceColorFlagsOutput(t *testing.T) {
 
 	t.Logf("Testing %q and %q flags both present", flagNameForceColor, flagNameNoColor)
 
-	out, _ := exec.Command("go", goCommandArgs...).CombinedOutput()
+	out, _ := exec.Command("go", goCommandArgs...).CombinedOutput() // nolint:errcheck // We want to test the output even if it fails
 
 	if !strings.Contains(string(out), expectedOutput) {
 		t.Errorf("Expected %q, got: %q", expectedOutput, out)

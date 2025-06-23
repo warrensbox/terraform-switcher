@@ -165,7 +165,7 @@ func TestNoAndForceColorEnvVars(t *testing.T) {
 
 	t.Logf("Testing %q and %q vars both present", envVarNameForceColor, envVarNameNoColor)
 
-	out, _ := exec.Command("go", goCommandArgs...).CombinedOutput()
+	out, _ := exec.Command("go", goCommandArgs...).CombinedOutput() // nolint:errcheck // We want to test the output even if it fails
 
 	_ = os.Unsetenv(envVarNameForceColor)
 	_ = os.Unsetenv(envVarNameNoColor)
