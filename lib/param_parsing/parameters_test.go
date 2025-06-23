@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mattn/go-isatty"
+	"github.com/gookit/color"
 	"github.com/pborman/getopt"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
@@ -428,7 +428,7 @@ func TestNoColorFlagOutput(t *testing.T) {
 
 func TestForceColorFlagOutput(t *testing.T) {
 	flagName := "--force-color"
-	if isatty.IsTerminal(os.Stdout.Fd()) {
+	if color.SupportColor() {
 		goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", "1.10.5"}
 
 		t.Logf("Testing %q flag output", flagName)
@@ -449,7 +449,7 @@ func TestForceColorFlagOutput(t *testing.T) {
 			t.Log("Success: found ANSI color codes in output")
 		}
 	} else {
-		t.Logf("Skipping test for %q flag as TTY is not allocated", flagName)
+		t.Logf("Skipping test for %q flag as terminal doesn't support colors", flagName)
 	}
 }
 

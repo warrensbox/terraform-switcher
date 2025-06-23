@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gookit/color"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
@@ -106,7 +107,7 @@ func TestNoColorEnvVar(t *testing.T) {
 	_ = os.Setenv(envVarName, "true")
 	goCommandArgs := []string{"run", "../../main.go", "--dry-run", "1.10.5"}
 
-	t.Logf("Testing %q var", envVarName)
+	t.Logf("Testing %q env var", envVarName)
 
 	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
 	if err != nil {
@@ -129,27 +130,31 @@ func TestNoColorEnvVar(t *testing.T) {
 
 func TestForceColorEnvVar(t *testing.T) {
 	envVarName := "FORCE_COLOR"
-	_ = os.Setenv(envVarName, "true")
-	goCommandArgs := []string{"run", "../../main.go", "--dry-run", "1.10.5"}
+	if color.SupportColor() {
+		_ = os.Setenv(envVarName, "true")
+		goCommandArgs := []string{"run", "../../main.go", "--dry-run", "1.10.5"}
 
-	t.Logf("Testing %q var", envVarName)
+		t.Logf("Testing %q env var", envVarName)
 
-	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
-	if err != nil {
-		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
-	}
+		out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+		if err != nil {
+			t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+		}
 
-	_ = os.Unsetenv(envVarName)
+		_ = os.Unsetenv(envVarName)
 
-	matched, err := regexp.MatchString(ansiCodesRegex, string(out))
-	if err != nil {
-		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
-	}
+		matched, err := regexp.MatchString(ansiCodesRegex, string(out))
+		if err != nil {
+			t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+		}
 
-	if !matched {
-		t.Errorf("Expected ANSI color codes in output, but found none: %q", string(out))
+		if !matched {
+			t.Errorf("Expected ANSI color codes in output, but found none: %q", string(out))
+		} else {
+			t.Log("Success: found ANSI color codes in output")
+		}
 	} else {
-		t.Log("Success: found ANSI color codes in output")
+		t.Logf("Skipping test for %q env var as terminal doesn't support colors", envVarName)
 	}
 }
 
@@ -163,7 +168,7 @@ func TestNoAndForceColorEnvVars(t *testing.T) {
 
 	goCommandArgs := []string{"run", "../../main.go", "--dry-run", "1.10.5"}
 
-	t.Logf("Testing %q and %q vars both present", envVarNameForceColor, envVarNameNoColor)
+	t.Logf("Testing %q and %q env vars both present", envVarNameForceColor, envVarNameNoColor)
 
 	out, _ := exec.Command("go", goCommandArgs...).CombinedOutput() // nolint:errcheck // We want to test the output even if it fails
 
