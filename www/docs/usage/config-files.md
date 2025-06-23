@@ -136,7 +136,8 @@ log-level = "INFO"
 CPU architecture of the downloaded binaries defaults to `tfswitch`'s host
 architecture.  
 The `.tfswitch.toml` file can be configured with a `arch` parameter for
-`tfswitch` to download binary of non-default architecture type:
+`tfswitch` to download binary of the CPU architecture that doens't match the
+host:
 
 ```toml
 arch = "arm64"

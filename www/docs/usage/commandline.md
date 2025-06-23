@@ -98,15 +98,15 @@ tfswitch -i /opt/terraform
 **NOTE**: The directory passed in `-i`/`--install` must be created before
 running `tfswitch`
 
-## Install binary for non-default architecture
+## Install binary for CPU architecture that doens't match the host
 
-By default `tfswitch` will download the binary for the architecture of the host
-machine.
+By default `tfswitch` will download the binary for the CPU architecture of the
+host machine.
 
-If you want to download the binary for non-default CPU architecture then you
-can provide the `-A` or `--arch` command line argument to download binaries for
-custom CPU architecture. Useful if you need to override binary architecture for
-whatever reason.
+If you want to download the binary for CPU architecture that doens't match the
+host then you can provide the `-A` or `--arch` command line argument to
+download binaries for custom CPU architecture. Useful if you need to override
+binary architecture for whatever reason.
 
 ```bash
 tfswitch --arch amd64
