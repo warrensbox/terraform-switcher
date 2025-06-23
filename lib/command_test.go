@@ -15,7 +15,7 @@ func TestNewCommand(t *testing.T) {
 	if reflect.ValueOf(cmd).Kind() == reflect.Ptr {
 		t.Logf("Value returned is a pointer %v [expected]", cmd)
 	} else {
-		t.Errorf("Value returned is not a pointer %v [expected", cmd)
+		t.Errorf("Value returned is not a pointer %v [unexpected]", cmd)
 	}
 }
 
