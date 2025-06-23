@@ -11,8 +11,9 @@ is allocated (interactive session).
 `FORCE_COLOR` environment variable can be set to force color output even if the
 TTY is **not** allocated (non-interactive session).
 
-- Has lower precedence than `NO_COLOR` environment variable (see [`NO_COLOR`](#no_color)).
 - Any non-empty value enables color output.
+- Is mutually exclusive with `NO_COLOR` environment variable (see
+  [`NO_COLOR`](#no_color)).
 
 ### `NO_COLOR`
 
@@ -22,8 +23,9 @@ is allocated (interactive session).
 
 - Can be useful in CI/CD pipelines or other non-interactive sessions where ASCII
   color codes are not desired or are not supported.
-- Has higher precedence than `FORCE_COLOR` environment variable (see [`FORCE_COLOR`](#force_color)).
 - Any non-empty value disables color output.
+- Is mutually exclusive with `FORCE_COLOR` environment variable (see
+  [`FORCE_COLOR`](#force_color)).
 
 ### `TF_ARCH`
 
