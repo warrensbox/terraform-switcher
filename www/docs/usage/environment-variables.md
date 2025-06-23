@@ -21,8 +21,8 @@ TTY is **not** allocated (non-interactive session).
 is allocated (interactive session).  
 `NO_COLOR` environment variable can be set to disable color output forcefully.
 
-- Can be useful in CI/CD pipelines or other non-interactive sessions where ASCII
-  color codes are not desired or are not supported.
+- Can be useful in CI/CD pipelines or other non-interactive sessions where ANSI
+  color (escape) codes are not desired or are not supported.
 - Any non-empty value disables color output.
 - Is mutually exclusive with `FORCE_COLOR` environment variable (see
   [`FORCE_COLOR`](#force_color)).
