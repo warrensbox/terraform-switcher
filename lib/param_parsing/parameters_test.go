@@ -14,6 +14,8 @@ import (
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
+var ansiCodesRegex = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
+
 func TestGetParameters_arch_from_args(t *testing.T) {
 	expected := "arch_from_args"
 	os.Args = []string{"cmd", "--arch=" + expected}
@@ -388,7 +390,7 @@ func TestDryRunFlagOutput(t *testing.T) {
 		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
 	}
 
-	re := regexp.MustCompile("[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))")
+	re := regexp.MustCompile(ansiCodesRegex)
 	outNoANSI := func(str string) string {
 		return re.ReplaceAllString(str, "")
 	}(string(out))
@@ -398,4 +400,52 @@ func TestDryRunFlagOutput(t *testing.T) {
 	}
 
 	t.Logf("Success: %q", outNoANSI)
+}
+
+func TestNoColorFlagOutput(t *testing.T) {
+	flagName := "--no-color"
+	testVersion := "1.10.5"
+	goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", testVersion}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	matched, err := regexp.MatchString(ansiCodesRegex, string(out))
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if matched {
+		t.Fatalf("Expected no ANSI color codes in output, but found some: %q", string(out))
+	} else {
+		t.Log("Success: no ANSI color codes in output")
+	}
+}
+
+func TestForceColorFlagOutput(t *testing.T) {
+	flagName := "--force-color"
+	testVersion := "1.10.5"
+	goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", testVersion}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	matched, err := regexp.MatchString(ansiCodesRegex, string(out))
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if !matched {
+		t.Fatalf("Expected ANSI color codes in output, but found none: %q", string(out))
+	} else {
+		t.Log("Success: found ANSI color codes in output")
+	}
 }
