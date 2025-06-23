@@ -105,6 +105,12 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 		t.Error("LogLevel Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
 
+	expectedBool := false
+	actualBool := params.NoColor
+	if actualBool != expectedBool {
+		t.Errorf("NoColor Param was not as expected. Actual: %v, Expected: %v", actualBool, expectedBool)
+	}
+
 	os.Unsetenv("BIN_DIR_FROM_TOML")
 	os.Unsetenv("INSTALL_DIR_FROM_TOML")
 
@@ -116,7 +122,7 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	expected := "../../test-data/integration-tests/test_tfswitchtoml"
-	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin", "--product=terraform", "--arch=arch_from_args", "1.6.0"}
+	os.Args = []string{"cmd", "--chdir=" + expected, "--bin=/usr/test/bin", "--product=terraform", "--arch=arch_from_args", "--no-color", "1.6.0"}
 	params := Params{}
 	params = initParams(params)
 	params.TomlDir = expected
@@ -149,6 +155,12 @@ func TestGetParameters_toml_params_are_overridden_by_cli(t *testing.T) {
 	actual = params.Arch
 	if actual != expected {
 		t.Error("Arch Param was not as expected. Actual: " + actual + ", Expected: " + expected)
+	}
+
+	expectedBool := true
+	actualBool := params.NoColor
+	if actualBool != expectedBool {
+		t.Errorf("NoColor Param was not as expected. Actual: %v, Expected: %v", actualBool, expectedBool)
 	}
 
 	t.Cleanup(func() {
@@ -353,10 +365,10 @@ func TestVersionFlagOutput(t *testing.T) {
 	}
 
 	if !strings.HasPrefix(string(out), expectedOutput) {
-		t.Fatalf("Expected %q, got: %q", expectedOutput, string(out))
+		t.Errorf("Expected %q, got: %q", expectedOutput, string(out))
+	} else {
+		t.Logf("Success: %q", string(out))
 	}
-
-	t.Logf("Success: %q", string(out))
 }
 
 func TestHelpFlagOutput(t *testing.T) {
@@ -372,10 +384,10 @@ func TestHelpFlagOutput(t *testing.T) {
 	}
 
 	if !strings.HasPrefix(string(out), expectedOutput) {
-		t.Fatalf("Expected %q, got: %q", expectedOutput, string(out))
+		t.Errorf("Expected %q, got: %q", expectedOutput, string(out))
+	} else {
+		t.Logf("Success: %q", string(out))
 	}
-
-	t.Logf("Success: %q", string(out))
 }
 
 func TestDryRunFlagOutput(t *testing.T) {
@@ -397,10 +409,10 @@ func TestDryRunFlagOutput(t *testing.T) {
 	}(string(out))
 
 	if !strings.HasSuffix(outNoANSI, expectedOutput) {
-		t.Fatalf("Expected %q, got: %q", expectedOutput, outNoANSI)
+		t.Errorf("Expected %q, got: %q", expectedOutput, outNoANSI)
+	} else {
+		t.Logf("Success: %q", outNoANSI)
 	}
-
-	t.Logf("Success: %q", outNoANSI)
 }
 
 func TestNoColorFlagOutput(t *testing.T) {
@@ -420,7 +432,7 @@ func TestNoColorFlagOutput(t *testing.T) {
 	}
 
 	if matched {
-		t.Fatalf("Expected no ANSI color codes in output, but found some: %q", string(out))
+		t.Errorf("Expected no ANSI color codes in output, but found some: %q", string(out))
 	} else {
 		t.Log("Success: no ANSI color codes in output")
 	}
@@ -444,7 +456,7 @@ func TestForceColorFlagOutput(t *testing.T) {
 		}
 
 		if !matched {
-			t.Fatalf("Expected ANSI color codes in output, but found none: %q", string(out))
+			t.Errorf("Expected ANSI color codes in output, but found none: %q", string(out))
 		} else {
 			t.Log("Success: found ANSI color codes in output")
 		}
@@ -463,7 +475,10 @@ func TestNoAndForceColorFlagsOutput(t *testing.T) {
 
 	t.Logf("Testing %q and %q flags both present", flagNameForceColor, flagNameNoColor)
 
-	out, _ := exec.Command("go", goCommandArgs...).CombinedOutput() // nolint:errcheck // We want to test the output even if it fails
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput() // nolint:errcheck // We want to test the output even if it fails
+	if err == nil {
+		t.Fatalf("Expected an error, but got none. Output: %q", string(out))
+	}
 
 	if !strings.Contains(string(out), expectedOutput) {
 		t.Errorf("Expected %q, got: %q", expectedOutput, out)
