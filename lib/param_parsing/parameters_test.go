@@ -404,8 +404,7 @@ func TestDryRunFlagOutput(t *testing.T) {
 
 func TestNoColorFlagOutput(t *testing.T) {
 	flagName := "--no-color"
-	testVersion := "1.10.5"
-	goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", testVersion}
+	goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", "1.10.5"}
 
 	t.Logf("Testing %q flag output", flagName)
 
@@ -428,8 +427,7 @@ func TestNoColorFlagOutput(t *testing.T) {
 
 func TestForceColorFlagOutput(t *testing.T) {
 	flagName := "--force-color"
-	testVersion := "1.10.5"
-	goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", testVersion}
+	goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", "1.10.5"}
 
 	t.Logf("Testing %q flag output", flagName)
 
