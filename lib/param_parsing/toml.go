@@ -59,7 +59,7 @@ func getParamsTOML(params Params) (Params, error) {
 
 				if reflect.TypeOf(configKeyValue).Kind() != ptype {
 					logger.Warnf(
-						"TOML key %q is not a %s but a %s, skipping assignment of %q patrameter from TOML",
+						"TOML key %q is not a %s but a %s, skipping assignment of %q parameter from TOML",
 						toml, ptype.String(), reflect.TypeOf(configKeyValue).Kind(), param,
 					)
 					continue
