@@ -10,9 +10,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gookit/color"
 	"github.com/pborman/getopt"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
+
+var ansiCodesRegex = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
 
 func TestGetParameters_arch_from_args(t *testing.T) {
 	expected := "arch_from_args"
@@ -100,6 +103,12 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 	actual = params.LogLevel
 	if actual != expected {
 		t.Error("LogLevel Param was not as expected. Actual: " + actual + ", Expected: " + expected)
+	}
+
+	expectedBool := false
+	actualBool := params.NoColor
+	if actualBool != expectedBool {
+		t.Errorf("NoColor Param was not as expected. Actual: %v, Expected: %v", actualBool, expectedBool)
 	}
 
 	os.Unsetenv("BIN_DIR_FROM_TOML")
@@ -350,10 +359,10 @@ func TestVersionFlagOutput(t *testing.T) {
 	}
 
 	if !strings.HasPrefix(string(out), expectedOutput) {
-		t.Fatalf("Expected %q, got: %q", expectedOutput, string(out))
+		t.Errorf("Expected %q, got: %q", expectedOutput, string(out))
+	} else {
+		t.Logf("Success: %q", string(out))
 	}
-
-	t.Logf("Success: %q", string(out))
 }
 
 func TestHelpFlagOutput(t *testing.T) {
@@ -369,10 +378,10 @@ func TestHelpFlagOutput(t *testing.T) {
 	}
 
 	if !strings.HasPrefix(string(out), expectedOutput) {
-		t.Fatalf("Expected %q, got: %q", expectedOutput, string(out))
+		t.Errorf("Expected %q, got: %q", expectedOutput, string(out))
+	} else {
+		t.Logf("Success: %q", string(out))
 	}
-
-	t.Logf("Success: %q", string(out))
 }
 
 func TestDryRunFlagOutput(t *testing.T) {
@@ -388,14 +397,86 @@ func TestDryRunFlagOutput(t *testing.T) {
 		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
 	}
 
-	re := regexp.MustCompile("[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))")
+	re := regexp.MustCompile(ansiCodesRegex)
 	outNoANSI := func(str string) string {
 		return re.ReplaceAllString(str, "")
 	}(string(out))
 
 	if !strings.HasSuffix(outNoANSI, expectedOutput) {
-		t.Fatalf("Expected %q, got: %q", expectedOutput, outNoANSI)
+		t.Errorf("Expected %q, got: %q", expectedOutput, outNoANSI)
+	} else {
+		t.Logf("Success: %q", outNoANSI)
+	}
+}
+
+func TestNoColorFlagOutput(t *testing.T) {
+	flagName := "--no-color"
+	goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", "1.10.5"}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
 	}
 
-	t.Logf("Success: %q", outNoANSI)
+	matched, err := regexp.MatchString(ansiCodesRegex, string(out))
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if matched {
+		t.Errorf("Expected no ANSI color codes in output, but found some: %q", string(out))
+	} else {
+		t.Log("Success: no ANSI color codes in output")
+	}
+}
+
+func TestForceColorFlagOutput(t *testing.T) {
+	flagName := "--force-color"
+	if color.SupportColor() {
+		goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", "1.10.5"}
+
+		t.Logf("Testing %q flag output", flagName)
+
+		out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+		if err != nil {
+			t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+		}
+
+		matched, err := regexp.MatchString(ansiCodesRegex, string(out))
+		if err != nil {
+			t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+		}
+
+		if !matched {
+			t.Errorf("Expected ANSI color codes in output, but found none: %q", string(out))
+		} else {
+			t.Log("Success: found ANSI color codes in output")
+		}
+	} else {
+		t.Skipf("Skipping test for %q flag as terminal doesn't support colors", flagName)
+	}
+}
+
+func TestNoAndForceColorFlagsOutput(t *testing.T) {
+	flagNameForceColor := "--force-color"
+	flagNameNoColor := "--no-color"
+
+	expectedOutput := "FATAL (init) Cannot force color and disable color at the same time. Please choose either of them."
+
+	goCommandArgs := []string{"run", "../../main.go", "--dry-run", flagNameForceColor, flagNameNoColor, "1.10.5"}
+
+	t.Logf("Testing %q and %q flags both present", flagNameForceColor, flagNameNoColor)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput() // nolint:errcheck // We want to test the output even if it fails
+	if err == nil {
+		t.Fatalf("Expected an error, but got none. Output: %q", string(out))
+	}
+
+	if !strings.Contains(string(out), expectedOutput) {
+		t.Errorf("Expected %q, got: %q", expectedOutput, out)
+	} else {
+		t.Logf("Success: %q", expectedOutput)
+	}
 }

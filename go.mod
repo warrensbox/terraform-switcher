@@ -12,6 +12,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.23.0
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20250401063509-d2d12f9a63bb
 	github.com/manifoldco/promptui v0.9.0
+	github.com/mattn/go-isatty v0.0.20
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pborman/getopt v1.1.0
 	github.com/spf13/viper v1.20.1
