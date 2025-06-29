@@ -40,16 +40,14 @@ type Params struct {
 	Version          string
 }
 
-type paramMapping struct {
+// This is used to automatically instate Environment variables and TOML keys
+var paramMappings = []struct {
 	description string
 	env         string
 	param       string
 	ptype       reflect.Kind
 	toml        string
-}
-
-// This is used to automatically instate Environment variables and TOML keys
-var paramMappings = []paramMapping{
+}{
 	{param: "Arch", ptype: reflect.String, env: "TF_ARCH", toml: "arch", description: "CPU architecture"},
 	{param: "CustomBinaryPath", ptype: reflect.String, env: "TF_BINARY_PATH", toml: "bin", description: "Custom binary path"},
 	{param: "DefaultVersion", ptype: reflect.String, env: "TF_DEFAULT_VERSION", toml: "default-version", description: "Default version"},
