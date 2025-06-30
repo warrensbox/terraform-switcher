@@ -53,7 +53,7 @@ tools which use it_
 
 `tfswitch` defaults to install to the `/usr/local/bin/` directory (and falls
 back to `$HOME/bin/` otherwise). The target filename is resolved automatically
-based on the `product` parameter ([see below](#setting-product-terarform-or-opentofu)).  
+based on the `product` parameter ([see below](#setting-product-base-tool-name)).  
 If you do not have write access to `/usr/local/bin/` directory, you can use the
 `.tfswitch.toml` file to specify a **full installation path** (directory +
 filename) Ex: `$HOME/bin/terraform`  
@@ -82,12 +82,12 @@ path for the installation:
 Below is an example for `$HOME/.tfswitch.toml` on Windows:
 
 ```toml
-bin = "C:\\Users\\<%USRNAME%>\\bin\\terraform.exe"
+bin = "C:\\Users\\<%USERNAME%>\\bin\\terraform.exe"
 ```
 
 ### Setting default (fallback) version
 
-By default, if `tfswsitch` is unable to determine the version to use, it errors
+By default, if `tfswitch` is unable to determine the version to use, it errors
 out.  
 The `.tfswitch.toml` file can be configured with a `default-version` parameter
 for `tfswitch` to use a particular version, if no other sources of versions are
@@ -97,7 +97,7 @@ found
 default-version = "1.5.4"
 ```
 
-### Setting product (`terarform` or `opentofu`)
+### Setting product (base tool) name
 
 `tfswitch` defaults to install Terraform binaries.  
 The `.tfswitch.toml` file can be configured with a `product` parameter for
