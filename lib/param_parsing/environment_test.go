@@ -110,11 +110,10 @@ func TestNoColorEnvVar(t *testing.T) {
 	t.Logf("Testing %q env var", envVarName)
 
 	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	_ = os.Unsetenv(envVarName)
 	if err != nil {
 		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
 	}
-
-	_ = os.Unsetenv(envVarName)
 
 	matched, err := regexp.MatchString(ansiCodesRegex, string(out))
 	if err != nil {
@@ -137,11 +136,10 @@ func TestForceColorEnvVar(t *testing.T) {
 		t.Logf("Testing %q env var", envVarName)
 
 		out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+		_ = os.Unsetenv(envVarName)
 		if err != nil {
 			t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
 		}
-
-		_ = os.Unsetenv(envVarName)
 
 		matched, err := regexp.MatchString(ansiCodesRegex, string(out))
 		if err != nil {
