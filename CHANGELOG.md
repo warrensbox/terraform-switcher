@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Other
 
-- docs: Update CHANGELOG with `v1.4.6` [#595](https://github.com/warrensbox/terraform-switcher/pull/595) ([yermulnik](https://github.com/yermulnik))
+- docs: Update CHANGELOG with `v1.4.6` [#596](https://github.com/warrensbox/terraform-switcher/pull/596) ([yermulnik](https://github.com/yermulnik))
 - chore(`Makefile`): Add `govulncheck` target [#593](https://github.com/warrensbox/terraform-switcher/pull/593) ([yermulnik](https://github.com/yermulnik))
 - chore(`.github/linters/.golangci.yml`): Sync config with super-linter [#592](https://github.com/warrensbox/terraform-switcher/pull/592) ([yermulnik](https://github.com/yermulnik))
 - chore(goreleaser): Brews: install Bash completion script [#590](https://github.com/warrensbox/terraform-switcher/pull/590) ([yermulnik](https://github.com/yermulnik))
