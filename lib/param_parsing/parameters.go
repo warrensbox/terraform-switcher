@@ -3,7 +3,9 @@ package param_parsing
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 
@@ -18,6 +20,7 @@ type Params struct {
 	CustomBinaryPath string
 	DefaultVersion   string
 	DryRun           bool
+	ForceColor       bool
 	HelpFlag         bool
 	InstallPath      string
 	LatestFlag       bool
@@ -26,32 +29,34 @@ type Params struct {
 	ListAllFlag      bool
 	LogLevel         string
 	MirrorURL        string
+	NoColor          bool
+	ProductEntity    lib.Product
+	Product          string
 	ShowLatestFlag   bool
 	ShowLatestPre    string
 	ShowLatestStable string
-	Product          string
-	ProductEntity    lib.Product
 	TomlDir          string
-	Version          string
 	VersionFlag      bool
-}
-
-type paramMapping struct {
-	description string
-	env         string
-	param       string
-	toml        string
+	Version          string
 }
 
 // This is used to automatically instate Environment variables and TOML keys
-var paramMappings = []paramMapping{
-	{param: "Arch", env: "TF_ARCH", toml: "arch", description: "CPU architecture"},
-	{param: "CustomBinaryPath", env: "TF_BINARY_PATH", toml: "bin", description: "Custom binary path"},
-	{param: "DefaultVersion", env: "TF_DEFAULT_VERSION", toml: "default-version", description: "Default version"},
-	{param: "InstallPath", env: "TF_INSTALL_PATH", toml: "install", description: "Custom install path"},
-	{param: "LogLevel", env: "TF_LOG_LEVEL", toml: "log-level", description: "Log level"},
-	{param: "Product", env: "TF_PRODUCT", toml: "product", description: "Product"},
-	{param: "Version", env: "TF_VERSION", toml: "version", description: "Version"},
+var paramMappings = []struct {
+	description string
+	env         string
+	param       string
+	ptype       reflect.Kind
+	toml        string
+}{
+	{param: "Arch", ptype: reflect.String, env: "TF_ARCH", toml: "arch", description: "CPU architecture"},
+	{param: "CustomBinaryPath", ptype: reflect.String, env: "TF_BINARY_PATH", toml: "bin", description: "Custom binary path"},
+	{param: "DefaultVersion", ptype: reflect.String, env: "TF_DEFAULT_VERSION", toml: "default-version", description: "Default version"},
+	{param: "ForceColor", ptype: reflect.Bool, env: "FORCE_COLOR", toml: "force-color", description: "Force color output if terminal supports it"},
+	{param: "InstallPath", ptype: reflect.String, env: "TF_INSTALL_PATH", toml: "install", description: "Custom install path"},
+	{param: "LogLevel", ptype: reflect.String, env: "TF_LOG_LEVEL", toml: "log-level", description: "Log level"},
+	{param: "NoColor", ptype: reflect.Bool, env: "NO_COLOR", toml: "no-color", description: "Disable color output"},
+	{param: "Product", ptype: reflect.String, env: "TF_PRODUCT", toml: "product", description: "Product"},
+	{param: "Version", ptype: reflect.String, env: "TF_VERSION", toml: "version", description: "Version"},
 }
 
 var logger *slog.Logger
@@ -72,31 +77,51 @@ func populateParams(params Params) Params {
 		defaultMirrors = append(defaultMirrors, fmt.Sprintf("%s: %s", product.GetName(), product.GetDefaultMirrorUrl()))
 	}
 
+	// String params
 	getopt.StringVarLong(&params.Arch, "arch", 'A', fmt.Sprintf("Override CPU architecture type for downloaded binary. Ex: `tfswitch --arch amd64` will attempt to download the amd64 version of the binary. Default: %s", runtime.GOARCH))
 	getopt.StringVarLong(&params.ChDirPath, "chdir", 'c', "Switch to a different working directory before executing the given command. Ex: tfswitch --chdir terraform_project will run tfswitch in the terraform_project directory")
 	getopt.StringVarLong(&params.CustomBinaryPath, "bin", 'b', "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
 	getopt.StringVarLong(&params.DefaultVersion, "default", 'd', "Default to this version in case no other versions could be detected. Ex: tfswitch --default 1.2.4")
-	getopt.BoolVarLong(&params.DryRun, "dry-run", 'r', "Only show what tfswitch would do. Don't download anything")
-	getopt.BoolVarLong(&params.HelpFlag, "help", 'h', "Displays help message")
 	getopt.StringVarLong(&params.InstallPath, "install", 'i', "Custom install path. Ex: tfswitch -i /Users/username. The binaries will be in the sub installDir directory e.g. /Users/username/"+lib.InstallDir)
-	getopt.BoolVarLong(&params.LatestFlag, "latest", 'u', "Get latest stable version")
 	getopt.StringVarLong(&params.LatestPre, "latest-pre", 'p', "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: tfswitch --latest-stable 0.13.0 downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
-	getopt.BoolVarLong(&params.ListAllFlag, "list-all", 'l', "List all versions of terraform - including beta and rc")
 	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', "Set loglevel for tfswitch. One of (ERROR, INFO, NOTICE, DEBUG, TRACE)")
 	getopt.StringVarLong(&params.MirrorURL, "mirror", 'm', "install from a remote API other than the default. Default (based on product):\n"+strings.Join(defaultMirrors, "\n"))
-	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
 	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
 	getopt.StringVarLong(&params.Product, "product", 't', fmt.Sprintf("Specifies which product to use. Ex: `tfswitch --product opentofu` will install OpenTofu. Options: (%s). Default: %s", strings.Join(productIds, ", "), lib.DefaultProductId))
+
+	// Bool params
+	getopt.BoolVarLong(&params.DryRun, "dry-run", 'r', "Only show what tfswitch would do. Don't download anything")
+	getopt.BoolVarLong(&params.ForceColor, "force-color", 'K', "Force color output if terminal supports it")
+	getopt.BoolVarLong(&params.HelpFlag, "help", 'h', "Displays help message")
+	getopt.BoolVarLong(&params.LatestFlag, "latest", 'u', "Get latest stable version")
+	getopt.BoolVarLong(&params.ListAllFlag, "list-all", 'l', "List all versions of terraform - including beta and rc")
+	getopt.BoolVarLong(&params.NoColor, "no-color", 'k', "Disable color output. Useful for piping output to a file or when the terminal does not support colors")
+	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
 	getopt.BoolVarLong(&params.VersionFlag, "version", 'v', "Displays the version of tfswitch")
 
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
 
-	isShortRun := !params.VersionFlag && !params.HelpFlag
+	isNotShortRun := !params.VersionFlag && !params.HelpFlag
 
-	if isShortRun {
+	if isNotShortRun {
+		if params.ForceColor && params.NoColor {
+			os.Setenv("NO_COLOR", "true") // Prefer no color in this case
+			logger = lib.InitLogger(params.LogLevel)
+			logger.Fatal("(init) Cannot force color and disable color at the same time. Please choose either of them.")
+		}
+
+		if params.ForceColor {
+			os.Setenv("FORCE_COLOR", "true")
+		} else if params.NoColor {
+			os.Setenv("NO_COLOR", "true")
+		}
+
+		oldForceColor := params.ForceColor
+		oldNoColor := params.NoColor
+
 		oldLogLevel := params.LogLevel
 		logger = lib.InitLogger(params.LogLevel)
 
@@ -108,10 +133,38 @@ func populateParams(params Params) Params {
 			if err != nil {
 				logger.Fatalf("Failed to obtain settings from TOML config in home directory: %v", err)
 			}
+
+			if params.ForceColor && params.NoColor {
+				logger.Fatal("(toml) Cannot force color and disable color at the same time. Please choose either of them.")
+			}
+
+			if !oldForceColor && params.ForceColor {
+				os.Setenv("FORCE_COLOR", "true")
+			} else if !oldNoColor && params.NoColor {
+				os.Setenv("NO_COLOR", "true")
+			}
+			// Re-init logger
+			logger = lib.InitLogger(params.LogLevel)
+
+			// Update assignment in case values changed by TOML
+			oldForceColor = params.ForceColor
+			oldNoColor = params.NoColor
 		}
 
 		// First pass to obtain environment variables to override product
 		params = GetParamsFromEnvironment(params)
+
+		if params.ForceColor && params.NoColor {
+			logger.Fatal("(env) Cannot force color and disable color at the same time. Please choose either of them.")
+		}
+
+		if !oldForceColor && params.ForceColor {
+			os.Setenv("FORCE_COLOR", "true")
+		} else if !oldNoColor && params.NoColor {
+			os.Setenv("NO_COLOR", "true")
+		}
+		// Re-init logger
+		logger = lib.InitLogger(params.LogLevel)
 
 		// Set defaults based on product
 		// This must be performed after TOML file, to obtain product.
@@ -182,7 +235,7 @@ func populateParams(params Params) Params {
 		params.Version = args[0]
 	}
 
-	if isShortRun {
+	if isNotShortRun {
 		if params.DryRun {
 			logger.Info("[DRY-RUN] No changes will be made")
 		} else {
@@ -194,10 +247,12 @@ func populateParams(params Params) Params {
 			logger.Debugf("Resolved fallback version: %q", params.DefaultVersion)
 		}
 		logger.Debugf("Resolved binary path: %q", params.CustomBinaryPath)
+		logger.Debugf("Resolved force color: %t", params.ForceColor)
 		logger.Debugf("Resolved install path: %q", filepath.Join(params.InstallPath, lib.InstallDir))
 		logger.Debugf("Resolved install version: %q", params.Version)
 		logger.Debugf("Resolved log level: %q", params.LogLevel)
 		logger.Debugf("Resolved mirror URL: %q", params.MirrorURL)
+		logger.Debugf("Resolved no color: %t", params.NoColor)
 		logger.Debugf("Resolved product name: %q", params.Product)
 		logger.Debugf("Resolved working directory: %q", params.ChDirPath)
 	}
@@ -211,6 +266,7 @@ func initParams(params Params) Params {
 	params.CustomBinaryPath = ""
 	params.DefaultVersion = lib.DefaultLatest
 	params.DryRun = false
+	params.ForceColor = false
 	params.HelpFlag = false
 	params.InstallPath = lib.GetHomeDirectory()
 	params.LatestFlag = false
@@ -219,6 +275,7 @@ func initParams(params Params) Params {
 	params.ListAllFlag = false
 	params.LogLevel = "INFO"
 	params.MirrorURL = ""
+	params.NoColor = false
 	params.ShowLatestFlag = false
 	params.ShowLatestPre = lib.DefaultLatest
 	params.ShowLatestStable = lib.DefaultLatest

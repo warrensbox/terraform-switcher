@@ -6,6 +6,7 @@ import (
 	"github.com/gookit/color"
 	"github.com/gookit/slog"
 	"github.com/gookit/slog/handler"
+	"github.com/mattn/go-isatty"
 )
 
 var (
@@ -19,14 +20,25 @@ var (
 	TraceLogging         = slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel, slog.TraceLevel}
 )
 
+func isColorLogging() bool {
+	if os.Getenv("NO_COLOR") != "" {
+		return false
+	} else if color.SupportColor() {
+		if os.Getenv("FORCE_COLOR") == "" {
+			return isatty.IsTerminal(os.Stdout.Fd())
+		}
+		return true
+	}
+	return false
+}
+
 func NewStderrConsoleWithLF(lf slog.LevelFormattable) *handler.ConsoleHandler {
 	h := handler.NewIOWriterWithLF(os.Stderr, lf)
 
 	// default use text formatter
 	f := slog.NewTextFormatter()
 	// default enable color on console
-	f.WithEnableColor(color.SupportColor())
-
+	f.WithEnableColor(isColorLogging())
 	h.SetFormatter(f)
 	return h
 }
@@ -37,7 +49,7 @@ func NewStderrConsoleHandler(levels []slog.Level) *handler.ConsoleHandler {
 
 func InitLogger(logLevel string) *slog.Logger {
 	formatter := slog.NewTextFormatter()
-	formatter.EnableColor = true
+	formatter.EnableColor = isColorLogging()
 	formatter.ColorTheme = slog.ColorTheme
 	formatter.TimeFormat = "15:04:05.000"
 
