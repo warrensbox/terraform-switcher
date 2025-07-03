@@ -7,6 +7,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.4.6](https://github.com/warrensbox/terraform-switcher/tree/v1.4.6) - 2025-07-03
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.5...v1.4.6)
+
+### Added
+
+- feat: Togglable color logging [#594](https://github.com/warrensbox/terraform-switcher/pull/594) ([yermulnik](https://github.com/yermulnik))
+- feat(shell-completion): Add Bash completion script [#586](https://github.com/warrensbox/terraform-switcher/pull/586) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.4.6` [#596](https://github.com/warrensbox/terraform-switcher/pull/596) ([yermulnik](https://github.com/yermulnik))
+- chore(`Makefile`): Add `govulncheck` target [#593](https://github.com/warrensbox/terraform-switcher/pull/593) ([yermulnik](https://github.com/yermulnik))
+- chore(`.github/linters/.golangci.yml`): Sync config with super-linter [#592](https://github.com/warrensbox/terraform-switcher/pull/592) ([yermulnik](https://github.com/yermulnik))
+- chore(goreleaser): Brews: install Bash completion script [#590](https://github.com/warrensbox/terraform-switcher/pull/590) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.4.5](https://github.com/warrensbox/terraform-switcher/tree/v1.4.5) - 2025-05-05
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.4...v1.4.5)
