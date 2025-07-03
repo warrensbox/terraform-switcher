@@ -13,14 +13,14 @@
         <link rel="canonical" href="https://tfswitch.warrensbox.com/usage/config-files/">
       
       
-        <link rel="prev" href="../commandline/">
+        <link rel="prev" href="../environment-variables/">
       
       
         <link rel="next" href="../ci-cd/">
       
       
       <link rel="icon" href="../../static/favicon_tfswitch_16.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.13">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
     
     
       
@@ -355,6 +355,29 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../environment-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Environment variables
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -431,56 +454,80 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use-tfswitchtoml-file-for-non-admin-users-with-limited-privilege-on-their-computers" class="md-nav__link">
+  <a href="#use-tfswitchtoml-file" class="md-nav__link">
     <span class="md-ellipsis">
-      Use .tfswitch.toml file (For non-admin users with limited privilege on their computers)
+      Use .tfswitch.toml file
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use .tfswitch.toml file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installing-to-a-custom-path-for-non-admin-users-with-limited-privilege-on-their-computers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installing to a custom path (for non-admin users with limited privilege on their computers)
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#setting-the-default-fallback-version-using-tfswitchtoml-file" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#setting-default-fallback-version" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting the default (fallback) version using .tfswitch.toml file
+      Setting default (fallback) version
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#setting-product-using-tfswitchtoml-file" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#setting-product-base-tool-name" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting product using .tfswitch.toml file
+      Setting product (base tool) name
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#setting-log-level-using-tfswitchtoml-file" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#setting-log-level" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting log level using .tfswitch.toml file
+      Setting log level
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#overriding-cpu-architecture-type-for-the-downloaded-binary-using-tfswitchtoml-file" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#overriding-cpu-architecture-type-for-the-downloaded-binary" class="md-nav__link">
     <span class="md-ellipsis">
-      Overriding CPU architecture type for the downloaded binary using .tfswitch.toml file
+      Overriding CPU architecture type for the downloaded binary
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#overriding-installation-directory-where-actual-binaries-are-stored-using-tfswitchtoml-file" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#overriding-installation-directory-where-actual-binaries-are-stored" class="md-nav__link">
     <span class="md-ellipsis">
-      Overriding installation directory, where actual binaries are stored, using .tfswitch.toml file
+      Overriding installation directory, where actual binaries are stored
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disabling-color-output-forcing-color-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Disabling color output / Forcing color output
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -672,56 +719,80 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use-tfswitchtoml-file-for-non-admin-users-with-limited-privilege-on-their-computers" class="md-nav__link">
+  <a href="#use-tfswitchtoml-file" class="md-nav__link">
     <span class="md-ellipsis">
-      Use .tfswitch.toml file (For non-admin users with limited privilege on their computers)
+      Use .tfswitch.toml file
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Use .tfswitch.toml file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#installing-to-a-custom-path-for-non-admin-users-with-limited-privilege-on-their-computers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installing to a custom path (for non-admin users with limited privilege on their computers)
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#setting-the-default-fallback-version-using-tfswitchtoml-file" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#setting-default-fallback-version" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting the default (fallback) version using .tfswitch.toml file
+      Setting default (fallback) version
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#setting-product-using-tfswitchtoml-file" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#setting-product-base-tool-name" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting product using .tfswitch.toml file
+      Setting product (base tool) name
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#setting-log-level-using-tfswitchtoml-file" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#setting-log-level" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting log level using .tfswitch.toml file
+      Setting log level
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#overriding-cpu-architecture-type-for-the-downloaded-binary-using-tfswitchtoml-file" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#overriding-cpu-architecture-type-for-the-downloaded-binary" class="md-nav__link">
     <span class="md-ellipsis">
-      Overriding CPU architecture type for the downloaded binary using .tfswitch.toml file
+      Overriding CPU architecture type for the downloaded binary
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#overriding-installation-directory-where-actual-binaries-are-stored-using-tfswitchtoml-file" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#overriding-installation-directory-where-actual-binaries-are-stored" class="md-nav__link">
     <span class="md-ellipsis">
-      Overriding installation directory, where actual binaries are stored, using .tfswitch.toml file
+      Overriding installation directory, where actual binaries are stored
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disabling-color-output-forcing-color-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Disabling color output / Forcing color output
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -758,14 +829,20 @@
 <!-- markdownlint-disable MD041 -->
 
 <h2 id="get-the-version-from-a-subdirectory">Get the version from a subdirectory</h2>
-<p>While using the file configuration it might be necessary to change the working directory. You can do that with the <code>--chdir</code> or <code>-c</code> parameter.</p>
+<p>While using the file configuration it might be necessary to change the working
+directory. You can do that with the <code>--chdir</code> or <code>-c</code> parameter.</p>
 <pre><code class="language-bash">tfswitch --chdir terraform_dir
 tfswitch -c terraform_dir
 </code></pre>
 <h2 id="use-versiontf-file">Use <code>version.tf</code> file</h2>
-<p>If a <code>.tf</code> file with the version constraints is included in the current directory, <code>tfswitch</code> should automatically download or switch to that terraform version.<br />
-Also please refer to <a href="../general/">Order of Terraform version definition precedence</a> page for more information on how <code>tfswitch</code> determines the version to use.<br />
-For example, the following should automatically switch to the latest available version newer than <code>0.12.8</code>:</p>
+<p>If a <code>.tf</code> file with the version constraints is included in the current
+directory, <code>tfswitch</code> should automatically download or switch to that terraform
+version.<br />
+Also please refer to <a href="../general/">Order of Terraform version definition
+precedence</a> page for more information on how <code>tfswitch</code> determines
+the version to use.<br />
+For example, the following should automatically switch to the latest available
+version newer than <code>0.12.8</code>:</p>
 <pre><code class="language-hcl">terraform {
   required_version = &quot;&gt;= 0.12.9&quot;
 
@@ -783,45 +860,63 @@ For example, the following should automatically switch to the latest available v
 <li>For example, <code>echo "0.10.5" &gt;&gt; .tfswitchrc</code> for version <code>0.10.5</code></li>
 <li>Run the command <code>tfswitch</code> in the same directory as this <code>.tfswitchrc</code> file</li>
 </ol>
-<p><em>Instead of a <code>.tfswitchrc</code> file, a <code>.terraform-version</code> file may be used for compatibility with <a href="https://github.com/tfutils/tfenv#terraform-version-file"><code>tfenv</code></a> and other tools which use it</em></p>
-<h2 id="use-tfswitchtoml-file-for-non-admin-users-with-limited-privilege-on-their-computers">Use <code>.tfswitch.toml</code> file (For non-admin users with limited privilege on their computers)</h2>
-<p><code>tfswitch</code> defaults to install to the <code>/usr/local/bin/</code> directory (and falls back to <code>$HOME/bin/</code> otherwise). The target filename is resolved automatically based on the <code>product</code> attribute (<a href="#setting-product-using-tfswitchtoml-file">see below</a>). If you do not have write access to <code>/usr/local/bin/</code> directory, you can use the <code>.tfswitch.toml</code> file to specify a <strong>full installation path</strong> (directory + filename).<br />
-This is similar to using a <code>.tfswitchrc</code> file, but you specify a custom binary path for the installation:</p>
+<p><em>Instead of a <code>.tfswitchrc</code> file, a <code>.terraform-version</code> file may be used for
+compatibility with
+<a href="https://github.com/tfutils/tfenv#terraform-version-file"><code>tfenv</code></a> and other
+tools which use it</em></p>
+<h2 id="use-tfswitchtoml-file">Use <code>.tfswitch.toml</code> file</h2>
+<h3 id="installing-to-a-custom-path-for-non-admin-users-with-limited-privilege-on-their-computers">Installing to a custom path (for non-admin users with limited privilege on their computers)</h3>
+<p><code>tfswitch</code> defaults to install to the <code>/usr/local/bin/</code> directory (and falls
+back to <code>$HOME/bin/</code> otherwise). The target filename is resolved automatically
+based on the <code>product</code> parameter (<a href="#setting-product-base-tool-name">see below</a>).<br />
+If you do not have write access to <code>/usr/local/bin/</code> directory, you can use the
+<code>.tfswitch.toml</code> file to specify a <strong>full installation path</strong> (directory +
+filename) Ex: <code>$HOME/bin/terraform</code><br />
+This is similar to using a <code>.tfswitchrc</code> file, but you specify a custom binary
+path for the installation:</p>
 <p><img alt="toml1" src="../../static/tfswitch-v7.gif" />
 <img alt="toml2" src="../../static/tfswitch-v8.gif" /></p>
 <ol>
 <li>Create a directory for the custom binary path. Ex: <code>mkdir -p "$HOME/bin/"</code></li>
-<li>Add the path to the directory to your <code>PATH</code> environment variable. Ex: <code>export PATH="$PATH:$HOME/bin"</code> (add this to your Bash profile or Zsh profile)</li>
-<li>Pass <code>-b</code> or <code>--bin</code> parameter with the custom binary path as value (this must be a first level pointer inside the directory from above). Ex: <code>tfswitch -b "$HOME/bin/terraform" 0.10.8</code></li>
-<li>If target directory for custom binary path does not exist, <code>tfswitch</code> falls back to <code>$HOME/bin/</code> directory</li>
-<li>Optionally, you can create a <code>.tfswitch.toml</code> file in your home directory (<code>~/.tfswitch.toml</code>)</li>
-<li>Your <code>~/.tfswitch.toml</code> file should look like this:</li>
-</ol>
-<pre><code class="language-toml">bin = &quot;$HOME/bin/terraform&quot;
-version = &quot;0.11.3&quot;
-</code></pre>
-<ol>
-<li>Run <code>tfswitch</code> and it should automatically install the required version in the specified binary path</li>
+<li>Add the path to the directory to your <code>PATH</code> environment variable. Ex:
+   <code>export PATH="$PATH:$HOME/bin"</code> (add this to your Bash profile or Zsh
+   profile)</li>
+<li>Pass <code>-b</code> or <code>--bin</code> parameter with the custom binary path as value (this
+   must be a first level pointer inside the directory from above). Ex:
+   <code>tfswitch -b "$HOME/bin/terraform" 0.10.8</code><br />
+   • If target directory for custom binary path does not exist, <code>tfswitch</code>
+   falls back to <code>$HOME/bin/</code> directory</li>
+<li>Optionally, you can create a <code>.tfswitch.toml</code> file in your home directory
+   (<code>~/.tfswitch.toml</code>)</li>
+<li>Your <code>~/.tfswitch.toml</code> file should have a line like this:
+   <code>bin = "$HOME/bin/terraform"</code></li>
+<li>Run <code>tfswitch</code> and it should automatically install the required version in
+   the specified binary path</li>
 </ol>
 <p>Below is an example for <code>$HOME/.tfswitch.toml</code> on Windows:</p>
-<pre><code class="language-toml">bin = &quot;C:\\Users\\&lt;%USRNAME%&gt;\\bin\\terraform.exe&quot;
+<pre><code class="language-toml">bin = &quot;C:\\Users\\&lt;%USERNAME%&gt;\\bin\\terraform.exe&quot;
 </code></pre>
-<h2 id="setting-the-default-fallback-version-using-tfswitchtoml-file">Setting the default (fallback) version using <code>.tfswitch.toml</code> file</h2>
-<p>By default, if <code>tfswsitch</code> is unable to determine the version to use, it errors out.<br />
-The <code>.tfswitch.toml</code> file can be configured with a <code>default-version</code> attribute for <code>tfswitch</code> to use a particular version, if no other sources of versions are found</p>
+<h3 id="setting-default-fallback-version">Setting default (fallback) version</h3>
+<p>By default, if <code>tfswitch</code> is unable to determine the version to use, it errors
+out.<br />
+The <code>.tfswitch.toml</code> file can be configured with a <code>default-version</code> parameter
+for <code>tfswitch</code> to use a particular version, if no other sources of versions are
+found</p>
 <pre><code class="language-toml">default-version = &quot;1.5.4&quot;
 </code></pre>
-<h2 id="setting-product-using-tfswitchtoml-file">Setting product using <code>.tfswitch.toml</code> file</h2>
+<h3 id="setting-product-base-tool-name">Setting product (base tool) name</h3>
 <p><code>tfswitch</code> defaults to install Terraform binaries.<br />
-The <code>.tfswitch.toml</code> file can be configured with a <code>product</code> attribute for <code>tfswitch</code> to use either Terraform or OpenTofu by default:</p>
+The <code>.tfswitch.toml</code> file can be configured with a <code>product</code> parameter for
+<code>tfswitch</code> to use either Terraform or OpenTofu by default:</p>
 <pre><code class="language-toml">product = &quot;opentofu&quot;
 </code></pre>
 <p>or</p>
 <pre><code class="language-toml">product = &quot;terraform&quot;
 </code></pre>
-<h2 id="setting-log-level-using-tfswitchtoml-file">Setting log level using <code>.tfswitch.toml</code> file</h2>
+<h3 id="setting-log-level">Setting log level</h3>
 <p><code>tfswitch</code> defaults to <code>INFO</code> log level.<br />
-The <code>.tfswitch.toml</code> file can be configured with a <code>log-level</code> attribute for <code>tfswitch</code> to use non-default logging verbosity:</p>
+The <code>.tfswitch.toml</code> file can be configured with a <code>log-level</code> parameter for
+<code>tfswitch</code> to use non-default logging verbosity:</p>
 <pre><code class="language-toml">log-level = &quot;INFO&quot;
 </code></pre>
 <ul>
@@ -833,21 +928,27 @@ The <code>.tfswitch.toml</code> file can be configured with a <code>log-level</c
 <li><code>TRACE</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code>, <code>TRACE</code></li>
 <li>Any other log level value falls under default logging level</li>
 </ul>
-<h2 id="overriding-cpu-architecture-type-for-the-downloaded-binary-using-tfswitchtoml-file">Overriding CPU architecture type for the downloaded binary using <code>.tfswitch.toml</code> file</h2>
-<p>CPU architecture of the downloaded binaries defaults to <code>tfswitch</code>'s host architecture.<br />
-The <code>.tfswitch.toml</code> file can be configured with a <code>arch</code> attribute for <code>tfswitch</code> to download binary of non-default architecture type:</p>
+<h3 id="overriding-cpu-architecture-type-for-the-downloaded-binary">Overriding CPU architecture type for the downloaded binary</h3>
+<p>CPU architecture of the downloaded binaries defaults to <code>tfswitch</code>'s host
+architecture.<br />
+The <code>.tfswitch.toml</code> file can be configured with a <code>arch</code> parameter for
+<code>tfswitch</code> to download binary of the CPU architecture that doesn't match the
+host:</p>
 <pre><code class="language-toml">arch = &quot;arm64&quot;
 </code></pre>
 <ul>
-<li>This can be set to any string, though incorrect values will result in download failure.</li>
+<li>This can be set to any string, though incorrect values will result in
+  download failure.</li>
 <li>Suggested values: <code>amd64</code>, <code>arm64</code>, <code>386</code>.</li>
 <li>Check available Arch types at:</li>
 <li><a href="https://releases.hashicorp.com/terraform/">Terraform Downloads</a></li>
 <li><a href="https://get.opentofu.org/tofu/">OpenTofu Downloads</a></li>
 </ul>
-<h2 id="overriding-installation-directory-where-actual-binaries-are-stored-using-tfswitchtoml-file">Overriding installation directory, where actual binaries are stored, using <code>.tfswitch.toml</code> file</h2>
-<p><code>tfswitch</code> defaults to download binaries to the <code>$HOME/.terraform.versions/</code> directory.<br />
-The <code>.tfswitch.toml</code> file can be configured with a <code>install</code> attribute to specify the parent directory for <code>.terraform.versions</code> directory.</p>
+<h3 id="overriding-installation-directory-where-actual-binaries-are-stored">Overriding installation directory, where actual binaries are stored</h3>
+<p><code>tfswitch</code> defaults to download binaries to the <code>$HOME/.terraform.versions/</code>
+directory.<br />
+The <code>.tfswitch.toml</code> file can be configured with a <code>install</code> parameter to
+specify the parent directory for <code>.terraform.versions</code> directory.</p>
 <pre><code class="language-toml">install = &quot;/var/cache&quot;
 </code></pre>
 <p><strong>NOTE</strong>:</p>
@@ -855,12 +956,26 @@ The <code>.tfswitch.toml</code> file can be configured with a <code>install</cod
 <li>Current user must have write permissions to the target directory</li>
 <li>If the target directory does not exist, <code>tfswitch</code> will create it</li>
 </ul>
+<h3 id="disabling-color-output-forcing-color-output">Disabling color output / Forcing color output</h3>
+<p><code>tfswitch</code> defaults to color output if the terminal supports it and if the TTY
+is allocated (interactive session).</p>
+<p>Disabling color output can be useful in non-interactive sessions, such as when
+running scripts in CI/CD pipeline or when piping output to other commands.</p>
+<ul>
+<li>If you want to disable color output, you can use the <code>no-color</code> parameter.</li>
+<li>If you want to force color output even if the TTY is not allocated
+  (non-interactive session), you can use the <code>force-color</code> parameter.</li>
+</ul>
+<p><strong>NOTE</strong>: <code>no-color</code> and <code>force-color</code> parameters are mutually exclusive.</p>
 <h2 id="use-terragrunthcl-file">Use <code>terragrunt.hcl</code> file</h2>
-<p>If a terragrunt.hcl file with the terraform constraint is included in the current directory, it should automatically download or switch to that terraform version.<br />
-For example, the following should automatically switch Terraform to the latest version 0.13:</p>
+<p>If a terragrunt.hcl file with the terraform constraint is included in the
+current directory, it should automatically download or switch to that terraform
+version.<br />
+For example, the following should automatically switch Terraform to the latest
+version 0.13:</p>
 <pre><code class="language-hcl">terragrunt_version_constraint = &quot;&gt;= 0.26, &lt; 0.27&quot;
 terraform_version_constraint  = &quot;&gt;= 0.13, &lt; 0.14&quot;
-...
+…
 </code></pre>
 
 
@@ -917,7 +1032,7 @@ terraform_version_constraint  = &quot;&gt;= 0.13, &lt; 0.14&quot;
       <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      <script src="../../assets/javascripts/bundle.56ea9cef.min.js"></script>
       
     
   </body>

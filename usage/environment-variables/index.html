@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://tfswitch.warrensbox.com/usage/general/">
+        <link rel="canonical" href="https://tfswitch.warrensbox.com/usage/environment-variables/">
       
       
-        <link rel="prev" href="../../Installation/">
+        <link rel="prev" href="../commandline/">
       
       
-        <link rel="next" href="../commandline/">
+        <link rel="next" href="../config-files/">
       
       
       <link rel="icon" href="../../static/favicon_tfswitch_16.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>General - TFSwitch</title>
+        <title>Environment variables - TFSwitch</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#order-of-terraform-version-definition-precedence" class="md-skip">
+        <a href="#environment-variables" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              General
+              Environment variables
             
           </span>
         </div>
@@ -309,30 +309,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    General
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../general/" class="md-nav__link">
         
   
   
@@ -343,33 +323,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#order-of-terraform-version-definition-precedence" class="md-nav__link">
-    <span class="md-ellipsis">
-      Order of Terraform version definition precedence
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -402,10 +355,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../environment-variables/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Environment variables
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -416,6 +389,120 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment variables
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#force_color" class="md-nav__link">
+    <span class="md-ellipsis">
+      FORCE_COLOR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no_color" class="md-nav__link">
+    <span class="md-ellipsis">
+      NO_COLOR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_arch" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_ARCH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_binary_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_BINARY_PATH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_default_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_DEFAULT_VERSION
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_install_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_INSTALL_PATH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_log_level" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_LOG_LEVEL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_product" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_PRODUCT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_VERSION
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -587,11 +674,98 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#order-of-terraform-version-definition-precedence" class="md-nav__link">
+  <a href="#environment-variables" class="md-nav__link">
     <span class="md-ellipsis">
-      Order of Terraform version definition precedence
+      Environment variables
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Environment variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#force_color" class="md-nav__link">
+    <span class="md-ellipsis">
+      FORCE_COLOR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no_color" class="md-nav__link">
+    <span class="md-ellipsis">
+      NO_COLOR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_arch" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_ARCH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_binary_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_BINARY_PATH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_default_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_DEFAULT_VERSION
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_install_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_INSTALL_PATH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_log_level" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_LOG_LEVEL
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_product" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_PRODUCT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tf_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_VERSION
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -614,47 +788,110 @@
   
 
 
-  <h1>General</h1>
+  <h1>Environment variables</h1>
 
 <!-- markdownlint-disable MD041 -->
 
-<h2 id="order-of-terraform-version-definition-precedence">Order of Terraform version definition precedence</h2>
-<table>
-<thead>
-<tr>
-<th>Order</th>
-<th>Method</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1</td>
-<td><code>$HOME/.tfswitch.toml</code> (<code>version</code> parameter)</td>
-</tr>
-<tr>
-<td>2</td>
-<td><code>.tfswitchrc</code> (version as a string)</td>
-</tr>
-<tr>
-<td>3</td>
-<td><code>.terraform-version</code> (version as a string)</td>
-</tr>
-<tr>
-<td>4</td>
-<td>Terraform root module (<code>required_version</code> constraint)</td>
-</tr>
-<tr>
-<td>5</td>
-<td><code>terragrunt.hcl</code> (<code>terraform_version_constraint</code> parameter)</td>
-</tr>
-<tr>
-<td>6</td>
-<td>Environment variable (<code>TF_VERSION</code>)</td>
-</tr>
-</tbody>
-</table>
-<p>With 1 being the <strong>lowest</strong> precedence and 7 — the <strong>highest</strong><br />
-<em>(If you disagree with this order of precedence, please open an issue)</em></p>
+<h2 id="environment-variables">Environment variables</h2>
+<p>You can set environment variables for <code>tfswitch</code> to override some configurations:</p>
+<h3 id="force_color"><code>FORCE_COLOR</code></h3>
+<p><code>tfswitch</code> defaults to color output if the terminal supports it and if the TTY
+is allocated (interactive session).<br />
+<code>FORCE_COLOR</code> environment variable can be set to force color output even if the
+TTY is <strong>not</strong> allocated (non-interactive session).</p>
+<ul>
+<li>Any non-empty value enables color output.</li>
+<li>Is mutually exclusive with <code>NO_COLOR</code> environment variable (see
+  <a href="#no_color"><code>NO_COLOR</code></a>).</li>
+</ul>
+<h3 id="no_color"><code>NO_COLOR</code></h3>
+<p><code>tfswitch</code> defaults to color output if the terminal supports it and if the TTY
+is allocated (interactive session).<br />
+<code>NO_COLOR</code> environment variable can be set to disable color output forcefully.</p>
+<ul>
+<li>Can be useful in CI/CD pipelines or other non-interactive sessions where ANSI
+  color (escape) codes are not desired or are not supported.</li>
+<li>Any non-empty value disables color output.</li>
+<li>Is mutually exclusive with <code>FORCE_COLOR</code> environment variable (see
+  <a href="#force_color"><code>FORCE_COLOR</code></a>).</li>
+</ul>
+<h3 id="tf_arch"><code>TF_ARCH</code></h3>
+<p><code>TF_ARCH</code> environment variable can be set to override default CPU architecture
+of downloaded binaries.</p>
+<ul>
+<li>This can be set to any string, though incorrect values will result in
+  download failure.</li>
+<li>Suggested values: <code>amd64</code>, <code>arm64</code>, <code>386</code>.</li>
+<li>Check available Arch types at:</li>
+<li><a href="https://releases.hashicorp.com/terraform/">Terraform Downloads</a></li>
+<li><a href="https://get.opentofu.org/tofu/">OpenTofu Downloads</a></li>
+</ul>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_ARCH=&quot;amd64&quot;
+tfswitch # Will install binary for amd64 architecture
+</code></pre>
+<h3 id="tf_binary_path"><code>TF_BINARY_PATH</code></h3>
+<p><code>tfswitch</code> defaults to install to the <code>/usr/local/bin/</code> directory (and falls
+back to <code>$HOME/bin/</code> otherwise). The target filename is resolved automatically
+based on the <code>product</code> parameter.<br />
+<code>TF_BINARY_PATH</code> environment variable can be set to specify a <strong>full
+installation path</strong> (directory + filename). If target directory does not exist,
+<code>tfswitch</code> falls back to <code>$HOME/bin/</code> directory.</p>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_BINARY_PATH=&quot;$HOME/bin/terraform&quot; # Path to the file
+tfswitch # Will install binary as $HOME/bin/terraform
+</code></pre>
+<h3 id="tf_default_version"><code>TF_DEFAULT_VERSION</code></h3>
+<p><code>TF_DEFAULT_VERSION</code> environment variable can be set to the desired product/tool
+version that will be used as a fallback version, if not other sources are
+found.</p>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_DEFAULT_VERSION=&quot;0.14.4&quot;
+tfswitch # Will automatically switch to terraform version 0.14.4
+</code></pre>
+<h3 id="tf_install_path"><code>TF_INSTALL_PATH</code></h3>
+<p><code>tfswitch</code> defaults to download binaries to the <code>$HOME/.terraform.versions/</code>
+directory.<br />
+<code>TF_INSTALL_PATH</code> environment variable can be set to specify the parent
+directory for <code>.terraform.versions</code> directory. Current user must have write
+permissions to the target directory. If the target directory does not exist,
+<code>tfswitch</code> will create it.</p>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_INSTALL_PATH=&quot;/var/cache&quot; # Path to the directory where `.terraform.versions` directory resides
+tfswitch # Will download actual binary to /var/cache/.terraform.versions/
+</code></pre>
+<h3 id="tf_log_level"><code>TF_LOG_LEVEL</code></h3>
+<p><code>TF_LOG_LEVEL</code> environment variable can be set to override default log level.</p>
+<ul>
+<li>Supported log levels:</li>
+<li><code>ERROR</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code></li>
+<li><code>INFO</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>INFO</code> (default)</li>
+<li><code>NOTICE</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code></li>
+<li><code>DEBUG</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code></li>
+<li><code>TRACE</code>: includes <code>PANIC</code>, <code>FATAL</code>, <code>ERROR</code>, <code>WARN</code>, <code>NOTICE</code>, <code>INFO</code>, <code>DEBUG</code>, <code>TRACE</code></li>
+<li>Any other log level value falls under default logging level</li>
+</ul>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_LOG_LEVEL=&quot;DEBUG&quot;
+tfswitch # Will output debug logs
+</code></pre>
+<h3 id="tf_product"><code>TF_PRODUCT</code></h3>
+<p><code>TF_PRODUCT</code> environment variable can be set to the desired product/tool.</p>
+<p>This can either be set to:</p>
+<ul>
+<li><code>terraform</code></li>
+<li><code>opentofu</code></li>
+</ul>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_PRODUCT=&quot;opentofu&quot;
+tfswitch # Will install opentofu instead of terraform
+</code></pre>
+<h3 id="tf_version"><code>TF_VERSION</code></h3>
+<p><code>TF_VERSION</code> environment variable can be set to the desired product/tool version.</p>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_VERSION=&quot;0.14.4&quot;
+tfswitch # Will automatically switch to terraform version 0.14.4
+</code></pre>
 
 
 
