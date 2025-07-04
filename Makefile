@@ -92,7 +92,7 @@ else
 		--env GITHUB_WORKSPACE="$(shell git rev-parse --show-toplevel)" \
 		--env RUN_LOCAL=true \
 		--env VALIDATE_ALL_CODEBASE=false \
-		--env FILTER_REGEX_EXCLUDE='^$$PWD/test-data/' \
+		--env FILTER_REGEX_EXCLUDE="^$(CURDIR)/test-data/" \
 		--env BASH_EXEC_IGNORE_LIBRARIES=true \
 		--env VALIDATE_GO=false \
 		--env VALIDATE_JSCPD=false \
