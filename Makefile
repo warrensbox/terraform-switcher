@@ -14,7 +14,7 @@ CONTAINER_ENGINE ?= $(shell command -v podman || command -v docker || echo "NONE
 GIT_COMMON_DIR   := $(shell git rev-parse --git-common-dir)
 GIT_DIR          := $(shell git rev-parse --git-dir)
 GIT_TOPLEVEL_DIR := $(shell git rev-parse --show-toplevel)
-# Assume that if GIT_COMMON_DIR difers from GIT_DIR, then we're in Git worktree
+# Assume that if GIT_COMMON_DIR differs from GIT_DIR, then we're in Git worktree
 # In this case, mount Git dir (`.git`) as a volume
 ifneq ($(GIT_COMMON_DIR),$(GIT_DIR))
 GIT_COMMON_DIR_VOLUME := --volume "$(GIT_COMMON_DIR):$(GIT_COMMON_DIR)"
