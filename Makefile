@@ -10,6 +10,16 @@ GOOS             ?= $(shell $(GOBINARY) env GOOS)
 GOARCH           ?= $(shell $(GOBINARY) env GOARCH)
 CONTAINER_ENGINE ?= $(shell command -v podman || command -v docker || echo "NONE")
 
+# Git dirs for `super-linter` target
+GIT_COMMON_DIR   := $(shell git rev-parse --git-common-dir)
+GIT_DIR          := $(shell git rev-parse --git-dir)
+GIT_TOPLEVEL_DIR := $(shell git rev-parse --show-toplevel)
+# Assume that if GIT_COMMON_DIR differs from GIT_DIR, then we're in Git worktree
+# In this case, mount Git dir (`.git`) as a volume
+ifneq ($(GIT_COMMON_DIR),$(GIT_DIR))
+GIT_COMMON_DIR_VOLUME := --volume "$(GIT_COMMON_DIR):$(GIT_COMMON_DIR)"
+endif
+
 $(EXE): version go.mod *.go lib/*.go
 	mkdir -p "$(BUILDPATH)/"
 	$(GOBINARY) build -v -ldflags "-X 'main.version=$(VER)'" -o "$(BUILDPATH)/$@" $(PKG)
@@ -86,13 +96,12 @@ else
 	# Keep `--env' vars below the `VALIDATE_ALL_CODEBASE' in sync with .github/workflows/super-linter.yml
 	$(CONTAINER_ENGINE) run \
 		--name super-linter \
-		--volume "$(shell git rev-parse --show-toplevel):$(shell git rev-parse --show-toplevel)" \
-		--volume "$(shell git rev-parse --git-common-dir):$(shell git rev-parse --git-common-dir)" \
-		--workdir "$(shell git rev-parse --show-toplevel)" \
-		--env GITHUB_WORKSPACE="$(shell git rev-parse --show-toplevel)" \
+		--volume "$(GIT_TOPLEVEL_DIR):$(GIT_TOPLEVEL_DIR)" $(GIT_COMMON_DIR_VOLUME)\
+		--workdir "$(GIT_TOPLEVEL_DIR)" \
+		--env GITHUB_WORKSPACE="$(GIT_TOPLEVEL_DIR)" \
 		--env RUN_LOCAL=true \
 		--env VALIDATE_ALL_CODEBASE=false \
-		--env FILTER_REGEX_EXCLUDE='^$$PWD/test-data/' \
+		--env FILTER_REGEX_EXCLUDE="^$(GIT_TOPLEVEL_DIR)/test-data/" \
 		--env BASH_EXEC_IGNORE_LIBRARIES=true \
 		--env VALIDATE_GO=false \
 		--env VALIDATE_JSCPD=false \
