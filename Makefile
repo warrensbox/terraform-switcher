@@ -7,6 +7,9 @@ VER       ?= $(shell git ls-remote --tags --sort=version:refname git@github.com:
 # Managing Go installations: Installing multiple Go versions
 # https://go.dev/doc/manage-install
 GOBINARY ?= $(shell (egrep -m1 '^go[[:space:]]+[[:digit:]]+\.' go.mod | tr -d '[:space:]' | xargs which) || which go)
+ifndef GOBINARY
+	$(error "Go binary not found. Please install Go and add it to your PATH or set GOBINARY variable to the path of your Go binary.")
+endif
 
 # Go vars
 GOOS   ?= $(shell $(GOBINARY) env GOOS)
