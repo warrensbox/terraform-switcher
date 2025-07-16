@@ -215,11 +215,11 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 }
 
 // TestValidVersionFormat : test if func returns valid version format
-// more regex testing at https://rubular.com/r/UvWXui7EU2icSb
 func TestValidVersionFormat(t *testing.T) {
 	var version string
-	version = "0.11.8"
 
+	// Test valid version formats
+	version = "0.11.8"
 	valid := validVersionFormat(version)
 
 	if valid == true {
@@ -229,7 +229,6 @@ func TestValidVersionFormat(t *testing.T) {
 	}
 
 	version = "1.11.9"
-
 	valid = validVersionFormat(version)
 
 	if valid == true {
@@ -238,38 +237,7 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Errorf("Failed to verify version format: %s\n", version)
 	}
 
-	version = "1.11.a"
-
-	valid = validVersionFormat(version)
-
-	if valid == false {
-		t.Logf("Invalid version format : %s (expected)", version)
-	} else {
-		t.Errorf("Failed to verify version format: %s\n", version)
-	}
-
-	version = "22323"
-
-	valid = validVersionFormat(version)
-
-	if valid == false {
-		t.Logf("Invalid version format : %s (expected)", version)
-	} else {
-		t.Errorf("Failed to verify version format: %s\n", version)
-	}
-
-	version = "@^&*!)!"
-
-	valid = validVersionFormat(version)
-
-	if valid == false {
-		t.Logf("Invalid version format : %s (expected)", version)
-	} else {
-		t.Errorf("Failed to verify version format: %s\n", version)
-	}
-
 	version = "1.11.9-beta1"
-
 	valid = validVersionFormat(version)
 
 	if valid == true {
@@ -279,7 +247,6 @@ func TestValidVersionFormat(t *testing.T) {
 	}
 
 	version = "0.12.0-rc2"
-
 	valid = validVersionFormat(version)
 
 	if valid == true {
@@ -289,7 +256,6 @@ func TestValidVersionFormat(t *testing.T) {
 	}
 
 	version = "1.11.4-boom"
-
 	valid = validVersionFormat(version)
 
 	if valid == true {
@@ -298,8 +264,35 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Errorf("Failed to verify version format: %s\n", version)
 	}
 
-	version = "1.11.4-1"
+	// Test invalid version formats
+	version = "1.11.a"
+	valid = validVersionFormat(version)
 
+	if valid == false {
+		t.Logf("Invalid version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "22323"
+	valid = validVersionFormat(version)
+
+	if valid == false {
+		t.Logf("Invalid version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "@^&*!)!"
+	valid = validVersionFormat(version)
+
+	if valid == false {
+		t.Logf("Invalid version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "1.11.4-01"
 	valid = validVersionFormat(version)
 
 	if valid == false {
