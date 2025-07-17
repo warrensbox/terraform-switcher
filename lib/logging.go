@@ -12,14 +12,14 @@ import (
 )
 
 var (
+	logger               *slog.Logger
 	loggingTemplateDebug = "{{datetime}} {{level}} [{{caller}}] {{message}} {{data}} {{extra}}\n"
 	loggingTemplate      = "{{datetime}} {{level}} {{message}} {{data}} {{extra}}\n"
-	logger               *slog.Logger
 	// Parent lib: https://github.com/gookit/slog/blob/f857defd050dd7fc3c3013134cf50ed51b917a1f/common.go#L69-L88
 	loggingLevel = map[string]slog.Levels{
 		// Special case to disable (suppress) logging
 		"OFF": {},
-		// High severity, unrecoverable errors
+		// High severity, unrecoverable errors (internally calls `panic()`)
 		"PANIC": {slog.PanicLevel},
 		// Fatal, unrecoverable errors
 		"FATAL": {slog.PanicLevel, slog.FatalLevel},
@@ -36,6 +36,7 @@ var (
 		// Even more finer-grained informational events
 		"TRACE": {slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel, slog.TraceLevel},
 	}
+	logUnknownLogLevel bool
 )
 
 func isColorLogging() bool {
@@ -70,13 +71,15 @@ func LogLevels() []string {
 	for level := range loggingLevel {
 		levels = append(levels, level)
 	}
-	slices.Sort(levels)
+	slices.Sort(levels) // Sort the result as we also use it in output messages
 	return levels
 }
 
 func InitLogger(logLevel string) *slog.Logger {
 	// Allow lower or mixed case for log levels to
 	// provide flexibility and improve user experience
+	originalLogLevelValue := logLevel
+	fallbackLogLevel := "INFO"
 	logLevel = strings.ToUpper(logLevel)
 
 	formatter := slog.NewTextFormatter()
@@ -88,9 +91,9 @@ func InitLogger(logLevel string) *slog.Logger {
 	useDebugTemplateLogLevels := []string{"DEBUG", "ERROR", "FATAL", "PANIC", "TRACE"}
 
 	var h *handler.ConsoleHandler
-	// Use INFO log level if default logging level isn't set somehow
-	// See `initParams()` in lib/param_parsing/parameters.go for defaults
-	h = NewStderrConsoleHandler(loggingLevel["INFO"])
+	// Safe log level fallback just in case
+	// See `initParams()` in lib/param_parsing/parameters.go for default log level
+	h = NewStderrConsoleHandler(loggingLevel[fallbackLogLevel])
 
 	isUnknownLogLevel := false
 
@@ -109,7 +112,19 @@ func InitLogger(logLevel string) *slog.Logger {
 	logger = newLogger
 
 	if isUnknownLogLevel {
-		logger.Fatalf("Unhandled logging level: %q (must be one of: %s)", logLevel, strings.Join(LogLevels(), ", "))
+		// TODO: [20250717] Drop the below `if`-conditional and switch to `logger.Fatalf()` to fail
+		// on unknown log level, say, in a couple of months so that users have enough time to notice
+		// this warning and fix their configuration (if any)
+		// logger.Fatalf("Unhandled logging level: %q (must be one of: %s)", originalLogLevelValue, strings.Join(LogLevels(), ", "))
+		if !logUnknownLogLevel { // Only log this warning once on very first occurrence of unknown log level
+			logUnknownLogLevel = true
+			logger.Warnf(
+				"Unhandled logging level: %q (must be one of: %s). Falling back to %s\n\t!!! THIS WILL BE A FATAL ERROR IN THE FUTURE !!!",
+				originalLogLevelValue,
+				strings.Join(LogLevels(), ", "),
+				fallbackLogLevel,
+			)
+		}
 	}
 
 	return logger
