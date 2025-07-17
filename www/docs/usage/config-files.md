@@ -137,7 +137,7 @@ log-level = "INFO"
   <!-- TODO: see `lib/logging.go` for a planned switch to fatal error
   - Any other log level value results in error and `tfswitch` will exit with
     non-zero exit code.
-  -->
+    -->
 
 ### Overriding CPU architecture type for the downloaded binary
 

@@ -109,7 +109,7 @@ tfswitch # Will download actual binary to /var/cache/.terraform.versions/
   <!-- TODO: see `lib/logging.go` for a planned switch to fatal error
   - Any other log level value results in error and `tfswitch` will exit with
     non-zero exit code.
-  -->
+    -->
 
 For example:
 
