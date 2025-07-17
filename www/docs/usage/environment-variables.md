@@ -105,8 +105,11 @@ tfswitch # Will download actual binary to /var/cache/.terraform.versions/
   - `NOTICE`: Normal operational entries, but not necessarily noteworthy + previous log levels
   - `DEBUG`: Verbose logging, useful for development + previous log levels
   - `TRACE`: Finer-grained informational events than DEBUG + previous log levels
+  - Any other log level value results in a warning message
+  <!-- TODO: see `lib/logging.go` for a planned switch to fatal error
   - Any other log level value results in error and `tfswitch` will exit with
     non-zero exit code.
+  -->
 
 For example:
 
