@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"reflect"
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -16,20 +17,25 @@ type tfVersionList struct {
 
 // Semantic version regexes without `^` and `$` anchors
 // Follows https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-var regexSemVer = map[string]string{
-	"full":             `(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?`,
-	"minor":            `(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)`,
-	"patch":            `(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)`,
-	"preReleaseSuffix": `\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?`,
+var regexSemVer = struct {
+	Full             *regexp.Regexp
+	Minor            *regexp.Regexp
+	Patch            *regexp.Regexp
+	PreReleaseSuffix *regexp.Regexp
+}{
+	Full:             regexp.MustCompile(`(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?`),
+	Minor:            regexp.MustCompile(`(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)`),
+	Patch:            regexp.MustCompile(`(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)`),
+	PreReleaseSuffix: regexp.MustCompile(`\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?`),
 }
 
 func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionList) {
 	var semver string
 	// Without the ending '"' pre-release folders would be tried and break.
 	if preRelease {
-		semver = `\/?` + regexSemVer["full"] + `/?"`
+		semver = `\/?` + regexSemVer.Full.String() + `/?"`
 	} else if !preRelease {
-		semver = `\/?` + regexSemVer["patch"] + `\/?"`
+		semver = `\/?` + regexSemVer.Patch.String() + `\/?"`
 	}
 	r, err := regexp.Compile(semver)
 	if err != nil {
@@ -70,7 +76,7 @@ func getTFLatest(mirrorURL string) (string, error) {
 		return "", err
 	}
 	// Getting versions from body; should return match /X.X.X/ where X is a number
-	semver := `\/?` + regexSemVer["patch"] + `\/?"`
+	semver := `\/?` + regexSemVer.Patch.String() + `\/?"`
 	r, errSemVer := regexp.Compile(semver)
 	if errSemVer != nil {
 		return "", fmt.Errorf("Error compiling %q regex: %v", semver, errSemVer)
@@ -95,7 +101,7 @@ func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (str
 			return "", err
 		}
 		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver := `\/?` + version + regexSemVer["preReleaseSuffix"] + `\/?"`
+		semver := `\/?` + version + regexSemVer.PreReleaseSuffix.String() + `\/?"`
 		r, errReSemVer := regexp.Compile(semver)
 		if errReSemVer != nil {
 			return "", errReSemVer
@@ -191,29 +197,25 @@ func removeDuplicateVersions(elements []string) []string {
 }
 
 // validVersionFormat : Return true if valid semantic version provided based on the type of version requested
-func validVersionFormat(version string, reqType ...string) bool {
-	var verType string
+func validVersionFormat(version string, validation ...*regexp.Regexp) bool {
 	var semverRegex *regexp.Regexp
 
-	switch len(reqType) {
+	switch len(validation) {
 	case 0:
-		verType = "full"
+		semverRegex = regexSemVer.Full
 	case 1:
-		verType = reqType[0]
+		semverRegex = validation[0]
+		// Limit the valid values in this switch case to only minor and patch versions,
+		// as currently it is used in `ShowLatestImplicitVersion()` only
+		validValues := []*regexp.Regexp{regexSemVer.Minor, regexSemVer.Patch}
+		if !slices.Contains(validValues, semverRegex) {
+			logger.Fatalf("Internal error: invalid \"validation\" argument value")
+		}
 	default:
-		logger.Fatalf("Internal error: invalid number of arguments (must be 2, got %d)", 1+len(reqType))
+		logger.Fatalf("Internal error: invalid number of arguments (must be 2, got %d)", 1+len(validation))
 	}
 
-	switch verType {
-	case "full":
-		semverRegex = regexp.MustCompile(`^` + regexSemVer["full"] + `$`)
-	case "minor":
-		semverRegex = regexp.MustCompile(`^` + regexSemVer["minor"] + `$`)
-	case "patch":
-		semverRegex = regexp.MustCompile(`^` + regexSemVer["patch"] + `$`)
-	default:
-		logger.Fatalf("Internal error: \"type\" argument must be one of \"full\", \"minor\", or \"patch\" (got %q)", reqType)
-	}
+	semverRegex = regexp.MustCompile(`^` + semverRegex.String() + `$`)
 
 	return semverRegex.MatchString(version)
 }
@@ -230,7 +232,7 @@ func ShowLatestVersion(mirrorURL string) {
 
 // ShowLatestImplicitVersion : show latest implicit version given the mirror URL
 func ShowLatestImplicitVersion(requestedVersion, mirrorURL string, preRelease bool) {
-	if validVersionFormat(requestedVersion, "minor") || (validVersionFormat(requestedVersion, "patch") && !preRelease) {
+	if validVersionFormat(requestedVersion, regexSemVer.Minor) || (validVersionFormat(requestedVersion, regexSemVer.Patch) && !preRelease) {
 		tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
 		if err != nil {
 			logger.Fatalf("Error getting latest implicit version %q from %q: %v", requestedVersion, mirrorURL, err)
