@@ -212,7 +212,7 @@ func validVersionFormat(version string, validation ...*regexp.Regexp) bool {
 			logger.Fatalf("Internal error: invalid \"validation\" argument value")
 		}
 	default:
-		logger.Fatalf("Internal error: invalid number of arguments (must be 2, got %d)", 1+len(validation))
+		logger.Fatalf("Internal error: invalid number of arguments (must be 1 or 2, got %d)", 1+len(validation))
 	}
 
 	semverRegex = regexp.MustCompile(`^` + semverRegex.String() + `$`)
