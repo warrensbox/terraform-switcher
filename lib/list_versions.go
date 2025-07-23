@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"reflect"
 	"regexp"
-	"slices"
 	"strings"
 )
 
@@ -197,6 +196,7 @@ func removeDuplicateVersions(elements []string) []string {
 }
 
 // validVersionFormat : Return true if valid semantic version provided based on the type of version requested
+// Caveat: Passing no validation argument validates the full semantic version format to provide backward compatibility
 func validVersionFormat(version string, validation ...*regexp.Regexp) bool {
 	var semverRegex *regexp.Regexp
 
@@ -205,10 +205,8 @@ func validVersionFormat(version string, validation ...*regexp.Regexp) bool {
 		semverRegex = regexSemVer.Full
 	case 1:
 		semverRegex = validation[0]
-		// Limit the valid values in this switch case to only minor and patch versions,
-		// as currently it is used in `ShowLatestImplicitVersion()` only
-		validValues := []*regexp.Regexp{regexSemVer.Minor, regexSemVer.Patch}
-		if !slices.Contains(validValues, semverRegex) {
+		// regexSemVer.PreReleaseSuffix is a special use case, hence do not accept it as valid validation argument
+		if semverRegex == regexSemVer.PreReleaseSuffix {
 			logger.Fatalf("Internal error: invalid \"validation\" argument value")
 		}
 	default:

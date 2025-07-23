@@ -258,6 +258,15 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Errorf("Failed to verify version format: %s\n", version)
 	}
 
+	// Test valid full version format (using func argument)
+	version = "1.11.4"
+	valid = validVersionFormat(version, regexSemVer.Full)
+	if valid == true {
+		t.Logf("Valid full version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify full version format: %s\n", version)
+	}
+
 	// Test valid minor version format
 	version = "1.11"
 	valid = validVersionFormat(version, regexSemVer.Minor)
@@ -307,6 +316,15 @@ func TestValidVersionFormat(t *testing.T) {
 		t.Logf("Invalid version format : %s (expected)", version)
 	} else {
 		t.Errorf("Failed to verify version format: %s\n", version)
+	}
+
+	// Test invalid full version format (using func argument)
+	version = "1.11"
+	valid = validVersionFormat(version, regexSemVer.Full)
+	if valid == false {
+		t.Logf("Invalid full version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify full version format: %s\n", version)
 	}
 
 	// Test invalid minor version format
