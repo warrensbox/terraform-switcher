@@ -216,9 +216,10 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 func TestValidVersionFormat(t *testing.T) {
 	logger = InitLogger("DEBUG")
 	var version string
+	var valid bool
 
 	version = "0.11.8"
-	valid := validVersionFormat(version)
+	valid = validVersionFormat(version)
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
@@ -289,6 +290,7 @@ func TestValidVersionFormat(t *testing.T) {
 func TestInvalidVersionFormat(t *testing.T) {
 	logger = InitLogger("DEBUG")
 	var version string
+	var valid bool
 
 	version = "1.11.a"
 	valid = validVersionFormat(version)
