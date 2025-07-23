@@ -217,7 +217,6 @@ func TestValidVersionFormat(t *testing.T) {
 	logger = InitLogger("DEBUG")
 	var version string
 
-	// Test valid version formats
 	version = "0.11.8"
 	valid := validVersionFormat(version)
 	if valid == true {
@@ -284,8 +283,13 @@ func TestValidVersionFormat(t *testing.T) {
 	} else {
 		t.Errorf("Failed to verify patch version format: %s\n", version)
 	}
+}
 
-	// Test invalid version formats
+// TestInvalidVersionFormat : test if func catches invalid version format
+func TestInvalidVersionFormat(t *testing.T) {
+	logger = InitLogger("DEBUG")
+	var version string
+
 	version = "1.11.a"
 	valid = validVersionFormat(version)
 	if valid == false {
