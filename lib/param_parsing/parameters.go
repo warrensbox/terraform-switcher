@@ -83,13 +83,13 @@ func populateParams(params Params) Params {
 	getopt.StringVarLong(&params.CustomBinaryPath, "bin", 'b', "Custom binary path. Ex: tfswitch -b "+lib.ConvertExecutableExt("/Users/username/bin/terraform"))
 	getopt.StringVarLong(&params.DefaultVersion, "default", 'd', "Default to this version in case no other versions could be detected. Ex: tfswitch --default 1.2.4")
 	getopt.StringVarLong(&params.InstallPath, "install", 'i', "Custom install path. Ex: tfswitch -i /Users/username. The binaries will be in the sub installDir directory e.g. /Users/username/"+lib.InstallDir)
-	getopt.StringVarLong(&params.LatestPre, "latest-pre", 'p', "Latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest)")
-	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: tfswitch --latest-stable 0.13.0 downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
+	getopt.StringVarLong(&params.LatestPre, "latest-pre", 'p', "Latest (including pre-release) implicit version. Accepts #.# as argument where # are numbers. Ex: tfswitch --latest-pre 0.13 downloads latest in 0.13.x branch up to pre-release (if any)")
+	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest stable implicit version. Accepts either #.# or #.#.# as argument where # are numbers. Ex: tfswitch --latest-stable 0.13.0 downloads latest in 0.13.x branch, 0.13 downloads latest in 0.x branch, 1.1 downloads latest in 1.x branch")
 	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', "Set loglevel for tfswitch. One of (ERROR, INFO, NOTICE, DEBUG, TRACE)")
 	getopt.StringVarLong(&params.MirrorURL, "mirror", 'm', "install from a remote API other than the default. Default (based on product):\n"+strings.Join(defaultMirrors, "\n"))
-	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
-	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
 	getopt.StringVarLong(&params.Product, "product", 't', fmt.Sprintf("Specifies which product to use. Ex: `tfswitch --product opentofu` will install OpenTofu. Options: (%s). Default: %s", strings.Join(productIds, ", "), lib.DefaultProductId))
+	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Accepts #.# as argument where # are numbers. Ex: tfswitch --show-latest-pre 0.13 prints latest in 0.13.x branch up to pre-release (if any)")
+	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest stable implicit version. Accepts either #.# or #.#.# as argument where # are numbers. Ex: tfswitch --show-latest-stable 0.13.0 prints latest in 0.13.x branch, 0.13 prints latest in 0.x branch, 1.1 prints latest in 1.x branch")
 
 	// Bool params
 	getopt.BoolVarLong(&params.DryRun, "dry-run", 'r', "Only show what tfswitch would do. Don't download anything")
