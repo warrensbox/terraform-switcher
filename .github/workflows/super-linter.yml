@@ -40,7 +40,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_JSCPD: false
           VALIDATE_GO: false
-          # FIXME: Disabled until we migrate to Brew casks 24-Jul-2025
+          # FIXME: [24-Jul-2025] Disabled until we migrate to Brew casks
           # See:
           # - https://goreleaser.com/deprecations/#brews
           # - https://github.com/orgs/goreleaser/discussions/5563#discussioncomment-13879589
