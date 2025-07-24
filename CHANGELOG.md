@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Fixed
 
-- fix: Commad-line flags to show/install latest stable versions are broken [#601](https://github.com/warrensbox/terraform-switcher/pull/601) ([yermulnik](https://github.com/yermulnik))
+- fix: Command-line flags to show/install latest stable versions are broken [#601](https://github.com/warrensbox/terraform-switcher/pull/601) ([yermulnik](https://github.com/yermulnik))
 
 ### Other
 
