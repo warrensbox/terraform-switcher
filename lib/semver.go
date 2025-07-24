@@ -58,7 +58,12 @@ func PrintInvalidTFVersion() {
 	logger.Error("Version does not exist or invalid terraform version format.\n\tFormat should be #.#.# or #.#.#-@# where # are numbers and @ are word characters.\n\tFor example, 1.11.7 and 0.11.9-beta1 are valid versions")
 }
 
-// PrintInvalidMinorTFVersion Print invalid minor TF version
+// PrintInvalidMinorTFVersion Print invalid minor version format
 func PrintInvalidMinorTFVersion() {
 	logger.Error("Invalid minor terraform version format.\n\tFormat should be #.# where # are numbers. For example, 1.11 is valid version")
+}
+
+// printInvalidVersionFormat Print invalid version format
+func printInvalidVersionFormat() {
+	logger.Error("Invalid version format.\n\tFormat should be either #.# or #.#.# where # are numbers. For example, 1.11 and 1.11.2 are valid versions")
 }
