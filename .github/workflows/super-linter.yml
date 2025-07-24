@@ -45,5 +45,6 @@ jobs:
           # - https://goreleaser.com/deprecations/#brews
           # - https://github.com/orgs/goreleaser/discussions/5563#discussioncomment-13879589
           #   - https://github.com/goreleaser/goreleaser/pull/5780 (included in Goreleaser v2.10.0)
+          #     - `super-linter@v8` has Goreleaser v2.11.0 (https://github.com/super-linter/super-linter/blob/v8/Dockerfile#L17)
           VALIDATE_GO_RELEASER: false
           BASH_EXEC_IGNORE_LIBRARIES: true
