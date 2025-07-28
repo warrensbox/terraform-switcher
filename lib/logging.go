@@ -87,7 +87,7 @@ func LogLevels() []string {
 		levels = append(levels, logLevels.Field(fieldNum).Name)
 	}
 
-	slices.Sort(levels) // Sort the result as we also use it in output messages
+	slices.Sort(levels) // Sort the result as we use it in output messages
 	return levels
 }
 

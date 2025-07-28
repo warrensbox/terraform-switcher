@@ -124,7 +124,7 @@ log-level = "INFO"
 ```
 
 - Supported log levels:
-  - `OFF`: disables (suppresses) logging
+  - `OFF`: Disable (suppress) logging
   - `PANIC`: High severity, unrecoverable errors
   - `FATAL`: Fatal, unrecoverable errors + previous log level
   - `ERROR`: Runtime errors that should definitely be noted + previous log levels

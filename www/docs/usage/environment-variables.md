@@ -96,7 +96,7 @@ tfswitch # Will download actual binary to /var/cache/.terraform.versions/
 `TF_LOG_LEVEL` environment variable can be set to override default log level.
 
 - Supported log levels:
-  - `OFF`: disables (suppresses) logging
+  - `OFF`: Disable (suppress) logging
   - `PANIC`: High severity, unrecoverable errors
   - `FATAL`: Fatal, unrecoverable errors + previous log level
   - `ERROR`: Runtime errors that should definitely be noted + previous log levels
