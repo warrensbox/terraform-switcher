@@ -127,11 +127,11 @@ func InitLogger(logLevel string) *slog.Logger {
 				formatter.SetTemplate(loggingTemplateDebug)
 			}
 		} else {
-			// Handle unkonwn log levels down the code once the logger is initialized
+			// Handle unknown log levels down the code once the logger is initialized
 			isUnknownLogLevel = true
 		}
 	} else {
-		// Handle unkonwn log levels down the code once the logger is initialized
+		// Handle unknown log levels down the code once the logger is initialized
 		isUnknownLogLevel = true
 	}
 
