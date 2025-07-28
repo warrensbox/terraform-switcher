@@ -2,6 +2,7 @@ package lib
 
 import (
 	"os"
+	"reflect"
 	"slices"
 	"strings"
 
@@ -15,29 +16,41 @@ var (
 	logger               *slog.Logger
 	loggingTemplateDebug = "{{datetime}} {{level}} [{{caller}}] {{message}} {{data}} {{extra}}\n"
 	loggingTemplate      = "{{datetime}} {{level}} {{message}} {{data}} {{extra}}\n"
-	// Parent lib: https://github.com/gookit/slog/blob/f857defd050dd7fc3c3013134cf50ed51b917a1f/common.go#L69-L88
-	loggingLevel = map[string]slog.Levels{
-		// Special case to disable (suppress) logging
-		"OFF": {},
-		// High severity, unrecoverable errors (internally calls `panic()`)
-		"PANIC": {slog.PanicLevel},
-		// Fatal, unrecoverable errors
-		"FATAL": {slog.PanicLevel, slog.FatalLevel},
-		// Runtime errors that should definitely be noted
-		"ERROR": {slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel},
-		// Non-critical entries that deserve eyes
-		"WARN": {slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel},
-		// Default log level, messages that highlight the progress
-		"INFO": {slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel},
-		// Normal operational entries, but not necessarily noteworthy
-		"NOTICE": {slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel},
-		// Verbose logging, useful for developers
-		"DEBUG": {slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel},
-		// Even more finer-grained informational events
-		"TRACE": {slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel, slog.TraceLevel},
-	}
-	logUnknownLogLevel bool
+	logUnknownLogLevel   bool
 )
+
+// Parent lib: https://github.com/gookit/slog/blob/f857defd050dd7fc3c3013134cf50ed51b917a1f/common.go#L69-L88
+// Keys below are ordered by level of verbosity
+var loggingLevels = struct {
+	OFF    slog.Levels
+	PANIC  slog.Levels
+	FATAL  slog.Levels
+	ERROR  slog.Levels
+	WARN   slog.Levels
+	INFO   slog.Levels
+	NOTICE slog.Levels
+	DEBUG  slog.Levels
+	TRACE  slog.Levels
+}{
+	// Special case to disable (suppress) logging
+	OFF: slog.Levels{},
+	// High severity, unrecoverable errors (internally calls `panic()`)
+	PANIC: slog.Levels{slog.PanicLevel},
+	// Fatal, unrecoverable errors
+	FATAL: slog.Levels{slog.PanicLevel, slog.FatalLevel},
+	// Runtime errors that should definitely be noted
+	ERROR: slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel},
+	// Non-critical entries that deserve eyes
+	WARN: slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel},
+	// Default log level, messages that highlight the progress
+	INFO: slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel},
+	// Normal operational entries, but not necessarily noteworthy
+	NOTICE: slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel},
+	// Verbose logging, useful for developers
+	DEBUG: slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel},
+	// Even more finer-grained informational events
+	TRACE: slog.Levels{slog.PanicLevel, slog.FatalLevel, slog.ErrorLevel, slog.WarnLevel, slog.InfoLevel, slog.NoticeLevel, slog.DebugLevel, slog.TraceLevel},
+}
 
 func isColorLogging() bool {
 	if os.Getenv("NO_COLOR") != "" {
@@ -67,10 +80,13 @@ func NewStderrConsoleHandler(levels []slog.Level) *handler.ConsoleHandler {
 }
 
 func LogLevels() []string {
-	levels := make([]string, 0, len(loggingLevel))
-	for level := range loggingLevel {
-		levels = append(levels, level)
+	logLevels := reflect.TypeOf(loggingLevels)
+	levels := make([]string, 0, logLevels.NumField())
+
+	for fieldNum := 0; fieldNum < logLevels.NumField(); fieldNum++ {
+		levels = append(levels, logLevels.Field(fieldNum).Name)
 	}
+
 	slices.Sort(levels) // Sort the result as we also use it in output messages
 	return levels
 }
@@ -93,16 +109,29 @@ func InitLogger(logLevel string) *slog.Logger {
 	var h *handler.ConsoleHandler
 	// Safe log level fallback just in case
 	// See `initParams()` in lib/param_parsing/parameters.go for default log level
-	h = NewStderrConsoleHandler(loggingLevel[fallbackLogLevel])
+	logLevels := reflect.ValueOf(loggingLevels)
+	loggingLevel, ok := logLevels.FieldByName(fallbackLogLevel).Interface().(slog.Levels)
+	if !ok {
+		panic("Internal error: invalid fallback log level - " + fallbackLogLevel)
+	}
+	h = NewStderrConsoleHandler(loggingLevel)
 
 	isUnknownLogLevel := false
 
-	if slices.Contains(LogLevels(), logLevel) {
-		h = NewStderrConsoleHandler(loggingLevel[logLevel])
-		if slices.Contains(useDebugTemplateLogLevels, logLevel) {
-			formatter.SetTemplate(loggingTemplateDebug)
+	loggingLevelProp := logLevels.FieldByName(logLevel)
+	if loggingLevelProp.IsValid() {
+		loggingLevel, ok = logLevels.FieldByName(logLevel).Interface().(slog.Levels)
+		if ok {
+			h = NewStderrConsoleHandler(loggingLevel)
+			if slices.Contains(useDebugTemplateLogLevels, logLevel) {
+				formatter.SetTemplate(loggingTemplateDebug)
+			}
+		} else {
+			// Handle unkonwn log levels down the code once the logger is initialized
+			isUnknownLogLevel = true
 		}
 	} else {
+		// Handle unkonwn log levels down the code once the logger is initialized
 		isUnknownLogLevel = true
 	}
 
