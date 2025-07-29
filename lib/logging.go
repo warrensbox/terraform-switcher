@@ -120,7 +120,7 @@ func InitLogger(logLevel string) *slog.Logger {
 
 	loggingLevelProp := logLevels.FieldByName(logLevel)
 	if loggingLevelProp.IsValid() {
-		loggingLevel, ok = logLevels.FieldByName(logLevel).Interface().(slog.Levels)
+		loggingLevel, ok = loggingLevelProp.Interface().(slog.Levels)
 		if ok {
 			h = NewStderrConsoleHandler(loggingLevel)
 			if slices.Contains(useDebugTemplateLogLevels, logLevel) {
