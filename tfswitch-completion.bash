@@ -26,7 +26,7 @@ _tfswitch() {
 		return 0
 		;;
 	-g | --log-level)
-		COMPREPLY=($(compgen -W "DEBUG ERROR INFO NOTICE TRACE" -- "$cur"))
+		COMPREPLY=($(compgen -W "DEBUG ERROR FATAL INFO NOTICE OFF PANIC TRACE WARN" -- "$cur"))
 		return 0
 		;;
 	-t | --product)
