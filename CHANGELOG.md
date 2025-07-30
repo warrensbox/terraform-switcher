@@ -7,6 +7,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.5.0](https://github.com/warrensbox/terraform-switcher/tree/v1.5.0) - 2025-07-30
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.7...v1.5.0)
+
+### Fixed
+
+- fix: Rectify incomplete/incorrect logging library logic [#602](https://github.com/warrensbox/terraform-switcher/pull/602) ([yermulnik](https://github.com/yermulnik))
+- fix(Goreleaser): Do not exclude `"^.*?test(ing)?"` from log (overlaps with word `latest`) [#605](https://github.com/warrensbox/terraform-switcher/pull/605) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.5.0` [#607](https://github.com/warrensbox/terraform-switcher/pull/607) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.4.7](https://github.com/warrensbox/terraform-switcher/tree/v1.4.7) - 2025-07-24
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.6...v1.4.7)
