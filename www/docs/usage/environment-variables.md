@@ -96,12 +96,20 @@ tfswitch # Will download actual binary to /var/cache/.terraform.versions/
 `TF_LOG_LEVEL` environment variable can be set to override default log level.
 
 - Supported log levels:
-  - `ERROR`: includes `PANIC`, `FATAL`, `ERROR`
-  - `INFO`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `INFO` (default)
-  - `NOTICE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`
-  - `DEBUG`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`
-  - `TRACE`: includes `PANIC`, `FATAL`, `ERROR`, `WARN`, `NOTICE`, `INFO`, `DEBUG`, `TRACE`
-  - Any other log level value falls under default logging level
+  - `OFF`: Disable (suppress) logging
+  - `PANIC`: High severity, unrecoverable errors
+  - `FATAL`: Fatal, unrecoverable errors + previous log level
+  - `ERROR`: Runtime errors that should definitely be noted + previous log levels
+  - `WARN`: Non-critical entries that deserve eyes + previous log levels
+  - `INFO`: Default logging level, messages that highlight the progress + previous log levels
+  - `NOTICE`: Normal operational entries, but not necessarily noteworthy + previous log levels
+  - `DEBUG`: Verbose logging, useful for development + previous log levels
+  - `TRACE`: Finer-grained informational events than DEBUG + previous log levels
+  - Any other log level value results in a warning message
+  <!-- TODO: see `lib/logging.go` for a planned switch to fatal error
+  - Any other log level value results in error and `tfswitch` will exit with
+    non-zero exit code.
+    -->
 
 For example:
 
