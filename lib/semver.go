@@ -20,7 +20,7 @@ func GetSemver(tfconstraint string, mirrorURL string) (string, error) {
 	return tfversion, err
 }
 
-// SemVerParser  : Goes through the list of versions, returns a valid version for contraint provided
+// SemVerParser  : Goes through the list of versions, returns a valid version for constraint provided
 func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 	tfversion := ""
 	constraints, err := semver.NewConstraint(*tfconstraint) // NewConstraint returns a Constraints instance that a Version instance can be checked against

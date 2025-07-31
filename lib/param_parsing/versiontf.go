@@ -42,7 +42,7 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 	requiredVersions := module.RequiredCore
 
 	for key := range requiredVersions {
-		// Check if the version contraint is valid
+		// Check if the version constraint is valid
 		constraint, constraintErr := semver.NewConstraint(requiredVersions[key])
 		if constraintErr != nil {
 			logger.Errorf("Invalid version constraint found: %q", requiredVersions[key])
@@ -73,5 +73,5 @@ func isTerraformModule(params Params) bool {
 	if len(module.RequiredCore) == 0 {
 		logger.Debugf("No required version constraints defined by Terraform module at %q", params.ChDirPath)
 	}
-	return err == nil && len(module.RequiredCore) > 0
+	return len(module.RequiredCore) > 0
 }
