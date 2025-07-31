@@ -98,3 +98,32 @@ func TestSemverParserCase5(t *testing.T) {
 		t.Errorf("This is unexpected. Parsing failed. Expected: %q", expected)
 	}
 }
+
+func TestSemverCheckFoss(t *testing.T) {
+	tests := map[string]struct {
+		version string
+		expected   bool
+	}{
+		"FOSS": {
+			version: "1.5.1",
+			expected: true,
+		},
+		"BSL": {
+			version: "1.7.1",
+			expected: false,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			actual, err := lib.SemVerCheckFoss(test.version)
+			if err != nil {
+				t.Errorf("Error checking for Foss licensed version %q: %v", test.version, err)
+			}
+			if actual != test.expected {
+				t.Errorf("%s: Version %q returned %v. Expected: %v", name, test.version, actual, test.expected)
+			}
+		})
+	}
+}
+

@@ -32,6 +32,7 @@ type Params struct {
 	NoColor          bool
 	ProductEntity    lib.Product
 	Product          string
+	FossFallback     bool
 	ShowLatestFlag   bool
 	ShowLatestPre    string
 	ShowLatestStable string
@@ -56,6 +57,7 @@ var paramMappings = []struct {
 	{param: "LogLevel", ptype: reflect.String, env: "TF_LOG_LEVEL", toml: "log-level", description: "Log level"},
 	{param: "NoColor", ptype: reflect.Bool, env: "NO_COLOR", toml: "no-color", description: "Disable color output"},
 	{param: "Product", ptype: reflect.String, env: "TF_PRODUCT", toml: "product", description: "Product"},
+	{param: "FossFallback", ptype: reflect.Bool, env: "TF_FossFallback", toml: "foss-fallback", description: "Enable FOSS licensed Terraform fallback"},
 	{param: "Version", ptype: reflect.String, env: "TF_VERSION", toml: "version", description: "Version"},
 }
 
@@ -100,6 +102,7 @@ func populateParams(params Params) Params {
 	getopt.BoolVarLong(&params.NoColor, "no-color", 'k', "Disable color output. Useful for piping output to a file or when the terminal does not support colors")
 	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
 	getopt.BoolVarLong(&params.VersionFlag, "version", 'v', "Display the version of tfswitch")
+	getopt.BoolVarLong(&params.FossFallback, "foss-fallback", 'f', "When product is OpenTofu, fall back to FOSS licensed Terraform for pre-OpenTofu versions. ")
 
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
@@ -260,6 +263,25 @@ func populateParams(params Params) Params {
 	return params
 }
 
+// Update the product information to use Terraform when a Tofu version isn't available
+func TofuFossFallback(params Params) Params {
+	tofuExecName := params.ProductEntity.GetExecutableName()
+
+	// Update the target product
+	params.Product = "terraform";
+	terraform := lib.GetProductById(params.Product)
+	params.ProductEntity = terraform
+
+	// When falling back to FOSS Terraform only the default URL is supported
+	params.MirrorURL = terraform.GetDefaultMirrorUrl()
+
+	// Update the executable path
+	newPath := strings.Replace(params.CustomBinaryPath, tofuExecName, terraform.GetExecutableName(), -1)
+	params.CustomBinaryPath = newPath
+
+	return params
+}
+
 func initParams(params Params) Params {
 	params.Arch = runtime.GOARCH
 	params.ChDirPath = lib.GetCurrentDirectory()
@@ -282,6 +304,7 @@ func initParams(params Params) Params {
 	params.TomlDir = lib.GetHomeDirectory()
 	params.Version = lib.DefaultLatest
 	params.Product = lib.DefaultProductId
+	params.FossFallback = false
 	params.VersionFlag = false
 	return params
 }

@@ -56,11 +56,38 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 
 	version, err2 := lib.GetSemver(tfConstraint, params.MirrorURL)
 	if err2 != nil {
-		logger.Errorf("No version found matching %q", tfConstraint)
-		return params, err2
+		logger.Warnf("No %s version found matching %s", params.ProductEntity.GetName(), tfConstraint)
+		if params.FossFallback && strings.EqualFold(params.Product, "opentofu") {
+			tfparams := params // capture original settings
+			logger.Info("Testing for possible fallback to a matching FOSS Terraform version")
+			params = TofuFossFallback(params)
+
+			fossVersion, fossErr := lib.GetSemver(tfConstraint, params.MirrorURL)
+			if fossErr != nil {
+				logger.Errorf("No %s version found matching %s", params.Product, tfConstraint)
+				return params, fossErr
+			}
+			
+			fossLicensed, fossErr := lib.SemVerCheckFoss(fossVersion)
+			if fossErr != nil {
+				logger.Errorf("Terraform license check for %s failed: %v", fossVersion, err)
+				return params, fossErr
+			}
+
+			if !fossLicensed {
+				// If this is not a valid fallback then return the original error and settings
+				logger.Errorf("Matching Terraform version is not FOSS licensed: %s", fossVersion)
+				return tfparams, err2
+			}
+
+			version = fossVersion
+		} else {
+			return params, err2
+		}
 	}
+
 	params.Version = version
-	logger.Debugf("Using version from Terraform module at %q: %q", relPath, params.Version)
+	logger.Debugf("Using %q version from Terraform module at %q: %q", params.Product, relPath, params.Version)
 	return params, nil
 }
 

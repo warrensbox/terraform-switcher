@@ -53,6 +53,25 @@ func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 	return "", fmt.Errorf("Did not find version matching constraint: %s", *tfconstraint)
 }
 
+func SemVerCheckFoss(tfversion string) (bool, error) {
+	version, err := semver.NewVersion(tfversion)
+	if err != nil {
+		return false, fmt.Errorf("Error parsing version: %s", err)
+	}
+
+	constraint, err := semver.NewConstraint("<1.6.0")
+	if err != nil {
+		return false, fmt.Errorf("Error parsing FOSS constraint: %s", err)
+	}
+
+	if constraint.Check(version) {
+		logger.Infof("Terraform %s is a FOSS licensed release.", tfversion)
+		return true, nil
+	}
+
+	return false, nil
+}
+
 // PrintInvalidTFVersion Print invalid TF version
 func PrintInvalidTFVersion() {
 	logger.Error("Version does not exist or invalid terraform version format.\n\tFormat should be #.#.# or #.#.#-@# where # are numbers and @ are word characters.\n\tFor example, 1.11.7 and 0.11.9-beta1 are valid versions")
