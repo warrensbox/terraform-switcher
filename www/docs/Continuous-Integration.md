@@ -1,8 +1,11 @@
+<!-- markdownlint-disable MD041 -->
+
 ## Jenkins setup
+
 ![jenkins_tfswitch](static/jenkins_tfswitch.png)
 
 ```sh
-#!/bin/bash 
+#!/bin/bash
 
 echo "Installing tfswitch locally"
 wget https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh  #Get the installer on to your machine
@@ -17,8 +20,8 @@ export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
 $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
 
-#OR 
-$CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
+#OR
+$CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform
 
 terraform -v                    #testing version
 ```
@@ -27,7 +30,8 @@ terraform -v                    #testing version
 
 ![cirecleci_tfswitch](static/circleci_tfswitch.png)
 
-Example config yaml
+Example config YAML
+
 ```yaml
 version: 2
 jobs:
@@ -39,8 +43,8 @@ jobs:
 
     steps:
       - checkout
-      - run: 
-          command: |    
+      - run:
+          command: |
             set +e   
             apt-get update 
             apt-get install -y wget 
@@ -59,7 +63,7 @@ jobs:
             export PATH=$PATH:$CUSTOMBIN    #Add custom bin path to PATH environment
 
             $CUSTOMBIN/tfswitch -b $CUSTOMBIN/terraform 0.11.7 #or simply tfswitch -b $CUSTOMBIN/terraform 0.11.7
-            
+
             #OR 
             $CUSTOMBIN/tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform  #or simply tfswitch -d 0.11.7 -b $CUSTOMBIN/terraform 
 

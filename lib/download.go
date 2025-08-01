@@ -1,3 +1,4 @@
+//nolint:staticcheck //ST1005: error strings should not be capitalized (staticcheck)
 package lib
 
 import (
@@ -15,37 +16,41 @@ func DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos,
 	product := getLegacyProduct()
 	return DownloadProductFromURL(product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch)
 }
+
 func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch string) (string, error) {
 	var wg sync.WaitGroup
 	defer wg.Done()
+	// nolint:revive // FIXME: var-naming: var zipUrl should be zipURL (revive)
 	zipUrl := mirrorURL + "/" + versionPrefix + tfversion + "_" + goos + "_" + goarch + ".zip"
+	// nolint:revive // FIXME: var-naming: var hashUrl should be hashURL (revive)
 	hashUrl := mirrorURL + "/" + versionPrefix + tfversion + "_SHA256SUMS"
+	// nolint:revive // FIXME: var-naming: var hashSignatureUrl should be hashSignatureURL (revive)
 	hashSignatureUrl := mirrorURL + "/" + versionPrefix + tfversion + "_SHA256SUMS." + product.GetShaSignatureSuffix()
 
 	pubKeyFilename, err := downloadPublicKey(product, installLocation, &wg)
 	if err != nil {
-		logger.Error("Could not download public PGP key file.")
+		logger.Error("Could not download public PGP key file")
 		return "", err
 	}
 
 	logger.Infof("Downloading %q", zipUrl)
 	zipFilePath, err := downloadFromURL(installLocation, zipUrl, &wg)
 	if err != nil {
-		logger.Error("Could not download zip file.")
+		logger.Error("Could not download zip file")
 		return "", err
 	}
 
 	logger.Infof("Downloading %q", hashUrl)
 	hashFilePath, err := downloadFromURL(installLocation, hashUrl, &wg)
 	if err != nil {
-		logger.Error("Could not download hash file.")
+		logger.Error("Could not download hash file")
 		return "", err
 	}
 
 	logger.Infof("Downloading %q", hashSignatureUrl)
 	hashSigFilePath, err := downloadFromURL(installLocation, hashSignatureUrl, &wg)
 	if err != nil {
-		logger.Error("Could not download hash signature file.")
+		logger.Error("Could not download hash signature file")
 		return "", err
 	}
 
@@ -98,7 +103,7 @@ func downloadFromURL(installLocation string, url string, wg *sync.WaitGroup) (st
 	fileName := tokens[len(tokens)-1]
 	logger.Infof("Downloading to %q", filepath.Join(installLocation, "/", fileName))
 
-	response, err := http.Get(url)
+	response, err := http.Get(url) // nolint:gosec // `url' is expected to be variable
 	if err != nil {
 		logger.Errorf("Error downloading %s: %v", url, err)
 		return "", err
@@ -106,8 +111,8 @@ func downloadFromURL(installLocation string, url string, wg *sync.WaitGroup) (st
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		//Sometimes hashicorp terraform file names are not consistent
-		//For example 0.12.0-alpha4 naming convention in the release repo is not consistent
+		// Sometimes hashicorp terraform file names are not consistent
+		// For example 0.12.0-alpha4 naming convention in the release repo is not consistent
 		return "", errors.New("Unable to download from " + url)
 	}
 

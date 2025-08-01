@@ -7,5 +7,5 @@ const (
 	pubKeySuffix              = ".asc"
 	recentFile                = "RECENT"
 	tfDarwinArm64StartVersion = "1.0.2"
-	DefaultProductId          = "terraform"
+	DefaultProductId          = "terraform" // nolint:revive // FIXME: var-naming: const DefaultProductId should be DefaultProductID (revive)
 )

@@ -1,14 +1,21 @@
+//nolint:revive // FIXME: don't use an underscore in package name
 package param_parsing
 
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strings"
 	"testing"
 
+	"github.com/gookit/color"
 	"github.com/pborman/getopt"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
+
+var ansiCodesRegex = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
 
 func TestGetParameters_arch_from_args(t *testing.T) {
 	expected := "arch_from_args"
@@ -40,6 +47,10 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})
+
+	os.Setenv("BIN_DIR_FROM_TOML", "/usr/local/bin")
+	os.Setenv("INSTALL_DIR_FROM_TOML", "/tmp")
+
 	expected := "../../test-data/integration-tests/test_tfswitchtoml"
 	os.Args = []string{"cmd", "--chdir=" + expected}
 	params := Params{}
@@ -58,6 +69,12 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 		t.Error("CustomBinaryPath Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
 
+	expected = "/tmp"
+	actual = params.InstallPath
+	if actual != expected {
+		t.Error("InstallPath Param was not as expected. Actual: " + actual + ", Expected: " + expected)
+	}
+
 	expected = "amd64"
 	actual = params.Arch
 	if actual != expected {
@@ -70,11 +87,33 @@ func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 		t.Error("Version Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
 
+	expected = "1.5.4"
+	actual = params.DefaultVersion
+	if actual != expected {
+		t.Error("DefaultVersion Param was not as expected. Actual: " + actual + ", Expected: " + expected)
+	}
+
 	expected = "opentofu"
 	actual = params.Product
 	if actual != expected {
 		t.Error("Product Param was not as expected. Actual: " + actual + ", Expected: " + expected)
 	}
+
+	expected = "NOTICE"
+	actual = params.LogLevel
+	if actual != expected {
+		t.Error("LogLevel Param was not as expected. Actual: " + actual + ", Expected: " + expected)
+	}
+
+	expectedBool := false
+	actualBool := params.NoColor
+	if actualBool != expectedBool {
+		t.Errorf("NoColor Param was not as expected. Actual: %v, Expected: %v", actualBool, expectedBool)
+	}
+
+	os.Unsetenv("BIN_DIR_FROM_TOML")
+	os.Unsetenv("INSTALL_DIR_FROM_TOML")
+
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
 	})
@@ -162,9 +201,9 @@ func TestGetParameters_dry_run_wont_download_anything(t *testing.T) {
 	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+params.Version))
 	// Make sure the file tfswitch WOULD download is absent
 	_ = os.Remove(installFileVersionPath)
-	lib.InstallProductVersion(product, params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL, params.Arch)
-	if lib.FileExistsAndIsNotDir(installFileVersionPath) {
-		t.Error("Dry run should NOT download any files.")
+	err := lib.InstallProductVersion(product, params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL, params.Arch)
+	if err != nil || lib.FileExistsAndIsNotDir(installFileVersionPath) {
+		t.Error("Dry run should NOT install any files.")
 	}
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()
@@ -181,7 +220,8 @@ func writeTestFile(t *testing.T, basePath string, fileName string, fileContent s
 	})
 }
 
-func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string, expectedDefaultVersion string) {
+//nolint:revive // FIXME: the 3rd argument is not used %-/ 10-Mar-2025
+func checkExpectedPrecedenceVersion(t *testing.T, expectedVersion string, _ string) {
 	getopt.CommandLine = getopt.New()
 	os.Args = []string{"cmd", "--chdir=../../test-data/skip-integration-tests/test_precedence"}
 	parameters := Params{}
@@ -304,4 +344,139 @@ product = "opentofu"
 	checkExpectedPrecedenceProduct(t, tempDir, terraformProduct)
 
 	os.Unsetenv("TF_VERSION")
+}
+
+func TestVersionFlagOutput(t *testing.T) {
+	flagName := "--version"
+	expectedOutput := "Version: "
+	goCommandArgs := []string{"run", "../../main.go", flagName}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if !strings.HasPrefix(string(out), expectedOutput) {
+		t.Errorf("Expected %q, got: %q", expectedOutput, string(out))
+	} else {
+		t.Logf("Success: %q", string(out))
+	}
+}
+
+func TestHelpFlagOutput(t *testing.T) {
+	flagName := "--help"
+	expectedOutput := "Usage: "
+	goCommandArgs := []string{"run", "../../main.go", flagName}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if !strings.HasPrefix(string(out), expectedOutput) {
+		t.Errorf("Expected %q, got: %q", expectedOutput, string(out))
+	} else {
+		t.Logf("Success: %q", string(out))
+	}
+}
+
+func TestDryRunFlagOutput(t *testing.T) {
+	flagName := "--dry-run"
+	testVersion := "1.10.5"
+	expectedOutput := fmt.Sprintf(" INFO [DRY-RUN] Would have attempted to install version %q  \n", testVersion)
+	goCommandArgs := []string{"run", "../../main.go", flagName, testVersion}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	re := regexp.MustCompile(ansiCodesRegex)
+	outNoANSI := func(str string) string {
+		return re.ReplaceAllString(str, "")
+	}(string(out))
+
+	if !strings.HasSuffix(outNoANSI, expectedOutput) {
+		t.Errorf("Expected %q, got: %q", expectedOutput, outNoANSI)
+	} else {
+		t.Logf("Success: %q", outNoANSI)
+	}
+}
+
+func TestNoColorFlagOutput(t *testing.T) {
+	flagName := "--no-color"
+	goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", "1.10.5"}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	matched, err := regexp.MatchString(ansiCodesRegex, string(out))
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	if matched {
+		t.Errorf("Expected no ANSI color codes in output, but found some: %q", string(out))
+	} else {
+		t.Log("Success: no ANSI color codes in output")
+	}
+}
+
+func TestForceColorFlagOutput(t *testing.T) {
+	flagName := "--force-color"
+	if color.SupportColor() {
+		goCommandArgs := []string{"run", "../../main.go", flagName, "--dry-run", "1.10.5"}
+
+		t.Logf("Testing %q flag output", flagName)
+
+		out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+		if err != nil {
+			t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+		}
+
+		matched, err := regexp.MatchString(ansiCodesRegex, string(out))
+		if err != nil {
+			t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+		}
+
+		if !matched {
+			t.Errorf("Expected ANSI color codes in output, but found none: %q", string(out))
+		} else {
+			t.Log("Success: found ANSI color codes in output")
+		}
+	} else {
+		t.Skipf("Skipping test for %q flag as terminal doesn't support colors", flagName)
+	}
+}
+
+func TestNoAndForceColorFlagsOutput(t *testing.T) {
+	flagNameForceColor := "--force-color"
+	flagNameNoColor := "--no-color"
+
+	expectedOutput := "FATAL (init) Cannot force color and disable color at the same time. Please choose either of them."
+
+	goCommandArgs := []string{"run", "../../main.go", "--dry-run", flagNameForceColor, flagNameNoColor, "1.10.5"}
+
+	t.Logf("Testing %q and %q flags both present", flagNameForceColor, flagNameNoColor)
+
+	out, err := exec.Command("go", goCommandArgs...).CombinedOutput() // nolint:errcheck // We want to test the output even if it fails
+	if err == nil {
+		t.Fatalf("Expected an error, but got none. Output: %q", string(out))
+	}
+
+	if !strings.Contains(string(out), expectedOutput) {
+		t.Errorf("Expected %q, got: %q", expectedOutput, out)
+	} else {
+		t.Logf("Success: %q", expectedOutput)
+	}
 }

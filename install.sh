@@ -1,18 +1,17 @@
 #!/bin/sh
 set -e
 
-
 usage() {
   this=$1
   cat <<EOF
-$this: download go binaries for warrensbox/tfswitch
+$this: Download Go binaries for $OWNER/$BINARY
 
-Usage: $this [-b] bindir [-d] [tag]
-  -b sets bindir or installation directory, Defaults to ./bin
-  -d turns on debug logging
-   [tag] is a tag from
-   https://github.com/warrensbox/terraform-switcher/releases
-   If tag is missing, then the latest will be used.
+Usage: $this [-b dir] [-d] [tag]
+  -b Sets installation directory. Defaults to ./bin
+  -d Turns on debug logging
+
+  [tag] Is a tag from https://github.com/$PREFIX/releases
+        If tag is missing, then the latest will be used.
 
 EOF
   exit 2
@@ -46,7 +45,8 @@ execute() {
   srcdir="${tmpdir}"
   (cd "${tmpdir}" && untar "${TARBALL}")
   install -d "${BINDIR}"
-  for binexe in "tfswitch" ; do
+  # shellcheck disable=SC2043,SC2066 # We're good with this loop to only ever run once
+  for binexe in "$BINARY"; do
     if [ "$OS" = "windows" ]; then
       binexe="${binexe}.exe"
     fi
@@ -88,6 +88,10 @@ tag_to_version() {
 }
 adjust_format() {
   # change format (tar.gz or zip) based on ARCH
+  case ${OS} in
+    # zip archives for Windows appeared in tfswitch v1.3.1
+    windows) expr "$REALTAG" \> "v1.3.0" >/dev/null && FORMAT=zip ;;
+  esac
   true
 }
 adjust_os() {
@@ -114,6 +118,7 @@ echoerr() {
   echo "$@" 1>&2
 }
 log_prefix() {
+  # shellcheck disable=SC2317 # (info): Command appears to be unreachable
   echo "$0"
 }
 _logp=6
@@ -175,7 +180,7 @@ uname_arch() {
     armv6*) arch="armv6" ;;
     armv7*) arch="armv7" ;;
   esac
-  echo ${arch}
+  echo "${arch}"
 }
 uname_os_check() {
   os=$(uname_os)
@@ -339,8 +344,8 @@ End of functions from https://github.com/client9/shlib
 EOF
 
 PROJECT_NAME="terraform-switcher"
-OWNER=warrensbox
-REPO="terraform-switcher"
+OWNER="warrensbox"
+REPO="$PROJECT_NAME"
 BINARY=tfswitch
 FORMAT=tar.gz
 OS=$(uname_os)
@@ -349,10 +354,10 @@ PREFIX="$OWNER/$REPO"
 
 # use in logging routines
 log_prefix() {
-	echo "$PREFIX"
+  echo "$PREFIX"
 }
 PLATFORM="${OS}/${ARCH}"
-GITHUB_DOWNLOAD=https://github.com/${OWNER}/${REPO}/releases/download
+GITHUB_DOWNLOAD=https://github.com/$PREFIX/releases/download
 
 uname_os_check "$OS"
 uname_arch_check "$ARCH"
@@ -378,3 +383,5 @@ CHECKSUM=${PROJECT_NAME}_${REALTAG}_checksums.txt
 CHECKSUM_URL=${GITHUB_DOWNLOAD}/${REALTAG}/${CHECKSUM}
 
 execute
+
+# vim: set expandtab tabstop=2 shiftwidth=2:

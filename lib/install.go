@@ -1,3 +1,4 @@
+//nolint:staticcheck //ST1005: error strings should not be capitalized (staticcheck)
 package lib
 
 import (
@@ -5,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"sync"
+	"time"
 
 	"github.com/manifoldco/promptui"
 
@@ -16,6 +17,8 @@ import (
 var installLocation = "/tmp"
 
 // initialize : removes existing symlink to terraform binary based on provided binPath
+//
+//nolint:unused // FIXME: Function is not used 10-Mar-2025
 func initialize(binPath string) {
 	/* find terraform binary location if terraform is already installed*/
 	cmd := NewCommand(binPath)
@@ -27,12 +30,14 @@ func initialize(binPath string) {
 		binPath = path
 	}
 
-	/* check if current symlink to terraform binary exist */
+	/* check if current symlink to terraform binary exists */
 	symlinkExist := CheckSymlink(binPath)
 
-	/* remove current symlink if exist*/
+	/* remove current symlink if exists */
 	if symlinkExist {
-		RemoveSymlink(binPath)
+		if err := RemoveSymlink(binPath); err != nil {
+			logger.Errorf("Error removing symlink: %v", err)
+		}
 	}
 }
 
@@ -42,7 +47,7 @@ func GetInstallLocation(installPath string) string {
 	/* set installation location */
 	installLocation = filepath.Join(installPath, InstallDir)
 
-	/* Create local installation directory if it does not exist */
+	/* Create local installation directory if it does not exists */
 	createDirIfNotExist(installLocation)
 	return installLocation
 }
@@ -51,32 +56,52 @@ func GetInstallLocation(installPath string) string {
 func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch string) error {
 	var wg sync.WaitGroup
 
-	// check to see if the requested version has been downloaded before
 	installLocation := GetInstallLocation(installPath)
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+tfversion))
-	recentDownloadFile := CheckFileExist(installFileVersionPath)
-	if recentDownloadFile {
+
+	// Create exclusive lock to prevent multiple concurrent installations
+	// Put lockfile in temp directory to get it cleaned up on reboot
+	lockFile := filepath.Join(os.TempDir(), ".tfswitch."+product.GetId()+".lock")
+	// 90 attempts * 2 seconds = 3 minutes to acquire lock, otherwise bail out
+	lockedFH, err := acquireLock(lockFile, 90, 2*time.Second)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	// Release lock when done
+	defer releaseLock(lockFile, lockedFH)
+
+	// check to see if the requested version has been downloaded before
+	if CheckFileExist(installFileVersionPath) {
 		return switchToVersion(product, tfversion, binPath, installPath, installFileVersionPath)
 	}
 
 	// If the requested version had not been downloaded before
 	// Set list all true - all versions including beta and rc will be displayed
-	tflist, _ := getTFList(mirrorURL, true)  // Get list of versions
-	exist := versionExist(tfversion, tflist) // Check if version exists before downloading it
+	tflist, errTFList := getTFList(mirrorURL, true) // Get list of versions
+	if errTFList != nil {
+		return fmt.Errorf("Error getting list of %s versions from %q: %v", product.GetName(), mirrorURL, errTFList)
+	}
 
-	if !exist {
-		return fmt.Errorf("the provided %s version does not exist: %q.\n Try `tfswitch -l` to see all available versions", product.GetId(), tfversion)
+	// Check if version exists before downloading it
+	if !versionExist(tfversion, tflist) {
+		return fmt.Errorf("Provided %s version does not exist: %q.\n\tTry `tfswitch -l` to see all available versions", product.GetName(), tfversion)
 	}
 
 	if goarch != runtime.GOARCH {
-		logger.Warnf("Installing for %q architecture on %q!", goarch, runtime.GOARCH)
+		logger.Warnf("Installing for %q CPU architecture on %q!", goarch, runtime.GOARCH)
 	}
 
 	goos := runtime.GOOS
 
 	// Terraform darwin arm64 comes with 1.0.2 and next version
-	tfver, _ := version.NewVersion(tfversion)
-	tf102, _ := version.NewVersion(tfDarwinArm64StartVersion)
+	tfver, tfverErr := version.NewVersion(tfversion)
+	if tfverErr != nil {
+		return fmt.Errorf("Error parsing %q version: %v", tfversion, tfverErr)
+	}
+	tf102, tf102Err := version.NewVersion(tfDarwinArm64StartVersion)
+	if tf102Err != nil {
+		return fmt.Errorf("Error parsing %q version: %v", tfDarwinArm64StartVersion, tf102Err)
+	}
 	if goos == "darwin" && goarch == "arm64" && tfver.LessThan(tf102) {
 		goarch = "amd64"
 	}
@@ -87,16 +112,22 @@ func install(product Product, tfversion, binPath, installPath, mirrorURL, goarch
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
+		// logger.Fatal doesn't invoke deferred functions,
+		// so need to release the lock explicitly
+		releaseLock(lockFile, lockedFH)
 		logger.Fatalf("Error downloading: %s", errDownload)
 	}
 
 	/* unzip the downloaded zipfile */
 	_, errUnzip := Unzip(zipFile, installLocation, product.GetExecutableName())
 	if errUnzip != nil {
+		// logger.Fatal doesn't invoke deferred functions,
+		// so need to release the lock explicitly
+		releaseLock(lockFile, lockedFH)
 		logger.Fatalf("Unable to unzip %q file: %v", zipFile, errUnzip)
 	}
 
-	logger.Debug("Waiting for deferred functions.")
+	logger.Debug("Waiting for deferred functions")
 	wg.Wait()
 	/* rename unzipped file to terraform version name - terraform_x.x.x */
 	installFilePath := ConvertExecutableExt(filepath.Join(installLocation, product.GetExecutableName()))
@@ -123,12 +154,13 @@ func switchToVersion(product Product, tfversion string, binPath string, installP
 
 // ConvertExecutableExt : convert executable with local OS extension
 func ConvertExecutableExt(fpath string) string {
+	const winExt = ".exe"
 	switch runtime.GOOS {
-	case "windows":
-		if filepath.Ext(fpath) == ".exe" {
+	case windows:
+		if filepath.Ext(fpath) == winExt {
 			return fpath
 		}
-		return fpath + ".exe"
+		return fpath + winExt
 	default:
 		return fpath
 	}
@@ -137,6 +169,8 @@ func ConvertExecutableExt(fpath string) string {
 // installableBinLocation : Checks if terraform is installable in the location provided by the user.
 // If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
 // Deprecated: This function has been deprecated and will be removed in v2.0.0
+//
+//nolint:unused // Function is deprecated
 func installableBinLocation(product Product, userBinPath string) string {
 	homedir := GetHomeDirectory()         // get user's home directory
 	binDir := Path(userBinPath)           // get path directory from binary path
@@ -145,11 +179,12 @@ func installableBinLocation(product Product, userBinPath string) string {
 	if binPathExist { // if bin path exist - check if we can write to it
 
 		binPathWritable := false // assume bin path is not writable
-		if runtime.GOOS != "windows" {
+		if runtime.GOOS != windows {
 			binPathWritable = CheckDirWritable(binDir) // check if is writable on ( only works on LINUX)
 		}
 
-		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false), we will attempt to install terraform at the ~/bin location. See ELSE
+		// IF: "/usr/local/bin" or `custom bin path` provided by user is non-writable, (binPathWritable == false),
+		// we will attempt to install terraform at the ~/bin location. See ELSE
 		if !binPathWritable {
 			homeBinDir := filepath.Join(homedir, "bin")
 			if !CheckDirExist(homeBinDir) { // if ~/bin exist, install at ~/bin/terraform
@@ -161,12 +196,12 @@ func installableBinLocation(product Product, userBinPath string) string {
 			logger.Infof("Installing %s at %q", product.GetName(), homeBinDir)
 			return filepath.Join(homeBinDir, product.GetExecutableName())
 
-		} else { // ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
-			return filepath.Join(userBinPath)
 		}
+		// ELSE: the "/usr/local/bin" or custom path provided by user is writable, we will return installable location
+		return userBinPath
 	}
 
-	logger.Fatalf("Binary path (%q) does not exist. Manually create bin directory %q and try again.", userBinPath, binDir)
+	logger.Fatalf("Binary path (%q) does not exist. Manually create bin directory %q and try again", userBinPath, binDir)
 	os.Exit(1)
 	return ""
 }
@@ -176,15 +211,21 @@ func installableBinLocation(product Product, userBinPath string) string {
 // Deprecated: This function has been deprecated in favor of InstallLatestProductVersion and will be removed in v2.0.0
 func InstallLatestVersion(dryRun bool, customBinaryPath, installPath, mirrorURL, arch string) {
 	product := getLegacyProduct()
+	//nolint:errcheck // Function is deprecated
 	InstallLatestProductVersion(product, dryRun, customBinaryPath, installPath, mirrorURL, arch)
 }
 
 // InstallLatestProductVersion install latest stable tf version
 func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath, installPath, mirrorURL, arch string) error {
-	tfversion, _ := getTFLatest(mirrorURL)
+	tfversion, err := getTFLatest(mirrorURL)
+	if err != nil {
+		return fmt.Errorf("Error getting latest %s version from %q: %v", product.GetName(), mirrorURL, err)
+	}
+
 	if !dryRun {
 		return install(product, tfversion, customBinaryPath, installPath, mirrorURL, arch)
 	}
+
 	return nil
 }
 
@@ -193,6 +234,7 @@ func InstallLatestProductVersion(product Product, dryRun bool, customBinaryPath,
 // Deprecated: This function has been deprecated in favor of InstallLatestProductImplicitVersion and will be removed in v2.0.0
 func InstallLatestImplicitVersion(dryRun bool, requestedVersion, customBinaryPath, installPath, mirrorURL, arch string, preRelease bool) {
 	product := getLegacyProduct()
+	//nolint:errcheck // Function is deprecated
 	InstallLatestProductImplicitVersion(product, dryRun, requestedVersion, customBinaryPath, installPath, mirrorURL, arch, preRelease)
 }
 
@@ -205,7 +247,9 @@ func InstallLatestProductImplicitVersion(product Product, dryRun bool, requested
 	}
 	tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
 	if err == nil && tfversion != "" && !dryRun {
-		install(product, tfversion, customBinaryPath, installPath, mirrorURL, arch)
+		if errInstall := install(product, tfversion, customBinaryPath, installPath, mirrorURL, arch); errInstall != nil {
+			return fmt.Errorf("Error installing %s version %q: %v", product.GetName(), tfversion, errInstall)
+		}
 		return nil
 	}
 	PrintInvalidMinorTFVersion()
@@ -217,22 +261,22 @@ func InstallLatestProductImplicitVersion(product Product, dryRun bool, requested
 // Deprecated: This function has been deprecated in favor of InstallProductVersion and will be removed in v2.0.0
 func InstallVersion(dryRun bool, version, customBinaryPath, installPath, mirrorURL, arch string) {
 	product := getLegacyProduct()
+	//nolint:errcheck // Function is deprecated
 	InstallProductVersion(product, dryRun, version, customBinaryPath, installPath, mirrorURL, arch)
 }
 
 // InstallProductVersion install with provided version as argument
 func InstallProductVersion(product Product, dryRun bool, version, customBinaryPath, installPath, mirrorURL, arch string) error {
-	logger.Debugf("Install version %s. Dry run: %s", version, strconv.FormatBool(dryRun))
 	if !dryRun {
+		logger.Debugf("Installing version %q", version)
 		if validVersionFormat(version) {
 			requestedVersion := version
 			return install(product, requestedVersion, customBinaryPath, installPath, mirrorURL, arch)
-		} else {
-			PrintInvalidTFVersion()
-			UsageMessage()
-			return fmt.Errorf("args must be a valid terraform version")
 		}
+		PrintInvalidTFVersion()
+		return fmt.Errorf("Argument must be a valid %s version", product.GetName())
 	}
+	logger.Infof("[DRY-RUN] Would have attempted to install version %q", version)
 	return nil
 }
 
@@ -243,6 +287,7 @@ func InstallProductVersion(product Product, dryRun bool, version, customBinaryPa
 // Deprecated: This function has been deprecated in favor of InstallProductOption and will be removed in v2.0.0
 func InstallOption(listAll, dryRun bool, customBinaryPath, installPath, mirrorURL, arch string) {
 	product := getLegacyProduct()
+	//nolint:errcheck // Function is deprecated
 	InstallProductOption(product, listAll, dryRun, customBinaryPath, installPath, mirrorURL, arch)
 }
 
@@ -257,9 +302,10 @@ type VersionSelector struct {
 func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPath, installPath, mirrorURL, arch string) error {
 	var selectVersions []VersionSelector
 
-	var versionMap map[string]bool = make(map[string]bool)
+	versionMap := make(map[string]bool)
 
 	// Add recent versions
+	//nolint:errcheck // getRecentVersions always returns nil error %-/
 	recentVersions, _ := getRecentVersions(installPath, product)
 	for _, version := range recentVersions {
 		selectVersions = append(selectVersions, VersionSelector{
@@ -270,7 +316,10 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 	}
 
 	// Add all versions
-	tfList, _ := getTFList(mirrorURL, listAll)
+	tfList, errTFList := getTFList(mirrorURL, listAll)
+	if errTFList != nil {
+		return fmt.Errorf("Error getting list of %s versions from %q: %v", product.GetName(), mirrorURL, errTFList)
+	}
 	for _, version := range tfList {
 		if !versionMap[version] {
 			selectVersions = append(selectVersions, VersionSelector{
@@ -304,12 +353,14 @@ func InstallProductOption(product Product, listAll, dryRun bool, customBinaryPat
 		if errPrompt.Error() == "^C" {
 			// Cancel execution
 			return fmt.Errorf("user interrupt")
-		} else {
-			return fmt.Errorf("prompt failed %v", errPrompt)
 		}
+		return fmt.Errorf("prompt failed %v", errPrompt)
 	}
+
 	if !dryRun {
 		return install(product, selectVersions[selectedItx].Version, customBinaryPath, installPath, mirrorURL, arch)
 	}
+
+	logger.Infof("[DRY-RUN] Would have attempted to install version %q", selectVersions[selectedItx].Version)
 	return nil
 }

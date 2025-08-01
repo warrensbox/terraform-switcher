@@ -2,7 +2,7 @@
 version: 2
 
 env:
-  - CGO_ENABLED=0 # Build statically linked binaries
+  - CGO_ENABLED=0  # Build statically linked binaries
 
 builds:
   -
@@ -41,6 +41,10 @@ archives:
       - CHANGELOG.md
       - LICENSE
       - README.md
+      - tfswitch-completion.*
+    format_overrides:
+      - goos: windows
+        formats: ['zip']
 
 brews:
   -
@@ -104,6 +108,7 @@ brews:
     # Default is 'bin.install "program"'.
     install: |
       bin.install "tfswitch"
+      bash_completion.install "tfswitch-completion.bash" => "tfswitch"
 
 changelog:
   # Set this to true if you don't want any changelog at all.
@@ -120,6 +125,24 @@ changelog:
   #
   # Default: 'git'
   use: github
+
+  # Format to use for commit formatting.
+  #
+  # Templates: allowed.
+  #
+  # Default:
+  #    if 'git': '{{ .SHA }} {{ .Message }}'
+  #   otherwise: '{{ .SHA }}: {{ .Message }} ({{ with .AuthorUsername }}@{{ . }}{{ else }}{{ .AuthorName }} <{{ .AuthorEmail }}>{{ end }})'.
+  #
+  # Extra template fields:
+  # - `SHA`: the commit SHA1
+  # - `Message`: the first line of the commit message, otherwise known as commit subject
+  # - `AuthorName`: the author full name (considers mailmap if 'git')
+  # - `AuthorEmail`: the author email (considers mailmap if 'git')
+  # - `AuthorUsername`: github/gitlab/gitea username - not available if 'git'
+  #
+  # Usage with 'git': Since: v2.8.
+  format: "{{ .Message }} ({{ with .AuthorUsername }}@{{ . }}{{ else }}{{ .AuthorName }} <{{ .AuthorEmail }}>{{ end }})"
 
   # Sorts the changelog by the commit's messages.
   # Could either be asc, desc or empty
@@ -154,7 +177,7 @@ changelog:
       regexp: "^.*?doc(s|umentation).*"
     - title: Go
       order: 3
-      regexp: "^.*?go: "
+      regexp: "^go: "
     - title: Others
       order: 999
 
@@ -167,7 +190,6 @@ changelog:
     # `<abbrev-commit>[:] <title-commit>`.
     exclude:
       - "^.*?Merge pull request "
-      - "^.*?test(ing)?"
 
     # Commit messages matching the regexp listed here will be the only ones
     # added to the changelog

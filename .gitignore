@@ -30,6 +30,7 @@ docs/.bundle/**
 .sass-cache
 
 tfswitch*
+!tfswitch-completion.*
 
 build-script.sh
 
@@ -37,6 +38,7 @@ build-script.sh
 
 /vendor
 /www/site
+/go.bin
 
 # Temp file used to update actual CHANGELOG.md (see CHANGELOG.howto.md)
 /CHANGELOG.md.new

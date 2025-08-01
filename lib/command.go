@@ -1,12 +1,14 @@
 package lib
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
 )
+
+// string `windows` has 12 occurrences, make it a constant (goconst)
+const windows = "windows"
 
 // Command : type string
 type Command struct {
@@ -42,11 +44,11 @@ func isExecutable(path string) bool {
 		return false
 	}
 
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == windows {
 		return true
 	}
 
-	if fileInfo.Mode()&0111 != 0 {
+	if fileInfo.Mode()&0o111 != 0 {
 		return true
 	}
 
@@ -61,7 +63,7 @@ func (cmd *Command) Find() func() string {
 			if !isDir(p) {
 				continue
 			}
-			fileList, err := ioutil.ReadDir(p)
+			fileList, err := os.ReadDir(p)
 			if err != nil {
 				continue
 			}

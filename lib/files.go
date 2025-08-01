@@ -1,3 +1,4 @@
+//nolint:staticcheck //ST1005: error strings should not be capitalized (staticcheck)
 package lib
 
 import (
@@ -25,15 +26,10 @@ func RenameFile(src string, dest string) {
 
 // RemoveFiles : remove file
 func RemoveFiles(src string) {
-	files, err := filepath.Glob(src)
-	if err != nil {
-		panic(err)
-	}
-	for _, f := range files {
-		if err := os.Remove(f); err != nil {
-			panic(err)
-		}
-	}
+	// Keep both identical functions for backward compatibility
+	// FIXME: need to plan deprecation of either of them
+	// 09-Mar-2025
+	removeFiles(src)
 }
 
 // CheckFileExist : check if file exist in directory
@@ -71,7 +67,7 @@ func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error
 	}
 	var unzipWaitGroup sync.WaitGroup
 	for _, f := range reader.File {
-		// Only extract the main binary binary
+		// Only extract the main binary
 		// from the archive, ignoring LICENSE and other files
 		if f.Name != ConvertExecutableExt(fileToUnzip) {
 			continue
@@ -80,12 +76,12 @@ func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error
 		unzipWaitGroup.Add(1)
 		unzipErr := unzipFile(f, destination, &unzipWaitGroup)
 		if unzipErr != nil {
-			logger.Fatalf("Error unzipping %v", unzipErr)
-		} else {
-			filenames = append(filenames, filepath.Join(destination, f.Name))
+			return nil, fmt.Errorf("Error unzipping: %v", unzipErr)
 		}
+		// nolint:gosec // The "G305: File traversal when extracting zip/tar archive" is handled by unzipFile()
+		filenames = append(filenames, filepath.Join(destination, f.Name))
 	}
-	logger.Debug("Waiting for deferred functions.")
+	logger.Debug("Waiting for deferred functions")
 	unzipWaitGroup.Wait()
 
 	if len(filenames) < 1 {
@@ -101,7 +97,7 @@ func Unzip(src string, dest string, fileToUnzipSlice ...string) ([]string, error
 func createDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		logger.Infof("Creating %q directory", dir)
-		err = os.MkdirAll(dir, 0755)
+		err = os.MkdirAll(dir, 0o755)
 		if err != nil {
 			logger.Panicf("Unable to create %q directory: %v", dir, err)
 		}
@@ -187,10 +183,8 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	res := []string{}
 	for _, f := range files {
 		if !f.IsDir() && strings.HasPrefix(f.Name(), prefix) {
-			res = append(res, filepath.Join(dir, f.Name()))
 			exist = true
 		}
 	}
@@ -205,6 +199,24 @@ func CheckDirExist(dir string) bool {
 		logger.Debugf("Directory %q doesn't exist", dir)
 		return false
 	}
+
+	return true
+}
+
+// CheckIsDir: check if is directory
+// dir=path to file
+// return bool
+func CheckIsDir(dir string) bool {
+	fi, err := os.Stat(dir)
+
+	if err != nil {
+		logger.Debugf("Error checking %q: %v", dir, err)
+		return false
+	} else if !fi.IsDir() {
+		logger.Debugf("The %q is not a directory", dir)
+		return false
+	}
+
 	return true
 }
 
@@ -223,7 +235,7 @@ func GetFileName(configfile string) string {
 func GetCurrentDirectory() string {
 	dir, err := os.Getwd() // get current directory
 	if err != nil {
-		logger.Fatalf("Failed to get current directory %v", err)
+		logger.Fatalf("Failed to get current directory: %v", err)
 	}
 	return dir
 }
@@ -232,7 +244,7 @@ func GetCurrentDirectory() string {
 func GetHomeDirectory() string {
 	homedir, err := homedir.Dir()
 	if err != nil {
-		logger.Fatalf("Failed to get user's home directory %v", err)
+		logger.Fatalf("Failed to get user's home directory: %v", err)
 	}
 	return homedir
 }
@@ -240,7 +252,7 @@ func GetHomeDirectory() string {
 func unzipFile(f *zip.File, destination string, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	// 1. Check if file paths are not vulnerable to Zip Slip
-	filePath := filepath.Join(destination, f.Name)
+	filePath := filepath.Join(destination, f.Name) // nolint:gosec // The "G305: File traversal when extracting zip/tar archive" is handled below
 	if !strings.HasPrefix(filePath, filepath.Clean(destination)+string(os.PathSeparator)) {
 		return fmt.Errorf("Invalid file path: %q", filePath)
 	}
@@ -261,6 +273,7 @@ func unzipFile(f *zip.File, destination string, wg *sync.WaitGroup) error {
 	// 3. Create a destination file for unzipped content
 	destinationFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 	defer func(destinationFile *os.File) {
+		logger.Debugf("Closing destination file handler %q", destinationFile.Name())
 		_ = destinationFile.Close()
 	}(destinationFile)
 	if err != nil {
@@ -270,19 +283,33 @@ func unzipFile(f *zip.File, destination string, wg *sync.WaitGroup) error {
 	// 4. Unzip the content of a file and copy it to the destination file
 	zippedFile, err := f.Open()
 	defer func(zippedFile io.ReadCloser) {
+		logger.Debugf("Closing zipped file handler %q", f.Name)
 		_ = zippedFile.Close()
 	}(zippedFile)
 	if err != nil {
 		return err
 	}
 
-	logger.Debugf("Extracting File %q", destinationFile.Name())
-	if _, err := io.Copy(destinationFile, zippedFile); err != nil {
-		return err
+	logger.Debugf("Extracting file %q to %q", f.Name, destinationFile.Name())
+	// Prevent the "G110: Potential DoS vulnerability via decompression bomb (gosec)"
+	totalCopied := int64(0)
+	maxSize := int64(1024 * 1024 * 1024) // 1 GB
+	for {
+		copied, err := io.CopyN(destinationFile, zippedFile, 1024*1024)
+		totalCopied += copied
+		if totalCopied%(10*1024*1024) == 0 { // Print stats every 10 MB
+			logger.Debugf("Size copied so far: %3.d MB\r", totalCopied/1024/1024)
+		}
+		if err != nil {
+			if err == io.EOF {
+				logger.Debugf("Total size copied: %4.d MB\r", totalCopied/1024/1024)
+				break
+			}
+			return err
+		}
+		if totalCopied > maxSize {
+			return fmt.Errorf("file %q is too large (> %d MB)", f.Name, maxSize/1024/1024)
+		}
 	}
-	logger.Debugf("Closing destination file handler %q", destinationFile.Name())
-	_ = destinationFile.Close()
-	logger.Debugf("Closing zipped file handler %q", f.Name)
-	_ = zippedFile.Close()
 	return nil
 }

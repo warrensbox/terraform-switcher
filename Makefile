@@ -1,35 +1,121 @@
-EXE  := tfswitch
-PKG  := github.com/warrensbox/terraform-switcher
-VER := $(shell git ls-remote --tags git@github.com:warrensbox/terraform-switcher.git | awk '{if ($$2 ~ "\\^\\{\\}$$") next; print vers[split($$2,vers,"\\/")]}' | sort -n -t. -k1,1 -k2,2 -k3,3 | tail -1)
-PATH := build:$(PATH)
-GOOS ?= $(shell go env GOOS)
-GOARCH ?= $(shell go env GOARCH)
+EXE       := tfswitch
+PKG       := github.com/warrensbox/terraform-switcher
+BUILDPATH := build
+PATH      := $(BUILDPATH):$(PATH)
+VER       ?= $(shell git ls-remote --tags --sort=version:refname git@github.com:warrensbox/terraform-switcher.git | awk '{if ($$2 ~ "\\^\\{\\}$$") next; print vers[split($$2,vers,"\\/")]}' | tail -1)
 
-$(EXE): go.mod *.go lib/*.go
-	go build -v -ldflags "-X main.version=$(VER)" -o $@ $(PKG)
+# Managing Go installations: Installing multiple Go versions
+# https://go.dev/doc/manage-install
+GOBINARY ?= $(shell (egrep -m1 '^go[[:space:]]+[[:digit:]]+\.' go.mod | tr -d '[:space:]' | xargs which) || which go)
+ifndef GOBINARY
+	$(error "Go binary not found. Please install Go and add it to your PATH or set GOBINARY variable to the path of your Go binary.")
+endif
+
+# Go vars
+GOOS   ?= $(shell $(GOBINARY) env GOOS)
+GOARCH ?= $(shell $(GOBINARY) env GOARCH)
+
+# Vars for `super-linter` target
+CONTAINER_ENGINE ?= $(shell command -v podman || command -v docker || echo "NONE")
+# Git dirs for `super-linter` target
+GIT_COMMON_DIR   := $(shell git rev-parse --git-common-dir)
+GIT_DIR          := $(shell git rev-parse --git-dir)
+GIT_TOPLEVEL_DIR := $(shell git rev-parse --show-toplevel)
+
+
+$(EXE): version go.mod *.go lib/*.go
+	mkdir -p "$(BUILDPATH)/"
+	$(GOBINARY) build -v -ldflags "-X 'main.version=$(VER)'" -o "$(BUILDPATH)/$@" $(PKG)
 
 .PHONY: release
-release: $(EXE) darwin linux
+release: $(EXE) darwin linux windows
 
-.PHONY: darwin linux 
-darwin linux:
-	GOOS=$@ go build -ldflags "-X main.version=$(VER)" -o $(EXE)-$(VER)-$@-$(GOARCH) $(PKG)
+.PHONY: darwin linux windows
+darwin linux windows: version
+	GOOS=$@ $(GOBINARY) build -ldflags "-X 'main.version=$(VER)'" -o "$(BUILDPATH)/$(EXE)-$(word 1, $(VER))-$@-$(GOARCH)" $(PKG)
 
 .PHONY: clean
 clean:
-	rm -f $(EXE) $(EXE)-*-*-*
+	rm -vrf "$(BUILDPATH)/"
 
 .PHONY: test
-test: $(EXE)
-	mv $(EXE) build
-	go test -v ./...
+test: vet vulncheck $(EXE)
+	$(GOBINARY) test -v ./...
+
+.PHONY: test-single-function
+test-single-function: vet
+ifndef TEST_FUNC_NAME
+	$(error TEST_FUNC_NAME is not set)
+endif
+	$(eval TEST_FUNC_NAME := ^$(TEST_FUNC_NAME)$$)
+	$(info Testing function matching "$(TEST_FUNC_NAME)" regexp)
+	$(GOBINARY) test -v -run="$(TEST_FUNC_NAME)" ./...
+
+.PHONY: vet
+vet: version
+	$(GOBINARY) vet ./...
+
+.PHONY: version
+version:
+	@echo "Running $(GOBINARY) ($(shell $(GOBINARY) version))"
+
+.PHONY: vulncheck
+vulncheck:
+	@command -v govulncheck >/dev/null 2>&1 && govulncheck -show color ./... || echo "govulncheck not found, skipping vulnerability check"
+
+.PHONY: vulncheck-verbose
+vulncheck-verbose:
+	@command -v govulncheck >/dev/null 2>&1 && govulncheck -show traces,color,version,verbose ./... || echo "govulncheck not found, skipping vulnerability check"
 
 .PHONY: install
 install: $(EXE)
 	mkdir -p ~/bin
-	mv $(EXE) ~/bin
+	mv "$(BUILDPATH)/$(EXE)" ~/bin/
 
-.PHONY: docs
-docs:
-	cd docs; bundle install --path vendor/bundler; bundle exec jekyll build -c _config.yml; cd ..
+.PHONY: docs-build
+docs-build:
+	cd www && mkdocs build
 
+.PHONY: docs-deploy
+docs-deploy:
+	cd www && mkdocs gh-deploy --force
+
+.PHONY: docs-serve
+docs-serve:
+	cd www && mkdocs serve
+
+.PHONY: docs-serve-public
+docs-serve-public:
+	cd www && mkdocs serve --dev-addr 0.0.0.0:8000
+
+.PHONY: goreleaser-release-snapshot
+goreleaser-release-snapshot:
+	RELEASE_VERSION="$(VER)" goreleaser release --config ./.goreleaser.yml --snapshot --clean
+
+.PHONY: lint
+lint: super-linter
+
+.PHONY: super-linter
+super-linter:
+ifeq ($(CONTAINER_ENGINE),NONE)
+	$(error "No container engine found. Please install Podman or Docker.")
+else
+# Assume that if GIT_COMMON_DIR differs from GIT_DIR, then we're in Git worktree
+# In this case, mount Git dir (`.git`) as a volume
+ifneq ($(GIT_COMMON_DIR),$(GIT_DIR))
+	$(eval GIT_COMMON_DIR_VOLUME := --volume "$(GIT_COMMON_DIR):$(GIT_COMMON_DIR)")
+endif
+	# Keep `--env' vars below the `VALIDATE_ALL_CODEBASE' in sync with .github/workflows/super-linter.yml
+	$(CONTAINER_ENGINE) run \
+		--name super-linter \
+		--volume "$(GIT_TOPLEVEL_DIR):$(GIT_TOPLEVEL_DIR)" $(GIT_COMMON_DIR_VOLUME)\
+		--workdir "$(GIT_TOPLEVEL_DIR)" \
+		--env GITHUB_WORKSPACE="$(GIT_TOPLEVEL_DIR)" \
+		--env RUN_LOCAL=true \
+		--env VALIDATE_ALL_CODEBASE=false \
+		--env FILTER_REGEX_EXCLUDE="^$(GIT_TOPLEVEL_DIR)/test-data/" \
+		--env BASH_EXEC_IGNORE_LIBRARIES=true \
+		--env VALIDATE_GO=false \
+		--env VALIDATE_JSCPD=false \
+		--rm ghcr.io/super-linter/super-linter:slim-latest
+endif

@@ -9,20 +9,18 @@ import (
 
 // TestNewCommand : pass value and check if returned value is a pointer
 func TestNewCommand(t *testing.T) {
-
 	testCmd := "terraform"
 	cmd := lib.NewCommand(testCmd)
 
 	if reflect.ValueOf(cmd).Kind() == reflect.Ptr {
 		t.Logf("Value returned is a pointer %v [expected]", cmd)
 	} else {
-		t.Errorf("Value returned is not a pointer %v [expected", cmd)
+		t.Errorf("Value returned is not a pointer %v [unexpected]", cmd)
 	}
 }
 
 // TestPathList : check if bin path exist
 func TestPathList(t *testing.T) {
-
 	testCmd := ""
 	cmd := lib.NewCommand(testCmd)
 	listBin := cmd.PathList()
@@ -34,14 +32,9 @@ func TestPathList(t *testing.T) {
 	}
 }
 
-type Command struct {
-	name string
-}
-
 // TestFind : check common "cd" command exist
 // This is assuming that Windows and linux has the "cd" command
 func TestFind(t *testing.T) {
-
 	testCmd := "cd"
 	cmd := lib.NewCommand(testCmd)
 

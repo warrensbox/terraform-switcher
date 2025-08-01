@@ -1,9 +1,137 @@
 <!-- markdownlint-disable MD013 MD024 MD043 -->
+<!-- textlint-disable -->
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
+
+## [v1.4.7](https://github.com/warrensbox/terraform-switcher/tree/v1.4.7) - 2025-07-24
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.6...v1.4.7)
+
+### Fixed
+
+- fix: Command-line flags to show/install latest stable versions are broken [#601](https://github.com/warrensbox/terraform-switcher/pull/601) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- chore(`Makefile`): another small set of improvements (no functional changes) [#600](https://github.com/warrensbox/terraform-switcher/pull/600) ([yermulnik](https://github.com/yermulnik))
+- chore(`Makefile`): Improve `super-linter` target for a plain repo and a worktree [#597](https://github.com/warrensbox/terraform-switcher/pull/597) ([yermulnik](https://github.com/yermulnik))
+- docs: Update CHANGELOG with `v1.4.7` [#604](https://github.com/warrensbox/terraform-switcher/pull/604) ([yermulnik](https://github.com/yermulnik))
+
+## [v1.4.6](https://github.com/warrensbox/terraform-switcher/tree/v1.4.6) - 2025-07-03
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.5...v1.4.6)
+
+### Added
+
+- feat: Togglable color logging [#594](https://github.com/warrensbox/terraform-switcher/pull/594) ([yermulnik](https://github.com/yermulnik))
+- feat(shell-completion): Add Bash completion script [#586](https://github.com/warrensbox/terraform-switcher/pull/586) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.4.6` [#596](https://github.com/warrensbox/terraform-switcher/pull/596) ([yermulnik](https://github.com/yermulnik))
+- chore(`Makefile`): Add `govulncheck` target [#593](https://github.com/warrensbox/terraform-switcher/pull/593) ([yermulnik](https://github.com/yermulnik))
+- chore(`.github/linters/.golangci.yml`): Sync config with super-linter [#592](https://github.com/warrensbox/terraform-switcher/pull/592) ([yermulnik](https://github.com/yermulnik))
+- chore(goreleaser): Brews: install Bash completion script [#590](https://github.com/warrensbox/terraform-switcher/pull/590) ([yermulnik](https://github.com/yermulnik))
+
+## [v1.4.5](https://github.com/warrensbox/terraform-switcher/tree/v1.4.5) - 2025-05-05
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.4...v1.4.5)
+
+### Changed
+
+- feat(gpg): Switch from deprecated Go `crypto` to `ProtonMail/gopenpgp@v3` [#579](https://github.com/warrensbox/terraform-switcher/pull/579) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.4.5` [#580](https://github.com/warrensbox/terraform-switcher/pull/580) ([yermulnik](https://github.com/yermulnik))
+
+## [v1.4.4](https://github.com/warrensbox/terraform-switcher/tree/v1.4.4) - 2025-04-07
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.3...v1.4.4)
+
+### Fixed
+
+- chore: Add `super-linter` [#573](https://github.com/warrensbox/terraform-switcher/pull/573) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.4.4` [#575](https://github.com/warrensbox/terraform-switcher/pull/575) ([yermulnik](https://github.com/yermulnik))
+
+## [v1.4.3](https://github.com/warrensbox/terraform-switcher/tree/v1.4.3) - 2025-03-19
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.2...v1.4.3)
+
+### Added
+
+- feat: Add env vars for `install` and `bin` args [#566](https://github.com/warrensbox/terraform-switcher/pull/566) ([yermulnik](https://github.com/yermulnik))
+- fix: reinstate env var expansion in `bin` and add the same for `install` TOML params [#570](https://github.com/warrensbox/terraform-switcher/pull/570) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.4.3` [#569](https://github.com/warrensbox/terraform-switcher/pull/569) ([yermulnik](https://github.com/yermulnik))
+
+## [v1.4.2](https://github.com/warrensbox/terraform-switcher/tree/v1.4.2) - 2025-03-14
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.1...v1.4.2)
+
+### Added
+
+- fix: Improve logging and fix symlink installation issues [#559](https://github.com/warrensbox/terraform-switcher/pull/559) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.4.2` [#565](https://github.com/warrensbox/terraform-switcher/pull/565) ([yermulnik](https://github.com/yermulnik))
+
+## [v1.4.1](https://github.com/warrensbox/terraform-switcher/tree/v1.4.1) - 2025-03-05
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.0...v1.4.1)
+
+### Added
+
+- feat: Implement exclusive locking during download and install [#551](https://github.com/warrensbox/terraform-switcher/pull/551) ([yermulnik](https://github.com/yermulnik))
+- feat: recommend updating `$PATH` only when necessary [#549](https://github.com/warrensbox/terraform-switcher/pull/549) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.4.1` [#554](https://github.com/warrensbox/terraform-switcher/pull/554) ([yermulnik](https://github.com/yermulnik))
+
+## [v1.4.0](https://github.com/warrensbox/terraform-switcher/tree/v1.4.0) - 2025-02-26
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.3.0...v1.4.0)
+
+### Added
+
+- feat: Improve messaging [#546](https://github.com/warrensbox/terraform-switcher/pull/546) ([yermulnik](https://github.com/yermulnik))
+- fix: Create home bin directory if it does not already exist (reinstate historical behavior) [#544](https://github.com/warrensbox/terraform-switcher/pull/544) ([MatthewJohn](https://github.com/MatthewJohn))
+- feat: Override default build format to Zip when building for Windows [#527](https://github.com/warrensbox/terraform-switcher/pull/527) ([felipebraga](https://github.com/felipebraga))
+
+### Other
+
+- :warning: go: bump golang.org/x/crypto from 0.33.0 to 0.34.0 (`go.mod`: upgrade go directive to at least 1.23.0) [#545](https://github.com/warrensbox/terraform-switcher/pull/545) ([dependabot[bot]](https://github.com/apps/dependabot))
+- docs: Update CHANGELOG with `v1.4.0` [#548](https://github.com/warrensbox/terraform-switcher/pull/548) ([yermulnik](https://github.com/yermulnik))
+
+## [v1.3.0](https://github.com/warrensbox/terraform-switcher/tree/v1.3.0) - 2025-01-26
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.4...v1.3.0)
+
+### Added
+
+- feat: Allow to download binary with custom CPU arch [#532](https://github.com/warrensbox/terraform-switcher/pull/532) ([yermulnik](https://github.com/yermulnik))
+
+### Fixed
+
+- fix(Makefile): bring up to date [#535](https://github.com/warrensbox/terraform-switcher/pull/535) ([yermulnik](https://github.com/yermulnik))
+- fix: Exclude CHANGELOG howto from distribution archives [#528](https://github.com/warrensbox/terraform-switcher/pull/528) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.3.0` [#539](https://github.com/warrensbox/terraform-switcher/pull/539) ([yermulnik](https://github.com/yermulnik))
+- docs: TOML file belongs in Home dir only [#534](https://github.com/warrensbox/terraform-switcher/pull/534) ([yermulnik](https://github.com/yermulnik))
+- docs: Update CHANGELOG with `v1.2.4` [#520](https://github.com/warrensbox/terraform-switcher/pull/520) ([yermulnik](https://github.com/yermulnik))
 
 ## [v1.2.4](https://github.com/warrensbox/terraform-switcher/tree/v1.2.4) - 2024-11-23
 
@@ -46,7 +174,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - docs: Update CHANGELOG with `v1.2.0` and `v1.2.1` [#484](https://github.com/warrensbox/terraform-switcher/pull/484) ([yermulnik](https://github.com/yermulnik))
 - fix: Remove duplicate .exe extension added to paths for windows inside symlink, as this is already handled by ConvertExecutableExt [#481](https://github.com/warrensbox/terraform-switcher/pull/481) ([MatthewJohn](https://github.com/MatthewJohn))
 
-
 ## [v1.2.1](https://github.com/warrensbox/terraform-switcher/tree/v1.2.1) - 2024-07-06
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.2.0...v1.2.1)
@@ -68,10 +195,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - docs: Update CHANGELOG with `v1.2.0-alpha2` [#479](https://github.com/warrensbox/terraform-switcher/pull/479) ([yermulnik](https://github.com/yermulnik))
 
-
 ### This release (v1.2.0) containes changes from v1.2.0-alpha2, v1.2.0-alpha1 and v1.2.0-alpha
 
 #### v1.2.0-alpha2
+
 ### Added
 
 - Added ERRORlog-level [#447](https://github.com/warrensbox/terraform-switcher/pull/447) ([MatrixCrawler](https://github.com/MatrixCrawler))
@@ -96,6 +223,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - added changelog [#415](https://github.com/warrensbox/terraform-switcher/pull/415) ([warrensbox](https://github.com/warrensbox))
 
 #### v1.2.0-alpha1
+
 ### Added
 
 - Add debug logging when successfully obtaining parameter from location… [#464](https://github.com/warrensbox/terraform-switcher/pull/464) ([MatthewJohn](https://github.com/MatthewJohn))
@@ -113,6 +241,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Add error return values to signatures of public methods to allow migrating to returning errors rather than Fatals in future [#457](https://github.com/warrensbox/terraform-switcher/pull/457) ([MatthewJohn](https://github.com/MatthewJohn))
 
 #### v1.2.0-alpha
+
 ### Added
 
 - Added ERRORlog-level [#447](https://github.com/warrensbox/terraform-switcher/pull/447) ([MatrixCrawler](https://github.com/MatrixCrawler))
@@ -195,13 +324,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - feat(goreleaser): Enable Release Changelog [#418](https://github.com/warrensbox/terraform-switcher/pull/418) ([yermulnik](https://github.com/yermulnik))
 - added changelog [#415](https://github.com/warrensbox/terraform-switcher/pull/415) ([warrensbox](https://github.com/warrensbox))
 
-## [v1.1.1](https://github.com/warrensbox/terraform-switcher/tree/v1.1.1) - 2024-04-27  
+## [v1.1.1](https://github.com/warrensbox/terraform-switcher/tree/v1.1.1) - 2024-04-27
 
 ### Fixed
 
 - Fix issue related to additional configuration apart from terraform_version_constraint failing #401 [#409](https://github.com/warrensbox/terraform-switcher/pull/409) ([MatrixCrawler](https://github.com/MatrixCrawler))
 - Fix issue related to terraform version constraint in version.tf not being parsed correctly #410 #402 [#403](https://github.com/warrensbox/terraform-switcher/pull/403) ([MatrixCrawler](https://github.com/MatrixCrawler))
-- Fix issue where install.sh is unable to download tfswitch version(s) with 'v' appended to the version number  #394 #413 #413 [#403](https://github.com/warrensbox/terraform-switcher/pull/405) ([yermulnik](https://github.com/yermulnik)) and ([d33psky](https://github.com/d33psky))
+- Fix issue where install.sh is unable to download tfswitch version(s) with 'v' appended to the version number #394 #413 #413 [#403](https://github.com/warrensbox/terraform-switcher/pull/405) ([yermulnik](https://github.com/yermulnik)) and ([d33psky](https://github.com/d33psky))
 
 ## [v1.1.0](https://github.com/warrensbox/terraform-switcher/tree/v1.1.0) - 2024-04-25
 
@@ -261,7 +390,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Other
 
 - fix release - add TAG_CONTEXT [#342](https://github.com/warrensbox/terraform-switcher/pull/342) ([warrensbox](https://github.com/warrensbox))
-- Fixes issues related to  install.sh - #339 [#341](https://github.com/warrensbox/terraform-switcher/pull/341) ([warrensbox](https://github.com/warrensbox))
+- Fixes issues related to install.sh - #339 [#341](https://github.com/warrensbox/terraform-switcher/pull/341) ([warrensbox](https://github.com/warrensbox))
 - fix: Attempt to fix PR335 [#340](https://github.com/warrensbox/terraform-switcher/pull/340) ([yermulnik](https://github.com/yermulnik))
 - #major release -update [#338](https://github.com/warrensbox/terraform-switcher/pull/338) ([warrensbox](https://github.com/warrensbox))
 
@@ -322,7 +451,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Other
 
-- Upgrade libraries: cve's   [#258](https://github.com/warrensbox/terraform-switcher/pull/258) ([warrensbox](https://github.com/warrensbox))
+- Upgrade libraries: cve's [#258](https://github.com/warrensbox/terraform-switcher/pull/258) ([warrensbox](https://github.com/warrensbox))
 - Upgrade go libraries to resolve CVE's [#255](https://github.com/warrensbox/terraform-switcher/pull/255) ([jukie](https://github.com/jukie))
 
 ## [0.13.1275](https://github.com/warrensbox/terraform-switcher/releases/tag/0.13.1275) - 2022-06-20
@@ -342,7 +471,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Other
 
-- Release 0.13 - Minor release  [#245](https://github.com/warrensbox/terraform-switcher/pull/245) ([warrensbox](https://github.com/warrensbox))
+- Release 0.13 - Minor release [#245](https://github.com/warrensbox/terraform-switcher/pull/245) ([warrensbox](https://github.com/warrensbox))
 - Fix chdirpath for absolute paths [#244](https://github.com/warrensbox/terraform-switcher/pull/244) ([jukie](https://github.com/jukie))
 - Rebase 0.14 master round 3 [#242](https://github.com/warrensbox/terraform-switcher/pull/242) ([jukie](https://github.com/jukie))
 - Use '.' vs full git ref to allow forks or other users to get their own tags [#241](https://github.com/warrensbox/terraform-switcher/pull/241) ([jukie](https://github.com/jukie))
@@ -382,7 +511,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Other
 
 - Fixes Semver issue and M1 installation issue with homebrew [#216](https://github.com/warrensbox/terraform-switcher/pull/216) ([warrensbox](https://github.com/warrensbox))
-- Fixes SemVer issue  [#209](https://github.com/warrensbox/terraform-switcher/pull/209) ([warrensbox](https://github.com/warrensbox))
+- Fixes SemVer issue [#209](https://github.com/warrensbox/terraform-switcher/pull/209) ([warrensbox](https://github.com/warrensbox))
 
 ## [0.13.1201](https://github.com/warrensbox/terraform-switcher/releases/tag/0.13.1201) - 2021-11-28
 

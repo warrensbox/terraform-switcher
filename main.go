@@ -1,20 +1,8 @@
 package main
 
 /*
-* Version 0.12.0
-* Compatible with Mac OS X AND other LINUX OS ONLY
- */
-
-/*** OPERATION WORKFLOW ***/
-/*
-* 1- Create /usr/local/terraform directory if it does not exist
-* 2- Download zip file from url to /usr/local/terraform
-* 3- Unzip the file to /usr/local/terraform
-* 4- Rename the file from `terraform` to `terraform_version`
-* 5- Remove the downloaded zip file
-* 6- Read the existing symlink for terraform (Check if it's a homebrew symlink)
-* 7- Remove that symlink (Check if it's a homebrew symlink)
-* 8- Create new symlink to binary  `terraform_version`
+* https://tfswitch.warrensbox.com/
+* A command line tool to switch between different versions of terraform
  */
 
 import (
@@ -32,13 +20,14 @@ var (
 )
 
 func main() {
-	var err error = nil
+	var err error
 	switch {
 	case parameters.VersionFlag:
+		fmt.Printf("Version: ")
 		if version != "" {
-			fmt.Printf("Version: %s\n", version)
+			fmt.Println(version)
 		} else {
-			fmt.Println("Version not defined during build.")
+			fmt.Println("not defined during build")
 		}
 		os.Exit(0)
 	case parameters.HelpFlag:

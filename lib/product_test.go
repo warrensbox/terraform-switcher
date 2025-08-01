@@ -48,6 +48,7 @@ func Test_GetId_Terraform(t *testing.T) {
 		t.Errorf("Product GetId does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetName_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
 	actual := product.GetName()
@@ -55,6 +56,7 @@ func Test_GetName_Terraform(t *testing.T) {
 		t.Errorf("Product GetProductById does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetDefaultMirrorUrl_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
 	actual := product.GetDefaultMirrorUrl()
@@ -62,6 +64,7 @@ func Test_GetDefaultMirrorUrl_Terraform(t *testing.T) {
 		t.Errorf("Product GetDefaultMirrorUrl does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetVersionPrefix_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
 	actual := product.GetVersionPrefix()
@@ -69,6 +72,7 @@ func Test_GetVersionPrefix_Terraform(t *testing.T) {
 		t.Errorf("Product GetVersionPrefix does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetExecutableName_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
 	actual := product.GetExecutableName()
@@ -76,6 +80,7 @@ func Test_GetExecutableName_Terraform(t *testing.T) {
 		t.Errorf("Product GetExecutableName does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetArchivePrefix_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
 	actual := product.GetArchivePrefix()
@@ -83,6 +88,7 @@ func Test_GetArchivePrefix_Terraform(t *testing.T) {
 		t.Errorf("Product GetArchivePrefix does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetArtifactUrl_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
 	actual := product.GetArtifactUrl("https://example.com/terraform", "5.3.2")
@@ -90,6 +96,7 @@ func Test_GetArtifactUrl_Terraform(t *testing.T) {
 		t.Errorf("Product GetArchivePrefix does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetPublicKeyId_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
 	actual := product.GetPublicKeyId()
@@ -97,6 +104,7 @@ func Test_GetPublicKeyId_Terraform(t *testing.T) {
 		t.Errorf("Product GetPublicKeyId does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetPublicKeyUrl_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
 	actual := product.GetPublicKeyUrl()
@@ -104,6 +112,7 @@ func Test_GetPublicKeyUrl_Terraform(t *testing.T) {
 		t.Errorf("Product GetPublicKeyUrl does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetShaSignatureSuffix_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
 	actual := product.GetShaSignatureSuffix()
@@ -111,8 +120,9 @@ func Test_GetShaSignatureSuffix_Terraform(t *testing.T) {
 		t.Errorf("Product GetShaSignatureSuffix does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetRecentVersionProduct_Terraform(t *testing.T) {
-	var recentFile RecentFile = RecentFile{
+	recentFile := RecentFile{
 		OpenTofu:  []string{"1.2.3", "3.2.1"},
 		Terraform: []string{"5.4.3", "3.4.5"},
 	}
@@ -125,8 +135,9 @@ func Test_GetRecentVersionProduct_Terraform(t *testing.T) {
 		t.Error(err)
 	}
 }
+
 func Test_SetRecentVersionProduct_Terraform(t *testing.T) {
-	var recentFile RecentFile = RecentFile{
+	recentFile := RecentFile{
 		OpenTofu:  []string{"1.2.3", "3.2.1"},
 		Terraform: []string{"5.4.3", "3.4.5"},
 	}
@@ -153,6 +164,7 @@ func Test_GetId_OpenTofu(t *testing.T) {
 		t.Errorf("Product GetId does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetName_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
 	actual := product.GetName()
@@ -160,6 +172,7 @@ func Test_GetName_OpenTofu(t *testing.T) {
 		t.Errorf("Product GetProductById does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetDefaultMirrorUrl_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
 	actual := product.GetDefaultMirrorUrl()
@@ -167,6 +180,7 @@ func Test_GetDefaultMirrorUrl_OpenTofu(t *testing.T) {
 		t.Errorf("Product GetDefaultMirrorUrl does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetVersionPrefix_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
 	actual := product.GetVersionPrefix()
@@ -174,6 +188,7 @@ func Test_GetVersionPrefix_OpenTofu(t *testing.T) {
 		t.Errorf("Product GetVersionPrefix does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetExecutableName_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
 	actual := product.GetExecutableName()
@@ -181,6 +196,7 @@ func Test_GetExecutableName_OpenTofu(t *testing.T) {
 		t.Errorf("Product GetExecutableName does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetArchivePrefix_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
 	actual := product.GetArchivePrefix()
@@ -188,6 +204,7 @@ func Test_GetArchivePrefix_OpenTofu(t *testing.T) {
 		t.Errorf("Product GetArchivePrefix does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetArtifactUrl_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
 	actual := product.GetArtifactUrl("https://example.com/opentofu", "5.3.2")
@@ -195,6 +212,7 @@ func Test_GetArtifactUrl_OpenTofu(t *testing.T) {
 		t.Errorf("Product GetArchivePrefix does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetPublicKeyId_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
 	actual := product.GetPublicKeyId()
@@ -202,6 +220,7 @@ func Test_GetPublicKeyId_OpenTofu(t *testing.T) {
 		t.Errorf("Product GetPublicKeyId does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetPublicKeyUrl_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
 	actual := product.GetPublicKeyUrl()
@@ -209,6 +228,7 @@ func Test_GetPublicKeyUrl_OpenTofu(t *testing.T) {
 		t.Errorf("Product GetPublicKeyUrl does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetShaSignatureSuffix_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
 	actual := product.GetShaSignatureSuffix()
@@ -216,8 +236,9 @@ func Test_GetShaSignatureSuffix_OpenTofu(t *testing.T) {
 		t.Errorf("Product GetShaSignatureSuffix does not match expected ID. Expected: %q, actual: %q", expected, actual)
 	}
 }
+
 func Test_GetRecentVersionProduct_OpenTofu(t *testing.T) {
-	var recentFile RecentFile = RecentFile{
+	recentFile := RecentFile{
 		Terraform: []string{"1.2.3", "3.2.1"},
 		OpenTofu:  []string{"5.4.3", "3.4.5"},
 	}
@@ -230,8 +251,9 @@ func Test_GetRecentVersionProduct_OpenTofu(t *testing.T) {
 		t.Error(err)
 	}
 }
+
 func Test_SetRecentVersionProduct_OpenTofu(t *testing.T) {
-	var recentFile RecentFile = RecentFile{
+	recentFile := RecentFile{
 		Terraform: []string{"1.2.3", "3.2.1"},
 		OpenTofu:  []string{"5.4.3", "3.4.5"},
 	}

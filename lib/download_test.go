@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -13,13 +12,13 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strings"
 	"sync"
 	"testing"
 
-	"github.com/ProtonMail/gopenpgp/v2/crypto"
-	"github.com/mitchellh/go-homedir"
+	"github.com/ProtonMail/gopenpgp/v3/constants"
+	"github.com/ProtonMail/gopenpgp/v3/crypto"
+	"github.com/ProtonMail/gopenpgp/v3/profile"
 )
 
 // TestDownloadFromURL_FileNameMatch : Check expected filename exist when downloaded
@@ -28,26 +27,21 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 	hashiURL := "https://releases.hashicorp.com/terraform/"
 	installVersion := "terraform_"
 	tempDir := t.TempDir()
-	installPath := fmt.Sprintf(tempDir + string(os.PathSeparator) + ".terraform.versions_test")
+	installLocation := filepath.Join(tempDir, ".terraform.versions_test")
 	macOS := "_darwin_amd64.zip"
 
-	home, err := homedir.Dir()
-	if err != nil {
-		logger.Fatalf("Could not detect home directory")
-	}
-
-	t.Logf("Current home directory: %q", home)
-	if runtime.GOOS != "windows" {
-		installLocation = filepath.Join(home, installPath)
-	} else {
-		installLocation = installPath
-	}
 	t.Logf("install Location: %v", installLocation)
 
 	// create /.terraform.versions_test/ directory to store code
 	if _, err := os.Stat(installLocation); os.IsNotExist(err) {
 		t.Logf("Creating directory for terraform: %v", installLocation)
-		err = os.MkdirAll(installLocation, 0755)
+		err = os.MkdirAll(installLocation, 0o755)
+
+		t.Cleanup(func() {
+			defer os.Remove(tempDir)
+			t.Logf("Cleanup temporary directory %q", tempDir)
+		})
+
 		if err != nil {
 			t.Logf("Unable to create directory for terraform: %v", installLocation)
 			t.Error("Test fail")
@@ -77,16 +71,11 @@ func TestDownloadFromURL_FileNameMatch(t *testing.T) {
 		t.Error("Download file mismatches expected file (unexpected)")
 	}
 
-	//check file name is what is expected
-	_, err = os.Stat(expectedFile)
-	if err != nil {
+	// check file name is what is expected
+	_, checkErr := os.Stat(expectedFile)
+	if checkErr != nil {
 		t.Logf("Expected file does not exist %v", expectedFile)
 	}
-
-	t.Cleanup(func() {
-		defer os.Remove(tempDir)
-		t.Logf("Cleanup temporary directory %q", tempDir)
-	})
 }
 
 // TestDownloadFromURL_Valid : Test if https://releases.hashicorp.com/terraform/ is still valid
@@ -110,9 +99,12 @@ type DownloadProductTestConfig struct {
 	PublicKey           string
 }
 
+//nolint:gocyclo
 func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadProductTestConfig) *httptest.Server {
 	logger = InitLogger("DEBUG")
-	gpgKey, err := crypto.GenerateKey("TestProductSign", "example@localhost.com", "RSA", 1024)
+	pgp4880 := crypto.PGPWithProfile(profile.RFC4880())
+	keyGenHandle := pgp4880.KeyGeneration().AddUserId("TestProductSign", "example@localhost.com").New()
+	gpgKey, err := keyGenHandle.GenerateKeyWithSecurity(constants.HighSecurity) // RSA 4096 bits
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,11 +117,13 @@ func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadPr
 		zipWriter := zip.NewWriter(zipFileBuffer)
 
 		executableBytes := []byte("This is the main executable")
-		zipFileContentWriter, err := zipWriter.Create("myprod")
+		zipFileContentWriter, err := zipWriter.Create("myprod") //nolint:govet
 		if err != nil {
 			t.Fatal(err)
 		}
-		zipFileContentWriter.Write(executableBytes)
+		if _, err := zipFileContentWriter.Write(executableBytes); err != nil {
+			t.Fatal(err)
+		}
 		zipWriter.Flush()
 		zipWriter.Close()
 		downloadProductTestConfig.ZipFileContent = zipFileBuffer.Bytes()
@@ -146,7 +140,7 @@ func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadPr
 	if downloadProductTestConfig.ZipFileChecksum == "" {
 		sha256HashWriter := sha256.New()
 		zipFileReadBuffer := new(bytes.Buffer)
-		_, err := zipFileReadBuffer.Write(downloadProductTestConfig.ZipFileContent)
+		_, err := zipFileReadBuffer.Write(downloadProductTestConfig.ZipFileContent) //nolint:govet
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -164,13 +158,12 @@ func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadPr
 	}
 
 	// Create signature of checksum file
-	binMessage := crypto.NewPlainMessageFromFile([]byte(downloadProductTestConfig.ChecksumFileContent), "my_product_download_2.1.0_SHA256SUMS", uint32(crypto.GetUnixTime()))
-	keyRing, err := crypto.NewKeyRing(gpgKey)
+	keyRing, err := crypto.PGP().Sign().SigningKey(gpgKey).Detached().New()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	signatureObj, err := keyRing.SignDetached(binMessage)
+	signatureObj, err := keyRing.Sign([]byte(downloadProductTestConfig.ChecksumFileContent), crypto.Auto)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -181,19 +174,27 @@ func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadPr
 		case "/testproduct/gpg-key.txt":
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(downloadProductTestConfig.PublicKey))
+			if _, err := w.Write([]byte(downloadProductTestConfig.PublicKey)); err != nil {
+				t.Error(err)
+			}
 		case "/productdownload/2.1.0/my_product_download_2.1.0_linux_amd64.zip":
 			w.Header().Set("Content-Type", "application/zip")
 			w.WriteHeader(http.StatusOK)
-			w.Write(downloadProductTestConfig.ZipFileContent)
+			if _, err := w.Write(downloadProductTestConfig.ZipFileContent); err != nil {
+				t.Error(err)
+			}
 		case "/productdownload/2.1.0/my_product_download_2.1.0_SHA256SUMS":
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(downloadProductTestConfig.ChecksumFileContent))
+			if _, err := w.Write([]byte(downloadProductTestConfig.ChecksumFileContent)); err != nil {
+				t.Error(err)
+			}
 		case "/productdownload/2.1.0/my_product_download_2.1.0_SHA256SUMS." + downloadProductTestConfig.GpgFingerprint + ".sig":
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
-			w.Write(signatureObj.GetBinary())
+			if _, err := w.Write(signatureObj); err != nil {
+				t.Error(err)
+			}
 		default:
 			http.NotFoundHandler().ServeHTTP(w, r)
 		}

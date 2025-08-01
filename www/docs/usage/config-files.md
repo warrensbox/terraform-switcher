@@ -1,6 +1,9 @@
+<!-- markdownlint-disable MD041 -->
+
 ## Get the version from a subdirectory
 
-While using the file configuration it might be necessary to change the working directory. You can do that with the `--chdir` or `-c` parameter.
+While using the file configuration it might be necessary to change the working
+directory. You can do that with the `--chdir` or `-c` parameter.
 
 ```bash
 tfswitch --chdir terraform_dir
@@ -9,8 +12,14 @@ tfswitch -c terraform_dir
 
 ## Use `version.tf` file
 
-If a .tf file with the terraform constraints is included in the current directory, it should automatically download or switch to that terraform version.  
-For example, the following should automatically switch terraform to the lastest version:  
+If a `.tf` file with the version constraints is included in the current
+directory, `tfswitch` should automatically download or switch to that terraform
+version.  
+Also please refer to [Order of Terraform version definition
+precedence](general.md) page for more information on how `tfswitch` determines
+the version to use.  
+For example, the following should automatically switch to the latest available
+version newer than `0.12.8`:
 
 ```hcl
 terraform {
@@ -30,51 +39,69 @@ terraform {
 ![tfswitchrc](../static/tfswitch-v6.gif)
 
 1. Create a `.tfswitchrc` file containing the desired version
-2. For example, `echo "0.10.5" >> .tfswitchrc` for version 0.10.5 of terraform
-3. Run the command `tfswitch` in the same directory as your `.tfswitchrc`
+2. For example, `echo "0.10.5" >> .tfswitchrc` for version `0.10.5`
+3. Run the command `tfswitch` in the same directory as this `.tfswitchrc` file
 
-*Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for compatibility with [`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other tools which use it*
+_Instead of a `.tfswitchrc` file, a `.terraform-version` file may be used for
+compatibility with
+[`tfenv`](https://github.com/tfutils/tfenv#terraform-version-file) and other
+tools which use it_
 
-## Use `.tfswitch.toml` file  (For non-admin users with limited privilege on their computers)
+## Use `.tfswitch.toml` file
 
-This is similiar to using a `.tfswitchrc` file, but you can specify a custom binary path for your terraform installation
+### Installing to a custom path (for non-admin users with limited privilege on their computers)
+
+`tfswitch` defaults to install to the `/usr/local/bin/` directory (and falls
+back to `$HOME/bin/` otherwise). The target filename is resolved automatically
+based on the `product` parameter ([see below](#setting-product-base-tool-name)).  
+If you do not have write access to `/usr/local/bin/` directory, you can use the
+`.tfswitch.toml` file to specify a **full installation path** (directory +
+filename) Ex: `$HOME/bin/terraform`  
+This is similar to using a `.tfswitchrc` file, but you specify a custom binary
+path for the installation:
 
 ![toml1](../static/tfswitch-v7.gif)
 ![toml2](../static/tfswitch-v8.gif)
 
-1. Create a custom binary path. Ex: `mkdir $HOME/bin`
-2. Add the path to your PATH. Ex: `export PATH=$PATH:$HOME/bin` (add this to your Bash profile or Zsh profile)
-3. Pass `-b` or `--bin` parameter with your custom path to install Terraform. Ex: `tfswitch -b $HOME/bin/terraform 0.10.8`
-4. Optionally, you can create a `.tfswitch.toml` file in your home directory (`~/.tfswitch.toml`)
-5. Your `~/.tfswitch.toml` file should look like this:
+1. Create a directory for the custom binary path. Ex: `mkdir -p "$HOME/bin/"`
+2. Add the path to the directory to your `PATH` environment variable. Ex:
+   `export PATH="$PATH:$HOME/bin"` (add this to your Bash profile or Zsh
+   profile)
+3. Pass `-b` or `--bin` parameter with the custom binary path as value (this
+   must be a first level pointer inside the directory from above). Ex:
+   `tfswitch -b "$HOME/bin/terraform" 0.10.8`  
+   • If target directory for custom binary path does not exist, `tfswitch`
+   falls back to `$HOME/bin/` directory
+4. Optionally, you can create a `.tfswitch.toml` file in your home directory
+   (`~/.tfswitch.toml`)
+5. Your `~/.tfswitch.toml` file should have a line like this:
+   `bin = "$HOME/bin/terraform"`
+6. Run `tfswitch` and it should automatically install the required version in
+   the specified binary path
+
+Below is an example for `$HOME/.tfswitch.toml` on Windows:
 
 ```toml
-bin = "$HOME/bin/terraform"
-version = "0.11.3"
+bin = "C:\\Users\\<%USERNAME%>\\bin\\terraform.exe"
 ```
 
-6. Run `tfswitch` and it should automatically install the required terraform version in the specified binary path
+### Setting default (fallback) version
 
-**NOTE**
-
-1. For Linux users that do not have write permission to `/usr/local/bin/`, `tfswitch` will attempt to install terraform at `$HOME/bin`. Run `export PATH=$PATH:$HOME/bin` to append bin to PATH
-2. For Windows host, `tfswitch` need to be run under `Administrator` mode, and `$HOME/.tfswitch.toml` with `bin` must be defined (with a valid path) as minimum, below is an example for `$HOME/.tfswitch.toml` on windows
-
-```toml
-bin = "C:\\Users\\<%USRNAME%>\\bin\\terraform.exe"
-```
-
-## Setting the default version using `.tfswitch.toml` file
-
-The `.tfswitch.toml` file can be configured with a `default-version` attribute to configure tfswitch a particular version, if no other sources of versions are found
+By default, if `tfswitch` is unable to determine the version to use, it errors
+out.  
+The `.tfswitch.toml` file can be configured with a `default-version` parameter
+for `tfswitch` to use a particular version, if no other sources of versions are
+found
 
 ```toml
 default-version = "1.5.4"
 ```
 
-## Setting product using `.tfswitch.toml` file
+### Setting product (base tool) name
 
-The `.tfswitch.toml` file can be configured with a `product` attribute to configure tfswitch to use Terraform or OpenTofu, by default:
+`tfswitch` defaults to install Terraform binaries.  
+The `.tfswitch.toml` file can be configured with a `product` parameter for
+`tfswitch` to use either Terraform or OpenTofu by default:
 
 ```toml
 product = "opentofu"
@@ -86,13 +113,91 @@ or
 product = "terraform"
 ```
 
+### Setting log level
+
+`tfswitch` defaults to `INFO` log level.  
+The `.tfswitch.toml` file can be configured with a `log-level` parameter for
+`tfswitch` to use non-default logging verbosity:
+
+```toml
+log-level = "INFO"
+```
+
+- Supported log levels:
+  - `OFF`: Disable (suppress) logging
+  - `PANIC`: High severity, unrecoverable errors
+  - `FATAL`: Fatal, unrecoverable errors + previous log level
+  - `ERROR`: Runtime errors that should definitely be noted + previous log levels
+  - `WARN`: Non-critical entries that deserve eyes + previous log levels
+  - `INFO`: Default logging level, messages that highlight the progress + previous log levels
+  - `NOTICE`: Normal operational entries, but not necessarily noteworthy + previous log levels
+  - `DEBUG`: Verbose logging, useful for development + previous log levels
+  - `TRACE`: Finer-grained informational events than DEBUG + previous log levels
+  - Any other log level value results in a warning message
+  <!-- TODO: see `lib/logging.go` for a planned switch to fatal error
+  - Any other log level value results in error and `tfswitch` will exit with
+    non-zero exit code.
+    -->
+
+### Overriding CPU architecture type for the downloaded binary
+
+CPU architecture of the downloaded binaries defaults to `tfswitch`'s host
+architecture.  
+The `.tfswitch.toml` file can be configured with a `arch` parameter for
+`tfswitch` to download binary of the CPU architecture that doesn't match the
+host:
+
+```toml
+arch = "arm64"
+```
+
+- This can be set to any string, though incorrect values will result in
+  download failure.
+- Suggested values: `amd64`, `arm64`, `386`.
+- Check available Arch types at:
+  - [Terraform Downloads](https://releases.hashicorp.com/terraform/)
+  - [OpenTofu Downloads](https://get.opentofu.org/tofu/)
+
+### Overriding installation directory, where actual binaries are stored
+
+`tfswitch` defaults to download binaries to the `$HOME/.terraform.versions/`
+directory.  
+The `.tfswitch.toml` file can be configured with a `install` parameter to
+specify the parent directory for `.terraform.versions` directory.
+
+```toml
+install = "/var/cache"
+```
+
+**NOTE**:
+
+- Current user must have write permissions to the target directory
+- If the target directory does not exist, `tfswitch` will create it
+
+### Disabling color output / Forcing color output
+
+`tfswitch` defaults to color output if the terminal supports it and if the TTY
+is allocated (interactive session).
+
+Disabling color output can be useful in non-interactive sessions, such as when
+running scripts in CI/CD pipeline or when piping output to other commands.
+
+- If you want to disable color output, you can use the `no-color` parameter.
+- If you want to force color output even if the TTY is not allocated
+  (non-interactive session), you can use the `force-color` parameter.
+
+**NOTE**: `no-color` and `force-color` parameters are mutually exclusive.
+
 ## Use `terragrunt.hcl` file
 
-If a terragrunt.hcl file with the terraform constraint is included in the current directory, it should automatically download or switch to that terraform version. 
-For example, the following should automatically switch terraform to the lastest version 0.13:
+If a terragrunt.hcl file with the terraform constraint is included in the
+current directory, it should automatically download or switch to that terraform
+version.  
+For example, the following should automatically switch Terraform to the latest
+version 0.13:
 
 ```hcl
 terragrunt_version_constraint = ">= 0.26, < 0.27"
 terraform_version_constraint  = ">= 0.13, < 0.14"
-...
+…
 ```

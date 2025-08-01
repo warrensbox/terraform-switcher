@@ -51,14 +51,15 @@ const (
 
 // TestGetTFList : Get list from hashicorp
 func TestGetTFList(t *testing.T) {
-
-	list, _ := getTFList(hashiURL, true)
+	list, err := getTFList(hashiURL, true)
+	if err != nil {
+		t.Errorf("Error getting list of versions from %q: %v", hashiURL, err)
+	}
 
 	val := "0.1.0"
 	var exists bool
 
-	switch reflect.TypeOf(list).Kind() {
-	case reflect.Slice:
+	if reflect.TypeOf(list).Kind() == reflect.Slice {
 		s := reflect.ValueOf(list)
 
 		for i := 0; i < s.Len(); i++ {
@@ -73,7 +74,6 @@ func TestGetTFList(t *testing.T) {
 	} else {
 		t.Log("Write versions exist (expected)")
 	}
-
 }
 
 func compareLists(actual []string, expected []string) error {
@@ -95,11 +95,15 @@ func getMockListVersionServer() *httptest.Server {
 		case "/hashicorp/":
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(hashicorpBody))
+			if _, err := w.Write([]byte(hashicorpBody)); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 		case "/opentofu/":
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(openTofuBody))
+			if _, err := w.Write([]byte(openTofuBody)); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 		default:
 			http.NotFoundHandler().ServeHTTP(w, r)
 		}
@@ -161,11 +165,8 @@ func TestGetTFLatest(t *testing.T) {
 func TestGetTFLatestImplicit(t *testing.T) {
 	logger = InitLogger("DEBUG")
 	tName := "version=%s_preRelease=%v"
-	t.Run(fmt.Sprintf(tName, "0.11.0", false), func(t *testing.T) { testGetTFLatestImplicit(t, "0.11.0", false, "0.11.13") })
-	// @TODO Couldn't get this test working
-	// t.Run(fmt.Sprintf(tName, "0.11", true), func(t *testing.T) { testGetTFLatestImplicit(t, "0.11", true, "0.11.13") })
+	t.Run(fmt.Sprintf(tName, "0.12.0", false), func(t *testing.T) { testGetTFLatestImplicit(t, "0.12.0", false, "0.12.2") })
 	t.Run(fmt.Sprintf(tName, "0.11", false), func(t *testing.T) { testGetTFLatestImplicit(t, "0.11", false, "0.12.2") })
-	// @TODO Couldn't get this test working
 	t.Run(fmt.Sprintf(tName, "0.12", true), func(t *testing.T) { testGetTFLatestImplicit(t, "0.12", true, "0.12.3-beta1") })
 }
 
@@ -180,6 +181,7 @@ func testGetTFLatestImplicit(t *testing.T, version string, preRelease bool, expe
 	if version != expectedVersion {
 		t.Errorf("Expected latest version does not match. Expected: %s, actual: %s", expectedVersion, version)
 	}
+	t.Logf("Expected %q, actual: %q", expectedVersion, version)
 }
 
 // TestGetTFURLBody :  Test getTFURLBody method
@@ -211,14 +213,13 @@ func TestRemoveDuplicateVersions(t *testing.T) {
 }
 
 // TestValidVersionFormat : test if func returns valid version format
-// more regex testing at https://rubular.com/r/UvWXui7EU2icSb
 func TestValidVersionFormat(t *testing.T) {
-
+	logger = InitLogger("DEBUG")
 	var version string
+	var valid bool
+
 	version = "0.11.8"
-
-	valid := validVersionFormat(version)
-
+	valid = validVersionFormat(version)
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
@@ -226,49 +227,15 @@ func TestValidVersionFormat(t *testing.T) {
 	}
 
 	version = "1.11.9"
-
 	valid = validVersionFormat(version)
-
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
 		t.Errorf("Failed to verify version format: %s\n", version)
 	}
 
-	version = "1.11.a"
-
-	valid = validVersionFormat(version)
-
-	if valid == false {
-		t.Logf("Invalid version format : %s (expected)", version)
-	} else {
-		t.Errorf("Failed to verify version format: %s\n", version)
-	}
-
-	version = "22323"
-
-	valid = validVersionFormat(version)
-
-	if valid == false {
-		t.Logf("Invalid version format : %s (expected)", version)
-	} else {
-		t.Errorf("Failed to verify version format: %s\n", version)
-	}
-
-	version = "@^&*!)!"
-
-	valid = validVersionFormat(version)
-
-	if valid == false {
-		t.Logf("Invalid version format : %s (expected)", version)
-	} else {
-		t.Errorf("Failed to verify version format: %s\n", version)
-	}
-
 	version = "1.11.9-beta1"
-
 	valid = validVersionFormat(version)
-
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
@@ -276,9 +243,7 @@ func TestValidVersionFormat(t *testing.T) {
 	}
 
 	version = "0.12.0-rc2"
-
 	valid = validVersionFormat(version)
-
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
@@ -286,23 +251,103 @@ func TestValidVersionFormat(t *testing.T) {
 	}
 
 	version = "1.11.4-boom"
-
 	valid = validVersionFormat(version)
-
 	if valid == true {
 		t.Logf("Valid version format : %s (expected)", version)
 	} else {
 		t.Errorf("Failed to verify version format: %s\n", version)
 	}
 
-	version = "1.11.4-1"
+	// Test valid full version format (using func argument)
+	version = "1.11.4"
+	valid = validVersionFormat(version, regexSemVer.Full)
+	if valid == true {
+		t.Logf("Valid full version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify full version format: %s\n", version)
+	}
 
+	// Test valid minor version format
+	version = "1.11"
+	valid = validVersionFormat(version, regexSemVer.Minor)
+	if valid == true {
+		t.Logf("Valid minor version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify minor version format: %s\n", version)
+	}
+
+	// Test valid patch version format
+	version = "1.11.4"
+	valid = validVersionFormat(version, regexSemVer.Patch)
+	if valid == true {
+		t.Logf("Valid patch version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify patch version format: %s\n", version)
+	}
+}
+
+// TestInvalidVersionFormat : test if func catches invalid version format
+func TestInvalidVersionFormat(t *testing.T) {
+	logger = InitLogger("DEBUG")
+	var version string
+	var valid bool
+
+	version = "1.11.a"
 	valid = validVersionFormat(version)
-
 	if valid == false {
 		t.Logf("Invalid version format : %s (expected)", version)
 	} else {
 		t.Errorf("Failed to verify version format: %s\n", version)
 	}
 
+	version = "22323"
+	valid = validVersionFormat(version)
+	if valid == false {
+		t.Logf("Invalid version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "@^&*!)!"
+	valid = validVersionFormat(version)
+	if valid == false {
+		t.Logf("Invalid version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify version format: %s\n", version)
+	}
+
+	version = "1.11.4-01"
+	valid = validVersionFormat(version)
+	if valid == false {
+		t.Logf("Invalid version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify version format: %s\n", version)
+	}
+
+	// Test invalid full version format (using func argument)
+	version = "1.11"
+	valid = validVersionFormat(version, regexSemVer.Full)
+	if valid == false {
+		t.Logf("Invalid full version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify full version format: %s\n", version)
+	}
+
+	// Test invalid minor version format
+	version = "1.11.4"
+	valid = validVersionFormat(version, regexSemVer.Minor)
+	if valid == false {
+		t.Logf("Invalid minor version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify minor version format: %s\n", version)
+	}
+
+	// Test invalid patch version format
+	version = "1.11"
+	valid = validVersionFormat(version, regexSemVer.Patch)
+	if valid == false {
+		t.Logf("Invalid patch version format : %s (expected)", version)
+	} else {
+		t.Errorf("Failed to verify patch version format: %s\n", version)
+	}
 }

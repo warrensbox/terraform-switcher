@@ -1,3 +1,4 @@
+//nolint:staticcheck //ST1005: error strings should not be capitalized (staticcheck)
 package lib
 
 import (
@@ -13,7 +14,7 @@ import (
 func CreateSymlink(cwd string, dir string) error {
 	// If we are on windows the symlink is not working correctly.
 	// Copy the desired terraform binary to the path environment.
-	if runtime.GOOS == "windows" {
+	if runtime.GOOS == windows {
 		r, err := os.Open(cwd)
 		if err != nil {
 			return fmt.Errorf("Unable to open source binary: %q", cwd)
@@ -56,19 +57,18 @@ func RemoveSymlink(symlinkPath string) error {
 		If error persist, you may not have the permission to create a symlink at %q.
 		Error: %v
 		`, symlinkPath, symlinkPath, err)
-	} else {
-		errRemove := os.Remove(symlinkPath)
-
-		if errRemove != nil {
-			return fmt.Errorf(`
-			Unable to remove symlink.
-			Maybe symlink already exist. Try removing existing symlink manually.
-			Try running "unlink %q" to remove existing symlink.
-			If error persist, you may not have the permission to create a symlink at %q.
-			Error: %v
-			`, symlinkPath, symlinkPath, errRemove)
-		}
 	}
+
+	if errRemove := os.Remove(symlinkPath); errRemove != nil {
+		return fmt.Errorf(`
+		Unable to remove symlink.
+		Maybe symlink already exist. Try removing existing symlink manually.
+		Try running "unlink %q" to remove existing symlink.
+		If error persist, you may not have the permission to create a symlink at %q.
+		Error: %v
+		`, symlinkPath, symlinkPath, errRemove)
+	}
+
 	return nil
 }
 
@@ -98,35 +98,104 @@ func ChangeSymlink(binVersionPath string, binPath string) {
 }
 
 // ChangeProductSymlink : move symlink for product to existing binary
+//
+//nolint:gocyclo
 func ChangeProductSymlink(product Product, binVersionPath string, userBinPath string) error {
 	homedir := GetHomeDirectory() // get user's home directory
 	homeBinPath := filepath.Join(homedir, "bin", product.GetExecutableName())
-	possibleInstallLocations := []string{userBinPath, homeBinPath}
-	possibleInstallDirs := []string{}
+
 	var err error
+	var locationsFmt string
 
-	for _, location := range possibleInstallLocations {
-		possibleInstallDirs = append(possibleInstallDirs, Path(location))
-		if CheckDirExist(Path(location)) {
-			/* remove current symlink if exist*/
-			symlinkExist := CheckSymlink(location)
-			if symlinkExist {
-				_ = RemoveSymlink(location)
+	// Possible install locations with boolean property as to whether to attempt to create
+	type installLocations struct {
+		path   string
+		create bool
+	}
+	possibleInstallLocations := []installLocations{
+		{path: userBinPath, create: false},
+		{path: homeBinPath, create: true},
+	}
+
+	for idx, location := range possibleInstallLocations {
+		isFallback := false
+		if idx > 0 {
+			isFallback = true
+		}
+		convertedPath := ConvertExecutableExt(location.path)
+		possibleInstallLocations[idx].path = convertedPath
+		locationsFmt += fmt.Sprintf("\n\t• №%d: %q (create: %-5t, isFallack: %t)", idx+1, convertedPath, location.create, isFallback)
+	}
+	logger.Noticef("Possible install locations:%s", locationsFmt)
+
+	for idx, location := range possibleInstallLocations {
+		dirPath := Path(location.path)
+		attempt := idx + 1
+
+		if attempt > 1 {
+			logger.Warnf("Falling back to install to %q directory", dirPath)
+		}
+
+		logger.Noticef("Attempting to install to %q directory (possible install location №%d)", dirPath, attempt)
+
+		// If directory does not exist, check if we should create it, otherwise skip
+		if !CheckDirExist(dirPath) {
+			logger.Warnf("Installation directory %q doesn't exist!", dirPath)
+			if location.create {
+				logger.Infof("Creating %q directory", dirPath)
+				err = os.MkdirAll(dirPath, 0o755)
+				if err != nil {
+					logger.Errorf("Unable to create %q directory: %v", dirPath, err)
+					continue
+				}
+			} else {
+				continue
+			}
+		} else if !CheckIsDir(dirPath) {
+			logger.Warnf("The %q is not a directory!", dirPath)
+			continue
+		}
+		logger.Noticef("Installation location: %q", location.path)
+
+		/* remove current symlink if exist */
+		if CheckSymlink(location.path) {
+			logger.Debugf("Clearing away symlink before re-creating it: %q", location.path)
+			if errRemoveSymlink := RemoveSymlink(location.path); errRemoveSymlink != nil {
+				return fmt.Errorf("Error removing symlink %q: %v", location.path, errRemoveSymlink)
+			}
+		}
+
+		/* set symlink to desired version */
+		err = CreateSymlink(binVersionPath, location.path)
+		if err == nil {
+			logger.Noticef("Symlink created at %q", location.path)
+
+			// Print helper message to export PATH if the directory is not in PATH only for non-Windows systems,
+			// as it's all complicated on Windows. See https://github.com/warrensbox/terraform-switcher/issues/558
+			if runtime.GOOS != windows {
+				isDirInPath := false
+
+				for _, envPathElement := range strings.Split(os.Getenv("PATH"), ":") {
+					expandedEnvPathElement := strings.TrimRight(strings.Replace(envPathElement, "~", homedir, 1), "/")
+
+					if expandedEnvPathElement == strings.TrimRight(dirPath, "/") {
+						isDirInPath = true
+						break
+					}
+				}
+
+				if !isDirInPath {
+					logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", dirPath, location.path)
+				}
 			}
 
-			/* set symlink to desired version */
-			err = CreateSymlink(binVersionPath, location)
-			if err == nil {
-				logger.Debugf("Symlink created at %q", location)
-				return nil
-			}
+			return nil
 		}
 	}
 
 	if err == nil {
-		return fmt.Errorf("None of the installation directories exist: \"%s\". %s\n",
-			strings.Join(possibleInstallDirs, `", "`),
-			"Manually create one of them and try again.")
+		return fmt.Errorf("None of the installation directories exist:%s\n\t%s", locationsFmt,
+			"Manually create one of them and try again")
 	}
 
 	return err

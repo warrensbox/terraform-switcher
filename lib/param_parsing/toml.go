@@ -1,8 +1,10 @@
+//nolint:revive // FIXME: don't use an underscore in package name
 package param_parsing
 
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 
 	"github.com/spf13/viper"
 	"github.com/warrensbox/terraform-switcher/lib"
@@ -21,35 +23,73 @@ func getParamsTOML(params Params) (Params, error) {
 		viperParser.SetConfigName(configfileName)
 		viperParser.AddConfigPath(params.TomlDir)
 
-		errs := viperParser.ReadInConfig() // Find and read the config file
-		if errs != nil {
-			logger.Errorf("Could not to read %q: %v", tomlPath, errs)
-			return params, errs
+		// Find and read the config file
+		if err := viperParser.ReadInConfig(); err != nil {
+			logger.Errorf("Could not read %q: %v", tomlPath, err)
+			return params, err
 		}
 
-		if viperParser.Get("arch") != nil {
-			params.Arch = os.ExpandEnv(viperParser.GetString("arch"))
-			logger.Debugf("Using \"arch\" from %q: %q", tomlPath, params.Arch)
-		}
-		if viperParser.Get("bin") != nil {
-			params.CustomBinaryPath = os.ExpandEnv(viperParser.GetString("bin"))
-			logger.Debugf("Using \"bin\" from %q: %q", tomlPath, params.CustomBinaryPath)
-		}
-		if viperParser.Get("log-level") != nil {
-			params.LogLevel = viperParser.GetString("log-level")
-			logger.Debugf("Using \"log-level\" from %q: %q", tomlPath, params.LogLevel)
-		}
-		if viperParser.Get("version") != nil {
-			params.Version = viperParser.GetString("version")
-			logger.Debugf("Using \"version\" from %q: %q", tomlPath, params.Version)
-		}
-		if viperParser.Get("default-version") != nil {
-			params.DefaultVersion = viperParser.GetString("default-version")
-			logger.Debugf("Using \"default-version\" from %q: %q", tomlPath, params.DefaultVersion)
-		}
-		if configKey := "product"; viperParser.Get(configKey) != nil {
-			params.Product = viperParser.GetString(configKey)
-			logger.Debugf("Using %q from %q: %q", configKey, tomlPath, params.Product)
+		reflectedParams := reflect.ValueOf(&params)
+		for _, configKey := range paramMappings {
+			description := configKey.description
+			param := configKey.param
+			ptype := configKey.ptype
+			toml := configKey.toml
+
+			if len(toml) == 0 {
+				logger.Errorf("Internal error: TOML key name is empty for parameter %q mapping, skipping assignment", param)
+				continue
+			}
+			if len(param) == 0 {
+				logger.Errorf("Internal error: parameter name is empty for TOML key %q mapping, skipping assignment", toml)
+				continue
+			}
+			if len(description) == 0 {
+				description = param
+			}
+
+			paramKey := reflect.Indirect(reflectedParams).FieldByName(param)
+			if !paramKey.CanSet() {
+				logger.Errorf("Internal error: parameter %q cannot be set, skipping assignment from TOML key %q", param, toml)
+				continue
+			}
+
+			if viperParser.Get(toml) != nil {
+				configKeyValue := viperParser.Get(toml)
+
+				if reflect.TypeOf(configKeyValue).Kind() != ptype {
+					logger.Warnf(
+						"TOML key %q is not a %s but a %s, skipping assignment of %q parameter from TOML",
+						toml, ptype.String(), reflect.TypeOf(configKeyValue).Kind(), param,
+					)
+					continue
+				}
+
+				switch toml {
+				case "bin", "install":
+					envExpandedConfigKeyValue := os.ExpandEnv(configKeyValue.(string))
+					logger.Debugf(
+						"Expanded environment variables in %q TOML key value (if any): %q -> %q",
+						toml, configKeyValue, envExpandedConfigKeyValue,
+					)
+					configKeyValue = envExpandedConfigKeyValue
+				}
+
+				logger.Debugf("%s (%q) from %q: %v", description, toml, tomlPath, configKeyValue)
+
+				switch ptype {
+				case reflect.Bool:
+					paramKey.SetBool(configKeyValue.(bool))
+				case reflect.String:
+					paramKey.SetString(configKeyValue.(string))
+				default:
+					logger.Errorf(
+						"Internal error: unhandled switch case for \"%T\" type of %q parameter (TOML key %q)",
+						ptype, param, toml,
+					)
+					continue
+				}
+			}
 		}
 	}
 	return params, nil
