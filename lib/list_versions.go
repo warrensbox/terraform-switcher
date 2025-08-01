@@ -234,8 +234,11 @@ func ShowRequiredVersion(mirrorURL string, version string) {
 		ShowLatestVersion(mirrorURL)
 		return
 	}
-	// Ensure version passed in valid and didn't come from an argument
-	tflist, _ := getTFList(mirrorURL, true)
+
+	tflist, err := getTFList(mirrorURL, true)
+	if err != nil {
+		logger.Fatalf("Error retrieving version list from %q: %v", mirrorURL, err)
+	}
 	if versionExist(version, tflist) {
 		fmt.Printf("%s\n", version)
 		return
