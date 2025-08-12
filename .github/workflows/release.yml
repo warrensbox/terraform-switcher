@@ -27,7 +27,7 @@ jobs:
 
       # Checkout code from repo
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }} # required for better experience using pre-releases
           fetch-depth: "0"
