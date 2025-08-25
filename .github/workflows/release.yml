@@ -18,12 +18,14 @@ jobs:
     steps:
       - name: Check if provided input is valid
         run: |
-          echo "Semantic Version: ${{ github.event.inputs.name }}"
-          VERSION=${{ github.event.inputs.name }}
+          echo "Semantic Version: ${GH_EVENT_INPUTS_NAME}"
+          VERSION="${GH_EVENT_INPUTS_NAME}"
           if [ "$VERSION" != "major" ] && [ "$VERSION" != "minor" ] && [ "$VERSION" != "patch" ]; then
               echo "Error: Provided input string must be 'major', 'minor', or 'patch'"
               exit 1
           fi
+        env:
+          GH_EVENT_INPUTS_NAME: ${{ github.event.inputs.name }}
 
       # Checkout code from repo
       - name: Checkout repo
@@ -72,7 +74,9 @@ jobs:
       # Echo version
       - name: Echo version
         run: |
-          echo ${{ steps.semver-tag-dry.outputs.tag }}
+          echo "${GH_STEPS_SEMVER_TAG_DRY_OUTPUTS_TAG}"
+        env:
+          GH_STEPS_SEMVER_TAG_DRY_OUTPUTS_TAG: ${{ steps.semver-tag-dry.outputs.tag }}
 
       # Push the changes to remote
       # - name: Push changes
