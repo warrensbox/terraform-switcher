@@ -29,6 +29,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
         with:
+          persist-credentials: false
           ref: ${{ github.head_ref }} # required for better experience using pre-releases
           fetch-depth: "0"
 
