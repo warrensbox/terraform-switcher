@@ -5,7 +5,7 @@
 on:
   pull_request:
     types: [opened, edited, synchronize, ready_for_review]
-    branches: [master, main]
+    branches: [master, main]  # zizmor: ignore[dangerous-triggers]
 
   pull_request_target: # for OSS with public contributions (forked PR)
     types: [opened, edited, synchronize, ready_for_review]
