@@ -5,7 +5,7 @@
 on:
   pull_request:
     types: [opened, edited, synchronize, ready_for_review]
-    branches: [master, main]
+    branches: [master, main] # zizmor: ignore[dangerous-triggers]
 
   pull_request_target: # for OSS with public contributions (forked PR)
     types: [opened, edited, synchronize, ready_for_review]
@@ -24,4 +24,4 @@ jobs:
     name: Multi Labeler
     runs-on: ubuntu-latest
     steps:
-      - uses: fuxingloh/multi-labeler@v4
+      - uses: fuxingloh/multi-labeler@b15a54460c38f54043fa75f7b08a0e2aa5b94b5b # v4.0.0
