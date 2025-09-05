@@ -7,6 +7,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.5.1](https://github.com/warrensbox/terraform-switcher/tree/v1.5.1) - 2025-09-06
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.5.0...v1.5.1)
+
+### Other
+
+- chore: DependaBot updates
+- docs: Update CHANGELOG with `v1.5.1` [#622](https://github.com/warrensbox/terraform-switcher/pull/622) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.5.0](https://github.com/warrensbox/terraform-switcher/tree/v1.5.0) - 2025-07-30
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.4.7...v1.5.0)
