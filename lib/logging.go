@@ -87,7 +87,9 @@ func LogLevels() []string {
 		levels = append(levels, logLevels.Field(fieldNum).Name)
 	}
 
-	slices.Sort(levels) // Sort the result as we use it in output messages
+	// Preserve the order of log levels as defined in `loggingLevels` struct
+	// to make clear the order of verbosity 06-Sep-2025
+	// slices.Sort(levels) // Sort the result as we use it in output messages
 	return levels
 }
 

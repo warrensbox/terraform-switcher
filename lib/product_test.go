@@ -1,6 +1,8 @@
 package lib
 
 import (
+	"slices"
+	"strings"
 	"testing"
 )
 
@@ -105,11 +107,12 @@ func Test_GetPublicKeyId_Terraform(t *testing.T) {
 	}
 }
 
-func Test_GetPublicKeyUrl_Terraform(t *testing.T) {
+func Test_GetPublicKeyURLs_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
-	actual := product.GetPublicKeyUrl()
-	if expected := "https://www.hashicorp.com/.well-known/pgp-key.txt"; actual != expected {
-		t.Errorf("Product GetPublicKeyUrl does not match expected ID. Expected: %q, actual: %q", expected, actual)
+	expected := []string{"https://www.hashicorp.com/.well-known/pgp-key.txt", "https://keybase.io/hashicorp/pgp_keys.asc"}
+	actual := product.GetPublicKeyURLs()
+	if !slices.Equal(expected, actual) {
+		t.Errorf("Product GetPublicKeyURLs does not match expected ID. Expected: %q, actual: %q", strings.Join(expected, ","), strings.Join(actual, ","))
 	}
 }
 
@@ -223,9 +226,10 @@ func Test_GetPublicKeyId_OpenTofu(t *testing.T) {
 
 func Test_GetPublicKeyUrl_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
-	actual := product.GetPublicKeyUrl()
-	if expected := "https://get.opentofu.org/opentofu.asc"; actual != expected {
-		t.Errorf("Product GetPublicKeyUrl does not match expected ID. Expected: %q, actual: %q", expected, actual)
+	expected := []string{"https://get.opentofu.org/opentofu.asc"}
+	actual := product.GetPublicKeyURLs()
+	if !slices.Equal(expected, actual) {
+		t.Errorf("Product GetPublicKeyURLs does not match expected ID. Expected: %q, actual: %q", strings.Join(expected, ","), strings.Join(actual, ","))
 	}
 }
 

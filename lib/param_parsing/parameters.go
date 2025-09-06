@@ -85,7 +85,7 @@ func populateParams(params Params) Params {
 	getopt.StringVarLong(&params.InstallPath, "install", 'i', fmt.Sprintf("Custom install path. Ex: `tfswitch -i /Users/username`. The binaries will be in the sub installDir directory e.g. `/Users/username/%s`", lib.InstallDir))
 	getopt.StringVarLong(&params.LatestPre, "latest-pre", 'p', "Latest pre-release implicit version. Ex: `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: `tfswitch --latest-stable 0.13.0` downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
-	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', fmt.Sprintf("Set tfswitch logging level. One of: %s. Use `OFF` to disable (suppress) logging", strings.Join(lib.LogLevels(), ", ")))
+	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', fmt.Sprintf("Set tfswitch logging level. One of (in the order of increasing level of verbosity): %s. Use `OFF` to disable (suppress) logging", strings.Join(lib.LogLevels(), ", ")))
 	getopt.StringVarLong(&params.MirrorURL, "mirror", 'm', fmt.Sprintf("Install from a remote API other than the default.\nDefault (based on value of `--product`):\n  - %s", strings.Join(defaultMirrors, "\n  - ")))
 	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: `tfswitch --show-latest-pre 0.13` prints 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: `tfswitch --show-latest-stable 0.13` prints 0.13.7 (latest)")
