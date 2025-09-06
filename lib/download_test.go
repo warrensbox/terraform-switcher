@@ -218,7 +218,7 @@ func TestDownloadProductFromURL(t *testing.T) {
 			ExecutableName: "myprod",
 			ArchivePrefix:  "my_product_download_",
 			PublicKeyId:    downloadProductTestConfig.GpgFingerprint,
-			PublicKeyUrl:   mockServer.URL + "/testproduct/gpg-key.txt",
+			PublicKeyURLs:  []string{mockServer.URL + "/testproduct/gpg-key.txt"},
 		},
 	}
 
@@ -256,7 +256,7 @@ func TestDownloadProductFromURL_invalid_checksum(t *testing.T) {
 			ExecutableName: "myprod",
 			ArchivePrefix:  "my_product_download_",
 			PublicKeyId:    downloadProductTestConfig.GpgFingerprint,
-			PublicKeyUrl:   mockServer.URL + "/testproduct/gpg-key.txt",
+			PublicKeyURLs:  []string{mockServer.URL + "/testproduct/gpg-key.txt"},
 		},
 	}
 
@@ -293,7 +293,7 @@ func TestDownloadProductFromURL_zip_file_not_present_in_checksum(t *testing.T) {
 			ExecutableName: "myprod",
 			ArchivePrefix:  "my_product_download_",
 			PublicKeyId:    downloadProductTestConfig.GpgFingerprint,
-			PublicKeyUrl:   mockServer.URL + "/testproduct/gpg-key.txt",
+			PublicKeyURLs:  []string{mockServer.URL + "/testproduct/gpg-key.txt"},
 		},
 	}
 
@@ -328,7 +328,7 @@ func TestDownloadProductFromURL_unable_to_download_public_key(t *testing.T) {
 			ExecutableName: "myprod",
 			ArchivePrefix:  "my_product_download_",
 			PublicKeyId:    downloadProductTestConfig.GpgFingerprint,
-			PublicKeyUrl:   mockServer.URL + "/testproduct/invalid-public-key",
+			PublicKeyURLs:  []string{mockServer.URL + "/testproduct/invalid-public-key"},
 		},
 	}
 
@@ -366,7 +366,7 @@ func TestDownloadProductFromURL_invalid_public_key(t *testing.T) {
 			ExecutableName: "myprod",
 			ArchivePrefix:  "my_product_download_",
 			PublicKeyId:    downloadProductTestConfig.GpgFingerprint,
-			PublicKeyUrl:   mockServer.URL + "/testproduct/gpg-key.txt",
+			PublicKeyURLs:  []string{mockServer.URL + "/testproduct/gpg-key.txt"},
 		},
 	}
 

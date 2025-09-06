@@ -136,18 +136,37 @@ func downloadFromURL(installLocation string, url string, wg *sync.WaitGroup) (st
 
 func downloadPublicKey(product Product, installLocation string, wg *sync.WaitGroup) (string, error) {
 	pubKeyFilePath := filepath.Join(installLocation, "/", product.GetId()+"_"+product.GetPublicKeyId()+pubKeySuffix)
-	logger.Debugf("Looking up public key file at %q", pubKeyFilePath)
+	logger.Debugf("Looking up public PGP-key file at %q", pubKeyFilePath)
 	publicKeyFileExists := FileExistsAndIsNotDir(pubKeyFilePath)
 	if !publicKeyFileExists {
-		// Public key does not exist. Let's grab it from hashicorp
-		pubKeyFile, errDl := downloadFromURL(installLocation, product.GetPublicKeyUrl(), wg)
-		if errDl != nil {
-			logger.Errorf("Error fetching public key file from %s", product.GetPublicKeyUrl())
-			return "", errDl
+		// Public PGP-key does not exist. Let's grab it
+		publicKeyURLs := product.GetPublicKeyURLs()
+		var pubKeyFile string
+		var errDl error
+		var errsDl []string
+		for idx, publicKeyURL := range publicKeyURLs {
+			logger.Debugf("Attempting to download public PGP-key from %q", publicKeyURL)
+			pubKeyFile, errDl = downloadFromURL(installLocation, publicKeyURL, wg)
+			if errDl != nil {
+				errsDl = append(errsDl, errDl.Error())
+				logger.Errorf("Failed to fetch public PGP-key from %q", publicKeyURL)
+
+				// Return all failures if all URLs have been tried so far
+				if idx+1 == len(publicKeyURLs) {
+					return "", errors.New(strings.Join(errsDl, "; "))
+				}
+
+				// Try the next URL
+				continue
+			}
+			// Download succeeded, break out of the loop
+			break
 		}
+
+		logger.Debugf("Renaming public PGP-key file from %q to %q", pubKeyFile, pubKeyFilePath)
 		errRename := os.Rename(pubKeyFile, pubKeyFilePath)
 		if errRename != nil {
-			logger.Errorf("Error renaming public key file from %q to %q", pubKeyFile, pubKeyFilePath)
+			logger.Errorf("Error renaming public PGP-key file from %q to %q", pubKeyFile, pubKeyFilePath)
 			return "", errRename
 		}
 	}

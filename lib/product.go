@@ -9,7 +9,6 @@ import (
 const legacyProductId = "terraform"
 
 // nolint:revive // FIXME: var-naming: struct field PublicKeyId should be PublicKeyID (revive)
-// nolint:revive // FIXME: var-naming: struct field PublicKeyUrl should be PublicKeyURL (revive)
 type ProductDetails struct {
 	ID                    string
 	Name                  string
@@ -19,7 +18,7 @@ type ProductDetails struct {
 	ExecutableName        string
 	ArchivePrefix         string
 	PublicKeyId           string
-	PublicKeyUrl          string
+	PublicKeyURLs         []string
 }
 
 type TerraformProduct struct {
@@ -33,7 +32,6 @@ type OpenTofuProduct struct {
 // nolint:revive // FIXME: var-naming: method GetDefaultMirrorUrl should be GetDefaultMirrorURL (revive)
 // nolint:revive // FIXME: var-naming: method GetArtifactUrl should be GetArtifactURL (revive)
 // nolint:revive // FIXME: var-naming: method GetPublicKeyId should be GetPublicKeyID (revive)
-// nolint:revive // FIXME: var-naming: method GetPublicKeyUrl should be GetPublicKeyURL (revive)
 type Product interface {
 	GetId() string
 	GetName() string
@@ -42,7 +40,7 @@ type Product interface {
 	GetExecutableName() string
 	GetArchivePrefix() string
 	GetPublicKeyId() string
-	GetPublicKeyUrl() string
+	GetPublicKeyURLs() []string
 	GetShaSignatureSuffix() string
 	GetArtifactUrl(mirrorURL string, version string) string
 	GetRecentVersionProduct(recentFile *RecentFile) []string
@@ -87,9 +85,8 @@ func (p TerraformProduct) GetPublicKeyId() string {
 	return p.PublicKeyId
 }
 
-// nolint:revive // FIXME: var-naming: method GetPublicKeyUrl should be GetPublicKeyURL (revive)
-func (p TerraformProduct) GetPublicKeyUrl() string {
-	return p.PublicKeyUrl
+func (p TerraformProduct) GetPublicKeyURLs() []string {
+	return p.PublicKeyURLs
 }
 
 func (p TerraformProduct) GetShaSignatureSuffix() string {
@@ -142,9 +139,8 @@ func (p OpenTofuProduct) GetPublicKeyId() string {
 	return p.PublicKeyId
 }
 
-// nolint:revive // FIXME: var-naming: method GetPublicKeyUrl should be GetPublicKeyURL (revive)
-func (p OpenTofuProduct) GetPublicKeyUrl() string {
-	return p.PublicKeyUrl
+func (p OpenTofuProduct) GetPublicKeyURLs() []string {
+	return p.PublicKeyURLs
 }
 
 func (p OpenTofuProduct) GetShaSignatureSuffix() string {
@@ -170,7 +166,7 @@ var products = []Product{
 			ExecutableName: "terraform",
 			ArchivePrefix:  "terraform_",
 			PublicKeyId:    "72D7468F",
-			PublicKeyUrl:   "https://www.hashicorp.com/.well-known/pgp-key.txt",
+			PublicKeyURLs:  []string{"https://www.hashicorp.com/.well-known/pgp-key.txt", "https://keybase.io/hashicorp/pgp_keys.asc"},
 		},
 	},
 	OpenTofuProduct{
@@ -183,7 +179,7 @@ var products = []Product{
 			ExecutableName:        "tofu",
 			ArchivePrefix:         "tofu_",
 			PublicKeyId:           "0C0AF313E5FD9F80",
-			PublicKeyUrl:          "https://get.opentofu.org/opentofu.asc",
+			PublicKeyURLs:         []string{"https://get.opentofu.org/opentofu.asc"},
 		},
 	},
 }
