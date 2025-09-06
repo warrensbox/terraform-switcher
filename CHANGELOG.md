@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Other
 
-- docs: Update CHANGELOG with `v1.6.0` [#622](https://github.com/warrensbox/terraform-switcher/pull/625) ([yermulnik](https://github.com/yermulnik))
+- docs: Update CHANGELOG with `v1.6.0` [#625](https://github.com/warrensbox/terraform-switcher/pull/625) ([yermulnik](https://github.com/yermulnik))
 
 ## [v1.5.1](https://github.com/warrensbox/terraform-switcher/tree/v1.5.1) - 2025-09-06
 
