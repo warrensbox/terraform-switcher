@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- feat: Add KeyBase as fallback source of Hashicorp's public PGP-key [#624](https://github.com/warrensbox/terraform-switcher/pull/624) ([yermulnik](https://github.com/yermulnik))
+- feat: Add Keybase as fallback source of Hashicorp's public PGP-key [#624](https://github.com/warrensbox/terraform-switcher/pull/624) ([yermulnik](https://github.com/yermulnik))
 
 ### Fixed
 
