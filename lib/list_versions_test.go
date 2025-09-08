@@ -83,7 +83,7 @@ func compareLists(actual []string, expected []string) error {
 
 	for i, v := range expected {
 		if v != actual[i] {
-			return fmt.Errorf("Elements are not the same. Expected: " + v + ", actual: " + actual[i])
+			return fmt.Errorf("Elements are not the same. Expected: %s, actual: %s", v, actual[i])
 		}
 	}
 	return nil

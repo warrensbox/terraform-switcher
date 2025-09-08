@@ -513,32 +513,32 @@ func TestConvertExecutableExt(t *testing.T) {
 		switch runtime.GOOS {
 		case windows:
 			if filepath.Ext(fpathExt) != ".exe" {
-				t.Error(outputMsg + " (unexpected)")
+				t.Errorf("%s (unexpected)", outputMsg)
 				continue
 			}
 
 			if filepath.Ext(fpath) == ".exe" {
 				if fpathExt != fpath {
-					t.Error(outputMsg + " (unexpected)")
+					t.Errorf("%s (unexpected)", outputMsg)
 				} else {
-					t.Logf(outputMsg + " (expected)")
+					t.Logf("%s (expected)", outputMsg)
 				}
 				continue
 			}
 
 			if fpathExt != fpath+".exe" {
-				t.Error(outputMsg + " (unexpected)")
+				t.Errorf("%s (unexpected)", outputMsg)
 				continue
 			}
 
-			t.Logf(outputMsg + " (expected)")
+			t.Logf("%s (expected)", outputMsg)
 		default:
 			if fpath != fpathExt {
-				t.Error(outputMsg + " (unexpected)")
+				t.Errorf("%s (unexpected)", outputMsg)
 				continue
 			}
 
-			t.Logf(outputMsg + " (expected)")
+			t.Logf("%s (expected)", outputMsg)
 		}
 	}
 }
