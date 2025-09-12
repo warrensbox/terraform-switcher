@@ -228,7 +228,25 @@ func ShowLatestVersion(mirrorURL string) {
 	fmt.Printf("%s\n", tfversion)
 }
 
-// ShowLatestImplicitVersion : show latest implicit version given the mirror URL
+// ShowRequiredVersion show latest version using constraints from TF
+func ShowRequiredVersion(mirrorURL string, version string) {
+	if version == "" {
+		ShowLatestVersion(mirrorURL)
+		return
+	}
+
+	tflist, err := getTFList(mirrorURL, true)
+	if err != nil {
+		logger.Fatalf("Error retrieving version list from %q: %v", mirrorURL, err)
+	}
+	if versionExist(version, tflist) {
+		fmt.Printf("%s\n", version)
+		return
+	}
+	logger.Fatalf("The requested version (%q) does not exist.", version)
+}
+
+// ShowLatestImplicitVersion : show latest implicit version given the mirror URL - argument (version) must be provided
 func ShowLatestImplicitVersion(requestedVersion, mirrorURL string, preRelease bool) {
 	if validVersionFormat(requestedVersion, regexSemVer.Minor) || (validVersionFormat(requestedVersion, regexSemVer.Patch) && !preRelease) {
 		tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
