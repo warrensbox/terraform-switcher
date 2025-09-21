@@ -387,7 +387,7 @@ func TestHelpFlagOutput(t *testing.T) {
 func TestDryRunFlagOutput(t *testing.T) {
 	flagName := "--dry-run"
 	testVersion := "1.10.5"
-	expectedOutput := fmt.Sprintf(" INFO [DRY-RUN] No changes will be made  \n")
+	expectedOutput := " INFO [DRY-RUN] No changes will be made  \n"
 	goCommandArgs := []string{"run", "../../main.go", flagName, testVersion}
 
 	t.Logf("Testing %q flag output", flagName)
