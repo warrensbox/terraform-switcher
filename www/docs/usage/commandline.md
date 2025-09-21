@@ -42,7 +42,7 @@ The most recently selected versions are presented at the top of the dropdown.
 
 ## Install latest implicit version for beta, alpha and release candidates(rc)
 
-1. Install the latest implicit version, including pre-releases versions.
+1. Install the latest implicit version, including prereleases versions.
 2. Ex: `tfswitch -p 0.13` or `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1
    (latest) version.
 3. See examples for `--latest-stable` option above.
@@ -61,7 +61,7 @@ The most recently selected versions are presented at the top of the dropdown.
 
 ## Show latest implicit version for beta, alpha and release candidates(rc)
 
-1. Show the latest implicit version, including pre-releases versions.
+1. Show the latest implicit version, including prereleases versions.
 2. Ex: `tfswitch -P 0.13` or `tfswitch --show-latest-pre 0.13`
 
 ## Show required (or explicitly requested) version
