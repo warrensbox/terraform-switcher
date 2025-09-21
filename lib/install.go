@@ -287,8 +287,7 @@ func InstallProductVersion(product Product, dryRun, showRequiredFlag bool, versi
 	logger.Debugf("%sTargeting for %s version %q", logPrefix, product.GetName(), version)
 
 	if validVersionFormat(version) {
-		requestedVersion := version
-		return install(product, dryRun, showRequiredFlag, requestedVersion, customBinaryPath, installPath, mirrorURL, arch)
+		return install(product, dryRun, showRequiredFlag, version, customBinaryPath, installPath, mirrorURL, arch)
 	}
 	PrintInvalidTFVersion()
 	return fmt.Errorf("Argument must be a valid %s version", product.GetName())
