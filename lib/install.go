@@ -53,6 +53,8 @@ func GetInstallLocation(installPath string) string {
 }
 
 // install : install the provided version in the argument
+//
+//nolint:gocyclo
 func install(product Product, dryRun, showRequiredFlag bool, tfversion, binPath, installPath, mirrorURL, goarch string) error {
 	installLocation := GetInstallLocation(installPath)
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+tfversion))
