@@ -287,7 +287,7 @@ func InstallProductVersion(product Product, dryRun, showRequiredFlag bool, versi
 	if dryRun {
 		logPrefix = "[DRY-RUN] "
 	}
-	logger.Debugf("%sTargeting for %s version %q", logPrefix, product.GetName(), version)
+	logger.Debugf("%sTargeting %s version %q", logPrefix, product.GetName(), version)
 
 	if validVersionFormat(version) {
 		return install(product, dryRun, showRequiredFlag, version, customBinaryPath, installPath, mirrorURL, arch)
@@ -376,7 +376,7 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 		if errPrompt != nil {
 			if errPrompt.Error() == "^C" {
 				// Cancel execution
-				return fmt.Errorf("Interrupt by user")
+				return fmt.Errorf("Interrupted by user")
 			}
 			return fmt.Errorf("PromptUI unexpectedly failed: %v", errPrompt)
 		}
