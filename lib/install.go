@@ -313,20 +313,21 @@ type VersionSelector struct {
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
 func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag bool, customBinaryPath, installPath, mirrorURL, arch string) error {
-	var selectVersions []VersionSelector
 	var selectedVersion string
 
-	// Get all available versions from remote
-	tfList, errTFList := getTFList(mirrorURL, listAll)
-	if errTFList != nil {
-		return fmt.Errorf("Error getting list of %s versions from %q: %v", product.GetName(), mirrorURL, errTFList)
-	}
-
-	if len(tfList) == 0 {
-		return fmt.Errorf("[%s] Remote returned empty versions list: %s", product.GetName(), mirrorURL)
-	}
-
 	if !showRequiredFlag {
+		var selectVersions []VersionSelector
+
+		// Get all available versions from remote
+		tfList, errTFList := getTFList(mirrorURL, listAll)
+		if errTFList != nil {
+			return fmt.Errorf("Error getting list of %s versions from %q: %v", product.GetName(), mirrorURL, errTFList)
+		}
+
+		if len(tfList) == 0 {
+			return fmt.Errorf("[%s] Remote returned empty versions list: %s", product.GetName(), mirrorURL)
+		}
+
 		versionMap := make(map[string]bool)
 
 		// Add recent versions
@@ -380,7 +381,11 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 		selectedVersion = selectVersions[selectedItx].Version
 		logger.Infof("Selected %s version: %s", product.GetName(), selectedVersion)
 	} else {
-		selectedVersion = tfList[0]
+		var errGetLatest error
+		selectedVersion, errGetLatest = getTFLatest(mirrorURL)
+		if errGetLatest != nil {
+			return fmt.Errorf("Error getting latest %s version from %q: %v", product.GetName(), mirrorURL, errGetLatest)
+		}
 		logger.Warnf("No required or otherwise explicitly requested version found: defaulting to latest %s version (%s)", product.GetName(), selectedVersion)
 	}
 
