@@ -98,14 +98,15 @@ func install(product Product, dryRun, showRequiredFlag bool, tfversion, binPath,
 	}
 
 	logArgs := fmt.Sprintf("%s version %q for %q", product.GetName(), tfversion, goos+"_"+goarch)
-	if dryRun {
+	switch {
+	case dryRun:
 		logger.Infof("[DRY-RUN] Would have attempted to install %s", logArgs)
 		return nil
-	} else if showRequiredFlag {
+	case showRequiredFlag:
 		logger.Infof("Showing required %s", logArgs)
 		fmt.Printf("%s\n", tfversion)
 		return nil
-	} else {
+	default:
 		logger.Infof("Installing %s", logArgs)
 	}
 
