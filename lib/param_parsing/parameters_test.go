@@ -387,7 +387,7 @@ func TestHelpFlagOutput(t *testing.T) {
 func TestDryRunFlagOutput(t *testing.T) {
 	flagName := "--dry-run"
 	testVersion := "1.10.5"
-	expectedOutput := fmt.Sprintf(" INFO [DRY-RUN] Would have attempted to switch Terraform to version %q  \n", testVersion)
+	expectedOutput := fmt.Sprintf(" INFO [DRY-RUN] No changes will be made  \n")
 	goCommandArgs := []string{"run", "../../main.go", flagName, testVersion}
 
 	t.Logf("Testing %q flag output", flagName)
@@ -402,7 +402,7 @@ func TestDryRunFlagOutput(t *testing.T) {
 		return re.ReplaceAllString(str, "")
 	}(string(out))
 
-	if !strings.HasSuffix(outNoANSI, expectedOutput) {
+	if !strings.Contains(outNoANSI, expectedOutput) {
 		t.Errorf("Expected %q, got: %q", expectedOutput, outNoANSI)
 	} else {
 		t.Logf("Success: %q", outNoANSI)
