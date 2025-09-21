@@ -36,7 +36,7 @@ The most recently selected versions are presented at the top of the dropdown.
 1. Install the latest implicit stable version.
 2. Ex: `tfswitch -s 0.13` or `tfswitch --latest-stable 0.13` downloads latest
    on `0.*` branch (`~> 0.13`), while `tfswitch -s 0.13.5` or `tfswitch
-   --latest-stable 0.13.5` downloads latest on `0.13.*` branch (`~> 0.13.5`) and
+--latest-stable 0.13.5` downloads latest on `0.13.*` branch (`~> 0.13.5`) and
    `tfswitch -s 0` or `tfswitch --latest-stable 0` downloads latest on `0` branch
    (`~> 0`).
 
@@ -57,7 +57,7 @@ The most recently selected versions are presented at the top of the dropdown.
 1. Show the latest implicit stable version.
 2. Ex: `tfswitch -S 0.13` or `tfswitch --show-latest-stable 0.13` shows latest
    on `0.*` branch (`~> 0.13`), while `tfswitch -S 0.13.5` or `tfswitch
-   --show-latest-stable 0.13.5` shows latest on `0.13.*` branch (`~> 0.13.5`).
+--show-latest-stable 0.13.5` shows latest on `0.13.*` branch (`~> 0.13.5`).
 
 ## Show latest implicit version for beta, alpha and release candidates(rc)
 
