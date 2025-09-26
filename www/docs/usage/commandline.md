@@ -16,8 +16,7 @@ The most recently selected versions are presented at the top of the dropdown.
 <img src="https://s3.us-east-2.amazonaws.com/kepler-images/warrensbox/tfswitch/tfswitch-v4.gif" alt="drawing" style="width: 600px;"/>
 
 1. You can also supply the desired version as an argument on the command line.
-2. For example, `tfswitch 0.10.5` for version 0.10.5 of terraform.
-3. Hit **Enter** to switch.
+2. For example, `tfswitch 0.10.5` for version 0.10.5.
 
 ## See all versions including beta, alpha and release candidates(rc)
 
@@ -30,42 +29,50 @@ The most recently selected versions are presented at the top of the dropdown.
 ## Install latest version only
 
 1. Install the latest stable version only.
-2. Run `tfswitch -u` or `tfswitch --latest`.
-3. Hit **Enter** to install.
+2. Run `tfswitch -u` or `tfswitch --latest`
 
 ## Install latest implicit version for stable releases
 
 1. Install the latest implicit stable version.
-2. Ex: `tfswitch -s 0.13` or `tfswitch --latest-stable 0.13` downloads 0.13.6
-   (latest) version.
-3. Hit **Enter** to install.
+2. Ex: `tfswitch -s 0.13` or `tfswitch --latest-stable 0.13` downloads latest
+   on `0.*` branch (`~> 0.13`), while `tfswitch -s 0.13.5` or `tfswitch
+--latest-stable 0.13.5` downloads latest on `0.13.*` branch (`~> 0.13.5`) and
+   `tfswitch -s 0` or `tfswitch --latest-stable 0` downloads latest on `0` branch
+   (`~> 0`).
 
 ## Install latest implicit version for beta, alpha and release candidates(rc)
 
-1. Install the latest implicit prerelease version.
+1. Install the latest implicit version, including prereleases versions.
 2. Ex: `tfswitch -p 0.13` or `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1
    (latest) version.
-3. Hit **Enter** to install.
+3. See examples for `--latest-stable` option above.
 
 ## Show latest version only
 
 1. Just show what the latest version is.
 2. Run `tfswitch -U` or `tfswitch --show-latest`
-3. Hit **Enter** to show.
 
 ## Show latest implicit version for stable releases
 
 1. Show the latest implicit stable version.
-2. Ex: `tfswitch -S 0.13` or `tfswitch --show-latest-stable 0.13` shows 0.13.6
-   (latest) version.
-3. Hit **Enter** to show.
+2. Ex: `tfswitch -S 0.13` or `tfswitch --show-latest-stable 0.13` shows latest
+   on `0.*` branch (`~> 0.13`), while `tfswitch -S 0.13.5` or `tfswitch
+--show-latest-stable 0.13.5` shows latest on `0.13.*` branch (`~> 0.13.5`).
 
 ## Show latest implicit version for beta, alpha and release candidates(rc)
 
-1. Show the latest implicit prerelease version.
-2. Ex: `tfswitch -P 0.13` or `tfswitch --show-latest-pre 0.13` shows 0.13.0-rc1
-   (latest) version.
-3. Hit **Enter** to show.
+1. Show the latest implicit version, including prereleases versions.
+2. Ex: `tfswitch -P 0.13` or `tfswitch --show-latest-pre 0.13`
+
+## Show required (or explicitly requested) version
+
+1. Show the version required by version constraints.
+2. Takes into account version from module version constraint, command line,
+   configuration file(s), env var, etc. See [General](general.md) for options.
+3. Defaults to latest version if no constraints found.
+4. Ex: `tfswitch -R` or `tfswitch --show-required`
+5. Can be combined with options like `--latest-stable` and `--latest-pre` to
+   show the required version that would be installed by those options.
 
 ## Use custom mirror
 

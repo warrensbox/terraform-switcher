@@ -35,6 +35,7 @@ type Params struct {
 	ShowLatestFlag   bool
 	ShowLatestPre    string
 	ShowLatestStable string
+	ShowRequiredFlag bool
 	TomlDir          string
 	VersionFlag      bool
 	Version          string
@@ -99,6 +100,7 @@ func populateParams(params Params) Params {
 	getopt.BoolVarLong(&params.ListAllFlag, "list-all", 'l', "List all versions of product (see `--product`), including Beta and RC versions")
 	getopt.BoolVarLong(&params.NoColor, "no-color", 'k', "Disable color output. Useful for piping output to a file or when the terminal does not support colors")
 	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
+	getopt.BoolVarLong(&params.ShowRequiredFlag, "show-required", 'R', "Show required (or explicitly requested) version. Defaults to latest version if no constraints found")
 	getopt.BoolVarLong(&params.VersionFlag, "version", 'v', "Display the version of tfswitch")
 
 	// Parse the command line parameters to fetch stuff like chdir
@@ -232,6 +234,7 @@ func populateParams(params Params) Params {
 	args := getopt.Args()
 	if len(args) == 1 {
 		/* version provided on command line as arg */
+		logger.Infof("Reading version provided on command line: %s", args[0])
 		params.Version = args[0]
 	}
 
@@ -279,6 +282,7 @@ func initParams(params Params) Params {
 	params.ShowLatestFlag = false
 	params.ShowLatestPre = lib.DefaultLatest
 	params.ShowLatestStable = lib.DefaultLatest
+	params.ShowRequiredFlag = false
 	params.TomlDir = lib.GetHomeDirectory()
 	params.Version = lib.DefaultLatest
 	params.Product = lib.DefaultProductId
