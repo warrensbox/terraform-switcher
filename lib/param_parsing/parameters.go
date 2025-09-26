@@ -15,29 +15,30 @@ import (
 )
 
 type Params struct {
-	Arch             string
-	ChDirPath        string
-	CustomBinaryPath string
-	DefaultVersion   string
-	DryRun           bool
-	ForceColor       bool
-	HelpFlag         bool
-	InstallPath      string
-	LatestFlag       bool
-	LatestPre        string
-	LatestStable     string
-	ListAllFlag      bool
-	LogLevel         string
-	MirrorURL        string
-	NoColor          bool
-	ProductEntity    lib.Product
-	Product          string
-	ShowLatestFlag   bool
-	ShowLatestPre    string
-	ShowLatestStable string
-	TomlDir          string
-	VersionFlag      bool
-	Version          string
+	Arch                   string
+	ChDirPath              string
+	CustomBinaryPath       string
+	DefaultVersion         string
+	DryRun                 bool
+	ForceColor             bool
+	HelpFlag               bool
+	InstallPath            string
+	LatestFlag             bool
+	LatestPre              string
+	LatestStable           string
+	ListAllFlag            bool
+	LogLevel               string
+	MirrorURL              string
+	NoColor                bool
+	ProductEntity          lib.Product
+	Product                string
+	ShowLatestFlag         bool
+	ShowLatestPre          string
+	ShowLatestRequiredFlag bool
+	ShowLatestStable       string
+	TomlDir                string
+	VersionFlag            bool
+	Version                string
 }
 
 // This is used to automatically instate Environment variables and TOML keys
@@ -99,7 +100,11 @@ func populateParams(params Params) Params {
 	getopt.BoolVarLong(&params.ListAllFlag, "list-all", 'l', "List all versions of product (see `--product`), including Beta and RC versions")
 	getopt.BoolVarLong(&params.NoColor, "no-color", 'k', "Disable color output. Useful for piping output to a file or when the terminal does not support colors")
 	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
-	getopt.BoolVarLong(&params.VersionFlag, "version", 'v', "Display the version of tfswitch")
+	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: tfswitch --show-latest-pre 0.13 prints 0.13.0-rc1 (latest)")
+	getopt.BoolVarLong(&params.ShowLatestRequiredFlag, "show-latest-required", 'R', "Show latest stable version, which complies to constraints set by Terraform/Terragrunt")
+	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: tfswitch --show-latest-stable 0.13 prints 0.13.7 (latest)")
+	getopt.StringVarLong(&params.Product, "product", 't', fmt.Sprintf("Specifies which product to use. Ex: `tfswitch --product opentofu` will install OpenTofu. Options: (%s). Default: %s", strings.Join(productIds, ", "), lib.DefaultProductId))
+	getopt.BoolVarLong(&params.VersionFlag, "version", 'v', "Displays the version of tfswitch")
 
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
@@ -278,6 +283,7 @@ func initParams(params Params) Params {
 	params.NoColor = false
 	params.ShowLatestFlag = false
 	params.ShowLatestPre = lib.DefaultLatest
+	params.ShowLatestRequiredFlag = false
 	params.ShowLatestStable = lib.DefaultLatest
 	params.TomlDir = lib.GetHomeDirectory()
 	params.Version = lib.DefaultLatest
