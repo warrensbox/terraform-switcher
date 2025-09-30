@@ -201,7 +201,7 @@ func TestGetParameters_dry_run_wont_download_anything(t *testing.T) {
 	installFileVersionPath := lib.ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+params.Version))
 	// Make sure the file tfswitch WOULD download is absent
 	_ = os.Remove(installFileVersionPath)
-	err := lib.InstallProductVersion(product, params.DryRun, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL, params.Arch)
+	err := lib.InstallProductVersion(product, params.DryRun, params.ShowRequiredFlag, params.Version, params.CustomBinaryPath, params.InstallPath, params.MirrorURL, params.Arch)
 	if err != nil || lib.FileExistsAndIsNotDir(installFileVersionPath) {
 		t.Error("Dry run should NOT install any files.")
 	}
@@ -387,12 +387,37 @@ func TestHelpFlagOutput(t *testing.T) {
 func TestDryRunFlagOutput(t *testing.T) {
 	flagName := "--dry-run"
 	testVersion := "1.10.5"
-	expectedOutput := fmt.Sprintf(" INFO [DRY-RUN] Would have attempted to install version %q  \n", testVersion)
+	expectedOutput := " INFO [DRY-RUN] No changes will be made  \n"
 	goCommandArgs := []string{"run", "../../main.go", flagName, testVersion}
 
 	t.Logf("Testing %q flag output", flagName)
 
 	out, err := exec.Command("go", goCommandArgs...).CombinedOutput()
+	if err != nil {
+		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
+	}
+
+	re := regexp.MustCompile(ansiCodesRegex)
+	outNoANSI := func(str string) string {
+		return re.ReplaceAllString(str, "")
+	}(string(out))
+
+	if !strings.Contains(outNoANSI, expectedOutput) {
+		t.Errorf("Expected %q, got: %q", expectedOutput, outNoANSI)
+	} else {
+		t.Logf("Success: %q", outNoANSI)
+	}
+}
+
+func TestShowRequiredFlagOutput(t *testing.T) {
+	flagName := "--show-required"
+	testVersion := "1.10.5"
+	expectedOutput := fmt.Sprintf("%s\n", testVersion)
+	goCommandArgs := []string{"run", "../../main.go", flagName, testVersion}
+
+	t.Logf("Testing %q flag output", flagName)
+
+	out, err := exec.Command("go", goCommandArgs...).Output()
 	if err != nil {
 		t.Fatalf("Unexpected failure: \"%v\", output: %q", err, string(out))
 	}
