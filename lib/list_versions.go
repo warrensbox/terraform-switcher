@@ -218,6 +218,11 @@ func validVersionFormat(version string, validation ...*regexp.Regexp) bool {
 	return semverRegex.MatchString(version)
 }
 
+// IsValidVersionFormat : Public wrapper for validVersionFormat
+func IsValidVersionFormat(version string, validation ...*regexp.Regexp) bool {
+	return validVersionFormat(version, validation...)
+}
+
 // ShowLatestVersion : Show latest stable version given the mirror URL
 func ShowLatestVersion(mirrorURL string) {
 	tfversion, err := getTFLatest(mirrorURL)
