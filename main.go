@@ -33,6 +33,8 @@ func main() {
 	case parameters.HelpFlag:
 		lib.UsageMessage()
 		os.Exit(0)
+	case parameters.MatchVersionRequirement != "":
+		os.Exit(param_parsing.MatchVersionRequirement(parameters))
 	case parameters.ListAllFlag:
 		/* show all terraform version including betas and RCs*/
 		err = lib.InstallProductOption(parameters.ProductEntity, true, parameters.DryRun, parameters.ShowRequiredFlag, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, parameters.Arch)

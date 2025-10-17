@@ -12,7 +12,11 @@ import (
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
-func GetVersionFromVersionsTF(params Params) (Params, error) {
+func getConstraintFromVersionsTF(params Params) (Params, error) {
+	if !isTerraformModule(params) {
+		return params, nil
+	}
+
 	var tfConstraints []string
 
 	curDir, err := os.Getwd()
@@ -33,7 +37,7 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 		logger.Fatalf("Could not derive relative path to %q: %v", params.ChDirPath, err)
 	}
 
-	logger.Infof("Reading version from Terraform module at %q", relPath)
+	logger.Infof("Reading version constraint from Terraform module at %q", relPath)
 	module, _ := tfconfig.LoadModule(params.ChDirPath) // nolint:errcheck // covered by conditional below
 	if module.Diagnostics.HasErrors() {
 		logger.Fatalf("Could not load Terraform module at %q", params.ChDirPath)
@@ -52,15 +56,26 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 		tfConstraints = append(tfConstraints, constraint.String())
 	}
 
-	tfConstraint := strings.Join(tfConstraints, ", ")
+	params.VersionRequirement = strings.Join(tfConstraints, ", ")
+	logger.Debugf("Using version constraint from Terraform module at %q: %q", relPath, params.VersionRequirement)
+	return params, nil
+}
 
-	version, err2 := lib.GetSemver(tfConstraint, params.MirrorURL)
-	if err2 != nil {
-		logger.Errorf("No version found matching %q", tfConstraint)
-		return params, err2
+func GetVersionFromVersionsTF(params Params) (Params, error) {
+	params, err := getConstraintFromVersionsTF(params)
+	if err != nil {
+		return params, err
 	}
-	params.Version = version
-	logger.Debugf("Using version from Terraform module at %q: %q", relPath, params.Version)
+
+	if params.MatchVersionRequirement == "" {
+		version, err2 := lib.GetSemver(params.VersionRequirement, params.MirrorURL)
+		if err2 != nil {
+			logger.Errorf("No version found matching %q", params.VersionRequirement)
+			return params, err2
+		}
+		params.Version = version
+		logger.Debugf("Using version from Terraform module: %q", params.Version)
+	}
 	return params, nil
 }
 

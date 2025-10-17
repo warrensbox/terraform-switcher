@@ -81,7 +81,7 @@ To install from a remote mirror other than the default
 parameter.
 
 ```bash
-tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp`
+tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp
 ```
 
 ## Install to non-default location
@@ -138,3 +138,45 @@ running scripts in CI/CD pipeline or when piping output to other commands.
   (non-interactive session), you can use the `--force-color` (`-K`) flag.
 
 **NOTE**: `--no-color` and `--force-color` flags are mutually exclusive.
+
+## Check if a specific Product version matches a version requirement
+
+`tfswitch` can be used to match a specific Product version against a version
+mandated by the configuration (version provided on command line as argument to
+`tfswitch`, `TF_VERSION` environment variable, root module version constraint,
+other supported configuration options — see [General](general.md) for available
+options).
+
+- If the version matches the requirement, `tfswitch` will exit with a status code
+  of `0` with corresponding `INFO` level log message.
+- If the version does not match the requirement, it will exit with a status code of
+  `2` with corresponding `ERROR` level log message.
+- If there is an error (e.g. invalid version requirement), it will exit with a
+  status code of `1` with corresponding `ERROR` level log message.
+- If no version requirement is found, it will assume the provided version suffices and
+  exit with status code of `0` with corresponding `WARN` level log message.
+
+```bash
+tfswitch --chdir=/tmp/test/ --match-version-requirement=1.10.5; echo $?
+20:41:00.226 INFO Reading version constraint from Terraform module at "../../../../tmp/test"
+20:41:00.227 INFO Matched version: "1.10.5"
+20:41:00.227 INFO Version "1.10.5" matches requirement "~> 1.10.5, < 1.12.0"
+0
+
+tfswitch --chdir=/tmp/test/ --match-version-requirement=1.10.1; echo $?
+20:41:17.483 INFO Reading version constraint from Terraform module at "../../../../tmp/test"
+20:41:17.484 ERROR Version "1.10.1" mismatches requirement "~> 1.10.5, < 1.12.0"
+2
+
+tfswitch --chdir=/tmp/test/ --match-version-requirement=string; echo $?
+20:41:39.199 INFO Reading version constraint from Terraform module at "../../../../tmp/test"
+20:41:39.199 ERROR Failed to validate version format: "string"
+20:41:39.199 ERROR Version does not exist or invalid terraform version format.
+        Format should be #.#.# or #.#.#-@# where # are numbers and @ are word characters.
+        For example, 1.11.7 and 0.11.9-beta1 are valid versions
+1
+
+tfswitch --match-version-requirement=1.10.5; echo $?
+20:41:52.372 WARNING No version requirement found to match against (version "1.10.5" is acceptable)
+0
+```

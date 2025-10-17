@@ -36,12 +36,17 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 			logger.Infof("No terraform version constraint in %q", filePath)
 			return params, nil
 		}
-		version, err := lib.GetSemver(versionFromTerragrunt.TerraformVersionConstraint, params.MirrorURL)
-		if err != nil {
-			return params, fmt.Errorf("no version found matching %q", versionFromTerragrunt.TerraformVersionConstraint)
+		params.VersionRequirement = versionFromTerragrunt.TerraformVersionConstraint
+		logger.Infof("Using version requirement from %q: %q", filePath, params.VersionRequirement)
+
+		if params.MatchVersionRequirement == "" {
+			version, err := lib.GetSemver(params.VersionRequirement, params.MirrorURL)
+			if err != nil {
+				return params, fmt.Errorf("no version found matching %q", params.VersionRequirement)
+			}
+			params.Version = version
+			logger.Debugf("Using version from %q: %q", filePath, params.Version)
 		}
-		params.Version = version
-		logger.Debugf("Using version from %q: %q", filePath, params.Version)
 	}
 	return params, nil
 }
