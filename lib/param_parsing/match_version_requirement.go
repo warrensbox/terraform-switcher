@@ -14,7 +14,7 @@ func MatchVersionRequirement(parameters Params) (bool, error) {
 	// Sanity check MatchVersionRequirement parameter value
 	if !lib.IsValidVersionFormat(parameters.MatchVersionRequirement) {
 		lib.PrintInvalidTFVersion()
-		//nolint:staticcheck // We use capiltalized error messages
+		//nolint:staticcheck // We use capitalized error messages
 		return false, fmt.Errorf("Failed to validate version format: %q", parameters.MatchVersionRequirement)
 	}
 
