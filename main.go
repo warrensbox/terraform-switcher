@@ -19,6 +19,7 @@ var (
 	version    string
 )
 
+//nolint:gocyclo
 func main() {
 	var err error
 	switch {

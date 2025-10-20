@@ -14,6 +14,7 @@ func MatchVersionRequirement(parameters Params) (bool, error) {
 	// Sanity check MatchVersionRequirement parameter value
 	if !lib.IsValidVersionFormat(parameters.MatchVersionRequirement) {
 		lib.PrintInvalidTFVersion()
+		//lint:ignore ST1005 This is a specific case where capitalization is intended
 		return false, fmt.Errorf("Failed to validate version format: %q", parameters.MatchVersionRequirement)
 	}
 
