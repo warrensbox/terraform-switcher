@@ -151,8 +151,8 @@ options).
   of `0` with corresponding `INFO` level log message.
 - If the version does not match the requirement, it will exit with a status code of
   `2` with corresponding `ERROR` level log message.
-- If there is an error (e.g. invalid version requirement), it will exit with a
-  status code of `1` with corresponding `ERROR` level log message.
+- If there is an error (e.g. invalid version format), it will exit with a
+  status code of `1` with corresponding `ERROR` and `FATAL` level log messages.
 - If no version requirement is found, it will assume the provided version suffices and
   exit with status code of `0` with corresponding `WARN` level log message.
 
