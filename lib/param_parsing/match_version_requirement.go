@@ -11,7 +11,7 @@ import (
 // - Return `true` if the version matches the requirement, otherwise return `false`.
 // - Return `error` for any kind of general error (like version format parsing error).
 func MatchVersionRequirement(parameters Params) (bool, error) {
-	// Sanity check MatchVersionRequirement parameter value and return `1` on error
+	// Sanity check MatchVersionRequirement parameter value
 	if !lib.IsValidVersionFormat(parameters.MatchVersionRequirement) {
 		lib.PrintInvalidTFVersion()
 		return false, fmt.Errorf("Failed to validate version format: %q", parameters.MatchVersionRequirement)
@@ -33,13 +33,13 @@ func MatchVersionRequirement(parameters Params) (bool, error) {
 		return true, nil
 	}
 
-	// Return `0` if the version to match meets the version requirement
+	// Return success if the version to match meets the version requirement
 	_, err := lib.SemVerParser(&parameters.VersionRequirement, []string{parameters.MatchVersionRequirement})
 	if err == nil {
 		logger.Infof("Version %q matches requirement %q", parameters.MatchVersionRequirement, parameters.VersionRequirement)
 		return true, nil
 	}
-	// Otherwise return `2`
+	// Otherwise return failure
 	logger.Errorf("Version %q mismatches requirement %q", parameters.MatchVersionRequirement, parameters.VersionRequirement)
 	return false, nil
 }
