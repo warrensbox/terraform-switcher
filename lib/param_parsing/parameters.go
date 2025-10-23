@@ -15,30 +15,32 @@ import (
 )
 
 type Params struct {
-	Arch             string
-	ChDirPath        string
-	CustomBinaryPath string
-	DefaultVersion   string
-	DryRun           bool
-	ForceColor       bool
-	HelpFlag         bool
-	InstallPath      string
-	LatestFlag       bool
-	LatestPre        string
-	LatestStable     string
-	ListAllFlag      bool
-	LogLevel         string
-	MirrorURL        string
-	NoColor          bool
-	ProductEntity    lib.Product
-	Product          string
-	ShowLatestFlag   bool
-	ShowLatestPre    string
-	ShowLatestStable string
-	ShowRequiredFlag bool
-	TomlDir          string
-	VersionFlag      bool
-	Version          string
+	Arch                    string
+	ChDirPath               string
+	CustomBinaryPath        string
+	DefaultVersion          string
+	DryRun                  bool
+	ForceColor              bool
+	HelpFlag                bool
+	InstallPath             string
+	LatestFlag              bool
+	LatestPre               string
+	LatestStable            string
+	ListAllFlag             bool
+	LogLevel                string
+	MatchVersionRequirement string
+	MirrorURL               string
+	NoColor                 bool
+	ProductEntity           lib.Product
+	Product                 string
+	ShowLatestFlag          bool
+	ShowLatestPre           string
+	ShowLatestStable        string
+	ShowRequiredFlag        bool
+	TomlDir                 string
+	Version                 string
+	VersionFlag             bool
+	VersionRequirement      string
 }
 
 // This is used to automatically instate Environment variables and TOML keys
@@ -83,6 +85,7 @@ func populateParams(params Params) Params {
 	getopt.StringVarLong(&params.ChDirPath, "chdir", 'c', "Switch to a different working directory before executing the given command. Ex: `tfswitch --chdir terraform_project` will run tfswitch in the `terraform_project` directory")
 	getopt.StringVarLong(&params.CustomBinaryPath, "bin", 'b', fmt.Sprintf("Custom binary path. Ex: `tfswitch -b %s`", lib.ConvertExecutableExt("/Users/username/bin/terraform")))
 	getopt.StringVarLong(&params.DefaultVersion, "default", 'd', "Default to this version in case no other versions could be detected. Ex: `tfswitch --default 1.2.4`")
+	getopt.StringVarLong(&params.MatchVersionRequirement, "match-version-requirement", 'n', "Check if the requested version matches the requirement mandated by the configuration (env var, module version constraint, config files). Exit successfully if it does (or if there's no requirement found), otherwise exit with a code of `2` (code of `1` denotes a general error)")
 	getopt.StringVarLong(&params.InstallPath, "install", 'i', fmt.Sprintf("Custom install path. Ex: `tfswitch -i /Users/username`. The binaries will be in the sub installDir directory e.g. `/Users/username/%s`", lib.InstallDir))
 	getopt.StringVarLong(&params.LatestPre, "latest-pre", 'p', "Latest pre-release implicit version. Ex: `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: `tfswitch --latest-stable 0.13.0` downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
@@ -229,13 +232,15 @@ func populateParams(params Params) Params {
 		}
 	}
 
-	// Parse again to overwrite anything that might by defined on the cli AND in any config file (CLI always wins)
+	// Parse again to overwrite anything that might be defined on the command line AND in any config file (CLI always wins)
 	getopt.Parse()
 	args := getopt.Args()
-	if len(args) == 1 {
+	if len(args) == 1 && isNotShortRun { // Disregard args if "short" run (version or help)
 		/* version provided on command line as arg */
+		logger = lib.InitLogger(params.LogLevel)
 		logger.Infof("Reading version provided on command line: %s", args[0])
 		params.Version = args[0]
+		params.VersionRequirement = params.Version // version from cmdline takes highest precedence
 	}
 
 	if isNotShortRun {

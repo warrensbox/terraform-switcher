@@ -19,6 +19,7 @@ var (
 	version    string
 )
 
+//nolint:gocyclo
 func main() {
 	var err error
 	switch {
@@ -33,6 +34,17 @@ func main() {
 	case parameters.HelpFlag:
 		lib.UsageMessage()
 		os.Exit(0)
+	case parameters.MatchVersionRequirement != "":
+		var matchRes bool
+		matchRes, err = param_parsing.MatchVersionRequirement(parameters)
+		if err == nil {
+			switch {
+			case matchRes:
+				os.Exit(0)
+			default:
+				os.Exit(2)
+			}
+		}
 	case parameters.ListAllFlag:
 		/* show all terraform version including betas and RCs*/
 		err = lib.InstallProductOption(parameters.ProductEntity, true, parameters.DryRun, parameters.ShowRequiredFlag, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, parameters.Arch)
