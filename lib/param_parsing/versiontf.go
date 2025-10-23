@@ -1,4 +1,8 @@
-//nolint:revive // FIXME: don't use an underscore in package name
+// Suppressing linter warnings for this package:
+// - revive: FIXME: don't use an underscore in package name
+// - staticcheck: ST1005: error strings should not be capitalized (staticcheck)
+//
+//nolint:revive,staticcheck
 package param_parsing
 
 import (
