@@ -3,55 +3,105 @@ package param_parsing
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/hashicorp/hcl/v2/gohcl"
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
-const terraGruntFileName = "terragrunt.hcl"
+// Order of precedence for Terragrunt file names: last has highest precedence
+var terragruntFileNames = []string{"root.hcl", "terragrunt.hcl"}
+
+const paramTypeTerragrunt = "Terragrunt"
 
 type terragruntVersionConstraints struct {
 	TerraformVersionConstraint string `hcl:"terraform_version_constraint"`
 }
 
-func GetVersionFromTerragrunt(params Params) (Params, error) {
-	filePath := filepath.Join(params.ChDirPath, terraGruntFileName)
-	if lib.CheckFileExist(filePath) {
-		logger.Infof("Reading configuration from %q", filePath)
-		parser := hclparse.NewParser()
-		hclFile, diagnostics := parser.ParseHCLFile(filePath)
-		if diagnostics.HasErrors() {
-			return params, fmt.Errorf("unable to parse HCL file %q", filePath)
-		}
-		var versionFromTerragrunt terragruntVersionConstraints
-		diagnostics = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
-		// do not fail on failure to decode the body, as it may f.e. miss a required block,
-		// though we don't want to fail execution because of that
-		if diagnostics.HasErrors() {
-			logger.Errorf(diagnostics.Error())
-		}
-		if versionFromTerragrunt.TerraformVersionConstraint == "" {
-			logger.Infof("No terraform version constraint in %q", filePath)
-			return params, nil
-		}
-		params.VersionRequirement = versionFromTerragrunt.TerraformVersionConstraint
-		logger.Infof("Using version requirement from %q: %q", filePath, params.VersionRequirement)
+func terragruntFileNamesNew() []string {
+	terragruntFileNamesNew := terragruntFileNames
 
-		if params.MatchVersionRequirement == "" {
-			version, err := lib.GetSemver(params.VersionRequirement, params.MirrorURL)
-			if err != nil {
-				return params, fmt.Errorf("no version found matching %q", params.VersionRequirement)
-			}
-			params.Version = version
-			logger.Debugf("Using version from %q: %q", filePath, params.Version)
+	// Allow custom Terragrunt file name via env var
+	envVarName := "TF_TERRAGRUNT_CONFIG_FILE_NAME"
+	if terragruntFileName := os.Getenv(envVarName); terragruntFileName != "" {
+		logger.Infof("Found %q env var: %q", envVarName, terragruntFileName)
+
+		// Take only the base name of the value to avoid path injection
+		terragruntFileNameBase := filepath.Base(terragruntFileName)
+		if terragruntFileNameBase != terragruntFileName {
+			logger.Warnf("Stripping path from %q -> %q", terragruntFileName, terragruntFileNameBase)
+			terragruntFileName = terragruntFileNameBase
 		}
+
+		// Append to the list to make custom file have highest precedence if it exists
+		logger.Debugf("Appending %q to the list of legit %s configuration files", terragruntFileName, paramTypeTerragrunt)
+		terragruntFileNamesNew = append(terragruntFileNamesNew, terragruntFileName)
 	}
-	return params, nil
+
+	// Deduplicate while preserving order
+	// `lib.RemoveDuplicateStrings` keeps the first occurrence, so we reverse before and after
+	slices.Reverse(terragruntFileNamesNew)
+	terragruntFileNamesNew = lib.RemoveDuplicateStrings(terragruntFileNamesNew)
+	slices.Reverse(terragruntFileNamesNew)
+
+	return terragruntFileNamesNew
 }
 
-func terraGruntFileExists(params Params) bool {
-	filePath := filepath.Join(params.ChDirPath, terraGruntFileName)
-	return lib.CheckFileExist(filePath)
+func GetVersionFromTerragrunt(params Params) (Params, error) {
+	relPath, errRelPath := lib.GetRelativePath(params.ChDirPath)
+	if errRelPath != nil {
+		return params, errRelPath
+	}
+
+	var versionFromTerragrunt terragruntVersionConstraints
+
+	for _, terragruntFileName := range terragruntFileNamesNew() {
+		filePath := filepath.Join(relPath, terragruntFileName)
+		if !lib.IsRegularFile(filePath) {
+			if lib.CheckFileExist(filePath) {
+				logger.Warnf("Skipping non-regular %s configuration file %q", paramTypeTerragrunt, filePath)
+			} else {
+				logger.Tracef("Skipping non-existing %s configuration file %q", paramTypeTerragrunt, filePath)
+			}
+		} else {
+			logger.Infof("Reading %s configuration from %q", paramTypeTerragrunt, filePath)
+			parser := hclparse.NewParser()
+			hclFile, diagnostics := parser.ParseHCLFile(filePath)
+			if diagnostics.HasErrors() {
+				return params, fmt.Errorf("unable to parse HCL file %q", filePath)
+			}
+			diagnostics = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
+			// do not fail on failure to decode the body, as it may f.e. miss a required block,
+			// though we don't want to fail execution because of that
+			if diagnostics.HasErrors() {
+				logger.Errorf(diagnostics.Error())
+			}
+
+			if versionFromTerragrunt.TerraformVersionConstraint == "" {
+				logger.Debugf("No terraform version constraint found in %s configuration at %q", paramTypeTerragrunt, filePath)
+				continue
+			}
+
+			params.VersionRequirement = versionFromTerragrunt.TerraformVersionConstraint
+			logger.Debugf("Using version requirement from %s configuration at %q: %q", paramTypeTerragrunt, filePath, params.VersionRequirement)
+		}
+	}
+
+	if versionFromTerragrunt.TerraformVersionConstraint == "" {
+		return params, nil
+	}
+
+	if params.MatchVersionRequirement == "" {
+		version, err := lib.GetSemver(params.VersionRequirement, params.MirrorURL)
+		if err != nil {
+			return params, fmt.Errorf("no version found matching %q", params.VersionRequirement)
+		}
+		params.Version = version
+		logger.Debugf("Using version from %s configuration at %q", paramTypeTerragrunt, params.Version)
+	}
+
+	return params, nil
 }

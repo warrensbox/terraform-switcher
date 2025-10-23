@@ -1,7 +1,9 @@
 package lib
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/pborman/getopt"
 )
@@ -24,4 +26,40 @@ func closeFileHandlers(handlers []*os.File) {
 
 func UsageMessage() {
 	getopt.PrintUsage(os.Stderr)
+}
+
+// GetRelativePath : get relative path from absolute path
+func GetRelativePath(absPath string) (string, error) {
+	curDir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("Could not get current working directory: %v", err)
+	}
+
+	if !filepath.IsAbs(absPath) {
+		absPath, err := filepath.Abs(absPath)
+		if err != nil {
+			return "", fmt.Errorf("Could not derive absolute path to %q: %v", absPath, err)
+		}
+	}
+
+	relPath, err := filepath.Rel(curDir, absPath)
+	if err != nil {
+		return "", fmt.Errorf("Could not derive relative path to %q: %v", absPath, err)
+	}
+
+	return relPath, nil
+}
+
+// RemoveDuplicateStrings : deduplicate slice of strings
+func RemoveDuplicateStrings(slice []string) []string {
+	seen := map[string]bool{}
+	res := []string{}
+
+	for _, item := range slice {
+		if !seen[item] {
+			seen[item] = true
+			res = append(res, item)
+		}
+	}
+	return res
 }

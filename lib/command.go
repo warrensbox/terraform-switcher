@@ -34,6 +34,15 @@ func isDir(path string) bool {
 	return fileInfo.IsDir()
 }
 
+// IsRegularFile : check if the given path points to a regular file
+func IsRegularFile(path string) bool {
+	fileInfo, err := os.Stat(path)
+	if err != nil || os.IsNotExist(err) {
+		return false
+	}
+	return fileInfo.Mode().IsRegular()
+}
+
 func isExecutable(path string) bool {
 	if isDir(path) {
 		return false

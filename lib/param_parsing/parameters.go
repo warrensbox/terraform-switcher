@@ -217,11 +217,9 @@ func populateParams(params Params) Params {
 			}
 		}
 
-		if terraGruntFileExists(params) {
-			params, err = GetVersionFromTerragrunt(params)
-			if err != nil {
-				logger.Fatalf("Failed to obtain settings from Terragrunt configuration: %v", err)
-			}
+		params, err = GetVersionFromTerragrunt(params)
+		if err != nil {
+			logger.Fatalf("Failed to obtain settings from Terragrunt configuration: %v", err)
 		}
 
 		params = GetParamsFromEnvironment(params)
