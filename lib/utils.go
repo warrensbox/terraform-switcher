@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/pborman/getopt"
 )
@@ -31,6 +32,11 @@ func UsageMessage() {
 
 // GetRelativePath : get relative path from absolute path
 func GetRelativePath(absPath string) (string, error) {
+	// Windows is tricky, so don't attempt to derive relative paths there
+	if runtime.GOOS == windows {
+		return absPath, nil
+	}
+
 	curDir, err := os.Getwd()
 	if err != nil {
 		return "", fmt.Errorf("Could not get current working directory: %v", err)
