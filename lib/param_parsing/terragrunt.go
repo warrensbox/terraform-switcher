@@ -5,15 +5,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"slices"
 
 	"github.com/hashicorp/hcl/v2/gohcl"
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
-// Order of precedence for Terragrunt file names: last has highest precedence
-var terragruntFileNames = []string{"root.hcl", "terragrunt.hcl"}
+// Order of precedence for Terragrunt file names: first has highest precedence
+var terragruntFileNames = []string{"terragrunt.hcl", "root.hcl"}
 
 const (
 	paramTypeTerragrunt        = "Terragrunt"
@@ -38,16 +37,13 @@ func terragruntFileNamesNew() []string {
 			terragruntFileName = terragruntFileNameBase
 		}
 
-		// Append to the list to make custom file have highest precedence if it exists
-		logger.Debugf("Appending %q to the list of legit %s configuration files", terragruntFileName, paramTypeTerragrunt)
-		terragruntFileNamesNew = append(terragruntFileNamesNew, terragruntFileName)
+		// Prepend to the list to make custom file have highest precedence if it exists
+		logger.Debugf("Prepending %q to the list of legit %s configuration files", terragruntFileName, paramTypeTerragrunt)
+		terragruntFileNamesNew = append([]string{terragruntFileName}, terragruntFileNamesNew...)
 	}
 
-	// Deduplicate while preserving order
-	// `lib.RemoveDuplicateStrings` keeps the first occurrence, so we reverse before and after
-	slices.Reverse(terragruntFileNamesNew)
+	// Deduplicate while preserving order, `lib.RemoveDuplicateStrings` keeps the first occurrence and drops later ones
 	terragruntFileNamesNew = lib.RemoveDuplicateStrings(terragruntFileNamesNew)
-	slices.Reverse(terragruntFileNamesNew)
 
 	return terragruntFileNamesNew
 }
@@ -60,6 +56,7 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 
 	var versionFromTerragrunt terragruntVersionConstraints
 
+	// Iterate over possible Terragrunt files and break on first found version constraint
 	for _, terragruntFileName := range terragruntFileNamesNew() {
 		filePath := filepath.Join(relPath, terragruntFileName)
 		if !lib.IsRegularFile(filePath) {
@@ -68,28 +65,29 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 			} else {
 				logger.Tracef("Skipping non-existing %s configuration file %q", paramTypeTerragrunt, filePath)
 			}
-		} else {
-			logger.Infof("Reading %s configuration from %q", paramTypeTerragrunt, filePath)
-			parser := hclparse.NewParser()
-			hclFile, diagnostics := parser.ParseHCLFile(filePath)
-			if diagnostics.HasErrors() {
-				return params, fmt.Errorf("unable to parse HCL file %q", filePath)
-			}
-			diagnostics = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
-			// do not fail on failure to decode the body, as it may f.e. miss a required block,
-			// though we don't want to fail execution because of that
-			if diagnostics.HasErrors() {
-				logger.Errorf(diagnostics.Error())
-			}
+			continue
+		}
 
-			if versionFromTerragrunt.TerraformVersionConstraint == "" {
-				logger.Debugf("No terraform version constraint found in %s configuration at %q", paramTypeTerragrunt, filePath)
-				continue
-			}
+		logger.Infof("Reading %s configuration from %q", paramTypeTerragrunt, filePath)
+		parser := hclparse.NewParser()
+		hclFile, diagnostics := parser.ParseHCLFile(filePath)
+		if diagnostics.HasErrors() {
+			logger.Errorf("Unable to parse %s HCL file %q", paramTypeTerragrunt, filePath)
+			continue
+		}
+		diagnostics = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
+		if diagnostics.HasErrors() {
+			logger.Errorf(diagnostics.Error())
+			continue
+		}
 
+		if versionFromTerragrunt.TerraformVersionConstraint != "" {
 			params.VersionRequirement = versionFromTerragrunt.TerraformVersionConstraint
 			logger.Debugf("Version requirement from %s configuration at %q: %q", paramTypeTerragrunt, filePath, params.VersionRequirement)
+			break
 		}
+
+		logger.Debugf("No terraform version constraint found in %s configuration at %q", paramTypeTerragrunt, filePath)
 	}
 
 	if versionFromTerragrunt.TerraformVersionConstraint == "" {
