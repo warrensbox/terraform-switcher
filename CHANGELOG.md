@@ -7,6 +7,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.8.0](https://github.com/warrensbox/terraform-switcher/tree/v1.8.0) - 2025-10-23
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.7.0...v1.8.0)
+
+### Added
+
+- feat: Check if version matches version requirement [#640](https://github.com/warrensbox/terraform-switcher/pull/640) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.8.0` [#643](https://github.com/warrensbox/terraform-switcher/pull/643) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.7.0](https://github.com/warrensbox/terraform-switcher/tree/v1.7.0) - 2025-09-30
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.6.0...v1.7.0)
