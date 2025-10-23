@@ -36,7 +36,7 @@ func GetRelativePath(absPath string) (string, error) {
 	}
 
 	if !filepath.IsAbs(absPath) {
-		absPath, err := filepath.Abs(absPath)
+		absPath, err = filepath.Abs(absPath)
 		if err != nil {
 			return "", fmt.Errorf("Could not derive absolute path to %q: %v", absPath, err)
 		}

@@ -86,7 +86,7 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 			}
 
 			params.VersionRequirement = versionFromTerragrunt.TerraformVersionConstraint
-			logger.Debugf("Using version requirement from %s configuration at %q: %q", paramTypeTerragrunt, filePath, params.VersionRequirement)
+			logger.Debugf("Version requirement from %s configuration at %q: %q", paramTypeTerragrunt, filePath, params.VersionRequirement)
 		}
 	}
 
@@ -100,7 +100,7 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 			return params, fmt.Errorf("no version found matching %q", params.VersionRequirement)
 		}
 		params.Version = version
-		logger.Debugf("Using version from %s configuration at %q", paramTypeTerragrunt, params.Version)
+		logger.Debugf("Using version from %s configuration: %q", paramTypeTerragrunt, params.Version)
 	}
 
 	return params, nil
