@@ -15,7 +15,10 @@ import (
 // Order of precedence for Terragrunt file names: last has highest precedence
 var terragruntFileNames = []string{"root.hcl", "terragrunt.hcl"}
 
-const paramTypeTerragrunt = "Terragrunt"
+const (
+	paramTypeTerragrunt        = "Terragrunt"
+	terragruntConfigEnvVarName = "TF_TERRAGRUNT_CONFIG_FILE_NAME"
+)
 
 type terragruntVersionConstraints struct {
 	TerraformVersionConstraint string `hcl:"terraform_version_constraint"`
@@ -25,9 +28,8 @@ func terragruntFileNamesNew() []string {
 	terragruntFileNamesNew := terragruntFileNames
 
 	// Allow custom Terragrunt file name via env var
-	envVarName := "TF_TERRAGRUNT_CONFIG_FILE_NAME"
-	if terragruntFileName := os.Getenv(envVarName); terragruntFileName != "" {
-		logger.Infof("Found %q env var: %q", envVarName, terragruntFileName)
+	if terragruntFileName := os.Getenv(terragruntConfigEnvVarName); terragruntFileName != "" {
+		logger.Infof("Found %q env var: %q", terragruntConfigEnvVarName, terragruntFileName)
 
 		// Take only the base name of the value to avoid path injection
 		terragruntFileNameBase := filepath.Base(terragruntFileName)

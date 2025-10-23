@@ -26,7 +26,9 @@ func getConstraintFromVersionsTF(params Params) (Params, error) {
 	}
 
 	logger.Infof("Reading version constraint from %s at %q", paramTypeVersionTF, relPath)
-	module, _ := tfconfig.LoadModule(relPath) // nolint:errcheck // covered by conditional below
+	// Use `params.ChDirPath` rather than `relPath` as the `tfconfig.LoadModule` function
+	// typically expects an absolute path to properly resolve module dependencies and references
+	module, _ := tfconfig.LoadModule(params.ChDirPath) // nolint:errcheck // covered by conditional below
 	if module.Diagnostics.HasErrors() {
 		return params, fmt.Errorf("Could not load %s at %q", paramTypeVersionTF, relPath)
 	}
@@ -74,7 +76,9 @@ func isTerraformModule(params Params) bool {
 		return false
 	}
 
-	module, err := tfconfig.LoadModule(relPath)
+	// Use `params.ChDirPath` rather than `relPath` as the `tfconfig.LoadModule` function
+	// typically expects an absolute path to properly resolve module dependencies and references
+	module, err := tfconfig.LoadModule(params.ChDirPath)
 	if err != nil {
 		logger.Warnf("Error parsing %s: %v", paramTypeVersionTF, err)
 		return false
