@@ -145,8 +145,8 @@ turn takes precedence over `root.hcl` file.
 For more information, see [Migrating from root
 terragrunt.hcl](https://terragrunt.gruntwork.io/docs/migrate/migrating-from-root-terragrunt-hcl).
 > To simplify Terragrunt usage and make it more clear what the root
-> configuration is, it is now recommended that users rename the root`
-> terragrunt.hcl` file to something else (e.g. `root.hcl`).
+> configuration is, it is now recommended that users rename the root
+> `terragrunt.hcl` file to something else (e.g. `root.hcl`).
 
 For example:
 

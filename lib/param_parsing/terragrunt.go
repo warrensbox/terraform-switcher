@@ -76,7 +76,7 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 			continue
 		}
 		diagnostics = gohcl.DecodeBody(hclFile.Body, nil, &versionFromTerragrunt)
-		// Do not fail on failure to decode the body, as it may f.e. miss a required block or
+		// Do not fail on failure to decode the body, as it may e.g. miss a required block or
 		// have an unexpected attribute, though we don't want to fail execution because of that
 		if diagnostics.HasErrors() {
 			logger.Errorf(diagnostics.Error())
