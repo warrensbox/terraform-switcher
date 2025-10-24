@@ -137,7 +137,7 @@ tfswitch # Will install opentofu instead of terraform
 ### `TF_TERRAGRUNT_CONFIG_FILE_NAME`
 
 `TF_TERRAGRUNT_CONFIG_FILE_NAME` environment variable can be set to the custom
-Terragrunt config file name.  
+Terragrunt config filename.  
 When looking up `terraform_version_constraint` parameter, custom Terragrunt
 config file takes precedence over default `terragrunt.hcl` file, which in its
 turn takes precedence over `root.hcl` file.
