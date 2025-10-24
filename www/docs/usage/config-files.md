@@ -202,4 +202,4 @@ terraform_version_constraint = ">= 0.13, < 0.14"
 
 If there's no `terragrunt.hcl` file or it has no `terraform_version_constraint`
 defined, `tfswitch` will look for a `root.hcl` file in the same directory. If found, it
-will use the `terraform_version_constraint` defined there.  
+will use the `terraform_version_constraint` defined there.
