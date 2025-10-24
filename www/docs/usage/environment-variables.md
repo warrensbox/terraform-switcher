@@ -134,6 +134,27 @@ export TF_PRODUCT="opentofu"
 tfswitch # Will install opentofu instead of terraform
 ```
 
+### `TF_TERRAGRUNT_CONFIG_FILE_NAME`
+
+`TF_TERRAGRUNT_CONFIG_FILE_NAME` environment variable can be set to the custom
+Terragrunt config file name.  
+When looking up `terraform_version_constraint` parameter, custom Terragrunt
+config file takes precedence over default `terragrunt.hcl` file, which in its
+turn takes precedence over `root.hcl` file.
+
+For more information, see [Migrating from root
+terragrunt.hcl](https://terragrunt.gruntwork.io/docs/migrate/migrating-from-root-terragrunt-hcl).
+> To simplify Terragrunt usage and make it more clear what the root
+> configuration is, it is now recommended that users rename the root`
+> terragrunt.hcl` file to something else (e.g. `root.hcl`).
+
+For example:
+
+```bash
+export TF_TERRAGRUNT_CONFIG_FILE_NAME="tgconfig.hcl"
+tfswitch # Will look up `terraform_version_constraint` from `tgconfig.hcl` file
+```
+
 ### `TF_VERSION`
 
 `TF_VERSION` environment variable can be set to the desired product/tool version.
