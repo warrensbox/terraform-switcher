@@ -28,10 +28,19 @@ func (cmd *Command) PathList() []string {
 
 func isDir(path string) bool {
 	fileInfo, err := os.Stat(path)
-	if err != nil || os.IsNotExist(err) {
+	if err != nil {
 		return false
 	}
 	return fileInfo.IsDir()
+}
+
+// IsRegularFile : check if the given path points to a regular file
+func IsRegularFile(path string) bool {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	return fileInfo.Mode().IsRegular()
 }
 
 func isExecutable(path string) bool {
@@ -40,7 +49,7 @@ func isExecutable(path string) bool {
 	}
 
 	fileInfo, err := os.Stat(path)
-	if err != nil || os.IsNotExist(err) {
+	if err != nil {
 		return false
 	}
 
