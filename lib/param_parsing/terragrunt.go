@@ -91,10 +91,12 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 		logger.Debugf("No terraform version constraint found in %s configuration at %q", paramTypeTerragrunt, filePath)
 	}
 
+	// No version constraint found in any Terragrunt file, return as is
 	if versionFromTerragrunt.TerraformVersionConstraint == "" {
 		return params, nil
 	}
 
+	// Resolve version from the found version constraint, if version match arg was not supplied
 	if params.MatchVersionRequirement == "" {
 		version, err := lib.GetSemver(params.VersionRequirement, params.MirrorURL)
 		if err != nil {
