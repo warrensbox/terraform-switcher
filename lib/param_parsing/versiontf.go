@@ -1,9 +1,12 @@
-//nolint:revive // FIXME: don't use an underscore in package name
+// Suppressing linter warnings for this package:
+// - revive: FIXME: don't use an underscore in package name
+// - staticcheck: ST1005: error strings should not be capitalized (staticcheck)
+//
+//nolint:revive,staticcheck
 package param_parsing
 
 import (
-	"os"
-	"path/filepath"
+	"fmt"
 	"strings"
 
 	semver "github.com/hashicorp/go-version"
@@ -12,6 +15,8 @@ import (
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
+const paramTypeVersionTF = "Terraform module"
+
 func getConstraintFromVersionsTF(params Params) (Params, error) {
 	if !isTerraformModule(params) {
 		return params, nil
@@ -19,28 +24,15 @@ func getConstraintFromVersionsTF(params Params) (Params, error) {
 
 	var tfConstraints []string
 
-	curDir, err := os.Getwd()
+	relPath, err := lib.GetRelativePath(params.ChDirPath)
 	if err != nil {
-		logger.Fatalf("Could not get current working directory: %v", err)
+		return params, err
 	}
 
-	absPath := params.ChDirPath
-	if !filepath.IsAbs(params.ChDirPath) {
-		absPath, err = filepath.Abs(params.ChDirPath)
-		if err != nil {
-			logger.Fatalf("Could not derive absolute path to %q: %v", params.ChDirPath, err)
-		}
-	}
-
-	relPath, err := filepath.Rel(curDir, absPath)
-	if err != nil {
-		logger.Fatalf("Could not derive relative path to %q: %v", params.ChDirPath, err)
-	}
-
-	logger.Infof("Reading version constraint from Terraform module at %q", relPath)
-	module, _ := tfconfig.LoadModule(params.ChDirPath) // nolint:errcheck // covered by conditional below
+	logger.Infof("Reading version constraint from %s at %q", paramTypeVersionTF, relPath)
+	module, _ := tfconfig.LoadModule(relPath) // nolint:errcheck // covered by conditional below
 	if module.Diagnostics.HasErrors() {
-		logger.Fatalf("Could not load Terraform module at %q", params.ChDirPath)
+		return params, fmt.Errorf("Could not load %s at %q", paramTypeVersionTF, relPath)
 	}
 
 	requiredVersions := module.RequiredCore
@@ -57,7 +49,7 @@ func getConstraintFromVersionsTF(params Params) (Params, error) {
 	}
 
 	params.VersionRequirement = strings.Join(tfConstraints, ", ")
-	logger.Debugf("Using version constraint from Terraform module at %q: %q", relPath, params.VersionRequirement)
+	logger.Debugf("Using version constraint from %s at %q: %q", paramTypeVersionTF, relPath, params.VersionRequirement)
 	return params, nil
 }
 
@@ -74,19 +66,25 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 			return params, err2
 		}
 		params.Version = version
-		logger.Debugf("Using version from Terraform module: %q", params.Version)
+		logger.Debugf("Using version from %s: %q", paramTypeVersionTF, params.Version)
 	}
 	return params, nil
 }
 
 func isTerraformModule(params Params) bool {
-	module, err := tfconfig.LoadModule(params.ChDirPath)
+	relPath, errRelPath := lib.GetRelativePath(params.ChDirPath)
+	if errRelPath != nil {
+		logger.Warn(errRelPath)
+		return false
+	}
+
+	module, err := tfconfig.LoadModule(relPath)
 	if err != nil {
-		logger.Warnf("Error parsing Terraform module: %v", err)
+		logger.Warnf("Error parsing %s: %v", paramTypeVersionTF, err)
 		return false
 	}
 	if len(module.RequiredCore) == 0 {
-		logger.Debugf("No required version constraints defined by Terraform module at %q", params.ChDirPath)
+		logger.Debugf("No required version constraints defined by %s at %q", paramTypeVersionTF, relPath)
 	}
 	return len(module.RequiredCore) > 0
 }
