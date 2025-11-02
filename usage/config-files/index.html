@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../static/favicon_tfswitch_16.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
     
     
       
@@ -532,9 +532,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use-terragrunthcl-file" class="md-nav__link">
+  <a href="#use-terragrunthcl-or-roothcl-file" class="md-nav__link">
     <span class="md-ellipsis">
-      Use terragrunt.hcl file
+      Use terragrunt.hcl (or root.hcl) file
     </span>
   </a>
   
@@ -797,9 +797,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#use-terragrunthcl-file" class="md-nav__link">
+  <a href="#use-terragrunthcl-or-roothcl-file" class="md-nav__link">
     <span class="md-ellipsis">
-      Use terragrunt.hcl file
+      Use terragrunt.hcl (or root.hcl) file
     </span>
   </a>
   
@@ -976,16 +976,17 @@ running scripts in CI/CD pipeline or when piping output to other commands.</p>
   (non-interactive session), you can use the <code>force-color</code> parameter.</li>
 </ul>
 <p><strong>NOTE</strong>: <code>no-color</code> and <code>force-color</code> parameters are mutually exclusive.</p>
-<h2 id="use-terragrunthcl-file">Use <code>terragrunt.hcl</code> file</h2>
-<p>If a terragrunt.hcl file with the terraform constraint is included in the
+<h2 id="use-terragrunthcl-or-roothcl-file">Use <code>terragrunt.hcl</code> (or <code>root.hcl</code>) file</h2>
+<p>If a <code>terragrunt.hcl</code> file with the terraform constraint is included in the
 current directory, it should automatically download or switch to that terraform
 version.<br />
 For example, the following should automatically switch Terraform to the latest
 version 0.13:</p>
-<pre><code class="language-hcl">terragrunt_version_constraint = &quot;&gt;= 0.26, &lt; 0.27&quot;
-terraform_version_constraint  = &quot;&gt;= 0.13, &lt; 0.14&quot;
-…
+<pre><code class="language-hcl">terraform_version_constraint = &quot;&gt;= 0.13, &lt; 0.14&quot;
 </code></pre>
+<p>If there's no <code>terragrunt.hcl</code> file or it has no <code>terraform_version_constraint</code>
+defined, <code>tfswitch</code> will look for a <code>root.hcl</code> file in the same directory. If found, it
+will use the <code>terraform_version_constraint</code> defined there.</p>
 
 
 

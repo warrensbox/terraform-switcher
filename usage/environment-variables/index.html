@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../../static/favicon_tfswitch_16.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
     
     
       
@@ -486,6 +486,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tf_terragrunt_config_file_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_TERRAGRUNT_CONFIG_FILE_NAME
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tf_version" class="md-nav__link">
     <span class="md-ellipsis">
       TF_VERSION
@@ -756,6 +765,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#tf_terragrunt_config_file_name" class="md-nav__link">
+    <span class="md-ellipsis">
+      TF_TERRAGRUNT_CONFIG_FILE_NAME
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#tf_version" class="md-nav__link">
     <span class="md-ellipsis">
       TF_VERSION
@@ -894,6 +912,23 @@ tfswitch # Will output debug logs
 <p>For example:</p>
 <pre><code class="language-bash">export TF_PRODUCT=&quot;opentofu&quot;
 tfswitch # Will install opentofu instead of terraform
+</code></pre>
+<h3 id="tf_terragrunt_config_file_name"><code>TF_TERRAGRUNT_CONFIG_FILE_NAME</code></h3>
+<p><code>TF_TERRAGRUNT_CONFIG_FILE_NAME</code> environment variable can be set to the custom
+Terragrunt config filename.<br />
+When looking up <code>terraform_version_constraint</code> parameter, custom Terragrunt
+config file takes precedence over default <code>terragrunt.hcl</code> file, which in its
+turn takes precedence over <code>root.hcl</code> file.</p>
+<p>For more information, see <a href="https://terragrunt.gruntwork.io/docs/migrate/migrating-from-root-terragrunt-hcl">Migrating from root
+terragrunt.hcl</a>.</p>
+<blockquote>
+<p>To simplify Terragrunt usage and make it more clear what the root
+configuration is, it is now recommended that users rename the root
+<code>terragrunt.hcl</code> file to something else (e.g. <code>root.hcl</code>).</p>
+</blockquote>
+<p>For example:</p>
+<pre><code class="language-bash">export TF_TERRAGRUNT_CONFIG_FILE_NAME=&quot;tgconfig.hcl&quot;
+tfswitch # Will look up `terraform_version_constraint` from `tgconfig.hcl` file
 </code></pre>
 <h3 id="tf_version"><code>TF_VERSION</code></h3>
 <p><code>TF_VERSION</code> environment variable can be set to the desired product/tool version.</p>
