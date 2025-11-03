@@ -200,9 +200,9 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 			if runtime.GOOS != windows {
 				isDirInPath := false
 
-				absDirPath, err := filepath.Abs(dirPath)
-				if err != nil {
-					return fmt.Errorf("Could not derive absolute path to %q: %v", dirPath, err)
+				absDirPath, errAbs := filepath.Abs(dirPath)
+				if errAbs != nil {
+					return fmt.Errorf("Could not derive absolute path to %q: %v", dirPath, errAbs)
 				}
 				absDirPath = strings.TrimRight(absDirPath, "/")
 
