@@ -33,18 +33,14 @@ func CreateSymlink(target string, link string) error {
 		logger.Infof("Copying binary from %q to %q", target, link)
 		_, err = io.Copy(w, r)
 	} else {
-		// Store filenames of target and link
-		targetBase := filepath.Base(target)
-		linkBase := filepath.Base(link)
-
 		// Get absolute path of target
-		targetAbs, err := filepath.Abs(Path(target))
+		target, err := GetAbsolutePath(target)
 		if err != nil {
 			return fmt.Errorf("Unable to get absolute path of %q: %v", target, err)
 		}
 
 		// Get absolute path of link
-		linkAbs, err := filepath.Abs(Path(link))
+		link, err := GetAbsolutePath(link)
 		if err != nil {
 			return fmt.Errorf("Unable to get absolute path of %q: %v", link, err)
 		}
@@ -52,8 +48,6 @@ func CreateSymlink(target string, link string) error {
 		// Use absolute paths for symlink creation to allow
 		// `--install <path_dir>` and `--bin <path_file>` to be used together
 		// (don't mess with relative paths — it's complicated and error-prone)
-		target = filepath.Join(targetAbs, targetBase)
-		link = filepath.Join(linkAbs, linkBase)
 		logger.Debugf("Symlinking %q to %q", link, target)
 		err = os.Symlink(target, link)
 		if err != nil {
