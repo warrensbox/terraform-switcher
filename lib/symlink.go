@@ -34,13 +34,13 @@ func CreateSymlink(target string, link string) error {
 		_, err = io.Copy(w, r)
 	} else {
 		// Get absolute path of target
-		target, errTarget := GetAbsolutePath(target)
+		target, errTarget := GetAbsolutePath(target) //nolint:govet
 		if errTarget != nil {
 			return fmt.Errorf("Unable to get absolute path of %q: %v", target, errTarget)
 		}
 
 		// Get absolute path of link
-		link, errLink := GetAbsolutePath(link)
+		link, errLink := GetAbsolutePath(link) //nolint:govet
 		if errLink != nil {
 			return fmt.Errorf("Unable to get absolute path of %q: %v", link, errLink)
 		}
