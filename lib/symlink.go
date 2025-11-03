@@ -34,22 +34,22 @@ func CreateSymlink(target string, link string) error {
 		_, err = io.Copy(w, r)
 	} else {
 		// Get absolute path of target
-		target, err := GetAbsolutePath(target)
-		if err != nil {
-			return fmt.Errorf("Unable to get absolute path of %q: %v", target, err)
+		target, errTarget := GetAbsolutePath(target)
+		if errTarget != nil {
+			return fmt.Errorf("Unable to get absolute path of %q: %v", target, errTarget)
 		}
 
 		// Get absolute path of link
-		link, err := GetAbsolutePath(link)
-		if err != nil {
-			return fmt.Errorf("Unable to get absolute path of %q: %v", link, err)
+		link, errLink := GetAbsolutePath(link)
+		if errLink != nil {
+			return fmt.Errorf("Unable to get absolute path of %q: %v", link, errLink)
 		}
 
 		// Use absolute paths for symlink creation to allow
 		// `--install <path_dir>` and `--bin <path_file>` to be used together
 		// (don't mess with relative paths — it's complicated and error-prone)
 		logger.Debugf("Symlinking %q to %q", link, target)
-		err = os.Symlink(target, link)
+		err := os.Symlink(target, link)
 		if err != nil {
 			return fmt.Errorf(`
 		Unable to create new symlink.
