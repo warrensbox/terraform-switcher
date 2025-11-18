@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v5.0.1
-          with:
-            persist-credentials: false
+        with:
+          persist-credentials: false
       - name: Ping endpoint
         run: curl "https://proxy.golang.org/github.com/warrensbox/terraform-switcher/@v/$(git describe HEAD --tags --abbrev=0).info"
