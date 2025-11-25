@@ -32,6 +32,9 @@ func CreateSymlink(target string, link string) error {
 		}()
 		logger.Infof("Copying binary from %q to %q", target, link)
 		_, err = io.Copy(w, r)
+		if err != nil {
+			return fmt.Errorf("Failed to copy binary from %q to %q: %v", target, link, err)
+		}
 	} else {
 		// Get absolute path of target
 		target, errTarget := GetAbsolutePath(target) //nolint:govet
