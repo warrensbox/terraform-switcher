@@ -7,6 +7,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.10.0](https://github.com/warrensbox/terraform-switcher/tree/v1.10.0) - 2025-11-26
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.9.0...v1.10.0)
+
+### Fixed
+
+- fix(symlink): Improve symlinking [#648](https://github.com/warrensbox/terraform-switcher/pull/648) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- go: Bump Go version to 1.25 :warning: [#653](https://github.com/warrensbox/terraform-switcher/pull/653) ([yermulnik](https://github.com/yermulnik))
+- docs: Update CHANGELOG with `v1.10.0` [#661](https://github.com/warrensbox/terraform-switcher/pull/661) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.9.0](https://github.com/warrensbox/terraform-switcher/tree/v1.9.0) - 2025-10-31
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.8.0...v1.9.0)
