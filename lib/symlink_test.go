@@ -18,12 +18,8 @@ func TestCreateSymlink(t *testing.T) {
 		testSymlinkSrc += ".exe"
 	}
 
-	home, err := homedir.Dir()
-	if err != nil {
-		t.Errorf("Could not detect home directory.")
-	}
-	symlinkPathSrc := filepath.Join(home, testSymlinkSrc)
-	symlinkPathDest := filepath.Join(home, testSymlinkDest)
+	symlinkPathSrc := filepath.Join(t.TempDir(), testSymlinkSrc)
+	symlinkPathDest := filepath.Join(t.TempDir(), testSymlinkDest)
 
 	// Create file for test as windows does not like no source
 	create, err := os.Create(symlinkPathDest)
@@ -44,6 +40,7 @@ func TestCreateSymlink(t *testing.T) {
 		}
 	}
 
+	logger = InitLogger("DEBUG")
 	lnCreateErr := CreateSymlink(symlinkPathDest, symlinkPathSrc)
 	if lnCreateErr != nil {
 		t.Errorf("Could not create symlink at %q to %q: %v", symlinkPathSrc, symlinkPathDest, lnCreateErr)

@@ -57,6 +57,25 @@ func GetRelativePath(absPath string) (string, error) {
 	return relPath, nil
 }
 
+// GetAbsolutePath : get absolute path from path
+func GetAbsolutePath(path string) (string, error) {
+	// Windows is tricky, so skip it
+	if runtime.GOOS == windows {
+		return path, nil
+	}
+
+	if filepath.IsAbs(path) {
+		return path, nil
+	}
+
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		return path, fmt.Errorf("Unable to get absolute path of %q: %v", path, err)
+	}
+
+	return absPath, nil
+}
+
 // RemoveDuplicateStrings : deduplicate slice of strings
 func RemoveDuplicateStrings(slice []string) []string {
 	seen := map[string]bool{}

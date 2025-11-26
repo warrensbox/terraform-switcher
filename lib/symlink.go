@@ -11,28 +11,48 @@ import (
 )
 
 // CreateSymlink : create symlink or copy file to bin directory if windows
-func CreateSymlink(cwd string, dir string) error {
+func CreateSymlink(target string, link string) error {
 	// If we are on windows the symlink is not working correctly.
 	// Copy the desired terraform binary to the path environment.
 	if runtime.GOOS == windows {
-		r, err := os.Open(cwd)
+		r, err := os.Open(target)
 		if err != nil {
-			return fmt.Errorf("Unable to open source binary: %q", cwd)
+			return fmt.Errorf("Unable to open source binary %q: %v", target, err)
 		}
 		defer r.Close()
 
-		w, err := os.Create(dir)
+		w, err := os.Create(link)
 		if err != nil {
-			return fmt.Errorf("Could not create target binary: %q", dir)
+			return fmt.Errorf("Could not create target binary %q: %v", link, err)
 		}
 		defer func() {
 			if c := w.Close(); err == nil {
 				err = c
 			}
 		}()
+		logger.Infof("Copying binary from %q to %q", target, link)
 		_, err = io.Copy(w, r)
+		if err != nil {
+			return fmt.Errorf("Failed to copy binary from %q to %q: %v", target, link, err)
+		}
 	} else {
-		err := os.Symlink(cwd, dir)
+		// Get absolute path of target
+		target, errTarget := GetAbsolutePath(target) //nolint:govet
+		if errTarget != nil {
+			return fmt.Errorf("Unable to get absolute path of %q: %v", target, errTarget)
+		}
+
+		// Get absolute path of link
+		link, errLink := GetAbsolutePath(link) //nolint:govet
+		if errLink != nil {
+			return fmt.Errorf("Unable to get absolute path of %q: %v", link, errLink)
+		}
+
+		// Use absolute paths for symlink creation to allow
+		// `--install <path_dir>` and `--bin <path_file>` to be used together
+		// (don't mess with relative paths — it's complicated and error-prone)
+		logger.Debugf("Symlinking %q to %q", link, target)
+		err := os.Symlink(target, link)
 		if err != nil {
 			return fmt.Errorf(`
 		Unable to create new symlink.
@@ -40,7 +60,7 @@ func CreateSymlink(cwd string, dir string) error {
 		Try running "unlink %q" to remove existing symlink.
 		If error persist, you may not have the permission to create a symlink at %q.
 		Error: %v
-		`, dir, dir, err)
+		`, link, link, err)
 		}
 	}
 	return nil
@@ -59,6 +79,7 @@ func RemoveSymlink(symlinkPath string) error {
 		`, symlinkPath, symlinkPath, err)
 	}
 
+	logger.Debugf("Removing existing symlink at %q", symlinkPath)
 	if errRemove := os.Remove(symlinkPath); errRemove != nil {
 		return fmt.Errorf(`
 		Unable to remove symlink.
@@ -141,14 +162,15 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 		// If directory does not exist, check if we should create it, otherwise skip
 		if !CheckDirExist(dirPath) {
 			logger.Warnf("Installation directory %q doesn't exist!", dirPath)
-			if location.create {
-				logger.Infof("Creating %q directory", dirPath)
-				err = os.MkdirAll(dirPath, 0o755)
-				if err != nil {
-					logger.Errorf("Unable to create %q directory: %v", dirPath, err)
-					continue
-				}
-			} else {
+
+			if !location.create {
+				continue
+			}
+
+			logger.Infof("Creating %q directory", dirPath)
+			err = os.MkdirAll(dirPath, 0o755)
+			if err != nil {
+				logger.Errorf("Unable to create %q directory: %v", dirPath, err)
 				continue
 			}
 		} else if !CheckIsDir(dirPath) {
@@ -175,17 +197,23 @@ func ChangeProductSymlink(product Product, binVersionPath string, userBinPath st
 			if runtime.GOOS != windows {
 				isDirInPath := false
 
-				for _, envPathElement := range strings.Split(os.Getenv("PATH"), ":") {
+				absDirPath, errAbs := GetAbsolutePath(dirPath)
+				if errAbs != nil {
+					return fmt.Errorf("Could not derive absolute path to %q: %v", dirPath, errAbs)
+				}
+				absDirPath = strings.TrimRight(absDirPath, "/")
+
+				for envPathElement := range strings.SplitSeq(os.Getenv("PATH"), ":") {
 					expandedEnvPathElement := strings.TrimRight(strings.Replace(envPathElement, "~", homedir, 1), "/")
 
-					if expandedEnvPathElement == strings.TrimRight(dirPath, "/") {
+					if expandedEnvPathElement == absDirPath {
 						isDirInPath = true
 						break
 					}
 				}
 
 				if !isDirInPath {
-					logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", dirPath, location.path)
+					logger.Warnf("Run `export PATH=\"$PATH:%s\"` to append %q to $PATH", absDirPath, location.path)
 				}
 			}
 
