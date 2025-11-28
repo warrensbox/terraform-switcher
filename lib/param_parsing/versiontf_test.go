@@ -62,7 +62,7 @@ func TestGetVersionFromVersionsTF_erroneous_file(t *testing.T) {
 	if err == nil {
 		t.Error("Expected error got nil")
 	} else {
-		expected := "Malformed constraint: ~527> 1.0.0"
+		expected := "malformed constraint: ~527> 1.0.0"
 		if fmt.Sprint(err) != expected {
 			t.Errorf("Expected error %q, got %q", expected, err)
 		}
