@@ -186,6 +186,7 @@ func ConvertExecutableExt(fpath string) string {
 
 // installableBinLocation : Checks if terraform is installable in the location provided by the user.
 // If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
+//
 // Deprecated: This function has been deprecated and will be removed in v2.0.0
 //
 //nolint:unused // Function is deprecated
