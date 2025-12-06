@@ -448,6 +448,8 @@ func TestCheckDirIsReadable(t *testing.T) {
 	if err := os.Mkdir(path, os.FileMode(0o200)); err != nil {
 		t.Fatalf("Unexpected failure creating test directory %q: %v", path, err)
 	}
+	info, _ := os.Stat(path)
+	t.Logf("Dir mode: %v", info.Mode())
 	defer func() {
 		// Add enough permissions to allow cleanup (user read/write/execute)
 		if err := os.Chmod(path, 0o700); err != nil {
