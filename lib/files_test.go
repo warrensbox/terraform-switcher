@@ -445,6 +445,7 @@ func TestCheckDirIsReadable(t *testing.T) {
 	// Creating dir on Windows produces `drwxrwxrwx` permissions no matter
 	// what perms are requested in `os.Mkdir()`, and even `os.Chmod()` doesn't help
 	// So just skip this bit of the test on Windows. Windows is tricky ¯\_(ツ)_/¯
+	// Informational reference: https://github.com/golang/go/issues/65377
 	if runtime.GOOS != windows {
 		// Dir must have no read permissions
 		path = "../test-data/directory-without-read-permission"
