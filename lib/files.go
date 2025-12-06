@@ -220,6 +220,21 @@ func CheckIsDir(dir string) bool {
 	return true
 }
 
+// CheckDirIsReadable : check if directory is readable
+func CheckDirIsReadable(dir string) bool {
+	if !CheckDirExist(dir) || !CheckIsDir(dir) {
+		return false
+	}
+
+	_, err := os.ReadDir(dir)
+	if err != nil {
+		logger.Debugf("Failed to read directory %q: %v", dir, err)
+		return false
+	}
+
+	return true
+}
+
 // Path : returns path of directory
 // value=path to file
 func Path(value string) string {

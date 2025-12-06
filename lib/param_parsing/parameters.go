@@ -171,6 +171,11 @@ func populateParams(params Params) Params {
 		// Re-init logger
 		logger = lib.InitLogger(params.LogLevel)
 
+		// Fail fast if params.ChDirPath (defaults to current dir) is not readable
+		if !lib.CheckDirIsReadable(params.ChDirPath) {
+			logger.Fatalf("Cannot read working directory: %q", params.ChDirPath)
+		}
+
 		// Set defaults based on product
 		// This must be performed after TOML file, to obtain product.
 		// But the mirror URL, if set to default product URL,
