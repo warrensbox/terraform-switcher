@@ -362,7 +362,7 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 
 		/* prompt user to select version of product */
 		if !isatty.IsTerminal(os.Stdin.Fd()) || !isatty.IsTerminal(os.Stdout.Fd()) {
-			return errors.New("Interactive prompt isn't meant for non-interactive terminal")
+			return errors.New("Interactive prompt isn't meant for non-interactive terminal. Please use command line flags in such case.")
 		}
 		prompt := promptui.Select{
 			Label: fmt.Sprintf("Select %s version", product.GetName()),
