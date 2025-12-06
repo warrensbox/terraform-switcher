@@ -442,34 +442,29 @@ func TestCheckDirIsReadable(t *testing.T) {
 	}
 	t.Logf("The %q is not a directory (expected)", path)
 
-	// Dir must have no read permissions
-	path = "../test-data/directory-without-read-permission"
-	// 0200 is -w------- (user write only)
-	mode := os.FileMode(0o200)
-	if err := os.Mkdir(path, mode); err != nil {
-		t.Fatalf("Unexpected failure creating test directory %q: %v", path, err)
-	}
-	// drwxrwxrwx
-	if runtime.GOOS == windows {
-		if err := os.Chmod(path, mode); err != nil {
-			// Don't fail, just log
-			t.Logf("(cleanup) Unable to set permissions on test directory %q: %v", path, err)
+	// Creating dir on Windows produces `drwxrwxrwx` permissions no matter
+	// what perms are requested in `os.Mkdir()`, and even `os.Chmod()` doesn't help
+	// So just skip this bit of the test on Windows. Windows is tricky ¯\_(ツ)_/¯
+	if runtime.GOOS != windows {
+		// Dir must have no read permissions
+		path = "../test-data/directory-without-read-permission"
+		// 0200 is -w------- (user write only)
+		if err := os.Mkdir(path, os.FileMode(0o200)); err != nil {
+			t.Fatalf("Unexpected failure creating test directory %q: %v", path, err)
 		}
-	}
-	info, _ := os.Stat(path)
-	t.Logf("Dir mode: %v", info.Mode())
-	defer func() {
-		// Add enough permissions to allow cleanup (user read/write/execute)
-		if err := os.Chmod(path, 0o700); err != nil {
-			// Don't fail, just log
-			t.Logf("(cleanup) Unable to restore permissions on test directory %q: %v", path, err)
+		defer func() {
+			// Add enough permissions to allow cleanup (user read/write/execute)
+			if err := os.Chmod(path, 0o700); err != nil {
+				// Don't fail, just log
+				t.Logf("(cleanup) Unable to restore permissions on test directory %q: %v", path, err)
+			}
+			cleanUp(path)
+		}()
+		if CheckDirIsReadable(path) {
+			t.Fatalf("Directory %q must not have read permission", path)
 		}
-		cleanUp(path)
-	}()
-	if CheckDirIsReadable(path) {
-		t.Fatalf("Directory %q must not have read permission", path)
+		t.Logf("Directory %q has no read permission (expected)", path)
 	}
-	t.Logf("Directory %q has no read permission (expected)", path)
 }
 
 // TestCheckDirHasTGBin : create tg file in directory, check if exist
