@@ -445,8 +445,16 @@ func TestCheckDirIsReadable(t *testing.T) {
 	// Dir must have no read permissions
 	path = "../test-data/directory-without-read-permission"
 	// 0200 is -w------- (user write only)
-	if err := os.Mkdir(path, os.FileMode(0o200)); err != nil {
+	mode := os.FileMode(0o200)
+	if err := os.Mkdir(path, mode); err != nil {
 		t.Fatalf("Unexpected failure creating test directory %q: %v", path, err)
+	}
+	// drwxrwxrwx
+	if runtime.GOOS == windows {
+		if err := os.Chmod(path, mode); err != nil {
+			// Don't fail, just log
+			t.Logf("(cleanup) Unable to set permissions on test directory %q: %v", path, err)
+		}
 	}
 	info, _ := os.Stat(path)
 	t.Logf("Dir mode: %v", info.Mode())
