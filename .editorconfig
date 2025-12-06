@@ -1,3 +1,6 @@
+[*]
+charset = utf-8
+
 [install.sh]
 indent_style = space
 indent_size = 2

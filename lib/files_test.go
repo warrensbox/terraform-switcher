@@ -417,6 +417,57 @@ func TestIsDirEmpty(t *testing.T) {
 	cleanUp(installLocation)
 }
 
+// TestCheckDirIsReadable : test dir readability check
+func TestCheckDirIsReadable(t *testing.T) {
+	var path string
+
+	// Dir must be readable
+	path = "../test-data/"
+	if !CheckDirIsReadable(path) {
+		t.Fatalf("Directory %q is not readable", path)
+	}
+	t.Logf("Directory %q is readable (expected)", path)
+
+	// Dir must not exist
+	path = "../test-data/non-existent-directory"
+	if CheckDirIsReadable(path) {
+		t.Fatalf("Directory %q must not exist", path)
+	}
+	t.Logf("Directory %q does not exist (expected)", path)
+
+	// Path must not be a directory
+	path = "../test-data/is-plain-file"
+	if CheckDirIsReadable(path) {
+		t.Fatalf("The %q must not be a directory", path)
+	}
+	t.Logf("The %q is not a directory (expected)", path)
+
+	// Creating dir on Windows produces `drwxrwxrwx` permissions no matter
+	// what perms are requested in `os.Mkdir()`, and even `os.Chmod()` doesn't help
+	// So just skip this bit of the test on Windows. Windows is tricky ¯\_(ツ)_/¯
+	// Informational reference: https://github.com/golang/go/issues/65377
+	if runtime.GOOS != windows {
+		// Dir must have no read permissions
+		path = "../test-data/directory-without-read-permission"
+		// 0200 is -w------- (user write only)
+		if err := os.Mkdir(path, os.FileMode(0o200)); err != nil {
+			t.Fatalf("Unexpected failure creating test directory %q: %v", path, err)
+		}
+		defer func() {
+			// Add enough permissions to allow cleanup (user read/write/execute)
+			if err := os.Chmod(path, 0o700); err != nil {
+				// Don't fail, just log
+				t.Logf("(cleanup) Unable to restore permissions on test directory %q: %v", path, err)
+			}
+			cleanUp(path)
+		}()
+		if CheckDirIsReadable(path) {
+			t.Fatalf("Directory %q must not have read permission", path)
+		}
+		t.Logf("Directory %q has no read permission (expected)", path)
+	}
+}
+
 // TestCheckDirHasTGBin : create tg file in directory, check if exist
 func TestCheckDirHasTFBin(t *testing.T) {
 	goarch := runtime.GOARCH
