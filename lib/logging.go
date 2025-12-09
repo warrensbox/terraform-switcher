@@ -9,7 +9,7 @@ import (
 	"github.com/gookit/color"
 	"github.com/gookit/slog"
 	"github.com/gookit/slog/handler"
-	"github.com/mattn/go-isatty"
+	"golang.org/x/term"
 )
 
 var (
@@ -57,7 +57,7 @@ func isColorLogging() bool {
 		return false
 	} else if color.SupportColor() {
 		if os.Getenv("FORCE_COLOR") == "" {
-			return isatty.IsTerminal(os.Stdout.Fd())
+			return term.IsTerminal(int(os.Stdout.Fd()))
 		}
 		return true
 	}
