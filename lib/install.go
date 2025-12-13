@@ -2,6 +2,7 @@
 package lib
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/manifoldco/promptui"
+	"golang.org/x/term"
 
 	"github.com/hashicorp/go-version"
 )
@@ -186,6 +188,7 @@ func ConvertExecutableExt(fpath string) string {
 
 // installableBinLocation : Checks if terraform is installable in the location provided by the user.
 // If not, create $HOME/bin. Ask users to add  $HOME/bin to $PATH and return $HOME/bin as install location
+//
 // Deprecated: This function has been deprecated and will be removed in v2.0.0
 //
 //nolint:unused // Function is deprecated
@@ -357,7 +360,11 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 			return fmt.Errorf("%s version list is empty: %s", product.GetName(), mirrorURL)
 		}
 
-		/* prompt user to select version of terraform */
+		/* prompt user to select version of product */
+		if !term.IsTerminal(int(os.Stdin.Fd())) || !term.IsTerminal(int(os.Stdout.Fd())) {
+			//nolint:revive // error-strings: error strings should not be capitalized or end with punctuation or a newline (revive)
+			return errors.New("Interactive prompt is not meant for non-interactive terminal (please use command line flags in such case)")
+		}
 		prompt := promptui.Select{
 			Label: fmt.Sprintf("Select %s version", product.GetName()),
 			Items: selectVersions,
@@ -371,8 +378,7 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 			},
 		}
 
-		selectedItx, _, errPrompt := prompt.Run()
-
+		selectedIdx, _, errPrompt := prompt.Run()
 		if errPrompt != nil {
 			if errPrompt.Error() == "^C" {
 				// Cancel execution
@@ -381,7 +387,7 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 			return fmt.Errorf("PromptUI unexpectedly failed: %v", errPrompt)
 		}
 
-		selectedVersion = selectVersions[selectedItx].Version
+		selectedVersion = selectVersions[selectedIdx].Version
 		logger.Infof("Selected %s version: %s", product.GetName(), selectedVersion)
 	} else {
 		var errGetLatest error
