@@ -195,12 +195,7 @@ func CheckDirHasTGBin(dir, prefix string) bool {
 // dir=path to file
 // return bool
 func CheckDirExist(dir string) bool {
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		logger.Debugf("Directory %q doesn't exist", dir)
-		return false
-	}
-
-	return true
+	return CheckIsDir(dir)
 }
 
 // CheckIsDir: check if is directory
@@ -210,10 +205,25 @@ func CheckIsDir(dir string) bool {
 	fi, err := os.Stat(dir)
 
 	if err != nil {
-		logger.Debugf("Error checking %q: %v", dir, err)
+		logger.Debugf("Error checking directory %q: %v", dir, err)
 		return false
 	} else if !fi.IsDir() {
 		logger.Debugf("The %q is not a directory", dir)
+		return false
+	}
+
+	return true
+}
+
+// CheckDirIsReadable : check if directory is readable
+func CheckDirIsReadable(dir string) bool {
+	if !CheckIsDir(dir) {
+		return false
+	}
+
+	_, err := os.ReadDir(dir)
+	if err != nil {
+		logger.Debugf("Failed to read directory %q: %v", dir, err)
 		return false
 	}
 
