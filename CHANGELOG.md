@@ -7,6 +7,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.11.0](https://github.com/warrensbox/terraform-switcher/tree/v1.11.0) - 2025-12-13
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.10.0...v1.11.0)
+
+### Fixed
+
+- fix: Fail fast if `chdir` directory is not readable [#671](https://github.com/warrensbox/terraform-switcher/pull/671) ([yermulnik](https://github.com/yermulnik))
+- fix: Don't PromptUI in non-interactive terminal [#669](https://github.com/warrensbox/terraform-switcher/pull/669) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.11.0` [#674](https://github.com/warrensbox/terraform-switcher/pull/674) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.10.0](https://github.com/warrensbox/terraform-switcher/tree/v1.10.0) - 2025-11-26
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.9.0...v1.10.0)
