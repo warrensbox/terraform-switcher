@@ -3,13 +3,11 @@
 # https://github.com/warrensbox/terraform-switcher/labels
 
 on:
-  pull_request:
-    types: [opened, edited, synchronize, ready_for_review]
-    branches: [master, main] # zizmor: ignore[dangerous-triggers]
-
   pull_request_target: # for OSS with public contributions (forked PR)
-    types: [opened, edited, synchronize, ready_for_review]
-    branches: [master, main]
+    # types list ordering is based on the order from
+    # https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target
+    types: [opened, edited, reopened, synchronize, ready_for_review]
+    branches: [master, main] # zizmor: ignore[dangerous-triggers]
 
 permissions:
   # Setting up permissions in the workflow to limit the scope of what it can do. Optional!
