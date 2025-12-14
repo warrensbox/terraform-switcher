@@ -1,25 +1,27 @@
 # Remove once https://github.com/warrensbox/terraform-switcher/issues/537 is implemented
+set -l COMMAND tfswitch
 
-complete -c tfswitch -f
+complete -c $COMMAND -f
 
-# --- Flag: -A / --arch ---
-complete -c tfswitch -s A -l arch -d "Select architecture" -r -f -a "386 amd64 arm arm64"
-
-# --- Flag: -b / --bin ---
-complete -c tfswitch -s b -l bin -d "Custom binary path" -r
-
-# --- Flag: -c / --chdir AND -i / --install ---
-complete -c tfswitch -s c -l chdir -d "Switch to a different directory" -r -a "(__fish_complete_directories)"
-complete -c tfswitch -s i -l install -d "Install specific version" -r -a "(__fish_complete_directories)"
-
-# --- Flag: -g / --log-level ---
-complete -c tfswitch -s g -l log-level -d "Log level" -r -f -a "DEBUG ERROR FATAL INFO NOTICE OFF PANIC TRACE WARN"
-
-# --- Flag: -t / --product ---
-complete -c tfswitch -s t -l product -d "Product to switch" -r -f -a "opentofu terraform"
-
-# --- General flags ---
-complete -c tfswitch -s l -l list -d "List all installed versions"
-complete -c tfswitch -s u -l list-all -d "List all available versions"
-complete -c tfswitch -s h -l help -d "Show help"
-complete -c tfswitch -s v -l version -d "Show version"
+complete -c $COMMAND -s A -l arch                       -d "Override CPU architecture type for downloaded binary" -r -f -a "386 amd64 arm arm64"
+complete -c $COMMAND -s b -l bin                        -d "Custom binary path" -r -a "(__fish_complete_directories)"
+complete -c $COMMAND -s c -l chdir                      -d "Switch to a different working directory" -r -a "(__fish_complete_directories)"
+complete -c $COMMAND -s d -l default                    -d "Default to this version if none detected"
+complete -c $COMMAND -s g -l log-level                  -d "Log level" -r -f -a "DEBUG ERROR FATAL INFO NOTICE OFF PANIC TRACE WARN"
+complete -c $COMMAND -s h -l help                       -d "Show help"
+complete -c $COMMAND -s i -l install                    -d "Custom install path" -r -a "(__fish_complete_directories)"
+complete -c $COMMAND -s K -l force-color                -d "Force color output if terminal supports it"
+complete -c $COMMAND -s k -l no-color                   -d "Disable color output"
+complete -c $COMMAND -s l -l list-all                   -d "List all versions of a product"
+complete -c $COMMAND -s m -l mirror                     -d "Install from a remote API other than the default"
+complete -c $COMMAND -s n -l match-version-requirement  -d "Check if the requested version matches the requirement mandated by the configuration"
+complete -c $COMMAND -s p -l latest-pre                 -d "Latest pre-release implicit version"
+complete -c $COMMAND -s P -l show-latest-pre            -d "Show latest pre-release implicit version"
+complete -c $COMMAND -s r -l dry-run                    -d "Only show what tfswitch would do"
+complete -c $COMMAND -s R -l show-required              -d "Show required (or explicitly requested) version"
+complete -c $COMMAND -s s -l latest-stable              -d "Latest implicit version based on a constraint"
+complete -c $COMMAND -s S -l show-latest-stable         -d "Show latest implicit version"
+complete -c $COMMAND -s t -l product                    -d "Specify which product to use" -r -f -a "opentofu terraform"
+complete -c $COMMAND -s u -l latest                     -d "Get latest stable version"
+complete -c $COMMAND -s U -l show-latest                -d "Show latest stable version"
+complete -c $COMMAND -s v -l version                    -d "Show version"
