@@ -109,6 +109,7 @@ brews:
     install: |
       bin.install "tfswitch"
       bash_completion.install "tfswitch-completion.bash" => "tfswitch"
+      fish_completion.install "tfswitch-completion.fish" => "tfswitch.fish"
 
 changelog:
   # Set this to true if you don't want any changelog at all.
