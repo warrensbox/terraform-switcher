@@ -169,10 +169,10 @@ changelog:
   groups:
     - title: Features
       order: 0
-      regexp: '^.*?feat(ure)?(\([[:word:]]+\))??!?:.+$'
+      regexp: '^.*?feat(ure)?(\([[:word:]-]+\))??!?:.+$'
     - title: "Bug fixes"
       order: 1
-      regexp: '^.*?(bug(fix)?|fix)(\([[:word:]]+\))??!?:.+$'
+      regexp: '^.*?(bug(fix)?|fix)(\([[:word:]-]+\))??!?:.+$'
     - title: Documentation
       order: 2
       regexp: "^.*?doc(s|umentation).*"
