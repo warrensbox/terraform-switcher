@@ -172,7 +172,7 @@ changelog:
       regexp: '^.*?feat(ure)?(\([[:word:]-]+\))??!?:.+$'
     - title: "Bug fixes"
       order: 1
-      regexp: '^.*?(bug(fix)?|fix)(\([[:word:]-]+\))?!?:.+$'
+      regexp: '^.*?(bug(fix)?|fix)(\([[:word:]-]+\))??!?:.+$'
     - title: Documentation
       order: 2
       regexp: "^.*?doc(s|umentation).*"
