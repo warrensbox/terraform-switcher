@@ -7,6 +7,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.13.0](https://github.com/warrensbox/terraform-switcher/tree/v1.13.0) - 2025-12-15
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.12.0...v1.13.0)
+
+### Other
+
+- go: Bump toolchain version requirement to `go1.25.5` [#680](https://github.com/warrensbox/terraform-switcher/pull/680) ([yermulnik](https://github.com/yermulnik))
+- chore(goreleaser): Allow hyphen in Goreleaser's release notes groups config [#679](https://github.com/warrensbox/terraform-switcher/pull/679) ([yermulnik](https://github.com/yermulnik))
+- docs: Update CHANGELOG with `v1.13.0` [#681](https://github.com/warrensbox/terraform-switcher/pull/681) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.12.0](https://github.com/warrensbox/terraform-switcher/tree/v1.12.0) - 2025-12-14
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.11.0...v1.12.0)
