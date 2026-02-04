@@ -7,21 +7,83 @@ package param_parsing
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	semver "github.com/hashicorp/go-version"
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hclparse"
+	"github.com/zclconf/go-cty/cty"
 
-	"github.com/hashicorp/terraform-config-inspect/tfconfig"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
-const paramTypeVersionTF = "Terraform module"
+const (
+	paramTypeVersionTF      = "Terraform/OpenTofu module"
+	terraformBlockType      = "terraform"
+	requiredVersionAttrName = "required_version"
+)
 
-func getConstraintFromVersionsTF(params Params) (Params, error) {
-	if !isTerraformModule(params) {
-		return params, nil
+// getRequiredVersionsFromFile parses a single .tf or .tofu file and extracts all required_version constraints
+func getRequiredVersionsFromFile(filePath string) ([]string, error) {
+	var versions []string
+
+	parser := hclparse.NewParser()
+	hclFile, diagnostics := parser.ParseHCLFile(filePath)
+	if diagnostics.HasErrors() {
+		logger.Errorf("Unable to parse HCL file %q: %s", filePath, diagnostics.Error())
+		return nil, fmt.Errorf("Could not parse HCL file %q: %s", filePath, diagnostics.Error())
 	}
 
+	// Define the schema for the terraform block
+	terraformBlockSchema := &hcl.BodySchema{
+		Blocks: []hcl.BlockHeaderSchema{
+			{Type: terraformBlockType},
+		},
+	}
+
+	content, _, diags := hclFile.Body.PartialContent(terraformBlockSchema)
+	if diags.HasErrors() {
+		logger.Debugf("No terraform blocks found in %q", filePath)
+		return versions, nil
+	}
+
+	for _, block := range content.Blocks {
+		if block.Type == terraformBlockType {
+			// Extract required_version from the terraform block
+			terraformAttributesSchema := &hcl.BodySchema{
+				Attributes: []hcl.AttributeSchema{
+					{Name: requiredVersionAttrName},
+				},
+			}
+			blockContent, _, attrDiags := block.Body.PartialContent(terraformAttributesSchema)
+			if attrDiags.HasErrors() {
+				logger.Debugf("Error getting attributes from terraform block in %q: %s", filePath, attrDiags.Error())
+				continue
+			}
+
+			if attr, exists := blockContent.Attributes[requiredVersionAttrName]; exists {
+				val, valDiags := attr.Expr.Value(nil)
+				if valDiags.HasErrors() {
+					logger.Debugf("Error evaluating required_version in %q: %s", filePath, valDiags.Error())
+					continue
+				}
+				if !val.IsKnown() || !val.Type().Equals(cty.String) {
+					continue
+				}
+				versionStr := val.AsString()
+				if versionStr != "" {
+					logger.Debugf("Found required_version %q in %q", versionStr, filePath)
+					versions = append(versions, versionStr)
+				}
+			}
+		}
+	}
+
+	return versions, nil
+}
+
+func getConstraintFromVersionsTF(params Params) (Params, error) {
 	var tfConstraints []string
 
 	relPath, err := lib.GetRelativePath(params.ChDirPath)
@@ -30,22 +92,48 @@ func getConstraintFromVersionsTF(params Params) (Params, error) {
 	}
 
 	logger.Infof("Reading version constraint from %s at %q", paramTypeVersionTF, relPath)
-	module, _ := tfconfig.LoadModule(relPath) // nolint:errcheck // covered by conditional below
-	if module.Diagnostics.HasErrors() {
-		return params, fmt.Errorf("Could not load %s at %q", paramTypeVersionTF, relPath)
+
+	// Find all .tf and .tofu files in the directory
+	var hclFiles []string
+	for _, ext := range []string{"*.tf", "*.tofu"} {
+		files, globErr := filepath.Glob(filepath.Join(relPath, ext))
+		if globErr != nil {
+			return params, fmt.Errorf("Could not list %s files in %q: %v", ext, relPath, globErr)
+		}
+		hclFiles = append(hclFiles, files...)
 	}
 
-	requiredVersions := module.RequiredCore
+	if len(hclFiles) == 0 {
+		logger.Debugf("No .tf or .tofu files found in %q", relPath)
+		return params, nil
+	}
 
-	for key := range requiredVersions {
-		// Check if the version contraint is valid
-		constraint, constraintErr := semver.NewConstraint(requiredVersions[key])
-		if constraintErr != nil {
-			logger.Errorf("Invalid version constraint found: %q", requiredVersions[key])
-			return params, constraintErr
+	// Parse each .tf/.tofu file and collect required_version constraints
+	for _, hclFile := range hclFiles {
+		if !lib.CheckFileExist(hclFile) {
+			continue
 		}
-		// It's valid. Add to list
-		tfConstraints = append(tfConstraints, constraint.String())
+
+		versions, parseErr := getRequiredVersionsFromFile(hclFile)
+		if parseErr != nil {
+			logger.Debugf("Error parsing %s file %q: %v", paramTypeVersionTF, hclFile, parseErr)
+			continue
+		}
+
+		for _, v := range versions {
+			// Check if the version constraint is valid
+			constraint, constraintErr := semver.NewConstraint(v)
+			if constraintErr != nil {
+				logger.Errorf("Invalid version constraint found: %q", v)
+				return params, constraintErr
+			}
+			tfConstraints = append(tfConstraints, constraint.String())
+		}
+	}
+
+	if len(tfConstraints) == 0 {
+		logger.Debugf("No terraform version constraint found in %s configuration", paramTypeVersionTF)
+		return params, nil
 	}
 
 	params.VersionRequirement = strings.Join(tfConstraints, ", ")
@@ -59,6 +147,10 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 		return params, err
 	}
 
+	if params.VersionRequirement == "" {
+		return params, nil
+	}
+
 	if params.MatchVersionRequirement == "" {
 		version, err2 := lib.GetSemver(params.VersionRequirement, params.MirrorURL)
 		if err2 != nil {
@@ -69,22 +161,4 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 		logger.Debugf("Using version from %s: %q", paramTypeVersionTF, params.Version)
 	}
 	return params, nil
-}
-
-func isTerraformModule(params Params) bool {
-	relPath, errRelPath := lib.GetRelativePath(params.ChDirPath)
-	if errRelPath != nil {
-		logger.Warn(errRelPath)
-		return false
-	}
-
-	module, err := tfconfig.LoadModule(relPath)
-	if err != nil {
-		logger.Warnf("Error parsing %s: %v", paramTypeVersionTF, err)
-		return false
-	}
-	if len(module.RequiredCore) == 0 {
-		logger.Debugf("No required version constraints defined by %s at %q", paramTypeVersionTF, relPath)
-	}
-	return len(module.RequiredCore) > 0
 }

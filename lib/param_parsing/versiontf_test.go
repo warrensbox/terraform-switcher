@@ -33,6 +33,30 @@ func TestGetVersionFromVersionsTF_matches_version(t *testing.T) {
 	}
 }
 
+func TestGetVersionFromVersionsTF_matches_version_opentofu(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	var params Params
+	var getVerErr error
+	params = initParams(params)
+	params.ChDirPath = "../../test-data/integration-tests/test_versiontf_opentofu"
+	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
+	params, getVerErr = GetVersionFromVersionsTF(params)
+	if getVerErr != nil {
+		t.Errorf("Error getting version from Terraform module: %v", getVerErr)
+	}
+	v1, v1Err := version.NewVersion("1.11.4")
+	if v1Err != nil {
+		t.Errorf("Error parsing v1 version: %v", v1Err)
+	}
+	actualVersion, actualVersionErr := version.NewVersion(params.Version)
+	if actualVersionErr != nil {
+		t.Errorf("Error parsing actualVersion version: %v", actualVersionErr)
+	}
+	if !actualVersion.Equal(v1) {
+		t.Errorf("Determined version is not 1.11.4, but %s", params.Version)
+	}
+}
+
 func TestGetVersionFromVersionsTF_impossible_constraints(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	var params Params
