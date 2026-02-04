@@ -17,8 +17,12 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
+      # contents permission to clone the repository
       contents: read
       packages: read
+      # issues and pull-requests permissions to write results as pull request comments
+      issues: write
+      pull-requests: write
       # To report GitHub Actions status checks
       statuses: write
 
