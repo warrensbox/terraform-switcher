@@ -39,10 +39,10 @@ func TestGetVersionFromVersionsTF_matches_version_opentofu(t *testing.T) {
 	var getVerErr error
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_versiontf_opentofu"
-	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
+	params.MirrorURL = lib.GetProductById("opentofu").GetDefaultMirrorUrl()
 	params, getVerErr = GetVersionFromVersionsTF(params)
 	if getVerErr != nil {
-		t.Errorf("Error getting version from Terraform module: %v", getVerErr)
+		t.Errorf("Error getting version from OpenTofu module: %v", getVerErr)
 	}
 	v1, v1Err := version.NewVersion("1.11.4")
 	if v1Err != nil {
