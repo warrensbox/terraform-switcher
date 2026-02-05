@@ -31,8 +31,8 @@ func getRequiredVersionsFromFile(filePath string) ([]string, error) {
 	parser := hclparse.NewParser()
 	hclFile, diagnostics := parser.ParseHCLFile(filePath)
 	if diagnostics.HasErrors() {
-		logger.Errorf("Unable to parse HCL file %q: %s", filePath, diagnostics.Error())
-		return nil, fmt.Errorf("Could not parse HCL file %q: %s", filePath, diagnostics.Error())
+		logger.Errorf("Unable to parse HCL file %q: %v", filePath, diagnostics.Error())
+		return nil, fmt.Errorf("Could not parse HCL file %q: %v", filePath, diagnostics.Error())
 	}
 
 	// Define the schema for the terraform block
@@ -44,7 +44,7 @@ func getRequiredVersionsFromFile(filePath string) ([]string, error) {
 
 	content, _, diags := hclFile.Body.PartialContent(terraformBlockSchema)
 	if diags.HasErrors() {
-		logger.Debugf("No terraform blocks found in %q", filePath)
+		logger.Debugf("No %s blocks found in %q", terraformBlockType, filePath)
 		return versions, nil
 	}
 
@@ -58,22 +58,23 @@ func getRequiredVersionsFromFile(filePath string) ([]string, error) {
 			}
 			blockContent, _, attrDiags := block.Body.PartialContent(terraformAttributesSchema)
 			if attrDiags.HasErrors() {
-				logger.Debugf("Error getting attributes from terraform block in %q: %s", filePath, attrDiags.Error())
+				logger.Debugf("Error getting attributes from %q block in %q: %v", terraformBlockType, filePath, attrDiags.Error())
 				continue
 			}
 
 			if attr, exists := blockContent.Attributes[requiredVersionAttrName]; exists {
 				val, valDiags := attr.Expr.Value(nil)
 				if valDiags.HasErrors() {
-					logger.Debugf("Error evaluating required_version in %q: %s", filePath, valDiags.Error())
+					logger.Debugf("Error evaluating %q in %q: %v", requiredVersionAttrName, filePath, valDiags.Error())
 					continue
 				}
 				if !val.IsKnown() || !val.Type().Equals(cty.String) {
+					logger.Debugf("Skipping not known or non-string value of %q at %q: %q", requiredVersionAttrName, filePath, val)
 					continue
 				}
 				versionStr := val.AsString()
 				if versionStr != "" {
-					logger.Debugf("Found required_version %q in %q", versionStr, filePath)
+					logger.Debugf("Found %q %q in %q", requiredVersionAttrName, versionStr, filePath)
 					versions = append(versions, versionStr)
 				}
 			}
@@ -132,7 +133,7 @@ func getConstraintFromVersionsTF(params Params) (Params, error) {
 	}
 
 	if len(tfConstraints) == 0 {
-		logger.Debugf("No terraform version constraint found in %s configuration", paramTypeVersionTF)
+		logger.Debugf("No version constraint found in %s configuration", paramTypeVersionTF)
 		return params, nil
 	}
 
@@ -147,6 +148,7 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 		return params, err
 	}
 
+	// If parsing was successful but no version constraint was found, return as is
 	if params.VersionRequirement == "" {
 		return params, nil
 	}
