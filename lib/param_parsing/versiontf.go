@@ -117,8 +117,8 @@ func getConstraintFromVersionsTF(params Params) (Params, error) {
 
 		versions, parseErr := getRequiredVersionsFromFile(hclFile)
 		if parseErr != nil {
-			logger.Debugf("Error parsing %s file %q: %v", paramTypeVersionTF, hclFile, parseErr)
-			continue
+			logger.Errorf("Error parsing %s file %q: %v", paramTypeVersionTF, hclFile, parseErr)
+			return params, parseErr
 		}
 
 		for _, v := range versions {
