@@ -24,7 +24,7 @@ const (
 	requiredVersionAttrName = "required_version"
 )
 
-// getRequiredVersionsFromFile parses a single .tf or .tofu file and extracts all required_version constraints
+// getRequiredVersionsFromFile parses a single hcl file and extracts all required_version constraints
 func getRequiredVersionsFromFile(filePath string) ([]string, error) {
 	var versions []string
 
@@ -94,10 +94,10 @@ func getConstraintFromVersionsTF(params Params) (Params, error) {
 
 	logger.Infof("Reading version constraint from %s at %q", paramTypeVersionTF, relPath)
 
-	// Find all .tf and .tofu files in the directory
+	extensionsPerProduct := lib.GetProductById(params.Product).GetFileExtensions()
 	var hclFiles []string
-	for _, ext := range []string{"*.tf", "*.tofu"} {
-		files, globErr := filepath.Glob(filepath.Join(relPath, ext))
+	for _, ext := range extensionsPerProduct {
+		files, globErr := filepath.Glob(filepath.Join(relPath, fmt.Sprintf("*.%s", ext)))
 		if globErr != nil {
 			return params, fmt.Errorf("Could not list %s files in %q: %v", ext, relPath, globErr)
 		}
@@ -105,11 +105,11 @@ func getConstraintFromVersionsTF(params Params) (Params, error) {
 	}
 
 	if len(hclFiles) == 0 {
-		logger.Debugf("No .tf or .tofu files found in %q", relPath)
+		logger.Debugf("No %s files found in %q", strings.Join(extensionsPerProduct, ", "), relPath)
 		return params, nil
 	}
 
-	// Parse each .tf/.tofu file and collect required_version constraints
+	// Parse each file and collect required_version constraints
 	for _, hclFile := range hclFiles {
 		if !lib.CheckFileExist(hclFile) {
 			continue

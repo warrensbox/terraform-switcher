@@ -39,6 +39,7 @@ func TestGetVersionFromVersionsTF_matches_version_opentofu(t *testing.T) {
 	var getVerErr error
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_versiontf_opentofu"
+	params.Product = "opentofu"
 	params.MirrorURL = lib.GetProductById("opentofu").GetDefaultMirrorUrl()
 	params, getVerErr = GetVersionFromVersionsTF(params)
 	if getVerErr != nil {
