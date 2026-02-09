@@ -72,13 +72,26 @@ jobs:
           mkdir -p build
           go build -v -o build/tfswitch
           mkdir "$(pwd)/bin/"
-          find ./test-data/integration-tests/* -type d -print0 | while read -r -d $'\0' TEST_PATH; do
+          find ./test-data/integration-tests/ -mindepth 1 -maxdepth 1 -type d -print0 | while read -r -d $'\0' TEST_PATH; do
+              echo
+              echo "==> Running integration test in \"${TEST_PATH}\" directory"
+
               if test -f "${TEST_PATH}/.tfswitch.toml"
               then
                   cp "${TEST_PATH}/.tfswitch.toml" ~/
               else
                   rm -f ~/.tfswitch.toml
               fi
+
+              # If the integration test directory name ends with "_opentofu", set the TF_PRODUCT
+              # environment variable to "opentofu" for that test, otherwise unset it
+              if [[ $TEST_PATH == *_opentofu ]]; then
+                echo "--> Setting TF_PRODUCT environment variable to \"opentofu\" for this test"
+                export TF_PRODUCT="opentofu"
+              else
+                unset TF_PRODUCT
+              fi
+
               ./build/tfswitch -c "${TEST_PATH}" -b "$(pwd)/bin/terraform" || exit 1
           done
 
