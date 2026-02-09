@@ -24,16 +24,8 @@ const (
 	requiredVersionAttrName = "required_version"
 )
 
-// getRequiredVersionsFromFile parses a single hcl file and extracts all required_version constraints
-func getRequiredVersionsFromFile(filePath string) ([]string, error) {
-	var versions []string
-
-	parser := hclparse.NewParser()
-	hclFile, diagnostics := parser.ParseHCLFile(filePath)
-	if diagnostics.HasErrors() {
-		logger.Errorf("Unable to parse HCL file %q: %v", filePath, diagnostics.Error())
-		return nil, fmt.Errorf("Could not parse HCL file %q: %v", filePath, diagnostics.Error())
-	}
+func getVersionConstraintsFromHCLFile(fileName string, hclFile *hcl.File) ([]string, error) {
+	var constraints []string
 
 	// Define the schema for the terraform block
 	terraformBlockSchema := &hcl.BodySchema{
@@ -44,8 +36,8 @@ func getRequiredVersionsFromFile(filePath string) ([]string, error) {
 
 	content, _, diags := hclFile.Body.PartialContent(terraformBlockSchema)
 	if diags.HasErrors() {
-		logger.Debugf("No %s blocks found in %q", terraformBlockType, filePath)
-		return versions, nil
+		logger.Debugf("No %s blocks found in %q", terraformBlockType, fileName)
+		return constraints, nil
 	}
 
 	for _, block := range content.Blocks {
@@ -58,35 +50,62 @@ func getRequiredVersionsFromFile(filePath string) ([]string, error) {
 			}
 			blockContent, _, attrDiags := block.Body.PartialContent(terraformAttributesSchema)
 			if attrDiags.HasErrors() {
-				logger.Debugf("Error getting attributes from %q block in %q: %v", terraformBlockType, filePath, attrDiags.Error())
+				logger.Debugf("Error getting attributes from %q block in %q: %v", terraformBlockType, fileName, attrDiags.Error())
 				continue
 			}
 
 			if attr, exists := blockContent.Attributes[requiredVersionAttrName]; exists {
 				val, valDiags := attr.Expr.Value(nil)
 				if valDiags.HasErrors() {
-					logger.Debugf("Error evaluating %q in %q: %v", requiredVersionAttrName, filePath, valDiags.Error())
+					logger.Debugf("Error evaluating %q in %q: %v", requiredVersionAttrName, fileName, valDiags.Error())
 					continue
 				}
 				if !val.IsKnown() || !val.Type().Equals(cty.String) {
-					logger.Debugf("Skipping not known or non-string value of %q at %q: %q", requiredVersionAttrName, filePath, val)
+					logger.Debugf("Skipping not known or non-string value of %q at %q: %q", requiredVersionAttrName, fileName, val)
 					continue
 				}
 				versionStr := val.AsString()
-				if versionStr != "" {
-					logger.Debugf("Found %q %q in %q", requiredVersionAttrName, versionStr, filePath)
-					versions = append(versions, versionStr)
+				if versionStr == "" {
+					logger.Debugf("Skipping empty %q in %q", requiredVersionAttrName, fileName)
+					continue
 				}
+				constraint, constraintErr := semver.NewConstraint(versionStr)
+				if constraintErr != nil {
+					logger.Errorf("Invalid version constraint found: %q", versionStr)
+					return nil, constraintErr
+				}
+				logger.Debugf("Found %q %q in %q", requiredVersionAttrName, constraint.String(), fileName)
+				constraints = append(constraints, constraint.String())
 			}
 		}
 	}
 
-	return versions, nil
+	return constraints, nil
+}
+
+func getVersionConstraintsFromFiles(filesPath []string) (string, error) {
+	parser := hclparse.NewParser()
+	for _, filePath := range filesPath {
+		_, diagnostics := parser.ParseHCLFile(filePath)
+		if diagnostics.HasErrors() {
+			logger.Errorf("Unable to parse HCL file %q: %v", filePath, diagnostics.Error())
+			return "", fmt.Errorf("Could not parse HCL file %q: %v", filePath, diagnostics.Error())
+		}
+	}
+
+	var constraints []string
+	for fileName, hclFile := range parser.Files() {
+		parsedConstraints, err := getVersionConstraintsFromHCLFile(fileName, hclFile)
+		if err != nil {
+			return "", err
+		}
+		constraints = append(constraints, parsedConstraints...)
+	}
+
+	return strings.Join(constraints, ", "), nil
 }
 
 func getConstraintFromVersionsTF(params Params) (Params, error) {
-	var tfConstraints []string
-
 	relPath, err := lib.GetRelativePath(params.ChDirPath)
 	if err != nil {
 		return params, err
@@ -109,35 +128,13 @@ func getConstraintFromVersionsTF(params Params) (Params, error) {
 		return params, nil
 	}
 
-	// Parse each file and collect required_version constraints
-	for _, hclFile := range hclFiles {
-		if !lib.CheckFileExist(hclFile) {
-			continue
-		}
-
-		versions, parseErr := getRequiredVersionsFromFile(hclFile)
-		if parseErr != nil {
-			logger.Errorf("Error parsing %s file %q: %v", paramTypeVersionTF, hclFile, parseErr)
-			return params, parseErr
-		}
-
-		for _, v := range versions {
-			// Check if the version constraint is valid
-			constraint, constraintErr := semver.NewConstraint(v)
-			if constraintErr != nil {
-				logger.Errorf("Invalid version constraint found: %q", v)
-				return params, constraintErr
-			}
-			tfConstraints = append(tfConstraints, constraint.String())
-		}
+	versionRequirements, err := getVersionConstraintsFromFiles(hclFiles)
+	if err != nil {
+		logger.Errorf("Error parsing %s files in %q: %v", paramTypeVersionTF, relPath, err)
+		return params, err
 	}
 
-	if len(tfConstraints) == 0 {
-		logger.Debugf("No version constraint found in %s configuration", paramTypeVersionTF)
-		return params, nil
-	}
-
-	params.VersionRequirement = strings.Join(tfConstraints, ", ")
+	params.VersionRequirement = versionRequirements
 	logger.Debugf("Using version constraint from %s at %q: %q", paramTypeVersionTF, relPath, params.VersionRequirement)
 	return params, nil
 }
