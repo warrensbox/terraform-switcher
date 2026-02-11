@@ -19,6 +19,7 @@ type ProductDetails struct {
 	ArchivePrefix         string
 	PublicKeyId           string
 	PublicKeyURLs         []string
+	FileExtensions        []string
 }
 
 type TerraformProduct struct {
@@ -45,6 +46,7 @@ type Product interface {
 	GetArtifactUrl(mirrorURL string, version string) string
 	GetRecentVersionProduct(recentFile *RecentFile) []string
 	SetRecentVersionProduct(recentFile *RecentFile, versions []string)
+	GetFileExtensions() []string
 }
 
 // Terraform Product
@@ -101,6 +103,10 @@ func (p TerraformProduct) SetRecentVersionProduct(recentFile *RecentFile, versio
 	recentFile.Terraform = versions
 }
 
+func (p TerraformProduct) GetFileExtensions() []string {
+	return p.FileExtensions
+}
+
 // OpenTofu methods
 // nolint:revive // FIXME: var-naming: method GetId should be GetID (revive)
 func (p OpenTofuProduct) GetId() string {
@@ -155,6 +161,10 @@ func (p OpenTofuProduct) SetRecentVersionProduct(recentFile *RecentFile, version
 	recentFile.OpenTofu = versions
 }
 
+func (p OpenTofuProduct) GetFileExtensions() []string {
+	return p.FileExtensions
+}
+
 // Factory methods
 var products = []Product{
 	TerraformProduct{
@@ -167,6 +177,7 @@ var products = []Product{
 			ArchivePrefix:  "terraform_",
 			PublicKeyId:    "72D7468F",
 			PublicKeyURLs:  []string{"https://www.hashicorp.com/.well-known/pgp-key.txt", "https://keybase.io/hashicorp/pgp_keys.asc"},
+			FileExtensions: []string{"tf"},
 		},
 	},
 	OpenTofuProduct{
@@ -180,6 +191,7 @@ var products = []Product{
 			ArchivePrefix:         "tofu_",
 			PublicKeyId:           "0C0AF313E5FD9F80",
 			PublicKeyURLs:         []string{"https://get.opentofu.org/opentofu.asc"},
+			FileExtensions:        []string{"tf", "tofu"},
 		},
 	},
 }

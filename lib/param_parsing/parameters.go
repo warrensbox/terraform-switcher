@@ -215,11 +215,9 @@ func populateParams(params Params) Params {
 			}
 		}
 
-		if isTerraformModule(params) {
-			params, err = GetVersionFromVersionsTF(params)
-			if err != nil {
-				logger.Fatalf("Failed to obtain settings from Terraform module: %v", err)
-			}
+		params, err = GetVersionFromVersionsTF(params)
+		if err != nil {
+			logger.Fatalf("Failed to obtain settings from Terraform module: %v", err)
 		}
 
 		params, err = GetVersionFromTerragrunt(params)
