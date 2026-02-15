@@ -61,7 +61,7 @@ func getVersionConstraintsFromHCLFile(fileName string, hclFile *hcl.File) ([]str
 					continue
 				}
 				if !val.IsKnown() || !val.Type().Equals(cty.String) {
-					logger.Debugf("Skipping not known or non-string value of %q at %q: %q", requiredVersionAttrName, fileName, val)
+					logger.Debugf("Skipping not known or non-string value of %q in %q: %#v", requiredVersionAttrName, fileName, val)
 					continue
 				}
 				versionStr := val.AsString()
@@ -71,7 +71,7 @@ func getVersionConstraintsFromHCLFile(fileName string, hclFile *hcl.File) ([]str
 				}
 				constraint, constraintErr := semver.NewConstraint(versionStr)
 				if constraintErr != nil {
-					logger.Errorf("Invalid version constraint found: %q", versionStr)
+					logger.Errorf("Invalid version constraint found in %q: %q", fileName, versionStr)
 					return nil, constraintErr
 				}
 				logger.Debugf("Found %q %q in %q", requiredVersionAttrName, constraint.String(), fileName)
@@ -88,7 +88,6 @@ func getVersionConstraintsFromFiles(filesPath []string) (string, error) {
 	for _, filePath := range filesPath {
 		_, diagnostics := parser.ParseHCLFile(filePath)
 		if diagnostics.HasErrors() {
-			logger.Errorf("Unable to parse HCL file %q: %v", filePath, diagnostics.Error())
 			return "", fmt.Errorf("Could not parse HCL file %q: %v", filePath, diagnostics.Error())
 		}
 	}
@@ -115,23 +114,30 @@ func getConstraintFromVersionsTF(params Params) (Params, error) {
 
 	extensionsPerProduct := lib.GetProductById(params.Product).GetFileExtensions()
 	var hclFiles []string
+	var fileGlobs []string
 	for _, ext := range extensionsPerProduct {
-		files, globErr := filepath.Glob(filepath.Join(relPath, fmt.Sprintf("*.%s", ext)))
+		globPattern := fmt.Sprintf("*.%s", ext)
+		fileGlobs = append(fileGlobs, globPattern)
+		files, globErr := filepath.Glob(filepath.Join(relPath, globPattern))
 		if globErr != nil {
-			return params, fmt.Errorf("Could not list %s files in %q: %v", ext, relPath, globErr)
+			return params, fmt.Errorf("Could not list %s files in %q: %v", globPattern, relPath, globErr)
 		}
 		hclFiles = append(hclFiles, files...)
 	}
 
 	if len(hclFiles) == 0 {
-		logger.Debugf("No %s files found in %q", strings.Join(extensionsPerProduct, ", "), relPath)
+		logger.Debugf("No %s files found in %q", strings.Join(fileGlobs, ", "), relPath)
 		return params, nil
 	}
 
 	versionRequirements, err := getVersionConstraintsFromFiles(hclFiles)
 	if err != nil {
-		logger.Errorf("Error parsing %s files in %q: %v", paramTypeVersionTF, relPath, err)
 		return params, err
+	}
+
+	if versionRequirements == "" {
+		logger.Debugf("No version requirements found in %s files in %q", strings.Join(fileGlobs, ", "), relPath)
+		return params, nil
 	}
 
 	params.VersionRequirement = versionRequirements
