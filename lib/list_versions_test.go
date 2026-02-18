@@ -59,7 +59,7 @@ func TestGetTFList(t *testing.T) {
 	val := "0.1.0"
 	var exists bool
 
-	if reflect.TypeOf(list).Kind() == reflect.Slice {
+	if reflect.TypeFor[[]string]().Kind() == reflect.Slice {
 		s := reflect.ValueOf(list)
 
 		for i := 0; i < s.Len(); i++ {

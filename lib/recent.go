@@ -44,11 +44,7 @@ func getRecentVersions(installPath string, product Product) ([]string, error) {
 	unmarshalRecentFileData(recentFilePath, &recentFileData)
 	listOfRecentVersions := product.GetRecentVersionProduct(&recentFileData)
 	var maxCount int
-	if len(listOfRecentVersions) >= 5 {
-		maxCount = 5
-	} else {
-		maxCount = len(listOfRecentVersions)
-	}
+	maxCount = min(len(listOfRecentVersions), 5)
 	var returnedRecentVersions []string
 	for i := 0; i < maxCount; i++ {
 		returnedRecentVersions = append(returnedRecentVersions, listOfRecentVersions[i])
@@ -76,8 +72,8 @@ func unmarshalRecentFileData(recentFilePath string, recentFileData *RecentFile) 
 }
 
 func convertOldRecentFile(content []byte, recentFileData *RecentFile) {
-	lines := strings.Split(string(content), "\n")
-	for _, s := range lines {
+	lines := strings.SplitSeq(string(content), "\n")
+	for s := range lines {
 		if s != "" {
 			recentFileData.Terraform = append(recentFileData.Terraform, s)
 		}
