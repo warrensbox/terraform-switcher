@@ -43,10 +43,8 @@ func getRecentVersions(installPath string, product Product) ([]string, error) {
 	var recentFileData RecentFile
 	unmarshalRecentFileData(recentFilePath, &recentFileData)
 	listOfRecentVersions := product.GetRecentVersionProduct(&recentFileData)
-	var maxCount int
-	maxCount = min(len(listOfRecentVersions), 5)
 	var returnedRecentVersions []string
-	for i := 0; i < maxCount; i++ {
+	for i := range min(len(listOfRecentVersions), 5) {
 		returnedRecentVersions = append(returnedRecentVersions, listOfRecentVersions[i])
 	}
 	return returnedRecentVersions, nil
