@@ -12,7 +12,7 @@ func TestNewCommand(t *testing.T) {
 	testCmd := "terraform"
 	cmd := lib.NewCommand(testCmd)
 
-	if reflect.ValueOf(cmd).Kind() == reflect.Ptr {
+	if reflect.ValueOf(cmd).Kind() == reflect.Pointer {
 		t.Logf("Value returned is a pointer %v [expected]", cmd)
 	} else {
 		t.Errorf("Value returned is not a pointer %v [unexpected]", cmd)
