@@ -7,6 +7,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.14.0](https://github.com/warrensbox/terraform-switcher/tree/v1.14.0) - 2026-02-21
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.13.0...v1.14.0)
+
+### Added
+
+- feat(versiontf): handle tofu files [#696](https://github.com/warrensbox/terraform-switcher/pull/696) ([Intuinewin](https://github.com/Intuinewin))
+
+### Other
+
+- chore: Apply `go fix ./...` [#706](https://github.com/warrensbox/terraform-switcher/pull/706) ([yermulnik](https://github.com/yermulnik))
+- chore: Improve integration tests GHA workflow [#702](https://github.com/warrensbox/terraform-switcher/pull/702) ([yermulnik](https://github.com/yermulnik))
+- Expand `super-linter` workflow permission to post to issues and PRs [#697](https://github.com/warrensbox/terraform-switcher/pull/697) ([Intuinewin](https://github.com/Intuinewin))
+- docs: Update CHANGELOG with `v1.14.0` [#707](https://github.com/warrensbox/terraform-switcher/pull/707) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.13.0](https://github.com/warrensbox/terraform-switcher/tree/v1.13.0) - 2025-12-15
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.12.0...v1.13.0)
