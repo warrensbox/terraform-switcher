@@ -1,10 +1,14 @@
 <!-- markdownlint-disable MD041 -->
 
 [![Build Status](https://github.com/warrensbox/terraform-switcher/actions/workflows/build.yml/badge.svg)](https://github.com/warrensbox/terraform-switcher/actions/workflows/build.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher)](https://goreportcard.com/report/github.com/warrensbox/terraform-switcher)
-![GitHub Release](https://img.shields.io/github/v/release/warrensbox/terraform-switcher)
+[![Super-Linter](https://github.com/warrensbox/terraform-switcher/actions/workflows/super-linter.yml/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![GitHub Release](https://img.shields.io/github/v/release/warrensbox/terraform-switcher)](https://github.com/warrensbox/terraform-switcher/releases/latest)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/warrensbox/terraform-switcher/total)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/warrensbox/terraform-switcher/latest/total)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/warrensbox/terraform-switcher)
+[![Go Report Card](https://goreportcard.com/badge/github.com/warrensbox/terraform-switcher)](https://goreportcard.com/report/github.com/warrensbox/terraform-switcher)
+[![GitHub contributors](https://img.shields.io/github/contributors/warrensbox/terraform-switcher)](https://github.com/warrensbox/terraform-switcher/graphs/contributors)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/warrensbox/terraform-switcher/issues/324)
 
 # Terraform Switcher
 
@@ -17,7 +21,7 @@ Once installed, simply select the version you require from the dropdown and star
 
 ## Documentation
 
-Click [here](https://tfswitch.warrensbox.com) for our extended documentation.
+Click [here](https://tfswitch.warrensbox.com) for our extended documentation. <!-- markdownlint-disable-line MD059 -->
 
 ## NOTE
 
