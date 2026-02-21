@@ -21,7 +21,7 @@ Once installed, simply select the version you require from the dropdown and star
 
 ## Documentation
 
-Click [here](https://tfswitch.warrensbox.com) for our extended documentation.
+Click [here](https://tfswitch.warrensbox.com) for our extended documentation. <!-- markdownlint-disable-line MD059 -->
 
 ## NOTE
 
