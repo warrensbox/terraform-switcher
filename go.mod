@@ -10,12 +10,12 @@ require (
 	github.com/gookit/slog v0.6.0
 	github.com/hashicorp/go-version v1.8.0
 	github.com/hashicorp/hcl/v2 v2.24.0
-	github.com/hashicorp/terraform-config-inspect v0.0.0-20250401063509-d2d12f9a63bb
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pborman/getopt v1.1.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
+	github.com/zclconf/go-cty v1.16.3
 	golang.org/x/sys v0.41.0
 	golang.org/x/term v0.40.0
 )
@@ -32,7 +32,6 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/gookit/goutil v0.7.1 // indirect
 	github.com/gookit/gsr v0.1.1 // indirect
-	github.com/hashicorp/hcl v1.0.1-vault-7 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
@@ -45,7 +44,6 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
-	github.com/zclconf/go-cty v1.16.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.45.0 // indirect
 	golang.org/x/exp v0.0.0-20240531132922-fd00a4e0eefc // indirect
