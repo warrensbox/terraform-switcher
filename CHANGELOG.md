@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v1.14.0](https://github.com/warrensbox/terraform-switcher/tree/v1.14.0) - 2026-02-21
+## [v1.14.0](https://github.com/warrensbox/terraform-switcher/tree/v1.14.0) - 2026-02-22
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.13.0...v1.14.0)
 
