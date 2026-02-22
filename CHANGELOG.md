@@ -7,6 +7,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.14.0](https://github.com/warrensbox/terraform-switcher/tree/v1.14.0) - 2026-02-22
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.13.0...v1.14.0)
+
+### Added
+
+- feat(versiontf): handle tofu files [#696](https://github.com/warrensbox/terraform-switcher/pull/696) ([Intuinewin](https://github.com/Intuinewin))
+
+### Other
+
+- chore: Apply `go fix ./...` [#706](https://github.com/warrensbox/terraform-switcher/pull/706) ([yermulnik](https://github.com/yermulnik))
+- chore: Improve integration tests GHA workflow [#702](https://github.com/warrensbox/terraform-switcher/pull/702) ([yermulnik](https://github.com/yermulnik))
+- Expand `super-linter` workflow permission to post to issues and PRs [#697](https://github.com/warrensbox/terraform-switcher/pull/697) ([Intuinewin](https://github.com/Intuinewin))
+- docs: Update CHANGELOG with `v1.14.0` [#707](https://github.com/warrensbox/terraform-switcher/pull/707) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.13.0](https://github.com/warrensbox/terraform-switcher/tree/v1.13.0) - 2025-12-15
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.12.0...v1.13.0)
@@ -317,7 +332,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - docs: Update CHANGELOG with `v1.2.0-alpha2` [#479](https://github.com/warrensbox/terraform-switcher/pull/479) ([yermulnik](https://github.com/yermulnik))
 
-### This release (v1.2.0) containes changes from v1.2.0-alpha2, v1.2.0-alpha1 and v1.2.0-alpha
+### This release (v1.2.0) contains changes from v1.2.0-alpha2, v1.2.0-alpha1 and v1.2.0-alpha
 
 #### v1.2.0-alpha2
 
@@ -328,7 +343,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - RECENT to JSON Proposal [#437](https://github.com/warrensbox/terraform-switcher/pull/437) ([MatrixCrawler](https://github.com/MatrixCrawler))
 - Convert recent file to json [#436](https://github.com/warrensbox/terraform-switcher/pull/436) ([MatthewJohn](https://github.com/MatthewJohn))
 - OpenTofu support and JSON recentFile support [#435](https://github.com/warrensbox/terraform-switcher/pull/435) ([MatthewJohn](https://github.com/MatthewJohn))
-- Check version sources based on whether verison has been set [#429](https://github.com/warrensbox/terraform-switcher/pull/429) ([MatthewJohn](https://github.com/MatthewJohn))
+- Check version sources based on whether version has been set [#429](https://github.com/warrensbox/terraform-switcher/pull/429) ([MatthewJohn](https://github.com/MatthewJohn))
 - 154 feature request option to dry run [#416](https://github.com/warrensbox/terraform-switcher/pull/416) ([MatrixCrawler](https://github.com/MatrixCrawler))
 
 ### Fixed
@@ -350,7 +365,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - Add debug logging when successfully obtaining parameter from location… [#464](https://github.com/warrensbox/terraform-switcher/pull/464) ([MatthewJohn](https://github.com/MatthewJohn))
 - Add TOML configuration and environment variable for "default version" [#463](https://github.com/warrensbox/terraform-switcher/pull/463) ([MatthewJohn](https://github.com/MatthewJohn))
-- feat: Allow for case-insensitve matching of products [#458](https://github.com/warrensbox/terraform-switcher/pull/458) ([MatthewJohn](https://github.com/MatthewJohn))
+- feat: Allow for case-insensitive matching of products [#458](https://github.com/warrensbox/terraform-switcher/pull/458) ([MatthewJohn](https://github.com/MatthewJohn))
 
 ### Fixed
 
@@ -371,7 +386,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - RECENT to JSON Proposal [#437](https://github.com/warrensbox/terraform-switcher/pull/437) ([MatrixCrawler](https://github.com/MatrixCrawler))
 - Convert recent file to json [#436](https://github.com/warrensbox/terraform-switcher/pull/436) ([MatthewJohn](https://github.com/MatthewJohn))
 - OpenTofu support and JSON recentFile support [#435](https://github.com/warrensbox/terraform-switcher/pull/435) ([MatthewJohn](https://github.com/MatthewJohn))
-- Check version sources based on whether verison has been set [#429](https://github.com/warrensbox/terraform-switcher/pull/429) ([MatthewJohn](https://github.com/MatthewJohn))
+- Check version sources based on whether version has been set [#429](https://github.com/warrensbox/terraform-switcher/pull/429) ([MatthewJohn](https://github.com/MatthewJohn))
 - 154 feature request option to dry run [#416](https://github.com/warrensbox/terraform-switcher/pull/416) ([MatrixCrawler](https://github.com/MatrixCrawler))
 
 ### Fixed
@@ -407,7 +422,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - Add debug logging when successfully obtaining parameter from location… [#464](https://github.com/warrensbox/terraform-switcher/pull/464) ([MatthewJohn](https://github.com/MatthewJohn))
 - Add TOML configuration and environment variable for "default version" [#463](https://github.com/warrensbox/terraform-switcher/pull/463) ([MatthewJohn](https://github.com/MatthewJohn))
-- feat: Allow for case-insensitve matching of products [#458](https://github.com/warrensbox/terraform-switcher/pull/458) ([MatthewJohn](https://github.com/MatthewJohn))
+- feat: Allow for case-insensitive matching of products [#458](https://github.com/warrensbox/terraform-switcher/pull/458) ([MatthewJohn](https://github.com/MatthewJohn))
 
 ### Fixed
 
@@ -430,7 +445,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - RECENT to JSON Proposal [#437](https://github.com/warrensbox/terraform-switcher/pull/437) ([MatrixCrawler](https://github.com/MatrixCrawler))
 - Convert recent file to json [#436](https://github.com/warrensbox/terraform-switcher/pull/436) ([MatthewJohn](https://github.com/MatthewJohn))
 - OpenTofu support and JSON recentFile support [#435](https://github.com/warrensbox/terraform-switcher/pull/435) ([MatthewJohn](https://github.com/MatthewJohn))
-- Check version sources based on whether verison has been set [#429](https://github.com/warrensbox/terraform-switcher/pull/429) ([MatthewJohn](https://github.com/MatthewJohn))
+- Check version sources based on whether version has been set [#429](https://github.com/warrensbox/terraform-switcher/pull/429) ([MatthewJohn](https://github.com/MatthewJohn))
 - 154 feature request option to dry run [#416](https://github.com/warrensbox/terraform-switcher/pull/416) ([MatrixCrawler](https://github.com/MatrixCrawler))
 
 ### Fixed
@@ -531,7 +546,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - Testing new pipeline [#336](https://github.com/warrensbox/terraform-switcher/pull/336) ([warrensbox](https://github.com/warrensbox))
 - Fix/move circle GitHub ci [#335](https://github.com/warrensbox/terraform-switcher/pull/335) ([warrensbox](https://github.com/warrensbox))
 - Use Windows User Directory for bin path [#327](https://github.com/warrensbox/terraform-switcher/pull/327) ([MatrixCrawler](https://github.com/MatrixCrawler))
-- Refactor re-use of PLATFORM [#321](https://github.com/warrensbox/terraform-switcher/pull/321) ([eternityduck](https://github.com/eternityduck))
+- Refactor reuse of PLATFORM [#321](https://github.com/warrensbox/terraform-switcher/pull/321) ([eternityduck](https://github.com/eternityduck))
 - Use go-homedir.Dir() everywhere [#314](https://github.com/warrensbox/terraform-switcher/pull/314) ([kim0](https://github.com/kim0))
 - Make leading slash optional in regex when looking for versions [#313](https://github.com/warrensbox/terraform-switcher/pull/313) ([tusv](https://github.com/tusv))
 - Fix init function [#297](https://github.com/warrensbox/terraform-switcher/pull/297) ([jukie](https://github.com/jukie))
@@ -583,7 +598,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Other
 
 - Fix repo - update documentation [#253](https://github.com/warrensbox/terraform-switcher/pull/253) ([warrensbox](https://github.com/warrensbox))
-- adjust regex to get all terraform versinos from mirror [#251](https://github.com/warrensbox/terraform-switcher/pull/251) ([chrispruitt](https://github.com/chrispruitt))
+- adjust regex to get all terraform versions from mirror [#251](https://github.com/warrensbox/terraform-switcher/pull/251) ([chrispruitt](https://github.com/chrispruitt))
 - :bug: Corrected bad installations if user doesn't input 2 dots in ver… [#249](https://github.com/warrensbox/terraform-switcher/pull/249) ([afreyermuth98](https://github.com/afreyermuth98))
 - [Fix] Fail CircleCI pipeline on errors [#246](https://github.com/warrensbox/terraform-switcher/pull/246) ([yermulnik](https://github.com/yermulnik))
 
