@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Other
 
+- chore: Add more badges to README and suppress `super-linter` output on success [#708](https://github.com/warrensbox/terraform-switcher/pull/708) ([yermulnik](https://github.com/yermulnik))
 - chore: Apply `go fix ./...` [#706](https://github.com/warrensbox/terraform-switcher/pull/706) ([yermulnik](https://github.com/yermulnik))
 - chore: Improve integration tests GHA workflow [#702](https://github.com/warrensbox/terraform-switcher/pull/702) ([yermulnik](https://github.com/yermulnik))
 - Expand `super-linter` workflow permission to post to issues and PRs [#697](https://github.com/warrensbox/terraform-switcher/pull/697) ([Intuinewin](https://github.com/Intuinewin))
