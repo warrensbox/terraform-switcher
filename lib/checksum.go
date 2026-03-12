@@ -2,6 +2,7 @@ package lib
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"io"
@@ -9,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ProtonMail/gopenpgp/v3/crypto"
+	openpgp "github.com/ProtonMail/go-crypto/openpgp"
 )
 
 // getChecksumFromFile Extract the checksum from the signature file
@@ -74,15 +75,9 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 		return false
 	}
 
-	keyFromArmored, err := crypto.NewKeyFromArmored(string(keyFileContent))
+	entities, err := openpgp.ReadArmoredKeyRing(bytes.NewReader(keyFileContent))
 	if err != nil {
 		logger.Errorf("Could not read PGP armored key: %v", err)
-		return false
-	}
-
-	signingKey, err := crypto.PGP().Verify().VerificationKey(keyFromArmored).New()
-	if err != nil {
-		logger.Errorf("Could not read PGP signing key: %v", err)
 		return false
 	}
 
@@ -98,13 +93,8 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 		return false
 	}
 
-	verifyRes, err := signingKey.VerifyDetached(hashFileContent, signatureContent, crypto.Auto)
+	_, _, err = openpgp.VerifyDetachedSignature(entities, bytes.NewReader(hashFileContent), bytes.NewReader(signatureContent), nil)
 	if err != nil {
-		logger.Errorf("Could not verify detached signature PGP message: %v", err)
-		return false
-	}
-
-	if err := verifyRes.SignatureError(); err != nil {
 		logger.Errorf("Could not verify PGP signature: %v", err)
 		return false
 	}
