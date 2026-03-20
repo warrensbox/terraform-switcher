@@ -5,7 +5,7 @@ go 1.25.0
 toolchain go1.25.7
 
 require (
-	github.com/ProtonMail/gopenpgp/v3 v3.3.0
+	github.com/ProtonMail/gopenpgp/v3 v3.4.0
 	github.com/gookit/color v1.6.0
 	github.com/gookit/slog v0.6.0
 	github.com/hashicorp/go-version v1.8.0
@@ -21,7 +21,7 @@ require (
 )
 
 require (
-	github.com/ProtonMail/go-crypto v1.3.0 // indirect
+	github.com/ProtonMail/go-crypto v1.4.1 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
