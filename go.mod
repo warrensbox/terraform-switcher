@@ -8,7 +8,7 @@ require (
 	github.com/ProtonMail/gopenpgp/v3 v3.4.0
 	github.com/gookit/color v1.6.0
 	github.com/gookit/slog v0.6.0
-	github.com/hashicorp/go-version v1.8.0
+	github.com/hashicorp/go-version v1.9.0
 	github.com/hashicorp/hcl/v2 v2.24.0
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mitchellh/go-homedir v1.1.0
