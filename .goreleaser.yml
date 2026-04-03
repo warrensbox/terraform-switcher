@@ -46,53 +46,37 @@ archives:
       - goos: windows
         formats: ['zip']
 
-brews:
+homebrew_casks:
   -
     # Name of the recipe
     # Default to project name
     name: tfswitch
 
-    # GitHub/GitLab repository to push the formula to
-    # Gitea is not supported yet, but the support coming
+    license: MIT
+
+    # Repository to push the tap to
     repository:
       owner: warrensbox
       name: homebrew-tap
       token: "{{ .Env.PERSONAL_ACCESS_TOKEN }}"
 
-    # Reporitory to push the tap to.
-    # github:
-    #   owner: warrensbox
-    #   name: homebrew-tap
-
-    # Allows you to set a custom download strategy.
-    # Default is empty.
-    #download_strategy: GitHubPrivateRepositoryReleaseDownloadStrategy
-
-    # Git author used to commit to the repository.
-    # Defaults are shown.
+    # Git author used to commit to the repository
     commit_author:
       name: Warren Veerasingam
       email: warren.veerasingam@gmail.com
 
-    # Folder inside the repository to put the formula.
-    # Default is the root folder.
-    directory: Formula
-
-    # Caveats for the user of your binary.
-    # Default is empty.
+    # Caveats for the user of your binary
     caveats: "Type 'tfswitch' on your command line and choose Terraform version that you want from the dropdown"
 
-    # Your app's homepage.
-    # Default is empty.
+    # App's homepage
     homepage: "https://warrensbox.github.io/terraform-switcher"
 
-    # Your app's description.
-    # Default is empty.
+    # App's description
     description: "The tfswitch command lets you switch between terraform versions."
 
-    # Packages that conflict with your package.
+    # Packages that conflict with your package
     conflicts:
-      - terraform
+      - cask: terraform
 
     # Setting this will prevent goreleaser to actually try to commit the updated
     # formula - instead, the formula file will be stored on the dist folder only,
@@ -100,16 +84,17 @@ brews:
     # Default is false.
     skip_upload: false
 
-    # So you can `brew test` your formula.
-    # Default is empty.
-    test: |
-      system "#{bin}/tfswitch --version"
-    # Custom install script for brew.
-    # Default is 'bin.install "program"'.
-    install: |
-      bin.install "tfswitch"
-      bash_completion.install "tfswitch-completion.bash" => "tfswitch"
-      fish_completion.install "tfswitch-completion.fish" => "tfswitch.fish"
+    completions:
+      bash: "completions/tfswitch.bash"
+      fish: "completions/tfswitch.fish"
+
+    hooks:
+      post:
+        # macOS: remove the quarantine bit from the binary
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/tfswitch"]
+          end
 
 changelog:
   # Set this to true if you don't want any changelog at all.

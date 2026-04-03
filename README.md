@@ -44,6 +44,9 @@ See the [release page](https://github.com/warrensbox/terraform-switcher/releases
 
 For macOS or various Linux distributions, Homebrew offers the simplest installation process. <a href="https://brew.sh/" target="_blank">If you do not have Homebrew installed, click here</a>.
 
+> [!IMPORTANT] Homebrew on Linux (formerly referred to as Linuxbrew)
+> :warning: _Requires at least Homebrew [v5.0.6](https://github.com/Homebrew/brew/releases/tag/5.0.6) (released Dec 16, 2025)_
+
 ```shell
 brew install warrensbox/tap/tfswitch
 ```
