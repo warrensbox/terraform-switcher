@@ -154,7 +154,7 @@ changelog:
   groups:
     - title: Features
       order: 0
-      regexp: '^.*?feat(ure)?(\([[:word:]-]+\))??!?:.+$'
+      regexp: '^.*?feat(ure)?(\([[:word:]-]+\))??!?:.+$'  # codespell:ignore ure
     - title: "Bug fixes"
       order: 1
       regexp: '^.*?(bug(fix)?|fix)(\([[:word:]-]+\))??!?:.+$'
