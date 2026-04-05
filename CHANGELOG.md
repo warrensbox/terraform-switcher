@@ -7,6 +7,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.16.0](https://github.com/warrensbox/terraform-switcher/tree/v1.16.0) - 2026-04-05
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.15.0...v1.16.0)
+
+### Added
+
+- feat(goreleaser/homebrew): Migrate from Formula to Cask [#732](https://github.com/warrensbox/terraform-switcher/pull/732) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.16.0` [#719](https://github.com/warrensbox/terraform-switcher/pull/733) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.15.0](https://github.com/warrensbox/terraform-switcher/tree/v1.15.0) - 2026-03-06
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.14.0...v1.15.0)
