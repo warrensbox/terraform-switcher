@@ -5,7 +5,7 @@
 _tfswitch() {
 	local cur prev
 	cur=${COMP_WORDS[COMP_CWORD]}
-	prev=${COMP_WORDS[COMP_CWORD - 1]}
+	prev=${COMP_WORDS[COMP_CWORD-1]}
 
 	if [[ ${cur} == -* ]]; then
 		COMPREPLY=($(compgen -W "$(tfswitch --help 2>&1 | grep -Eo '[[:space:]]+(-{1,2}[a-zA-Z0-9-]+)')" -- "$cur"))
