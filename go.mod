@@ -17,7 +17,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/zclconf/go-cty v1.18.0
 	golang.org/x/sys v0.43.0
-	golang.org/x/term v0.41.0
+	golang.org/x/term v0.42.0
 )
 
 require (
