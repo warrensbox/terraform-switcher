@@ -9,7 +9,6 @@ import (
 	"github.com/gookit/color"
 	"github.com/gookit/slog"
 	"github.com/gookit/slog/handler"
-	"golang.org/x/term"
 )
 
 var (
@@ -57,7 +56,7 @@ func isColorLogging() bool {
 		return false
 	} else if color.SupportColor() {
 		if os.Getenv("FORCE_COLOR") == "" {
-			return term.IsTerminal(int(os.Stdout.Fd()))
+			return isTerminal()
 		}
 		return true
 	}
