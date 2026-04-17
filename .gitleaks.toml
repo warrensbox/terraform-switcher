@@ -1,0 +1,3 @@
+[[allowlist.regexes]]
+description = "Ignore cf-beacon test token"
+regex = '''cf-beacon.*token.*abcdef[0-9a-f]*'''
