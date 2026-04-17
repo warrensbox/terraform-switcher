@@ -92,7 +92,6 @@ func RemoveDuplicateStrings(slice []string) []string {
 }
 
 // isTerminal : Determines if user is running in an interactive terminal
-
 func isTerminal() bool {
 	var fdToInt = func(fd uintptr) (int, error) {
 		if fd > uintptr(^uint(0)>>1) {
