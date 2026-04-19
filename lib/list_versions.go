@@ -133,12 +133,27 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, ver
 		return "", fmt.Errorf("Error getting list of versions from %q: %v", mirrorURL, errTFList)
 	}
 
-	version = fmt.Sprintf("~> %v", version)
-	semv, err := SemVerParser(&version, tflist)
-	if err != nil {
-		return "", err
+	if preRelease {
+		// @TODO version is not regex escaped, meaning 1.2.3 will match 1a2b3
+		semver := version + regexSemVer.PreReleaseSuffix.String()
+		r, errReSemVer := regexp.Compile(semver)
+		if errReSemVer != nil {
+			return "", errReSemVer
+		}
+		for _, versionItx := range tflist {
+			if r.MatchString(versionItx) {
+				return versionItx, nil
+			}
+		}
+	} else {
+		version = fmt.Sprintf("~> %v", version)
+		semv, err := SemVerParser(&version, tflist)
+		if err != nil {
+			return "", err
+		}
+		return semv, nil
 	}
-	return semv, nil
+	return "", nil
 }
 
 // getTFURLBody : Get list of versions from the mirror URL
