@@ -7,7 +7,10 @@ import (
 	"net/http"
 	"reflect"
 	"regexp"
+	"sort"
 	"strings"
+
+	"github.com/hashicorp/go-version"
 )
 
 type tfVersionList struct {
@@ -45,11 +48,28 @@ func getVersionsFromJson(product Product, body string, preRelease bool, tfVersio
 		logger.Fatalf("Error compiling %q regex: %v", semver, err)
 		return err
 	}
-	for _, version := range versionList {
-		if r.MatchString(version) {
-			tfVersionList.tflist = append(tfVersionList.tflist, version)
+	for _, versionItx := range versionList {
+		if r.MatchString(versionItx) {
+			logger.Warnf("Adding version: %s", versionItx)
+			tfVersionList.tflist = append(tfVersionList.tflist, versionItx)
 		}
 	}
+
+	// Sort versions
+	sort.Slice(tfVersionList.tflist, func(i, j int) bool {
+		iVersion, err := version.NewSemver(tfVersionList.tflist[i])
+		if err != nil {
+			logger.Warn("Failed to parse version: %s", tfVersionList.tflist[i])
+			return true
+		}
+		jVersion, err := version.NewSemver(tfVersionList.tflist[j])
+		if err != nil {
+			logger.Warn("Failed to parse version: %s", tfVersionList.tflist[j])
+			return false
+		}
+		return iVersion.GreaterThan(jVersion)
+	})
+
 	return nil
 }
 
