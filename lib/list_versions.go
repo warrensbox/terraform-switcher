@@ -48,26 +48,25 @@ func getVersionsFromJson(product Product, body string, preRelease bool, tfVersio
 		logger.Fatalf("Error compiling %q regex: %v", semver, err)
 		return err
 	}
+
+	parsedVersions := make([]*version.Version, 0, len(versionList))
 	for _, versionItx := range versionList {
+		// Sanity check that it matches our regex
+		// Could be removed in future, perhaps, if we switch to Hashicorp library entirely.
 		if r.MatchString(versionItx) {
-			tfVersionList.tflist = append(tfVersionList.tflist, versionItx)
+			parsedVersion, err := version.NewSemver(versionItx)
+			if err != nil {
+				continue
+			}
+			parsedVersions = append(parsedVersions, parsedVersion)
 		}
 	}
 
-	// Sort versions
-	sort.Slice(tfVersionList.tflist, func(i, j int) bool {
-		iVersion, err := version.NewVersion(tfVersionList.tflist[i])
-		if err != nil {
-			logger.Warn("Failed to parse version: %s", tfVersionList.tflist[i])
-			return true
-		}
-		jVersion, err := version.NewVersion(tfVersionList.tflist[j])
-		if err != nil {
-			logger.Warn("Failed to parse version: %s", tfVersionList.tflist[j])
-			return false
-		}
-		return !iVersion.LessThan(jVersion)
-	})
+	// Sort versions and store in tflist
+	sort.Sort(version.Collection(parsedVersions))
+	for itx := range parsedVersions {
+		tfVersionList.tflist = append(tfVersionList.tflist, parsedVersions[len(parsedVersions)-(itx+1)].Original())
+	}
 
 	return nil
 }
