@@ -57,6 +57,7 @@ const (
 
 // TestGetTFList : Get list from hashicorp
 func TestGetTFList(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	product := GetProductById("terraform")
 	list, err := getTFList(product, hashiURL, true)
 	if err != nil {
