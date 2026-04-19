@@ -153,6 +153,7 @@ func getMockListVersionServer(config MockListVersionServerConfig) *httptest.Serv
 
 // TestGetVersionsFromBodyHashicorp :  test hashicorp release body
 func TestGetVersionsFromBodyHashicorp(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	var testTfVersionList tfVersionList
 	getVersionsFromBody(hashicorpBody, false, &testTfVersionList)
 	expectedVersion := []string{"0.12.2", "0.12.1", "0.12.0", "0.11.13"}
@@ -171,6 +172,7 @@ func TestGetVersionsFromBodyHashicorp(t *testing.T) {
 
 // TestGetVersionsFromBodyOpenTofu :  test OpenTofu release body
 func TestGetVersionsFromBodyOpenTofu(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	var testTfVersionList tfVersionList
 	getVersionsFromBody(openTofuBody, false, &testTfVersionList)
 	expectedVersion := []string{"1.7.0", "1.6.2"}
@@ -189,6 +191,7 @@ func TestGetVersionsFromBodyOpenTofu(t *testing.T) {
 
 // TestGetVersionFromJsonTerraform
 func TestGetVersionFromJsonTerraform(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	var testTfVersionList tfVersionList
 	product := GetProductById("terraform")
 	getVersionsFromJson(product, hashicorpJsonData, false, &testTfVersionList)
@@ -208,6 +211,7 @@ func TestGetVersionFromJsonTerraform(t *testing.T) {
 
 // TestGetVersionFromJsonOpentofu
 func TestGetVersionFromJsonOpentofu(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	var testTfVersionList tfVersionList
 	product := GetProductById("opentofu")
 	getVersionsFromJson(product, openTofuJsonData, false, &testTfVersionList)
@@ -227,6 +231,7 @@ func TestGetVersionFromJsonOpentofu(t *testing.T) {
 
 // TestGetTFLatest : Test getTFLatest
 func TestGetTFLatest(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	tests := []struct { // Define a struct for each test case and create a slice of them
 		name           string
 		product        Product
@@ -258,6 +263,7 @@ func TestGetTFLatest(t *testing.T) {
 
 // TestGetTFLatestImplicit : Test getTFLatestImplicit
 func TestGetTFLatestImplicit(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	type versionTest struct {
 		version         string
 		preRelease      bool
@@ -332,6 +338,7 @@ func TestGetTFLatestImplicit(t *testing.T) {
 
 // TestGetTFURLBody :  Test getTFURLBody method
 func TestGetTFURLBody(t *testing.T) {
+	logger = InitLogger("DEBUG")
 	server := getMockListVersionServer(MockListVersionServerConfig{true, false, false, false})
 	defer server.Close()
 
