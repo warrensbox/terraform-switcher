@@ -89,7 +89,13 @@ func (p TerraformProduct) GetArchivePrefix() string {
 
 // nolint:revive // FIXME: var-naming: method GetArtifactUrl should be GetArtifactURL (revive)
 func (p TerraformProduct) GetArtifactUrl(mirrorURL string, version string) string {
-	downloadUrl := p.DefaultDownloadMirror
+	// Backwards compatible with old tests
+	downloadUrl := p.DefaultMirror
+
+	// Use default download mirror, if set (it should be in all cases)
+	if p.DefaultDownloadMirror != "" {
+		downloadUrl = p.DefaultDownloadMirror
+	}
 
 	// If the actual mirror is not the default, use this mirror for downloading
 	if mirrorURL != p.DefaultMirror {
@@ -170,6 +176,7 @@ func (p OpenTofuProduct) GetArchivePrefix() string {
 
 // nolint:revive // FIXME: parameter 'mirrorURL' is not used (custom Mirror URL is not implemented for OpenTofu? 10-Mar-2025)
 // nolint:revive // FIXME: var-naming: method GetArtifactUrl should be GetArtifactURL (revive)
+// @TODO For a future release, use user-provided mirror, as we ONLY allow downloading via public OpenTofu URL
 func (p OpenTofuProduct) GetArtifactUrl(mirrorURL string, version string) string {
 	return fmt.Sprintf("%s/v%s", p.DefaultDownloadMirror, version)
 }
