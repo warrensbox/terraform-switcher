@@ -240,8 +240,8 @@ func TestGetTFLatest(t *testing.T) {
 	}{
 		{"Hashicorp JSON", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpJson: true}, "terraform/index.json", "0.12.2"},
 		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpList: true}, "hashicorp", "0.12.2"},
-		{"Opentofu JSON", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuJson: true}, "tofu/api.json", "0.12.2"},
-		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuList: true}, "opentofu/", "0.12.2"},
+		{"Opentofu JSON", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuJson: true}, "tofu/api.json", "1.7.0"},
+		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuList: true}, "opentofu/", "1.7.0"},
 	}
 
 	for _, tt := range tests {
@@ -275,7 +275,7 @@ func TestGetTFLatestImplicit(t *testing.T) {
 			expectedVersion: "0.12.2",
 		},
 		{
-			version:         "0.11.0",
+			version:         "0.11",
 			preRelease:      false,
 			expectedVersion: "0.12.2",
 		},
@@ -289,17 +289,17 @@ func TestGetTFLatestImplicit(t *testing.T) {
 		{
 			version:         "1.7.0",
 			preRelease:      false,
-			expectedVersion: "",
+			expectedVersion: "1.7.0",
 		},
 		{
-			version:         "1.6.0",
+			version:         "1.6",
 			preRelease:      false,
-			expectedVersion: "",
+			expectedVersion: "1.7.0",
 		},
 		{
 			version:         "1.7",
 			preRelease:      true,
-			expectedVersion: "",
+			expectedVersion: "1.7.1-beta1",
 		},
 	}
 	tests := []struct {
@@ -309,8 +309,8 @@ func TestGetTFLatestImplicit(t *testing.T) {
 		url          string
 		versionTests []versionTest
 	}{
-		{"Hashicorp JSON", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpJson: true}, "hashicorp", hashicorpVersions},
-		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpList: true}, "terraform/index.json", hashicorpVersions},
+		{"Hashicorp JSON", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpJson: true}, "terraform/index.json", hashicorpVersions},
+		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpList: true}, "hashicorp/", hashicorpVersions},
 		{"Opentofu JSON", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuJson: true}, "tofu/api.json", opentofuVersions},
 		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuList: true}, "opentofu/", opentofuVersions},
 	}
