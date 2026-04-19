@@ -50,14 +50,14 @@ type Product interface {
 	GetRecentVersionProduct(recentFile *RecentFile) []string
 	SetRecentVersionProduct(recentFile *RecentFile, versions []string)
 	GetFileExtensions() []string
-	GetVersionsFromJson(body []byte) ([]string, error)
+	GetVersionsFromJSON(body []byte) ([]string, error)
 }
 
 // Terraform Product
 
 // Struct representing Terraform JSON:
 // https://releases.hashicorp.com/terraform/index.json
-type TerraformVersionJson struct {
+type TerraformVersionJSON struct {
 	Versions map[string]struct{} `json:"versions"`
 }
 
@@ -99,8 +99,8 @@ func (p TerraformProduct) GetArtifactUrl(mirrorURL string, version string) strin
 	return fmt.Sprintf("%s/%s", downloadUrl, version)
 }
 
-func (b TerraformProduct) GetVersionsFromJson(body []byte) ([]string, error) {
-	var versions TerraformVersionJson
+func (p TerraformProduct) GetVersionsFromJSON(body []byte) ([]string, error) {
+	var versions TerraformVersionJSON
 	err := json.Unmarshal(body, &versions)
 	if err != nil {
 		return nil, err
@@ -136,9 +136,9 @@ func (p TerraformProduct) GetFileExtensions() []string {
 // OpenTofu methods
 // Struct representing OpenTofu JSON:
 // https://get.opentofu.org/tofu/api.json
-type OpenTofuVersionJson struct {
+type OpenTofuVersionJSON struct {
 	Versions []struct {
-		Id string `json:"id"`
+		ID string `json:"id"`
 	} `json:"versions"`
 }
 
@@ -191,15 +191,15 @@ func (p OpenTofuProduct) GetRecentVersionProduct(recentFile *RecentFile) []strin
 	return recentFile.OpenTofu
 }
 
-func (b OpenTofuProduct) GetVersionsFromJson(body []byte) ([]string, error) {
-	var versionsData OpenTofuVersionJson
+func (p OpenTofuProduct) GetVersionsFromJSON(body []byte) ([]string, error) {
+	var versionsData OpenTofuVersionJSON
 	err := json.Unmarshal(body, &versionsData)
 	if err != nil {
 		return nil, err
 	}
 	var versions []string
 	for _, v := range versionsData.Versions {
-		versions = append(versions, v.Id)
+		versions = append(versions, v.ID)
 	}
 	return versions, nil
 }

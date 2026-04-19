@@ -31,8 +31,8 @@ var regexSemVer = struct {
 	PreReleaseSuffix: regexp.MustCompile(`\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?`),
 }
 
-func getVersionsFromJson(product Product, body string, preRelease bool, tfVersionList *tfVersionList) error {
-	versionList, err := product.GetVersionsFromJson([]byte(body))
+func getVersionsFromJSON(product Product, body string, preRelease bool, tfVersionList *tfVersionList) error {
+	versionList, err := product.GetVersionsFromJSON([]byte(body))
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func getTFList(product Product, mirrorURL string, preRelease bool) ([]string, er
 	}
 
 	var tfVerList tfVersionList
-	err = getVersionsFromJson(product, body, preRelease, &tfVerList)
+	err = getVersionsFromJSON(product, body, preRelease, &tfVerList)
 	if err != nil {
 		getVersionsFromBody(body, preRelease, &tfVerList)
 	}
