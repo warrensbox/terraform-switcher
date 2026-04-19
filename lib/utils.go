@@ -8,7 +8,6 @@ import (
 	"runtime"
 
 	"github.com/pborman/getopt"
-	"golang.org/x/term"
 )
 
 // FileExistsAndIsNotDir checks if a file exists and is not a directory before we try using it to prevent further errors
@@ -89,23 +88,4 @@ func RemoveDuplicateStrings(slice []string) []string {
 		}
 	}
 	return res
-}
-
-// isTerminal : Determines if user is running in an interactive terminal
-func isTerminal() bool {
-	var fdToInt = func(fd uintptr) (int, error) {
-		if fd > uintptr(^uint(0)>>1) {
-			return 0, fmt.Errorf("file descriptor overflow")
-		}
-		return int(fd), nil
-	}
-
-	stdinFd, err1 := fdToInt(os.Stdin.Fd())
-	stdoutFd, err2 := fdToInt(os.Stdout.Fd())
-
-	if err1 != nil || err2 != nil {
-		return false
-	}
-
-	return !term.IsTerminal(stdinFd) || !term.IsTerminal(stdoutFd)
 }

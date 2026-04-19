@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/manifoldco/promptui"
+	"golang.org/x/term"
 
 	"github.com/hashicorp/go-version"
 )
@@ -360,7 +361,7 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 		}
 
 		/* prompt user to select version of product */
-		if !isTerminal() {
+		if !term.IsTerminal(int(os.Stdin.Fd())) || !term.IsTerminal(int(os.Stdout.Fd())) {
 			//nolint:revive // error-strings: error strings should not be capitalized or end with punctuation or a newline (revive)
 			return errors.New("Interactive prompt is not meant for non-interactive terminal (please use command line flags in such case)")
 		}
