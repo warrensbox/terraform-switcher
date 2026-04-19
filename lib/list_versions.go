@@ -34,19 +34,19 @@ func getVersionsFromJson(product Product, body string, preRelease bool, tfVersio
 		return err
 	}
 	var semver string
-	// Without the ending '"' pre-release folders would be tried and break.
 	if preRelease {
 		semver = regexSemVer.Full.String()
-	} else if !preRelease {
+	} else {
 		semver = regexSemVer.Patch.String()
 	}
+	semver = "^" + semver + "$"
 	r, err := regexp.Compile(semver)
 	if err != nil {
 		logger.Fatalf("Error compiling %q regex: %v", semver, err)
 		return err
 	}
 	for _, version := range versionList {
-		if r.Match([]byte(version)) {
+		if r.MatchString(version) {
 			tfVersionList.tflist = append(tfVersionList.tflist, version)
 		}
 	}
