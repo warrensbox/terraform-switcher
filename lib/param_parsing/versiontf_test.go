@@ -15,7 +15,9 @@ func TestGetVersionFromVersionsTF_matches_version(t *testing.T) {
 	var getVerErr error
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_versiontf"
-	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
+	params.Product = "terraform"
+	params.ProductEntity = lib.GetProductById(params.Product)
+	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, getVerErr = GetVersionFromVersionsTF(params)
 	if getVerErr != nil {
 		t.Errorf("Error getting version from Terraform module: %v", getVerErr)
@@ -40,7 +42,8 @@ func TestGetVersionFromVersionsTF_matches_version_opentofu(t *testing.T) {
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_versiontf_opentofu"
 	params.Product = "opentofu"
-	params.MirrorURL = lib.GetProductById("opentofu").GetDefaultMirrorUrl()
+	params.ProductEntity = lib.GetProductById(params.Product)
+	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, getVerErr = GetVersionFromVersionsTF(params)
 	if getVerErr != nil {
 		t.Errorf("Error getting version from OpenTofu module: %v", getVerErr)
@@ -63,7 +66,9 @@ func TestGetVersionFromVersionsTF_impossible_constraints(t *testing.T) {
 	var params Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_matching_constraints"
-	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
+	params.Product = "terraform"
+	params.ProductEntity = lib.GetProductById(params.Product)
+	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
 	expectedError := "Did not find version matching constraint: ~> 1.0.0, =1.0.5, <= 1.0.4"
 	if err == nil {
@@ -82,7 +87,9 @@ func TestGetVersionFromVersionsTF_erroneous_file(t *testing.T) {
 	var params Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_error"
-	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
+	params.Product = "opentofu"
+	params.ProductEntity = lib.GetProductById(params.Product)
+	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
 	if err == nil {
 		t.Error("Expected error got nil")
@@ -99,7 +106,9 @@ func TestGetVersionFromVersionsTF_non_existent_constraint(t *testing.T) {
 	var params Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_existent"
-	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
+	params.Product = "opentofu"
+	params.ProductEntity = lib.GetProductById(params.Product)
+	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
 	if err == nil {
 		t.Error("Expected error got nil")

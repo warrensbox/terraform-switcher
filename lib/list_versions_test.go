@@ -234,8 +234,8 @@ func TestGetTFLatest(t *testing.T) {
 		url            string
 		expectedLatest string
 	}{
-		{"Hashicorp JSON", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpJson: true}, "hashicorp", "0.12.2"},
-		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpList: true}, "hashicorp/index.json", "0.12.2"},
+		{"Hashicorp JSON", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpJson: true}, "hashicorp/index.json", "0.12.2"},
+		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpList: true}, "hashicorp", "0.12.2"},
 		{"Opentofu JSON", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuJson: true}, "tofu/api.json", "0.12.2"},
 		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuList: true}, "opentofu/", "0.12.2"},
 	}
