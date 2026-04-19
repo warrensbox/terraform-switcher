@@ -32,9 +32,9 @@ func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionL
 	var semver string
 	// Without the ending '"' pre-release folders would be tried and break.
 	if preRelease {
-		semver = `\/` + regexSemVer.Full.String() + `/"`
+		semver = `\/?` + regexSemVer.Full.String() + `/?"`
 	} else if !preRelease {
-		semver = `\/` + regexSemVer.Patch.String() + `\/"`
+		semver = `\/?` + regexSemVer.Patch.String() + `\/?"`
 	}
 	r, err := regexp.Compile(semver)
 	if err != nil {
