@@ -15,7 +15,8 @@ func TestGetVersionFromTerragrunt(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_terragrunt_hcl"
-	params.ProductEntity = lib.GetProductById("terraform")
+	params.Product = "terraform"
+	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
@@ -46,7 +47,8 @@ func TestGetVersionFromTerragrunt_root_hcl(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_terragrunt_root_hcl"
-	params.ProductEntity = lib.GetProductById("terraform")
+	params.Product = "terraform"
+	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
@@ -78,7 +80,8 @@ func TestGetVersionFromTerragrunt_with_env_var(t *testing.T) {
 	os.Setenv("TF_TERRAGRUNT_CONFIG_FILE_NAME", "custom.hcl")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_terragrunt_hcl"
-	params.ProductEntity = lib.GetProductById("terraform")
+	params.Product = "terraform"
+	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
@@ -112,7 +115,8 @@ func TestGetVersionFromTerragrunt_with_env_var_non_existing_file(t *testing.T) {
 	os.Setenv("TF_TERRAGRUNT_CONFIG_FILE_NAME", "nonexisting_file.hcl")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_terragrunt_hcl"
-	params.ProductEntity = lib.GetProductById("terraform")
+	params.Product = "terraform"
+	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
@@ -143,6 +147,9 @@ func TestGetVersionTerragrunt_with_no_terragrunt_file(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_no_file"
+	params.Product = "terraform"
+	setupProductParam(&params)
+	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -157,6 +164,9 @@ func TestGetVersionTerragrunt_with_no_version(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_terragrunt_no_version"
+	params.Product = "terraform"
+	setupProductParam(&params)
+	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -171,7 +181,8 @@ func TestGetVersionFromTerragrunt_erroneous_file(t *testing.T) {
 	logger = lib.InitLogger("DEBUG")
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_terragrunt_error_hcl"
-	params.ProductEntity = lib.GetProductById("terraform")
+	params.Product = "terraform"
+	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromTerragrunt(params)
 	if err != nil {

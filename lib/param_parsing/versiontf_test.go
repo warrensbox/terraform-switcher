@@ -16,7 +16,7 @@ func TestGetVersionFromVersionsTF_matches_version(t *testing.T) {
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_versiontf"
 	params.Product = "terraform"
-	params.ProductEntity = lib.GetProductById(params.Product)
+	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, getVerErr = GetVersionFromVersionsTF(params)
 	if getVerErr != nil {
@@ -42,7 +42,7 @@ func TestGetVersionFromVersionsTF_matches_version_opentofu(t *testing.T) {
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/integration-tests/test_versiontf_opentofu"
 	params.Product = "opentofu"
-	params.ProductEntity = lib.GetProductById(params.Product)
+	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, getVerErr = GetVersionFromVersionsTF(params)
 	if getVerErr != nil {
@@ -67,7 +67,7 @@ func TestGetVersionFromVersionsTF_impossible_constraints(t *testing.T) {
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_matching_constraints"
 	params.Product = "terraform"
-	params.ProductEntity = lib.GetProductById(params.Product)
+	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
 	expectedError := "Did not find version matching constraint: ~> 1.0.0, =1.0.5, <= 1.0.4"
@@ -88,7 +88,7 @@ func TestGetVersionFromVersionsTF_erroneous_file(t *testing.T) {
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_error"
 	params.Product = "opentofu"
-	params.ProductEntity = lib.GetProductById(params.Product)
+	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
 	if err == nil {
@@ -107,7 +107,7 @@ func TestGetVersionFromVersionsTF_non_existent_constraint(t *testing.T) {
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_existent"
 	params.Product = "opentofu"
-	params.ProductEntity = lib.GetProductById(params.Product)
+	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
 	if err == nil {
