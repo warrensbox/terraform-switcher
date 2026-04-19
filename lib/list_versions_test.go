@@ -344,7 +344,7 @@ func TestGetTFLatestImplicit(t *testing.T) {
 // TestGetTFURLBody :  Test getTFURLBody method
 func TestGetTFURLBody(t *testing.T) {
 	logger = InitLogger("DEBUG")
-	server := getMockListVersionServer(MockListVersionServerConfig{true, false, false, false})
+	server := getMockListVersionServer(MockListVersionServerConfig{EnableHashicorpList: true})
 	defer server.Close()
 
 	body, err := getTFURLBody(fmt.Sprintf("%s/%s", server.URL, "hashicorp"))
