@@ -71,7 +71,7 @@ func install(product Product, dryRun, showRequiredFlag bool, tfversion, binPath,
 
 	// If the requested version had not been downloaded before,
 	// set list all true - all versions including beta and rc will be displayed
-	tflist, errTFList := getTFList(mirrorURL, true) // Get list of versions
+	tflist, errTFList := getTFList(product, mirrorURL, true) // Get list of versions
 	if errTFList != nil {
 		return fmt.Errorf("Error getting list of %s versions from %q: %v", product.GetName(), mirrorURL, errTFList)
 	}
@@ -238,7 +238,7 @@ func InstallLatestVersion(dryRun, showRequiredFlag bool, customBinaryPath, insta
 // InstallLatestProductVersion install latest stable tf version
 func InstallLatestProductVersion(product Product, dryRun, showRequiredFlag bool, customBinaryPath, installPath, mirrorURL, arch string) error {
 	logger.Infof("Latest version requested explicitly")
-	tfversion, err := getTFLatest(mirrorURL)
+	tfversion, err := getTFLatest(product, mirrorURL)
 	if err != nil {
 		return fmt.Errorf("Error getting latest %s version from %q: %v", product.GetName(), mirrorURL, err)
 	}
@@ -263,7 +263,7 @@ func InstallLatestProductImplicitVersion(product Product, dryRun, showRequiredFl
 		// @TODO Should this return an error?
 		logger.Errorf("Error parsing constraint %q: %v", requestedVersion, err)
 	}
-	tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
+	tfversion, err := getTFLatestImplicit(product, mirrorURL, preRelease, requestedVersion)
 	if err == nil && tfversion != "" {
 		if errInstall := install(product, dryRun, showRequiredFlag, tfversion, customBinaryPath, installPath, mirrorURL, arch); errInstall != nil {
 			return fmt.Errorf("Error installing %s version %q: %v", product.GetName(), tfversion, errInstall)
@@ -324,7 +324,7 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 		var selectVersions []VersionSelector
 
 		// Get all available versions from remote
-		tfList, errTFList := getTFList(mirrorURL, listAll)
+		tfList, errTFList := getTFList(product, mirrorURL, listAll)
 		if errTFList != nil {
 			return fmt.Errorf("Error getting list of %s versions from %q: %v", product.GetName(), mirrorURL, errTFList)
 		}
@@ -390,7 +390,7 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 		logger.Infof("Selected %s version: %s", product.GetName(), selectedVersion)
 	} else {
 		var errGetLatest error
-		selectedVersion, errGetLatest = getTFLatest(mirrorURL)
+		selectedVersion, errGetLatest = getTFLatest(product, mirrorURL)
 		if errGetLatest != nil {
 			return fmt.Errorf("Error getting latest %s version from %q: %v", product.GetName(), mirrorURL, errGetLatest)
 		}

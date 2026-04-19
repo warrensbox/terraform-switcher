@@ -28,6 +28,31 @@ var regexSemVer = struct {
 	PreReleaseSuffix: regexp.MustCompile(`\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?`),
 }
 
+func getVersionsFromJson(product Product, body string, preRelease bool, tfVersionList *tfVersionList) error {
+	versionList, err := product.GetVersionsFromJson([]byte(body))
+	if err != nil {
+		return err
+	}
+	var semver string
+	// Without the ending '"' pre-release folders would be tried and break.
+	if preRelease {
+		semver = regexSemVer.Full.String()
+	} else if !preRelease {
+		semver = regexSemVer.Patch.String()
+	}
+	r, err := regexp.Compile(semver)
+	if err != nil {
+		logger.Fatalf("Error compiling %q regex: %v", semver, err)
+		return err
+	}
+	for _, version := range versionList {
+		if r.Match([]byte(version)) {
+			tfVersionList.tflist = append(tfVersionList.tflist, version)
+		}
+	}
+	return nil
+}
+
 func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionList) {
 	var semver string
 	// Without the ending '"' pre-release folders would be tried and break.
@@ -52,15 +77,18 @@ func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionL
 }
 
 // getTFList : Get the list of available versions given the mirror URL
-func getTFList(mirrorURL string, preRelease bool) ([]string, error) {
+func getTFList(product Product, mirrorURL string, preRelease bool) ([]string, error) {
 	logger.Debug("Getting list of versions")
-	result, err := getTFURLBody(mirrorURL)
+	body, err := getTFURLBody(mirrorURL)
 	if err != nil {
 		return nil, err
 	}
 
 	var tfVerList tfVersionList
-	getVersionsFromBody(result, preRelease, &tfVerList)
+	err = getVersionsFromJson(product, body, preRelease, &tfVerList)
+	if err != nil {
+		getVersionsFromBody(body, preRelease, &tfVerList)
+	}
 
 	if len(tfVerList.tflist) == 0 {
 		logger.Errorf("Cannot get version list from mirror: %s", mirrorURL)
@@ -69,71 +97,37 @@ func getTFList(mirrorURL string, preRelease bool) ([]string, error) {
 }
 
 // getTFLatest : Get the latest version given the mirror URL
-func getTFLatest(mirrorURL string) (string, error) {
-	result, err := getTFURLBody(mirrorURL)
+func getTFLatest(product Product, mirrorURL string) (string, error) {
+	versions, err := getTFList(product, mirrorURL, false)
 	if err != nil {
 		return "", err
 	}
-	// Getting versions from body; should return match /X.X.X/ where X is a number
-	semver := `\/?` + regexSemVer.Patch.String() + `\/?"`
-	r, errSemVer := regexp.Compile(semver)
-	if errSemVer != nil {
-		return "", fmt.Errorf("Error compiling %q regex: %v", semver, errSemVer)
+	if len(versions) == 0 {
+		return "", fmt.Errorf("No Versions available")
 	}
-	bodyLines := strings.Split(result, "\n")
-	for i := range result {
-		if r.MatchString(bodyLines[i]) {
-			str := r.FindString(bodyLines[i])
-			trimstr := strings.Trim(str, "/\"") // remove '/' or '"' from /X.X.X/" or /X.X.X"
-			return trimstr, nil
-		}
-	}
-	return "", nil
+	return versions[len(versions)-1], nil
 }
 
 // getTFLatestImplicit : Get the latest implicit version given the mirror URL
-func getTFLatestImplicit(mirrorURL string, preRelease bool, version string) (string, error) {
-	if preRelease {
-		// TODO: use getTFList() instead of getTFURLBody
-		body, err := getTFURLBody(mirrorURL)
-		if err != nil {
-			return "", err
-		}
-		// Getting versions from body; should return match /X.X.X-@/ where X is a number,@ is a word character between a-z or A-Z
-		semver := `\/?` + version + regexSemVer.PreReleaseSuffix.String() + `\/?"`
-		r, errReSemVer := regexp.Compile(semver)
-		if errReSemVer != nil {
-			return "", errReSemVer
-		}
-		versions := strings.Split(body, "\n")
-		for i := range versions {
-			if r.MatchString(versions[i]) {
-				str := r.FindString(versions[i])
-				trimstr := strings.Trim(str, "/\"") // remove '/' or '"' from /X.X.X/" or /X.X.X"
-				return trimstr, nil
-			}
-		}
-	} else if !preRelease {
-		listAll := false
-		tflist, errTFList := getTFList(mirrorURL, listAll) // get list of versions
-		if errTFList != nil {
-			return "", fmt.Errorf("Error getting list of versions from %q: %v", mirrorURL, errTFList)
-		}
-
-		version = fmt.Sprintf("~> %v", version)
-		semv, err := SemVerParser(&version, tflist)
-		if err != nil {
-			return "", err
-		}
-		return semv, nil
+func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, version string) (string, error) {
+	tflist, errTFList := getTFList(product, mirrorURL, preRelease) // get list of versions
+	if errTFList != nil {
+		return "", fmt.Errorf("Error getting list of versions from %q: %v", mirrorURL, errTFList)
 	}
-	return "", nil
+
+	version = fmt.Sprintf("~> %v", version)
+	semv, err := SemVerParser(&version, tflist)
+	if err != nil {
+		return "", err
+	}
+	return semv, nil
 }
 
 // getTFURLBody : Get list of versions from the mirror URL
 func getTFURLBody(mirrorURL string) (string, error) {
 	hasSlash := strings.HasSuffix(mirrorURL, "/")
-	if !hasSlash {
+	isJson := strings.HasSuffix(mirrorURL, ".json")
+	if !hasSlash && !isJson {
 		// if it does not have slash - append slash
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}
@@ -224,8 +218,8 @@ func IsValidVersionFormat(version string, validation ...*regexp.Regexp) bool {
 }
 
 // ShowLatestVersion : Show latest stable version given the mirror URL
-func ShowLatestVersion(mirrorURL string) {
-	tfversion, err := getTFLatest(mirrorURL)
+func ShowLatestVersion(product Product, mirrorURL string) {
+	tfversion, err := getTFLatest(product, mirrorURL)
 	if err != nil {
 		logger.Fatalf("Error getting latest version from %q: %v", mirrorURL, err)
 	}
@@ -234,9 +228,9 @@ func ShowLatestVersion(mirrorURL string) {
 }
 
 // ShowLatestImplicitVersion : show latest implicit version given the mirror URL
-func ShowLatestImplicitVersion(requestedVersion, mirrorURL string, preRelease bool) {
+func ShowLatestImplicitVersion(product Product, requestedVersion, mirrorURL string, preRelease bool) {
 	if validVersionFormat(requestedVersion, regexSemVer.Minor) || (validVersionFormat(requestedVersion, regexSemVer.Patch) && !preRelease) {
-		tfversion, err := getTFLatestImplicit(mirrorURL, preRelease, requestedVersion)
+		tfversion, err := getTFLatestImplicit(product, mirrorURL, preRelease, requestedVersion)
 		if err != nil {
 			logger.Fatalf("Error getting latest implicit version %q from %q: %v", requestedVersion, mirrorURL, err)
 		}

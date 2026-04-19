@@ -48,11 +48,16 @@ const (
 </body>
 </html>
 `
+
+	hashicorpJsonData = `{"name":"terraform","versions":{"0.11.13":{"builds":[{"arch":"amd64","filename":"terraform_0.11.13_darwin_amd64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_darwin_amd64.zip","version":"0.11.13"},{"arch":"arm64","filename":"terraform_0.11.13_darwin_arm64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_darwin_arm64.zip","version":"0.11.13"},{"arch":"386","filename":"terraform_0.11.13_freebsd_386.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_freebsd_386.zip","version":"0.11.13"},{"arch":"amd64","filename":"terraform_0.11.13_freebsd_amd64.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_freebsd_amd64.zip","version":"0.11.13"},{"arch":"arm","filename":"terraform_0.11.13_freebsd_arm.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_freebsd_arm.zip","version":"0.11.13"},{"arch":"386","filename":"terraform_0.11.13_linux_386.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_386.zip","version":"0.11.13"},{"arch":"amd64","filename":"terraform_0.11.13_linux_amd64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_amd64.zip","version":"0.11.13"},{"arch":"arm","filename":"terraform_0.11.13_linux_arm.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_arm.zip","version":"0.11.13"},{"arch":"arm64","filename":"terraform_0.11.13_linux_arm64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_linux_arm64.zip","version":"0.11.13"},{"arch":"386","filename":"terraform_0.11.13_openbsd_386.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_openbsd_386.zip","version":"0.11.13"},{"arch":"amd64","filename":"terraform_0.11.13_openbsd_amd64.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_openbsd_amd64.zip","version":"0.11.13"},{"arch":"amd64","filename":"terraform_0.11.13_solaris_amd64.zip","name":"terraform","os":"solaris","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_solaris_amd64.zip","version":"0.11.13"},{"arch":"386","filename":"terraform_0.11.13_windows_386.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_windows_386.zip","version":"0.11.13"},{"arch":"amd64","filename":"terraform_0.11.13_windows_amd64.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.11.13/terraform_0.11.13_windows_amd64.zip","version":"0.11.13"}],"name":"terraform","shasums":"terraform_0.11.13_SHA256SUMS","shasums_signature":"terraform_0.11.13_SHA256SUMS.sig","shasums_signatures":["terraform_0.11.13_SHA256SUMS.72D7468F.sig","terraform_0.11.13_SHA256SUMS.sig"],"version":"0.11.13"},"0.12.0-beta2":{"builds":[{"arch":"amd64","filename":"terraform_0.12.0-beta2_darwin_amd64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_darwin_amd64.zip","version":"0.12.0-beta2"},{"arch":"arm64","filename":"terraform_0.12.0-beta2_darwin_arm64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_darwin_arm64.zip","version":"0.12.0-beta2"},{"arch":"386","filename":"terraform_0.12.0-beta2_freebsd_386.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_freebsd_386.zip","version":"0.12.0-beta2"},{"arch":"amd64","filename":"terraform_0.12.0-beta2_freebsd_amd64.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_freebsd_amd64.zip","version":"0.12.0-beta2"},{"arch":"arm","filename":"terraform_0.12.0-beta2_freebsd_arm.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_freebsd_arm.zip","version":"0.12.0-beta2"},{"arch":"386","filename":"terraform_0.12.0-beta2_linux_386.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_linux_386.zip","version":"0.12.0-beta2"},{"arch":"amd64","filename":"terraform_0.12.0-beta2_linux_amd64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_linux_amd64.zip","version":"0.12.0-beta2"},{"arch":"arm","filename":"terraform_0.12.0-beta2_linux_arm.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_linux_arm.zip","version":"0.12.0-beta2"},{"arch":"arm64","filename":"terraform_0.12.0-beta2_linux_arm64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_linux_arm64.zip","version":"0.12.0-beta2"},{"arch":"386","filename":"terraform_0.12.0-beta2_openbsd_386.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_openbsd_386.zip","version":"0.12.0-beta2"},{"arch":"amd64","filename":"terraform_0.12.0-beta2_openbsd_amd64.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_openbsd_amd64.zip","version":"0.12.0-beta2"},{"arch":"amd64","filename":"terraform_0.12.0-beta2_solaris_amd64.zip","name":"terraform","os":"solaris","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_solaris_amd64.zip","version":"0.12.0-beta2"},{"arch":"386","filename":"terraform_0.12.0-beta2_windows_386.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_windows_386.zip","version":"0.12.0-beta2"},{"arch":"amd64","filename":"terraform_0.12.0-beta2_windows_amd64.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.0-beta2/terraform_0.12.0-beta2_windows_amd64.zip","version":"0.12.0-beta2"}],"name":"terraform","shasums":"terraform_0.12.0-beta2_SHA256SUMS","shasums_signature":"terraform_0.12.0-beta2_SHA256SUMS.sig","shasums_signatures":["terraform_0.12.0-beta2_SHA256SUMS.72D7468F.sig","terraform_0.12.0-beta2_SHA256SUMS.sig"],"version":"0.12.0-beta2"},"0.12.0-rc1":{"builds":[{"arch":"amd64","filename":"terraform_0.12.0-rc1_darwin_amd64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_darwin_amd64.zip","version":"0.12.0-rc1"},{"arch":"arm64","filename":"terraform_0.12.0-rc1_darwin_arm64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_darwin_arm64.zip","version":"0.12.0-rc1"},{"arch":"386","filename":"terraform_0.12.0-rc1_freebsd_386.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_freebsd_386.zip","version":"0.12.0-rc1"},{"arch":"amd64","filename":"terraform_0.12.0-rc1_freebsd_amd64.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_freebsd_amd64.zip","version":"0.12.0-rc1"},{"arch":"arm","filename":"terraform_0.12.0-rc1_freebsd_arm.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_freebsd_arm.zip","version":"0.12.0-rc1"},{"arch":"386","filename":"terraform_0.12.0-rc1_linux_386.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_linux_386.zip","version":"0.12.0-rc1"},{"arch":"amd64","filename":"terraform_0.12.0-rc1_linux_amd64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_linux_amd64.zip","version":"0.12.0-rc1"},{"arch":"arm","filename":"terraform_0.12.0-rc1_linux_arm.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_linux_arm.zip","version":"0.12.0-rc1"},{"arch":"arm64","filename":"terraform_0.12.0-rc1_linux_arm64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_linux_arm64.zip","version":"0.12.0-rc1"},{"arch":"386","filename":"terraform_0.12.0-rc1_openbsd_386.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_openbsd_386.zip","version":"0.12.0-rc1"},{"arch":"amd64","filename":"terraform_0.12.0-rc1_openbsd_amd64.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_openbsd_amd64.zip","version":"0.12.0-rc1"},{"arch":"amd64","filename":"terraform_0.12.0-rc1_solaris_amd64.zip","name":"terraform","os":"solaris","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_solaris_amd64.zip","version":"0.12.0-rc1"},{"arch":"386","filename":"terraform_0.12.0-rc1_windows_386.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_windows_386.zip","version":"0.12.0-rc1"},{"arch":"amd64","filename":"terraform_0.12.0-rc1_windows_amd64.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.0-rc1/terraform_0.12.0-rc1_windows_amd64.zip","version":"0.12.0-rc1"}],"name":"terraform","shasums":"terraform_0.12.0-rc1_SHA256SUMS","shasums_signature":"terraform_0.12.0-rc1_SHA256SUMS.sig","shasums_signatures":["terraform_0.12.0-rc1_SHA256SUMS.72D7468F.sig","terraform_0.12.0-rc1_SHA256SUMS.sig"],"version":"0.12.0-rc1"},"0.12.0":{"builds":[{"arch":"amd64","filename":"terraform_0.12.0_darwin_amd64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_darwin_amd64.zip","version":"0.12.0"},{"arch":"arm64","filename":"terraform_0.12.0_darwin_arm64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_darwin_arm64.zip","version":"0.12.0"},{"arch":"386","filename":"terraform_0.12.0_freebsd_386.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_freebsd_386.zip","version":"0.12.0"},{"arch":"amd64","filename":"terraform_0.12.0_freebsd_amd64.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_freebsd_amd64.zip","version":"0.12.0"},{"arch":"arm","filename":"terraform_0.12.0_freebsd_arm.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_freebsd_arm.zip","version":"0.12.0"},{"arch":"386","filename":"terraform_0.12.0_linux_386.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_linux_386.zip","version":"0.12.0"},{"arch":"amd64","filename":"terraform_0.12.0_linux_amd64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_linux_amd64.zip","version":"0.12.0"},{"arch":"arm","filename":"terraform_0.12.0_linux_arm.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_linux_arm.zip","version":"0.12.0"},{"arch":"arm64","filename":"terraform_0.12.0_linux_arm64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_linux_arm64.zip","version":"0.12.0"},{"arch":"386","filename":"terraform_0.12.0_openbsd_386.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_openbsd_386.zip","version":"0.12.0"},{"arch":"amd64","filename":"terraform_0.12.0_openbsd_amd64.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_openbsd_amd64.zip","version":"0.12.0"},{"arch":"amd64","filename":"terraform_0.12.0_solaris_amd64.zip","name":"terraform","os":"solaris","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_solaris_amd64.zip","version":"0.12.0"},{"arch":"386","filename":"terraform_0.12.0_windows_386.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_windows_386.zip","version":"0.12.0"},{"arch":"amd64","filename":"terraform_0.12.0_windows_amd64.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.0/terraform_0.12.0_windows_amd64.zip","version":"0.12.0"}],"name":"terraform","shasums":"terraform_0.12.0_SHA256SUMS","shasums_signature":"terraform_0.12.0_SHA256SUMS.sig","shasums_signatures":["terraform_0.12.0_SHA256SUMS.72D7468F.sig","terraform_0.12.0_SHA256SUMS.sig"],"version":"0.12.0"},"0.12.1":{"builds":[{"arch":"amd64","filename":"terraform_0.12.1_darwin_amd64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_darwin_amd64.zip","version":"0.12.1"},{"arch":"arm64","filename":"terraform_0.12.1_darwin_arm64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_darwin_arm64.zip","version":"0.12.1"},{"arch":"386","filename":"terraform_0.12.1_freebsd_386.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_freebsd_386.zip","version":"0.12.1"},{"arch":"amd64","filename":"terraform_0.12.1_freebsd_amd64.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_freebsd_amd64.zip","version":"0.12.1"},{"arch":"arm","filename":"terraform_0.12.1_freebsd_arm.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_freebsd_arm.zip","version":"0.12.1"},{"arch":"386","filename":"terraform_0.12.1_linux_386.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_linux_386.zip","version":"0.12.1"},{"arch":"amd64","filename":"terraform_0.12.1_linux_amd64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_linux_amd64.zip","version":"0.12.1"},{"arch":"arm","filename":"terraform_0.12.1_linux_arm.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_linux_arm.zip","version":"0.12.1"},{"arch":"arm64","filename":"terraform_0.12.1_linux_arm64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_linux_arm64.zip","version":"0.12.1"},{"arch":"386","filename":"terraform_0.12.1_openbsd_386.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_openbsd_386.zip","version":"0.12.1"},{"arch":"amd64","filename":"terraform_0.12.1_openbsd_amd64.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_openbsd_amd64.zip","version":"0.12.1"},{"arch":"amd64","filename":"terraform_0.12.1_solaris_amd64.zip","name":"terraform","os":"solaris","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_solaris_amd64.zip","version":"0.12.1"},{"arch":"386","filename":"terraform_0.12.1_windows_386.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_windows_386.zip","version":"0.12.1"},{"arch":"amd64","filename":"terraform_0.12.1_windows_amd64.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.1/terraform_0.12.1_windows_amd64.zip","version":"0.12.1"}],"name":"terraform","shasums":"terraform_0.12.1_SHA256SUMS","shasums_signature":"terraform_0.12.1_SHA256SUMS.sig","shasums_signatures":["terraform_0.12.1_SHA256SUMS.72D7468F.sig","terraform_0.12.1_SHA256SUMS.sig"],"version":"0.12.1"},"0.12.2":{"builds":[{"arch":"amd64","filename":"terraform_0.12.2_darwin_amd64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_darwin_amd64.zip","version":"0.12.2"},{"arch":"arm64","filename":"terraform_0.12.2_darwin_arm64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_darwin_arm64.zip","version":"0.12.2"},{"arch":"386","filename":"terraform_0.12.2_freebsd_386.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_freebsd_386.zip","version":"0.12.2"},{"arch":"amd64","filename":"terraform_0.12.2_freebsd_amd64.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_freebsd_amd64.zip","version":"0.12.2"},{"arch":"arm","filename":"terraform_0.12.2_freebsd_arm.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_freebsd_arm.zip","version":"0.12.2"},{"arch":"386","filename":"terraform_0.12.2_linux_386.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_linux_386.zip","version":"0.12.2"},{"arch":"amd64","filename":"terraform_0.12.2_linux_amd64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_linux_amd64.zip","version":"0.12.2"},{"arch":"arm","filename":"terraform_0.12.2_linux_arm.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_linux_arm.zip","version":"0.12.2"},{"arch":"arm64","filename":"terraform_0.12.2_linux_arm64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_linux_arm64.zip","version":"0.12.2"},{"arch":"386","filename":"terraform_0.12.2_openbsd_386.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_openbsd_386.zip","version":"0.12.2"},{"arch":"amd64","filename":"terraform_0.12.2_openbsd_amd64.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_openbsd_amd64.zip","version":"0.12.2"},{"arch":"amd64","filename":"terraform_0.12.2_solaris_amd64.zip","name":"terraform","os":"solaris","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_solaris_amd64.zip","version":"0.12.2"},{"arch":"386","filename":"terraform_0.12.2_windows_386.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_windows_386.zip","version":"0.12.2"},{"arch":"amd64","filename":"terraform_0.12.2_windows_amd64.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_windows_amd64.zip","version":"0.12.2"}],"name":"terraform","shasums":"terraform_0.12.2_SHA256SUMS","shasums_signature":"terraform_0.12.2_SHA256SUMS.sig","shasums_signatures":["terraform_0.12.2_SHA256SUMS.72D7468F.sig","terraform_0.12.2_SHA256SUMS.sig"],"version":"0.12.2"},"0.12.3-beta1":{"builds":[{"arch":"amd64","filename":"terraform_0.12.3-beta1_darwin_amd64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_darwin_amd64.zip","version":"0.12.3-beta1"},{"arch":"arm64","filename":"terraform_0.12.3-beta1_darwin_arm64.zip","name":"terraform","os":"darwin","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_darwin_arm64.zip","version":"0.12.3-beta1"},{"arch":"386","filename":"terraform_0.12.3-beta1_freebsd_386.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_freebsd_386.zip","version":"0.12.3-beta1"},{"arch":"amd64","filename":"terraform_0.12.3-beta1_freebsd_amd64.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_freebsd_amd64.zip","version":"0.12.3-beta1"},{"arch":"arm","filename":"terraform_0.12.3-beta1_freebsd_arm.zip","name":"terraform","os":"freebsd","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_freebsd_arm.zip","version":"0.12.3-beta1"},{"arch":"386","filename":"terraform_0.12.3-beta1_linux_386.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_linux_386.zip","version":"0.12.3-beta1"},{"arch":"amd64","filename":"terraform_0.12.3-beta1_linux_amd64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_linux_amd64.zip","version":"0.12.3-beta1"},{"arch":"arm","filename":"terraform_0.12.3-beta1_linux_arm.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_linux_arm.zip","version":"0.12.3-beta1"},{"arch":"arm64","filename":"terraform_0.12.3-beta1_linux_arm64.zip","name":"terraform","os":"linux","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_linux_arm64.zip","version":"0.12.3-beta1"},{"arch":"386","filename":"terraform_0.12.3-beta1_openbsd_386.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_openbsd_386.zip","version":"0.12.3-beta1"},{"arch":"amd64","filename":"terraform_0.12.3-beta1_openbsd_amd64.zip","name":"terraform","os":"openbsd","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_openbsd_amd64.zip","version":"0.12.3-beta1"},{"arch":"amd64","filename":"terraform_0.12.3-beta1_solaris_amd64.zip","name":"terraform","os":"solaris","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_solaris_amd64.zip","version":"0.12.3-beta1"},{"arch":"386","filename":"terraform_0.12.3-beta1_windows_386.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_windows_386.zip","version":"0.12.3-beta1"},{"arch":"amd64","filename":"terraform_0.12.3-beta1_windows_amd64.zip","name":"terraform","os":"windows","url":"https://releases.hashicorp.com/terraform/0.12.3-beta1/terraform_0.12.3-beta1_windows_amd64.zip","version":"0.12.3-beta1"}],"name":"terraform","shasums":"terraform_0.12.3-beta1_SHA256SUMS","shasums_signature":"terraform_0.12.3-beta1_SHA256SUMS.sig","shasums_signatures":["terraform_0.12.3-beta1_SHA256SUMS.72D7468F.sig","terraform_0.12.3-beta1_SHA256SUMS.sig"],"version":"0.12.3-beta1"}}}`
+
+	openTofuJsonData = `{"versions":[{"id":"1.6.0-alpha1","files":["tofu_1.6.0-alpha1_386.apk","tofu_1.6.0-alpha1_386.deb","tofu_1.6.0-alpha1_386.rpm","tofu_1.6.0-alpha1_amd64.apk","tofu_1.6.0-alpha1_amd64.deb","tofu_1.6.0-alpha1_amd64.rpm","tofu_1.6.0-alpha1_arm.apk","tofu_1.6.0-alpha1_arm.deb","tofu_1.6.0-alpha1_arm.rpm","tofu_1.6.0-alpha1_arm64.apk","tofu_1.6.0-alpha1_arm64.deb","tofu_1.6.0-alpha1_arm64.rpm","tofu_1.6.0-alpha1_darwin_amd64.zip","tofu_1.6.0-alpha1_darwin_arm64.zip","tofu_1.6.0-alpha1_freebsd_386.zip","tofu_1.6.0-alpha1_freebsd_amd64.zip","tofu_1.6.0-alpha1_freebsd_arm.zip","tofu_1.6.0-alpha1_linux_386.zip","tofu_1.6.0-alpha1_linux_amd64.zip","tofu_1.6.0-alpha1_linux_arm.zip","tofu_1.6.0-alpha1_linux_arm64.zip","tofu_1.6.0-alpha1_openbsd_386.zip","tofu_1.6.0-alpha1_openbsd_amd64.zip","tofu_1.6.0-alpha1_SHA256SUMS","tofu_1.6.0-alpha1_SHA256SUMS.pem","tofu_1.6.0-alpha1_SHA256SUMS.sig","tofu_1.6.0-alpha1_solaris_amd64.zip","tofu_1.6.0-alpha1_windows_386.zip","tofu_1.6.0-alpha1_windows_amd64.zip"]}]}`
 )
 
 // TestGetTFList : Get list from hashicorp
 func TestGetTFList(t *testing.T) {
-	list, err := getTFList(hashiURL, true)
+	product := GetProductById("terraform")
+	list, err := getTFList(product, hashiURL, true)
 	if err != nil {
 		t.Errorf("Error getting list of versions from %q: %v", hashiURL, err)
 	}
@@ -90,20 +95,55 @@ func compareLists(actual []string, expected []string) error {
 	return nil
 }
 
-func getMockListVersionServer() *httptest.Server {
+type MockListVersionServerConfig struct {
+	EnableHashicorpList bool
+	EnableHashicorpJson bool
+	EnableOpentofuList  bool
+	EnableOpentofuJson  bool
+}
+
+func getMockListVersionServer(config MockListVersionServerConfig) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch strings.TrimSpace(r.URL.Path) {
 		case "/hashicorp/":
-			w.Header().Set("Content-Type", "text/html")
-			w.WriteHeader(http.StatusOK)
-			if _, err := w.Write([]byte(hashicorpBody)); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+			if config.EnableHashicorpList {
+				w.Header().Set("Content-Type", "text/html")
+				w.WriteHeader(http.StatusOK)
+				if _, err := w.Write([]byte(hashicorpBody)); err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+			} else {
+				http.NotFoundHandler().ServeHTTP(w, r)
+			}
+		case "/terraform/index.json":
+			if config.EnableHashicorpJson {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				if _, err := w.Write([]byte(hashicorpJsonData)); err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+			} else {
+				http.NotFoundHandler().ServeHTTP(w, r)
 			}
 		case "/opentofu/":
-			w.Header().Set("Content-Type", "text/html")
-			w.WriteHeader(http.StatusOK)
-			if _, err := w.Write([]byte(openTofuBody)); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+			if config.EnableOpentofuList {
+				w.Header().Set("Content-Type", "text/html")
+				w.WriteHeader(http.StatusOK)
+				if _, err := w.Write([]byte(openTofuBody)); err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+			} else {
+				http.NotFoundHandler().ServeHTTP(w, r)
+			}
+		case "/tofu/api.json":
+			if config.EnableOpentofuJson {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				if _, err := w.Write([]byte(openTofuJsonData)); err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+			} else {
+				http.NotFoundHandler().ServeHTTP(w, r)
 			}
 		default:
 			http.NotFoundHandler().ServeHTTP(w, r)
@@ -147,47 +187,152 @@ func TestGetVersionsFromBodyOpenTofu(t *testing.T) {
 	}
 }
 
+// TestGetVersionFromJsonTerraform
+func TestGetVersionFromJsonTerraform(t *testing.T) {
+	var testTfVersionList tfVersionList
+	product := GetProductById("terraform")
+	getVersionsFromJson(product, hashicorpJsonData, false, &testTfVersionList)
+	expectedVersion := []string{"0.12.2", "0.12.1", "0.12.0", "0.11.13"}
+	if err := compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", err)
+	}
+
+	// Test pre-release
+	var testTfVersionListPre tfVersionList
+	getVersionsFromJson(product, hashicorpJsonData, true, &testTfVersionListPre)
+	expectedVersion = []string{"0.12.3-beta1", "0.12.2", "0.12.1", "0.12.0", "0.12.0-rc1", "0.12.0-beta2", "0.11.13"}
+	if err := compareLists(testTfVersionListPre.tflist, expectedVersion); err != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", err)
+	}
+}
+
+// TestGetVersionFromJsonOpentofu
+func TestGetVersionFromJsonOpentofu(t *testing.T) {
+	var testTfVersionList tfVersionList
+	product := GetProductById("opentofu")
+	getVersionsFromJson(product, openTofuJsonData, false, &testTfVersionList)
+	expectedVersion := []string{"1.7.0", "1.6.2"}
+	if err := compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", err)
+	}
+
+	// Test pre-release
+	var testTfVersionListPre tfVersionList
+	getVersionsFromJson(product, openTofuJsonData, true, &testTfVersionListPre)
+	expectedVersion = []string{"1.7.1-beta1", "1.7.0", "1.7.0-rc1", "1.7.0-beta1", "1.7.0-alpha1", "1.6.2", "1.6.0-alpha1"}
+	if err := compareLists(testTfVersionListPre.tflist, expectedVersion); err != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", err)
+	}
+}
+
 // TestGetTFLatest : Test getTFLatest
 func TestGetTFLatest(t *testing.T) {
-	server := getMockListVersionServer()
-	defer server.Close()
-
-	version, err := getTFLatest(fmt.Sprintf("%s/%s", server.URL, "hashicorp"))
-	if err != nil {
-		t.Error(err)
+	tests := []struct { // Define a struct for each test case and create a slice of them
+		name           string
+		product        Product
+		serverConfig   MockListVersionServerConfig
+		url            string
+		expectedLatest string
+	}{
+		{"Hashicorp JSON", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpJson: true}, "hashicorp", "0.12.2"},
+		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpList: true}, "hashicorp/index.json", "0.12.2"},
+		{"Opentofu JSON", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuJson: true}, "tofu/api.json", "0.12.2"},
+		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuList: true}, "opentofu/", "0.12.2"},
 	}
-	expectedVersion := "0.12.2"
-	if version != expectedVersion {
-		t.Errorf("Expected latest version does not match. Expected: %s, actual: %s", expectedVersion, version)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server := getMockListVersionServer(tt.serverConfig)
+			defer server.Close()
+
+			version, err := getTFLatest(tt.product, fmt.Sprintf("%s/%s", server.URL, tt.url))
+			if err != nil {
+				t.Error(err)
+			}
+			if version != tt.expectedLatest {
+				t.Errorf("Expected latest version does not match. Expected: %s, actual: %s", tt.expectedLatest, version)
+			}
+		})
 	}
 }
 
 // TestGetTFLatestImplicit : Test getTFLatestImplicit
 func TestGetTFLatestImplicit(t *testing.T) {
-	logger = InitLogger("DEBUG")
-	tName := "version=%s_preRelease=%v"
-	t.Run(fmt.Sprintf(tName, "0.12.0", false), func(t *testing.T) { testGetTFLatestImplicit(t, "0.12.0", false, "0.12.2") })
-	t.Run(fmt.Sprintf(tName, "0.11", false), func(t *testing.T) { testGetTFLatestImplicit(t, "0.11", false, "0.12.2") })
-	t.Run(fmt.Sprintf(tName, "0.12", true), func(t *testing.T) { testGetTFLatestImplicit(t, "0.12", true, "0.12.3-beta1") })
-}
-
-func testGetTFLatestImplicit(t *testing.T, version string, preRelease bool, expectedVersion string) {
-	server := getMockListVersionServer()
-	defer server.Close()
-
-	version, err := getTFLatestImplicit(fmt.Sprintf("%s/%s", server.URL, "hashicorp"), preRelease, version)
-	if err != nil {
-		t.Error(err)
+	type versionTest struct {
+		version         string
+		preRelease      bool
+		expectedVersion string
 	}
-	if version != expectedVersion {
-		t.Errorf("Expected latest version does not match. Expected: %s, actual: %s", expectedVersion, version)
+	hashicorpVersions := []versionTest{
+		{
+			version:         "0.12.0",
+			preRelease:      false,
+			expectedVersion: "0.12.2",
+		},
+		{
+			version:         "0.11.0",
+			preRelease:      false,
+			expectedVersion: "0.12.2",
+		},
+		{
+			version:         "0.12",
+			preRelease:      true,
+			expectedVersion: "0.12.3-beta1",
+		},
 	}
-	t.Logf("Expected %q, actual: %q", expectedVersion, version)
+	opentofuVersions := []versionTest{
+		{
+			version:         "1.7.0",
+			preRelease:      false,
+			expectedVersion: "",
+		},
+		{
+			version:         "1.6.0",
+			preRelease:      false,
+			expectedVersion: "",
+		},
+		{
+			version:         "1.7",
+			preRelease:      true,
+			expectedVersion: "",
+		},
+	}
+	tests := []struct {
+		name         string
+		product      Product
+		serverConfig MockListVersionServerConfig
+		url          string
+		versionTests []versionTest
+	}{
+		{"Hashicorp JSON", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpJson: true}, "hashicorp", hashicorpVersions},
+		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpList: true}, "hashicorp/index.json", hashicorpVersions},
+		{"Opentofu JSON", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuJson: true}, "tofu/api.json", opentofuVersions},
+		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuList: true}, "opentofu/", opentofuVersions},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for _, tv := range tt.versionTests {
+				t.Run(fmt.Sprintf("version=%s,prerelease=%t", tv.version, tv.preRelease), func(t *testing.T) {
+					server := getMockListVersionServer(tt.serverConfig)
+					defer server.Close()
+
+					version, err := getTFLatestImplicit(tt.product, fmt.Sprintf("%s/%s", server.URL, tt.url), tv.preRelease, tv.version)
+					if err != nil {
+						t.Error(err)
+					}
+					if version != tv.expectedVersion {
+						t.Errorf("Expected latest version does not match. Expected: %s, actual: %s", tv.expectedVersion, version)
+					}
+				})
+			}
+		})
+	}
 }
 
 // TestGetTFURLBody :  Test getTFURLBody method
 func TestGetTFURLBody(t *testing.T) {
-	server := getMockListVersionServer()
+	server := getMockListVersionServer(MockListVersionServerConfig{true, false, false, false})
 	defer server.Close()
 
 	body, err := getTFURLBody(fmt.Sprintf("%s/%s", server.URL, "hashicorp"))
