@@ -134,8 +134,7 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, ver
 	}
 
 	if preRelease {
-		// @TODO version is not regex escaped, meaning 1.2.3 will match 1a2b3
-		semver := version + regexSemVer.PreReleaseSuffix.String()
+		semver := regexp.QuoteMeta(version) + regexSemVer.PreReleaseSuffix.String()
 		r, errReSemVer := regexp.Compile(semver)
 		if errReSemVer != nil {
 			return "", errReSemVer
