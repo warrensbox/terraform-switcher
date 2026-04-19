@@ -124,7 +124,7 @@ func getTFLatest(product Product, mirrorURL string) (string, error) {
 	if len(versions) == 0 {
 		return "", fmt.Errorf("No Versions available")
 	}
-	return versions[len(versions)-1], nil
+	return versions[0], nil
 }
 
 // getTFLatestImplicit : Get the latest implicit version given the mirror URL
