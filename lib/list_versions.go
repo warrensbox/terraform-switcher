@@ -159,8 +159,8 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, ver
 // getTFURLBody : Get list of versions from the mirror URL
 func getTFURLBody(mirrorURL string) (string, error) {
 	hasSlash := strings.HasSuffix(mirrorURL, "/")
-	isJson := strings.HasSuffix(mirrorURL, ".json")
-	if !hasSlash && !isJson {
+	isJSON := strings.HasSuffix(mirrorURL, ".json")
+	if !hasSlash && !isJSON {
 		// if it does not have slash - append slash
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}

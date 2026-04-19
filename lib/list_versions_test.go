@@ -198,8 +198,8 @@ func TestGetVersionFromJSONTerraform(t *testing.T) {
 	err := getVersionsFromJSON(product, hashicorpJSONData, false, &testTfVersionList)
 	assert.NoError(t, err)
 	expectedVersion := []string{"0.12.2", "0.12.1", "0.12.0", "0.11.13"}
-	if err := compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
-		t.Errorf("Parsed version does not match expected versions: %v", err)
+	if cmpErr := compareLists(testTfVersionList.tflist, expectedVersion); cmpErr != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", cmpErr)
 	}
 
 	// Test pre-release
@@ -207,8 +207,8 @@ func TestGetVersionFromJSONTerraform(t *testing.T) {
 	err = getVersionsFromJSON(product, hashicorpJSONData, true, &testTfVersionListPre)
 	assert.NoError(t, err)
 	expectedVersion = []string{"0.12.3-beta1", "0.12.2", "0.12.1", "0.12.0", "0.12.0-rc1", "0.12.0-beta2", "0.11.13"}
-	if err := compareLists(testTfVersionListPre.tflist, expectedVersion); err != nil {
-		t.Errorf("Parsed version does not match expected versions: %v", err)
+	if cmpErr := compareLists(testTfVersionListPre.tflist, expectedVersion); cmpErr != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", cmpErr)
 	}
 }
 
@@ -220,8 +220,8 @@ func TestGetVersionFromJSONOpentofu(t *testing.T) {
 	err := getVersionsFromJSON(product, openTofuJSONData, false, &testTfVersionList)
 	assert.NoError(t, err)
 	expectedVersion := []string{"1.7.0", "1.6.2"}
-	if err := compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
-		t.Errorf("Parsed version does not match expected versions: %v", err)
+	if cmpErr := compareLists(testTfVersionList.tflist, expectedVersion); cmpErr != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", cmpErr)
 	}
 
 	// Test pre-release
@@ -229,8 +229,8 @@ func TestGetVersionFromJSONOpentofu(t *testing.T) {
 	err = getVersionsFromJSON(product, openTofuJSONData, true, &testTfVersionListPre)
 	assert.NoError(t, err)
 	expectedVersion = []string{"1.7.1-beta1", "1.7.0", "1.7.0-rc1", "1.7.0-beta1", "1.7.0-alpha1", "1.6.2", "1.6.0-alpha1"}
-	if err := compareLists(testTfVersionListPre.tflist, expectedVersion); err != nil {
-		t.Errorf("Parsed version does not match expected versions: %v", err)
+	if cmpErr := compareLists(testTfVersionListPre.tflist, expectedVersion); cmpErr != nil {
+		t.Errorf("Parsed version does not match expected versions: %v", cmpErr)
 	}
 }
 

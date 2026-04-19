@@ -57,7 +57,7 @@ func isColorLogging() bool {
 		return false
 	} else if color.SupportColor() {
 		if os.Getenv("FORCE_COLOR") == "" {
-			return term.IsTerminal(int(os.Stdout.Fd()))
+			return term.IsTerminal(int(os.Stdout.Fd())) //nolint:gosec // G115: file descriptor from os.Stdout is always a valid small integer
 		}
 		return true
 	}
