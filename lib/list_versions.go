@@ -50,24 +50,23 @@ func getVersionsFromJson(product Product, body string, preRelease bool, tfVersio
 	}
 	for _, versionItx := range versionList {
 		if r.MatchString(versionItx) {
-			logger.Warnf("Adding version: %s", versionItx)
 			tfVersionList.tflist = append(tfVersionList.tflist, versionItx)
 		}
 	}
 
 	// Sort versions
 	sort.Slice(tfVersionList.tflist, func(i, j int) bool {
-		iVersion, err := version.NewSemver(tfVersionList.tflist[i])
+		iVersion, err := version.NewVersion(tfVersionList.tflist[i])
 		if err != nil {
 			logger.Warn("Failed to parse version: %s", tfVersionList.tflist[i])
 			return true
 		}
-		jVersion, err := version.NewSemver(tfVersionList.tflist[j])
+		jVersion, err := version.NewVersion(tfVersionList.tflist[j])
 		if err != nil {
 			logger.Warn("Failed to parse version: %s", tfVersionList.tflist[j])
 			return false
 		}
-		return iVersion.GreaterThan(jVersion)
+		return !iVersion.LessThan(jVersion)
 	})
 
 	return nil
