@@ -123,7 +123,7 @@ func getTFLatest(product Product, mirrorURL string) (string, error) {
 		return "", err
 	}
 	if len(versions) == 0 {
-		return "", fmt.Errorf("No versions available")
+		return "", fmt.Errorf("No versions matching predefined pattern are available at %s", mirrorURL)
 	}
 	return versions[0], nil
 }
