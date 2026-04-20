@@ -87,7 +87,7 @@ func TestGetVersionFromVersionsTF_erroneous_file(t *testing.T) {
 	var params Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_error"
-	params.Product = "opentofu"
+	params.Product = "terraform"
 	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
@@ -106,7 +106,7 @@ func TestGetVersionFromVersionsTF_non_existent_constraint(t *testing.T) {
 	var params Params
 	params = initParams(params)
 	params.ChDirPath = "../../test-data/skip-integration-tests/test_versiontf_non_existent"
-	params.Product = "opentofu"
+	params.Product = "terraform"
 	setupProductParam(&params)
 	params.MirrorURL = params.ProductEntity.GetDefaultMirrorUrl()
 	params, err := GetVersionFromVersionsTF(params)
