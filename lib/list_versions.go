@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"reflect"
 	"regexp"
-	"sort"
+	"slices"
 	"strings"
 
 	"github.com/hashicorp/go-version"
@@ -63,7 +63,9 @@ func getVersionsFromJSON(product Product, body string, preRelease bool, tfVersio
 	}
 
 	// Sort versions and store in tflist
-	sort.Sort(version.Collection(parsedVersions))
+	slices.SortFunc(parsedVersions, func(a *version.Version, b *version.Version) int {
+		return a.Compare(b)
+	})
 	for itx := range parsedVersions {
 		tfVersionList.tflist = append(tfVersionList.tflist, parsedVersions[len(parsedVersions)-(itx+1)].Original())
 	}
