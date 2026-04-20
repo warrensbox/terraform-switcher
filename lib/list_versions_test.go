@@ -98,9 +98,9 @@ func compareLists(actual []string, expected []string) error {
 }
 
 type MockListVersionServerConfig struct {
-	EnableHashicorpList bool
+	EnableHashicorpHTML bool
 	EnableHashicorpJSON bool
-	EnableOpentofuList  bool
+	EnableOpentofuHTML  bool
 	EnableOpentofuJSON  bool
 }
 
@@ -108,7 +108,7 @@ func getMockListVersionServer(config MockListVersionServerConfig) *httptest.Serv
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch strings.TrimSpace(r.URL.Path) {
 		case "/hashicorp/":
-			if config.EnableHashicorpList {
+			if config.EnableHashicorpHTML {
 				w.Header().Set("Content-Type", "text/html")
 				w.WriteHeader(http.StatusOK)
 				if _, err := w.Write([]byte(hashicorpBody)); err != nil {
@@ -128,7 +128,7 @@ func getMockListVersionServer(config MockListVersionServerConfig) *httptest.Serv
 				http.NotFoundHandler().ServeHTTP(w, r)
 			}
 		case "/opentofu/":
-			if config.EnableOpentofuList {
+			if config.EnableOpentofuHTML {
 				w.Header().Set("Content-Type", "text/html")
 				w.WriteHeader(http.StatusOK)
 				if _, err := w.Write([]byte(openTofuBody)); err != nil {
@@ -246,22 +246,22 @@ func TestGetTFLatest(t *testing.T) {
 		expectedLatest string
 	}{
 		{"Hashicorp JSON", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpJSON: true}, "terraform/index.json", "0.12.2"},
-		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpList: true}, "hashicorp", "0.12.2"},
+		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpHTML: true}, "hashicorp", "0.12.2"},
 		{"Opentofu JSON", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuJSON: true}, "tofu/api.json", "1.7.0"},
-		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuList: true}, "opentofu/", "1.7.0"},
+		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuHTML: true}, "opentofu/", "1.7.0"},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			server := getMockListVersionServer(tt.serverConfig)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			server := getMockListVersionServer(test.serverConfig)
 			defer server.Close()
 
-			version, err := getTFLatest(tt.product, fmt.Sprintf("%s/%s", server.URL, tt.url))
+			version, err := getTFLatest(test.product, fmt.Sprintf("%s/%s", server.URL, test.url))
 			if err != nil {
 				t.Error(err)
 			}
-			if version != tt.expectedLatest {
-				t.Errorf("Expected latest version does not match. Expected: %s, actual: %s", tt.expectedLatest, version)
+			if version != test.expectedLatest {
+				t.Errorf("Expected latest version does not match. Expected: %s, actual: %s", test.expectedLatest, version)
 			}
 		})
 	}
@@ -317,24 +317,24 @@ func TestGetTFLatestImplicit(t *testing.T) {
 		versionTests []versionTest
 	}{
 		{"Hashicorp JSON", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpJSON: true}, "terraform/index.json", hashicorpVersions},
-		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpList: true}, "hashicorp/", hashicorpVersions},
+		{"Hashicorp List", GetProductById("terraform"), MockListVersionServerConfig{EnableHashicorpHTML: true}, "hashicorp/", hashicorpVersions},
 		{"Opentofu JSON", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuJSON: true}, "tofu/api.json", opentofuVersions},
-		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuList: true}, "opentofu/", opentofuVersions},
+		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuHTML: true}, "opentofu/", opentofuVersions},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			for _, tv := range tt.versionTests {
-				t.Run(fmt.Sprintf("version=%s,prerelease=%t", tv.version, tv.preRelease), func(t *testing.T) {
-					server := getMockListVersionServer(tt.serverConfig)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			for _, versionTest := range test.versionTests {
+				t.Run(fmt.Sprintf("version=%s,prerelease=%t", versionTest.version, versionTest.preRelease), func(t *testing.T) {
+					server := getMockListVersionServer(test.serverConfig)
 					defer server.Close()
 
-					version, err := getTFLatestImplicit(tt.product, fmt.Sprintf("%s/%s", server.URL, tt.url), tv.preRelease, tv.version)
+					version, err := getTFLatestImplicit(test.product, fmt.Sprintf("%s/%s", server.URL, test.url), versionTest.preRelease, versionTest.version)
 					if err != nil {
 						t.Error(err)
 					}
-					if version != tv.expectedVersion {
-						t.Errorf("Expected latest version does not match. Expected: %s, actual: %s", tv.expectedVersion, version)
+					if version != versionTest.expectedVersion {
+						t.Errorf("Expected latest version does not match. Expected: %s, actual: %s", versionTest.expectedVersion, version)
 					}
 				})
 			}
@@ -345,7 +345,7 @@ func TestGetTFLatestImplicit(t *testing.T) {
 // TestGetTFURLBody :  Test getTFURLBody method
 func TestGetTFURLBody(t *testing.T) {
 	logger = InitLogger("DEBUG")
-	server := getMockListVersionServer(MockListVersionServerConfig{EnableHashicorpList: true})
+	server := getMockListVersionServer(MockListVersionServerConfig{EnableHashicorpHTML: true})
 	defer server.Close()
 
 	body, err := getTFURLBody(fmt.Sprintf("%s/%s", server.URL, "hashicorp"))

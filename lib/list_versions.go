@@ -125,6 +125,8 @@ func getTFLatest(product Product, mirrorURL string) (string, error) {
 	if len(versions) == 0 {
 		return "", fmt.Errorf("No versions matching predefined pattern are available at %s", mirrorURL)
 	}
+	// The list is ordered in ascending order, hence return the very
+	// first element which in this case is considered the "latest"
 	return versions[0], nil
 }
 
