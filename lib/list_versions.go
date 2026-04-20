@@ -50,11 +50,11 @@ func getVersionsFromJSON(product Product, body string, preRelease bool, tfVersio
 	}
 
 	parsedVersions := make([]*version.Version, 0, len(versionList))
-	for _, versionItx := range versionList {
+	for versionItem := range slices.Values(versionList) {
 		// Sanity check that it matches our regex
 		// Could be removed in future, perhaps, if we switch to Hashicorp library entirely.
-		if r.MatchString(versionItx) {
-			parsedVersion, err := version.NewSemver(versionItx)
+		if r.MatchString(versionItem) {
+			parsedVersion, err := version.NewSemver(versionItem)
 			if err != nil {
 				continue
 			}
@@ -66,8 +66,8 @@ func getVersionsFromJSON(product Product, body string, preRelease bool, tfVersio
 	slices.SortFunc(parsedVersions, func(a *version.Version, b *version.Version) int {
 		return a.Compare(b)
 	})
-	for itx := range parsedVersions {
-		tfVersionList.tflist = append(tfVersionList.tflist, parsedVersions[len(parsedVersions)-(itx+1)].Original())
+	for versionItem := range parsedVersions {
+		tfVersionList.tflist = append(tfVersionList.tflist, parsedVersions[len(parsedVersions)-(versionItem+1)].Original())
 	}
 
 	return nil
@@ -144,9 +144,9 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, ver
 		if errReSemVer != nil {
 			return "", errReSemVer
 		}
-		for _, versionItx := range tflist {
-			if r.MatchString(versionItx) {
-				return versionItx, nil
+		for _, versionItem := range tflist {
+			if r.MatchString(versionItem) {
+				return versionItem, nil
 			}
 		}
 	} else {
