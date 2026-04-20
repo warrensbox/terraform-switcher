@@ -56,6 +56,7 @@ func getVersionsFromJSON(product Product, body string, preRelease bool, tfVersio
 		if r.MatchString(versionItem) {
 			parsedVersion, err := version.NewSemver(versionItem)
 			if err != nil {
+				logger.Debug("Failed to parse version using go-version: \"%s\", skipping", versionItem)
 				continue
 			}
 			parsedVersions = append(parsedVersions, parsedVersion)
