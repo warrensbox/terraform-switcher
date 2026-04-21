@@ -1,3 +1,4 @@
+//nolint:staticcheck //ST1005: error strings should not be capitalized (staticcheck)
 package lib
 
 import (
