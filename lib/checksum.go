@@ -154,7 +154,7 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 	}
 
 	if err := verifyRes.SignatureError(); err != nil {
-		logger.Errorf("Could not verify PGP signature (tried %d keys): %v", len(keys), err)
+		logger.Errorf("Could not verify PGP signature using %d loaded keys from %q: %v", len(keys), keyFile.Name(), err)
 		return false
 	}
 

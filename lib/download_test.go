@@ -408,7 +408,7 @@ func TestDownloadProductFromURL_multiple_public_keys(t *testing.T) {
 	// has to skip past it and try the second one.
 	pgp4880 := crypto.PGPWithProfile(profile.RFC4880())
 	companionGen := pgp4880.KeyGeneration().AddUserId("TestProductCompanion", "companion@localhost.com").New()
-	companionKey, err := companionGen.GenerateKeyWithSecurity(constants.HighSecurity)
+	companionKey, err := companionGen.GenerateKeyWithSecurity(constants.StandardSecurity)
 	if err != nil {
 		t.Fatal(err)
 	}
