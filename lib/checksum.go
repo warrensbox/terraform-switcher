@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 
 	"github.com/ProtonMail/gopenpgp/v3/crypto"
@@ -121,20 +120,6 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 		return false
 	}
 
-	verifyBuilder := crypto.PGP().Verify()
-	// Parse every armored block from the key file and register each parsed key
-	// with verify handle builder. Successive VerificationKey() calls append
-	// to the builder's internal keyring, and the key matching the signature's
-	// KeyID is picked automatically.
-	for key := range slices.Values(keys) {
-		verifyBuilder = verifyBuilder.VerificationKey(key)
-	}
-	signingKey, err := verifyBuilder.New()
-	if err != nil {
-		logger.Errorf("Could not read PGP signing key: %v", err)
-		return false
-	}
-
 	hashFileContent, err := io.ReadAll(hashFile)
 	if err != nil {
 		logger.Errorf("Could not read hash file %q: %v", hashFile.Name(), err)
@@ -147,17 +132,43 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 		return false
 	}
 
-	verifyRes, err := signingKey.VerifyDetached(hashFileContent, signatureContent, crypto.Auto)
-	if err != nil {
-		logger.Errorf("Could not verify detached signature PGP message: %v", err)
-		return false
+	// Try each parsed key in its own verify handle rather than loading them all
+	// into a single keyring. HashiCorp's pgp-key.txt publishes the legacy and
+	// renewed blocks with identical primary fingerprint and identical signing
+	// subkey fingerprint (only the expiration differs), so a merged keyring
+	// collapses them to one entry and gopenpgp may latch onto the expired
+	// copy - rejecting a signature the renewed copy would accept. Iterating
+	// per block sidesteps that collapse: any block whose effective signing
+	// material is still valid produces a clean verification.
+	var lastErr error
+	for i, key := range keys {
+		verifyHandle, err := crypto.PGP().Verify().VerificationKey(key).New()
+		if err != nil {
+			logger.Debugf("Could not build verify handle for key block №%d: %v", i+1, err)
+			lastErr = err
+			continue
+		}
+		verifyRes, err := verifyHandle.VerifyDetached(hashFileContent, signatureContent, crypto.Auto)
+		if err != nil {
+			logger.Debugf("Could not verify detached signature PGP message for key block №%d: %v", i+1, err)
+			lastErr = err
+			continue
+		}
+		if err := verifyRes.SignatureError(); err != nil {
+			logger.Debugf("Signature verification failed for key block №%d: %v", i+1, err)
+			lastErr = err
+			continue
+		}
+		logger.Info("Checksum file PGP signature verification successful")
+		return true
 	}
 
-	if err := verifyRes.SignatureError(); err != nil {
-		logger.Errorf("Could not verify PGP signature using %d loaded keys from %q: %v", len(keys), keyFile.Name(), err)
-		return false
+	if lastErr == nil {
+		// Belt-and-braces: parsePublicKeys already errors on zero keys, so
+		// the loop should always execute at least once. Guard anyway so the
+		// final log line never prints "<nil>" if that contract ever shifts.
+		lastErr = errors.New("no PGP keys attempted")
 	}
-
-	logger.Info("Checksum file PGP signature verification successful")
-	return true
+	logger.Errorf("Could not verify PGP signature using %d loaded keys from %q: %v", len(keys), keyFile.Name(), lastErr)
+	return false
 }

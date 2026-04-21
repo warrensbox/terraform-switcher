@@ -244,6 +244,67 @@ func Test_checkSignatureOfChecksums_noMatchingKey(t *testing.T) {
 	}
 }
 
+// Test_checkSignatureOfChecksums_hashicorpDualKey is a fixture-backed
+// regression test for issue #746. It feeds the real HashiCorp pgp-key.txt
+// (two blocks sharing primary fingerprint and signing subkey fingerprint,
+// only the expiration differs) together with two real Terraform release
+// pairs: 1.12.2 signed before the 2026-04-18 rotation (verifies against
+// the legacy block) and 1.14.9 signed after (verifies only against the
+// renewed block). A merged-keyring implementation collapses the two
+// blocks to one entry, latches onto the expired variant, and reports
+// "openpgp: key expired"; per-block iteration falls through to the
+// block whose signing material is still effective. Refresh the key
+// fixture and post-rotation release pair once the renewed subkey's
+// expiration is within reach.
+func Test_checkSignatureOfChecksums_hashicorpDualKey(t *testing.T) {
+	InitLogger("DEBUG")
+	keyContent, err := os.ReadFile("../test-data/hashicorp-pgp-key.txt")
+	if err != nil {
+		t.Fatalf("read key fixture: %v", err)
+	}
+
+	cases := []struct {
+		name    string
+		hash    string
+		sig     string
+		comment string
+	}{
+		{
+			name:    "pre-rotation-1.12.2",
+			hash:    "../test-data/terraform_1.12.2_SHA256SUMS",
+			sig:     "../test-data/terraform_1.12.2_SHA256SUMS.72D7468F.sig",
+			comment: "legacy block (first) must still verify pre-rotation releases",
+		},
+		{
+			name:    "post-rotation-1.14.9",
+			hash:    "../test-data/terraform_1.14.9_SHA256SUMS",
+			sig:     "../test-data/terraform_1.14.9_SHA256SUMS.72D7468F.sig",
+			comment: "renewed block (second) must verify post-rotation releases (GitHub issue #746)",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			hashContent, err := os.ReadFile(tc.hash)
+			if err != nil {
+				t.Fatalf("read hash fixture %q: %v", tc.hash, err)
+			}
+			sigContent, err := os.ReadFile(tc.sig)
+			if err != nil {
+				t.Fatalf("read sig fixture %q: %v", tc.sig, err)
+			}
+
+			keyFile := writeReadableTempFile(t, "pgp-key.txt", keyContent)
+			hashFile := writeReadableTempFile(t, filepath.Base(tc.hash), hashContent)
+			sigFile := writeReadableTempFile(t, filepath.Base(tc.sig), sigContent)
+
+			if !checkSignatureOfChecksums(keyFile, hashFile, sigFile) {
+				t.Fatalf("checkSignatureOfChecksums returned false: %s", tc.comment)
+			}
+		})
+	}
+}
+
 func Test_checkSignatureOfChecksums_malformedKeyFile(t *testing.T) {
 	InitLogger("DEBUG")
 	keyA, _, _ := sharedTestKeys(t)
