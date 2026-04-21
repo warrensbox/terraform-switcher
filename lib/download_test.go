@@ -97,11 +97,12 @@ type DownloadProductTestConfig struct {
 	ZipFileChecksum     string
 	ChecksumFileContent string
 	PublicKey           string
-	// SecondaryPublicKey, when non-empty, is prepended to PublicKey in
-	// the armored response so that the signing key sits second in the
-	// concatenated file. This mirrors HashiCorp's pgp-key.txt layout
-	// during key rotations and is the shape that regressed in GitHub issue #746.
-	SecondaryPublicKey string
+	// LeadingPublicKey, when non-empty, is prepended to PublicKey in
+	// the armored response so that it becomes the first block and the
+	// signing key sits second in the concatenated file. This mirrors
+	// HashiCorp's pgp-key.txt layout during key rotations and is the
+	// shape that regressed in GitHub issue #746.
+	LeadingPublicKey string
 }
 
 //nolint:gocyclo
@@ -180,8 +181,8 @@ func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadPr
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(http.StatusOK)
 			body := downloadProductTestConfig.PublicKey
-			if downloadProductTestConfig.SecondaryPublicKey != "" {
-				body = downloadProductTestConfig.SecondaryPublicKey + "\n\n" + body
+			if downloadProductTestConfig.LeadingPublicKey != "" {
+				body = downloadProductTestConfig.LeadingPublicKey + "\n\n" + body
 			}
 			if _, err := w.Write([]byte(body)); err != nil {
 				t.Error(err)
@@ -417,7 +418,7 @@ func TestDownloadProductFromURL_multiple_public_keys(t *testing.T) {
 	}
 
 	downloadProductTestConfig := DownloadProductTestConfig{
-		SecondaryPublicKey: companionArmored,
+		LeadingPublicKey: companionArmored,
 	}
 	mockServer := setupTestDownloadServer(t, &downloadProductTestConfig)
 	defer mockServer.Close()
