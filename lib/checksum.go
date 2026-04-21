@@ -4,13 +4,20 @@ import (
 	"bufio"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/ProtonMail/gopenpgp/v3/crypto"
 )
+
+// pgpPublicKeyBegin is the ASCII armor marker that delimits every public
+// key block in a concatenated armored file (such as HashiCorp's
+// pgp-key.txt, which publishes more than one key around rotations).
+const pgpPublicKeyBegin = "-----BEGIN PGP PUBLIC KEY BLOCK-----"
 
 // getChecksumFromFile Extract the checksum from the signature file
 func getChecksumFromHashFile(signatureFilePath string, terraformFileName string) (string, error) {
@@ -58,6 +65,40 @@ func checkChecksumMatches(hashFile string, targetFile *os.File) bool {
 	return true
 }
 
+// parsePublicKeys extracts every armored PGP public key from the given
+// blob. HashiCorp's pgp-key.txt contains more than one key around key
+// rotations, and the key that signed a release may not be the first
+// block. crypto.NewKeyFromArmored refuses multi-entity input, so the
+// caller must feed it one armored block at a time.
+//
+// Blocks that fail to parse are logged at Debug and skipped; the
+// function returns an error only when no usable keys remain.
+func parsePublicKeys(armored string) ([]*crypto.Key, error) {
+	// strings.Split leaves the text preceding the first BEGIN marker in
+	// parts[0] (always non-key content); each subsequent entry is the
+	// body of one block. Re-prepending the marker rather than trimming
+	// preserves the mandatory blank line between the marker/headers and
+	// the base64 payload that RFC 4880 armor requires.
+	parts := strings.Split(armored, pgpPublicKeyBegin)
+	keys := make([]*crypto.Key, 0, len(parts)-1)
+	for i, part := range parts {
+		if i == 0 {
+			continue
+		}
+		block := pgpPublicKeyBegin + part
+		key, err := crypto.NewKeyFromArmored(block)
+		if err != nil {
+			logger.Debugf("Skipping unparsable PGP public key block №%d: %v", i, err)
+			continue
+		}
+		keys = append(keys, key)
+	}
+	if len(keys) == 0 {
+		return nil, errors.New("no parsable PGP public keys found in key file")
+	}
+	return keys, nil
+}
+
 // checkSignatureOfChecksums This will verify the signature of the file containing the hash sums
 func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFile *os.File) bool {
 	var fileHandlersToClose []*os.File
@@ -74,13 +115,21 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 		return false
 	}
 
-	keyFromArmored, err := crypto.NewKeyFromArmored(string(keyFileContent))
+	keys, err := parsePublicKeys(string(keyFileContent))
 	if err != nil {
-		logger.Errorf("Could not read PGP armored key: %v", err)
+		logger.Errorf("Could not parse PGP keys from %q: %v", keyFile.Name(), err)
 		return false
 	}
 
-	signingKey, err := crypto.PGP().Verify().VerificationKey(keyFromArmored).New()
+	verifyBuilder := crypto.PGP().Verify()
+	// Parse every armored block from the key file and register each parsed key
+	// with verify handle builder. Successive VerificationKey() calls append
+	// to the builder's internal keyring, and the key matching the signature's
+	// KeyID is picked automatically.
+	for key := range slices.Values(keys) {
+		verifyBuilder = verifyBuilder.VerificationKey(key)
+	}
+	signingKey, err := verifyBuilder.New()
 	if err != nil {
 		logger.Errorf("Could not read PGP signing key: %v", err)
 		return false
@@ -105,7 +154,7 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 	}
 
 	if err := verifyRes.SignatureError(); err != nil {
-		logger.Errorf("Could not verify PGP signature: %v", err)
+		logger.Errorf("Could not verify PGP signature using %d loaded keys from %q: %v", len(keys), keyFile.Name(), err)
 		return false
 	}
 

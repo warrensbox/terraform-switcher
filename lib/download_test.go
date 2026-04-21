@@ -97,6 +97,12 @@ type DownloadProductTestConfig struct {
 	ZipFileChecksum     string
 	ChecksumFileContent string
 	PublicKey           string
+	// LeadingPublicKey, when non-empty, is prepended to PublicKey in
+	// the armored response so that it becomes the first block and the
+	// signing key sits second in the concatenated file. This mirrors
+	// HashiCorp's pgp-key.txt layout during key rotations and is the
+	// shape that regressed in GitHub issue #746.
+	LeadingPublicKey string
 }
 
 //nolint:gocyclo
@@ -174,7 +180,11 @@ func setupTestDownloadServer(t *testing.T, downloadProductTestConfig *DownloadPr
 		case "/testproduct/gpg-key.txt":
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(http.StatusOK)
-			if _, err := w.Write([]byte(downloadProductTestConfig.PublicKey)); err != nil {
+			body := downloadProductTestConfig.PublicKey
+			if downloadProductTestConfig.LeadingPublicKey != "" {
+				body = downloadProductTestConfig.LeadingPublicKey + "\n\n" + body
+			}
+			if _, err := w.Write([]byte(body)); err != nil {
 				t.Error(err)
 			}
 		case "/productdownload/2.1.0/my_product_download_2.1.0_linux_amd64.zip":
@@ -382,5 +392,61 @@ func TestDownloadProductFromURL_invalid_public_key(t *testing.T) {
 		t.Fatal("DownloadProductFromURL did not throw error")
 	} else if expectedError := "Signature of checksum file could not be verified"; !strings.Contains(err.Error(), expectedError) {
 		t.Fatalf("DownloadProductFromURL did not throw expected error. Expected: %q, Actual: %q", expectedError, err)
+	}
+}
+
+// TestDownloadProductFromURL_multiple_public_keys exercises the full
+// install path when the served public-key file contains more than one
+// armored block and the signing key sits second, mirroring HashiCorp's
+// pgp-key.txt layout during rotations (issue #746).
+func TestDownloadProductFromURL_multiple_public_keys(t *testing.T) {
+	logger = InitLogger("DEBUG")
+
+	// Generate a throwaway companion key. It never signs anything and is
+	// unrelated to the signing key that setupTestDownloadServer builds;
+	// its job is to be the first armored block so the code under test
+	// has to skip past it and try the second one.
+	pgp4880 := crypto.PGPWithProfile(profile.RFC4880())
+	companionGen := pgp4880.KeyGeneration().AddUserId("TestProductCompanion", "companion@localhost.com").New()
+	companionKey, err := companionGen.GenerateKeyWithSecurity(constants.StandardSecurity)
+	if err != nil {
+		t.Fatal(err)
+	}
+	companionArmored, err := companionKey.GetArmoredPublicKey()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	downloadProductTestConfig := DownloadProductTestConfig{
+		LeadingPublicKey: companionArmored,
+	}
+	mockServer := setupTestDownloadServer(t, &downloadProductTestConfig)
+	defer mockServer.Close()
+
+	mockProduct := TerraformProduct{
+		ProductDetails{
+			ID:             "myproduct",
+			Name:           "Mock Product",
+			DefaultMirror:  mockServer.URL + "/productdownload",
+			VersionPrefix:  "myprod_",
+			ExecutableName: "myprod",
+			ArchivePrefix:  "my_product_download_",
+			PublicKeyId:    downloadProductTestConfig.GpgFingerprint,
+			PublicKeyURLs:  []string{mockServer.URL + "/testproduct/gpg-key.txt"},
+		},
+	}
+
+	tempDir, err := os.MkdirTemp("", "addRecentVersion")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	zipFilePath, err := DownloadProductFromURL(mockProduct, tempDir, mockProduct.GetArtifactUrl(mockServer.URL+"/productdownload", "2.1.0"), "2.1.0", mockProduct.GetArchivePrefix(), "linux", "amd64")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if expectedZipPath := filepath.Join(tempDir, "my_product_download_2.1.0_linux_amd64.zip"); zipFilePath != expectedZipPath {
+		t.Errorf("Returned zipFile not expected path. Expected: %q, actual: %q", expectedZipPath, zipFilePath)
 	}
 }
