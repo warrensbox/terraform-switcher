@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"slices"
 	"strings"
 
 	"github.com/ProtonMail/gopenpgp/v3/crypto"
@@ -115,26 +114,6 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 		return false
 	}
 
-	keys, err := parsePublicKeys(string(keyFileContent))
-	if err != nil {
-		logger.Errorf("Could not parse PGP keys from %q: %v", keyFile.Name(), err)
-		return false
-	}
-
-	verifyBuilder := crypto.PGP().Verify()
-	// Parse every armored block from the key file and register each parsed key
-	// with verify handle builder. Successive VerificationKey() calls append
-	// to the builder's internal keyring, and the key matching the signature's
-	// KeyID is picked automatically.
-	for key := range slices.Values(keys) {
-		verifyBuilder = verifyBuilder.VerificationKey(key)
-	}
-	signingKey, err := verifyBuilder.New()
-	if err != nil {
-		logger.Errorf("Could not read PGP signing key: %v", err)
-		return false
-	}
-
 	hashFileContent, err := io.ReadAll(hashFile)
 	if err != nil {
 		logger.Errorf("Could not read hash file %q: %v", hashFile.Name(), err)
@@ -147,17 +126,35 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 		return false
 	}
 
-	verifyRes, err := signingKey.VerifyDetached(hashFileContent, signatureContent, crypto.Auto)
+	keys, err := parsePublicKeys(string(keyFileContent))
 	if err != nil {
-		logger.Errorf("Could not verify detached signature PGP message: %v", err)
+		logger.Errorf("Could not parse PGP keys from %q: %v", keyFile.Name(), err)
 		return false
 	}
 
-	if err := verifyRes.SignatureError(); err != nil {
-		logger.Errorf("Could not verify PGP signature using %d loaded keys from %q: %v", len(keys), keyFile.Name(), err)
-		return false
-	}
+	verifyBuilder := crypto.PGP().Verify()
+	for idx, key := range keys {
+		logger.Debugf("Trying to verify PGP signature using key №%d (out of %d) with fingerprint %q", idx+1, len(keys), key.GetFingerprint())
 
-	logger.Info("Checksum file PGP signature verification successful")
-	return true
+		verifier, err := verifyBuilder.VerificationKey(key).New()
+		if err != nil {
+			logger.Errorf("Could not read PGP signing key: %v", err)
+			return false
+		}
+
+		verifyRes, err := verifier.VerifyDetached(hashFileContent, signatureContent, crypto.Auto)
+		if err != nil {
+			logger.Errorf("Could not verify detached signature PGP message: %v", err)
+			return false
+		}
+
+		if err := verifyRes.SignatureError(); err != nil {
+			logger.Errorf("Could not verify PGP signature using key №%d (out of %d): %v", idx+1, len(keys), err)
+			continue
+		}
+
+		logger.Info("Checksum file PGP signature verification successful")
+		return true
+	}
+	return false
 }
