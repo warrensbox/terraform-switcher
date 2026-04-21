@@ -80,7 +80,7 @@ func parsePublicKeys(armored string) ([]*crypto.Key, error) {
 	// preserves the mandatory blank line between the marker/headers and
 	// the base64 payload that RFC 4880 armor requires.
 	parts := strings.Split(armored, pgpPublicKeyBegin)
-	keys := make([]*crypto.Key, 0, len(parts))
+	keys := make([]*crypto.Key, 0, len(parts)-1)
 	for i, part := range parts {
 		if i == 0 {
 			continue

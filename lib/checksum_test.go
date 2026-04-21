@@ -48,9 +48,7 @@ func Test_checkChecksumMatches(t *testing.T) {
 // panicking instead of reporting the real cause.
 var (
 	sharedTestKeysOnce sync.Once
-	sharedTestKeyA     *crypto.Key
-	sharedTestKeyB     *crypto.Key
-	sharedTestKeyC     *crypto.Key
+	sharedTestKeyCache [3]*crypto.Key
 	sharedTestKeysErr  error
 )
 
@@ -58,20 +56,20 @@ func sharedTestKeys(t *testing.T) (*crypto.Key, *crypto.Key, *crypto.Key) {
 	t.Helper()
 	sharedTestKeysOnce.Do(func() {
 		pgp := crypto.PGPWithProfile(profile.RFC4880())
-		for target := range slices.Values([]**crypto.Key{&sharedTestKeyA, &sharedTestKeyB, &sharedTestKeyC}) {
+		for i := range sharedTestKeyCache {
 			gen := pgp.KeyGeneration().AddUserId("tfswitch-test", "tfswitch-test@example.invalid").New()
 			k, err := gen.GenerateKeyWithSecurity(constants.StandardSecurity)
 			if err != nil {
 				sharedTestKeysErr = err
 				return
 			}
-			*target = k
+			sharedTestKeyCache[i] = k
 		}
 	})
 	if sharedTestKeysErr != nil {
 		t.Fatalf("PGP key generation failed: %v", sharedTestKeysErr)
 	}
-	return sharedTestKeyA, sharedTestKeyB, sharedTestKeyC
+	return sharedTestKeyCache[0], sharedTestKeyCache[1], sharedTestKeyCache[2]
 }
 
 func armoredPublicKey(t *testing.T, key *crypto.Key) string {
