@@ -361,7 +361,7 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 		}
 
 		/* prompt user to select version of product */
-		if !term.IsTerminal(int(os.Stdin.Fd())) || !term.IsTerminal(int(os.Stdout.Fd())) {
+		if !term.IsTerminal(int(os.Stdin.Fd())) || !term.IsTerminal(int(os.Stdout.Fd())) { //nolint:gosec // G115: file descriptors from os.Stdin/Stdout are always valid small integers
 			//nolint:revive // error-strings: error strings should not be capitalized or end with punctuation or a newline (revive)
 			return errors.New("Interactive prompt is not meant for non-interactive terminal (please use command line flags in such case)")
 		}

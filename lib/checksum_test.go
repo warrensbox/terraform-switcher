@@ -3,6 +3,7 @@ package lib
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"testing"
@@ -57,7 +58,7 @@ func sharedTestKeys(t *testing.T) (*crypto.Key, *crypto.Key, *crypto.Key) {
 	t.Helper()
 	sharedTestKeysOnce.Do(func() {
 		pgp := crypto.PGPWithProfile(profile.RFC4880())
-		for _, target := range []**crypto.Key{&sharedTestKeyA, &sharedTestKeyB, &sharedTestKeyC} {
+		for target := range slices.Values([]**crypto.Key{&sharedTestKeyA, &sharedTestKeyB, &sharedTestKeyC}) {
 			gen := pgp.KeyGeneration().AddUserId("tfswitch-test", "tfswitch-test@example.invalid").New()
 			k, err := gen.GenerateKeyWithSecurity(constants.StandardSecurity)
 			if err != nil {
@@ -97,7 +98,10 @@ func signDetached(t *testing.T, key *crypto.Key, payload []byte) []byte {
 
 // writeReadableTempFile writes content to a fresh file under t.TempDir()
 // and returns it opened read-only. checkSignatureOfChecksums closes every
-// file it receives, so each test hands out its own handle.
+// file it receives, so each test hands out its own handle. A t.Cleanup is
+// registered to close the handle even when a test aborts before
+// checkSignatureOfChecksums runs; os.File.Close on an already-closed file
+// is harmless (returns an error we ignore), so the belt-and-braces is safe.
 func writeReadableTempFile(t *testing.T, name string, content []byte) *os.File {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), name)
@@ -108,11 +112,12 @@ func writeReadableTempFile(t *testing.T, name string, content []byte) *os.File {
 	if err != nil {
 		t.Fatalf("Open: %v", err)
 	}
+	t.Cleanup(func() { _ = f.Close() })
 	return f
 }
 
 func Test_parsePublicKeys_singleBlock(t *testing.T) {
-	InitLogger("TRACE")
+	InitLogger("DEBUG")
 	keyA, _, _ := sharedTestKeys(t)
 	keys, err := parsePublicKeys(armoredPublicKey(t, keyA))
 	if err != nil {
@@ -127,7 +132,7 @@ func Test_parsePublicKeys_singleBlock(t *testing.T) {
 }
 
 func Test_parsePublicKeys_multipleBlocks(t *testing.T) {
-	InitLogger("TRACE")
+	InitLogger("DEBUG")
 	keyA, keyB, _ := sharedTestKeys(t)
 	concatenated := armoredPublicKey(t, keyA) + "\n" + armoredPublicKey(t, keyB)
 
@@ -147,8 +152,8 @@ func Test_parsePublicKeys_multipleBlocks(t *testing.T) {
 }
 
 func Test_parsePublicKeys_emptyInput(t *testing.T) {
-	InitLogger("TRACE")
-	for _, input := range []string{"", "   \n\n\t  "} {
+	InitLogger("DEBUG")
+	for input := range slices.Values([]string{"", "   \n\n\t  "}) {
 		_, err := parsePublicKeys(input)
 		if err == nil {
 			t.Errorf("parsePublicKeys(%q) expected error, got nil", input)
@@ -157,7 +162,7 @@ func Test_parsePublicKeys_emptyInput(t *testing.T) {
 }
 
 func Test_parsePublicKeys_mixedValidAndGarbage(t *testing.T) {
-	InitLogger("TRACE")
+	InitLogger("DEBUG")
 	keyA, _, _ := sharedTestKeys(t)
 	garbage := pgpPublicKeyBegin + "\nnot-a-real-armored-body\n-----END PGP PUBLIC KEY BLOCK-----\n"
 	concatenated := armoredPublicKey(t, keyA) + "\n" + garbage
@@ -175,7 +180,7 @@ func Test_parsePublicKeys_mixedValidAndGarbage(t *testing.T) {
 }
 
 func Test_checkSignatureOfChecksums_singleKey(t *testing.T) {
-	InitLogger("TRACE")
+	InitLogger("DEBUG")
 	keyA, _, _ := sharedTestKeys(t)
 	payload := []byte("abc123  terraform_1.7.5_linux_amd64.zip\n")
 	signature := signDetached(t, keyA, payload)
@@ -190,7 +195,7 @@ func Test_checkSignatureOfChecksums_singleKey(t *testing.T) {
 }
 
 func Test_checkSignatureOfChecksums_signerIsFirst(t *testing.T) {
-	InitLogger("TRACE")
+	InitLogger("DEBUG")
 	keyA, keyB, _ := sharedTestKeys(t)
 	payload := []byte("abc123  terraform_1.7.5_linux_amd64.zip\n")
 	signature := signDetached(t, keyA, payload)
@@ -210,7 +215,7 @@ func Test_checkSignatureOfChecksums_signerIsFirst(t *testing.T) {
 // key first and the active signing key second, and every release signed
 // with the successor key must still verify.
 func Test_checkSignatureOfChecksums_signerIsSecond(t *testing.T) {
-	InitLogger("TRACE")
+	InitLogger("DEBUG")
 	keyA, keyB, _ := sharedTestKeys(t)
 	payload := []byte("abc123  terraform_1.14.9_linux_amd64.zip\n")
 	signature := signDetached(t, keyB, payload)
@@ -221,12 +226,12 @@ func Test_checkSignatureOfChecksums_signerIsSecond(t *testing.T) {
 	sigFile := writeReadableTempFile(t, "SHA256SUMS.sig", signature)
 
 	if !checkSignatureOfChecksums(keyFile, hashFile, sigFile) {
-		t.Fatal("checkSignatureOfChecksums returned false with signer at position 1 (the #746 scenario)")
+		t.Fatal("checkSignatureOfChecksums returned false with signer at position 1 (GitHub issue #746 scenario)")
 	}
 }
 
 func Test_checkSignatureOfChecksums_noMatchingKey(t *testing.T) {
-	InitLogger("TRACE")
+	InitLogger("DEBUG")
 	keyA, keyB, keyC := sharedTestKeys(t)
 	payload := []byte("abc123  terraform_1.7.5_linux_amd64.zip\n")
 	signature := signDetached(t, keyC, payload)
@@ -242,7 +247,7 @@ func Test_checkSignatureOfChecksums_noMatchingKey(t *testing.T) {
 }
 
 func Test_checkSignatureOfChecksums_malformedKeyFile(t *testing.T) {
-	InitLogger("TRACE")
+	InitLogger("DEBUG")
 	keyA, _, _ := sharedTestKeys(t)
 	payload := []byte("abc123  terraform_1.7.5_linux_amd64.zip\n")
 	signature := signDetached(t, keyA, payload)

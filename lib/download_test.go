@@ -100,7 +100,7 @@ type DownloadProductTestConfig struct {
 	// SecondaryPublicKey, when non-empty, is prepended to PublicKey in
 	// the armored response so that the signing key sits second in the
 	// concatenated file. This mirrors HashiCorp's pgp-key.txt layout
-	// during key rotations and is the shape that regressed in #746.
+	// during key rotations and is the shape that regressed in GitHub issue #746.
 	SecondaryPublicKey string
 }
 

@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/ProtonMail/gopenpgp/v3/crypto"
@@ -87,13 +88,13 @@ func parsePublicKeys(armored string) ([]*crypto.Key, error) {
 		block := pgpPublicKeyBegin + part
 		key, err := crypto.NewKeyFromArmored(block)
 		if err != nil {
-			logger.Debugf("Skipping unparseable PGP public key block: %v", err)
+			logger.Debugf("Skipping unparsable PGP public key block №%d: %v", i, err)
 			continue
 		}
 		keys = append(keys, key)
 	}
 	if len(keys) == 0 {
-		return nil, errors.New("no parseable PGP public keys found in key file")
+		return nil, errors.New("no parsable PGP public keys found in key file")
 	}
 	return keys, nil
 }
@@ -121,7 +122,7 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 	}
 
 	verifyBuilder := crypto.PGP().Verify()
-	for _, key := range keys {
+	for key := range slices.Values(keys) {
 		verifyBuilder = verifyBuilder.VerificationKey(key)
 	}
 	signingKey, err := verifyBuilder.New()
