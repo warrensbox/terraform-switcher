@@ -138,14 +138,14 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 
 		verifier, err := verifyBuilder.VerificationKey(key).New()
 		if err != nil {
-			logger.Errorf("Could not read PGP signing key: %v", err)
-			return false
+			logger.Errorf("Could not read PGP signing key №%d (out of %d): %v", idx+1, len(keys), err)
+			continue
 		}
 
 		verifyRes, err := verifier.VerifyDetached(hashFileContent, signatureContent, crypto.Auto)
 		if err != nil {
-			logger.Errorf("Could not verify detached signature PGP message: %v", err)
-			return false
+			logger.Errorf("Could not verify detached signature PGP message using key №%d (out of %d): %v", idx+1, len(keys), err)
+			continue
 		}
 
 		if err := verifyRes.SignatureError(); err != nil {
