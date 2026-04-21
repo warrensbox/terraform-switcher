@@ -7,6 +7,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.17.0](https://github.com/warrensbox/terraform-switcher/tree/v1.17.0) - 2026-04-21
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.16.0...v1.17.0)
+
+### Fixed
+
+- fix: Verify checksum signature against every PGP key in the public key file [#747](https://github.com/warrensbox/terraform-switcher/pull/747) ([pszypowicz](https://github.com/pszypowicz))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.17.0` [#748](https://github.com/warrensbox/terraform-switcher/pull/748) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.16.0](https://github.com/warrensbox/terraform-switcher/tree/v1.16.0) - 2026-04-05
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.15.0...v1.16.0)
