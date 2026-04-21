@@ -135,7 +135,6 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 		return false
 	}
 
-	verifyBuilder := crypto.PGP().Verify()
 	var verificationErrors []error
 	for idx, key := range keys {
 		logger.Debugf(
@@ -143,7 +142,7 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 			idx+1, len(keys), key.GetFingerprint(),
 		)
 
-		verifier, err := verifyBuilder.VerificationKey(key).New()
+		verifier, err := crypto.PGP().Verify().VerificationKey(key).New()
 		if err != nil {
 			verificationErrors = append(verificationErrors, fmt.Errorf(
 				"Could not read PGP signing key №%d (out of %d): %v",
