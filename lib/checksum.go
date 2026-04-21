@@ -5,9 +5,11 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/ProtonMail/gopenpgp/v3/crypto"
@@ -133,28 +135,46 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 	}
 
 	verifyBuilder := crypto.PGP().Verify()
+	var verificationErrors []error
 	for idx, key := range keys {
-		logger.Debugf("Trying to verify PGP signature using key №%d (out of %d) with fingerprint %q", idx+1, len(keys), key.GetFingerprint())
+		logger.Debugf(
+			"Trying to verify PGP signature using key №%d (out of %d) with fingerprint %q",
+			idx+1, len(keys), key.GetFingerprint(),
+		)
 
 		verifier, err := verifyBuilder.VerificationKey(key).New()
 		if err != nil {
-			logger.Errorf("Could not read PGP signing key №%d (out of %d): %v", idx+1, len(keys), err)
+			verificationErrors = append(verificationErrors, fmt.Errorf(
+				"Could not read PGP signing key №%d (out of %d): %v",
+				idx+1, len(keys), err,
+			))
 			continue
 		}
 
 		verifyRes, err := verifier.VerifyDetached(hashFileContent, signatureContent, crypto.Auto)
 		if err != nil {
-			logger.Errorf("Could not verify detached signature PGP message using key №%d (out of %d): %v", idx+1, len(keys), err)
+			verificationErrors = append(verificationErrors, fmt.Errorf(
+				"Could not verify detached signature PGP message using key №%d (out of %d): %v",
+				idx+1, len(keys), err,
+			))
 			continue
 		}
 
 		if err := verifyRes.SignatureError(); err != nil {
-			logger.Errorf("Could not verify PGP signature using key №%d (out of %d): %v", idx+1, len(keys), err)
+			verificationErrors = append(verificationErrors, fmt.Errorf(
+				"Could not verify PGP signature using key №%d (out of %d): %v",
+				idx+1, len(keys), err,
+			))
 			continue
 		}
 
 		logger.Info("Checksum file PGP signature verification successful")
 		return true
+	}
+
+	// Print errors once (if any)
+	for verificationError := range slices.Values(verificationErrors) {
+		logger.Error(verificationError)
 	}
 	return false
 }
