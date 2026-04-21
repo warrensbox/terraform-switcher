@@ -39,11 +39,18 @@ func Test_checkChecksumMatches(t *testing.T) {
 // Key-generation cache. PGP keygen (RSA 2048, standard security) is the
 // slow part of these tests; generating one keyset per package-test run
 // keeps the full suite in the single-digit-seconds range.
+//
+// Failures inside the sync.Once closure are captured into sharedTestKeysErr
+// rather than calling t.Fatalf directly, because Once.Do marks itself done
+// regardless of how its closure exits: aborting the first caller with
+// t.Fatalf would leave every subsequent caller looking at nil keys and
+// panicking instead of reporting the real cause.
 var (
 	sharedTestKeysOnce sync.Once
 	sharedTestKeyA     *crypto.Key
 	sharedTestKeyB     *crypto.Key
 	sharedTestKeyC     *crypto.Key
+	sharedTestKeysErr  error
 )
 
 func sharedTestKeys(t *testing.T) (*crypto.Key, *crypto.Key, *crypto.Key) {
@@ -54,11 +61,15 @@ func sharedTestKeys(t *testing.T) (*crypto.Key, *crypto.Key, *crypto.Key) {
 			gen := pgp.KeyGeneration().AddUserId("tfswitch-test", "tfswitch-test@example.invalid").New()
 			k, err := gen.GenerateKeyWithSecurity(constants.StandardSecurity)
 			if err != nil {
-				t.Fatalf("PGP key generation failed: %v", err)
+				sharedTestKeysErr = err
+				return
 			}
 			*target = k
 		}
 	})
+	if sharedTestKeysErr != nil {
+		t.Fatalf("PGP key generation failed: %v", sharedTestKeysErr)
+	}
 	return sharedTestKeyA, sharedTestKeyB, sharedTestKeyC
 }
 
