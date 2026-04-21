@@ -122,6 +122,10 @@ func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFil
 	}
 
 	verifyBuilder := crypto.PGP().Verify()
+	// Parse every armored block from the key file and register each parsed key
+	// with verify handle builder. Successive VerificationKey() calls append
+	// to the builder's internal keyring, and the key matching the signature's
+	// KeyID is picked automatically.
 	for key := range slices.Values(keys) {
 		verifyBuilder = verifyBuilder.VerificationKey(key)
 	}
