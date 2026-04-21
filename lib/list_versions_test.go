@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -251,7 +252,7 @@ func TestGetTFLatest(t *testing.T) {
 		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuHTML: true}, "opentofu/", "1.7.0"},
 	}
 
-	for _, test := range tests {
+	for test := range slices.Values(tests) {
 		t.Run(test.name, func(t *testing.T) {
 			server := getMockListVersionServer(test.serverConfig)
 			defer server.Close()
@@ -322,7 +323,7 @@ func TestGetTFLatestImplicit(t *testing.T) {
 		{"Opentofu List", GetProductById("opentofu"), MockListVersionServerConfig{EnableOpentofuHTML: true}, "opentofu/", opentofuVersions},
 	}
 
-	for _, test := range tests {
+	for test := range slices.Values(tests) {
 		t.Run(test.name, func(t *testing.T) {
 			for _, versionTest := range test.versionTests {
 				t.Run(fmt.Sprintf("version=%s,prerelease=%t", versionTest.version, versionTest.preRelease), func(t *testing.T) {
