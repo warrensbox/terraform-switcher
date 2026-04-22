@@ -3,6 +3,7 @@ package lib
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -29,6 +30,8 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 	// nolint:revive // FIXME: var-naming: var hashSignatureUrl should be hashSignatureURL (revive)
 	hashSignatureUrl := mirrorURL + "/" + versionPrefix + tfversion + "_SHA256SUMS." + product.GetShaSignatureSuffix()
 
+	match := false
+
 	pubKeyFilename, err := downloadPublicKey(product, installLocation, &wg)
 	if err != nil {
 		logger.Error("Could not download public PGP key file")
@@ -41,6 +44,11 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 		logger.Error("Could not download zip file")
 		return "", err
 	}
+	defer func() {
+		if !match {
+			os.Remove(zipFilePath)
+		}
+	}()
 
 	logger.Infof("Downloading %q", hashUrl)
 	hashFilePath, err := downloadFromURL(installLocation, hashUrl, &wg)
@@ -48,6 +56,7 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 		logger.Error("Could not download hash file")
 		return "", err
 	}
+	defer os.Remove(hashFilePath)
 
 	logger.Infof("Downloading %q", hashSignatureUrl)
 	hashSigFilePath, err := downloadFromURL(installLocation, hashSignatureUrl, &wg)
@@ -55,42 +64,54 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 		logger.Error("Could not download hash signature file")
 		return "", err
 	}
+	defer os.Remove(hashSigFilePath)
 
 	publicKeyFile, err := os.Open(pubKeyFilename)
 	if err != nil {
 		logger.Errorf("Could not open public key %q: %v", pubKeyFilename, err)
 		return "", err
 	}
+	defer publicKeyFile.Close()
 
 	signatureFile, err := os.Open(hashSigFilePath)
 	if err != nil {
 		logger.Errorf("Could not open hash signature file %q: %v", hashSigFilePath, err)
 		return "", err
 	}
+	defer signatureFile.Close()
 
 	targetFile, err := os.Open(zipFilePath)
 	if err != nil {
 		logger.Errorf("Could not open zip file %q: %v", zipFilePath, err)
 		return "", err
 	}
+	defer targetFile.Close()
 
 	hashFile, err := os.Open(hashFilePath)
 	if err != nil {
 		logger.Errorf("Could not open hash file %q: %v", hashFilePath, err)
 		return "", err
 	}
+	defer hashFile.Close()
 
-	var filesToCleanup []string
-	filesToCleanup = append(filesToCleanup, hashFilePath)
-	filesToCleanup = append(filesToCleanup, hashSigFilePath)
-	defer cleanup(filesToCleanup, &wg)
+	var verifySucceed bool
+	if verifySucceed, err = verifySignature(product, publicKeyFile, hashFile, signatureFile); err != nil {
+		return "", err
+	} else if !verifySucceed {
+		return "", fmt.Errorf("Unable to verify checksum signature against PGP key")
+	}
 
-	var fileHandlersToClose []*os.File
-	fileHandlersToClose = append(fileHandlersToClose, publicKeyFile)
-	fileHandlersToClose = append(fileHandlersToClose, hashFile)
-	fileHandlersToClose = append(fileHandlersToClose, signatureFile)
-	defer closeFileHandlers(fileHandlersToClose)
+	match = checkChecksumMatches(hashFilePath, targetFile)
+	if !match {
+		return "", errors.New("Checksums did not match")
+	}
 
+	return zipFilePath, err
+}
+
+// verifySignature: Verify signature of hash file.
+// If
+func verifySignature(product Product, publicKeyFile, hashFile, signatureFile *os.File) (bool, error) {
 	// CAUTION: Skip PGP signature verification of checksum file if TF_SKIP_SIGNATURE_VERIFICATION
 	// environment variable is set to true-ish value: 1, t, T, TRUE, true, True
 	// THIS IS NOT RECOMMENDED AND SHOULD ONLY BE USED FOR TESTING PURPOSES!
@@ -100,11 +121,11 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 	}
 	skipSignatureVerification, err := strconv.ParseBool(skipSignatureVerificationStr)
 	if err != nil {
-		logger.Debugf(
+		logger.Warnf(
 			"Unable to parse \"TF_SKIP_SIGNATURE_VERIFICATION\" env var value %q, defaulting to \"false\"",
 			skipSignatureVerificationStr,
 		)
-		skipSignatureVerification = false
+		return true, nil
 	}
 
 	if skipSignatureVerification {
@@ -113,75 +134,48 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 				"\"TF_SKIP_SIGNATURE_VERIFICATION\" environment variable being set",
 		)
 		logger.Warn("!!! THIS IS NOT RECOMMENDED AND SHOULD ONLY BE USED FOR TESTING PURPOSES !!!")
-	} else {
-		verified := checkSignatureOfChecksums(publicKeyFile, hashFile, signatureFile)
-		if !verified {
-			// Fail fast if there is no legacy builtin PGP public key to fall back to
-			if product.GetPublicKeyLegacyLiteral() == "" {
-				return "", errors.New("Signature of checksum file could not be verified")
-			}
-
-			legacyBuiltinKeyIdentifier := "legacy builtin PGP public key"
-			logger.Warnf(
-				"Checksum file PGP signature verification failed with public key from %q file. "+
-					"Falling back to %s", pubKeyFilename, legacyBuiltinKeyIdentifier,
-			)
-
-			tmpFile, tmpFileErr := os.CreateTemp("", "tfswitch.pubkey.asc.*")
-			if tmpFileErr != nil {
-				logger.Errorf("Error creating temporary file for %s: %v", legacyBuiltinKeyIdentifier, tmpFileErr)
-				targetFile.Close()
-				os.Remove(targetFile.Name())
-				return "", tmpFileErr
-			}
-
-			defer tmpFile.Close()
-			defer os.Remove(tmpFile.Name())
-
-			if _, writeStringErr := tmpFile.WriteString(product.GetPublicKeyLegacyLiteral()); writeStringErr != nil {
-				logger.Errorf("Error writing %s to temporary file: %v", legacyBuiltinKeyIdentifier, writeStringErr)
-				targetFile.Close()
-				os.Remove(targetFile.Name())
-				return "", writeStringErr
-			}
-
-			tmpFile, tmpFileErr = os.Open(tmpFile.Name())
-			if tmpFileErr != nil {
-				logger.Errorf("Could not open temporary %s file %q: %v", legacyBuiltinKeyIdentifier, tmpFile.Name(), tmpFileErr)
-				targetFile.Close()
-				os.Remove(targetFile.Name())
-				return "", tmpFileErr
-			}
-
-			fallbackSignatureFile, fallbackSignatureFileErr := os.Open(hashSigFilePath)
-			if fallbackSignatureFileErr != nil {
-				logger.Errorf("Could not open hash signature file %q: %v", hashSigFilePath, fallbackSignatureFileErr)
-				return "", fallbackSignatureFileErr
-			}
-
-			fallbackHashFile, fallbackHashFileErr := os.Open(hashFilePath)
-			if fallbackHashFileErr != nil {
-				logger.Errorf("Could not open hash file %q: %v", hashFilePath, fallbackHashFileErr)
-				fallbackSignatureFile.Close()
-				return "", fallbackHashFileErr
-			}
-
-			verified := checkSignatureOfChecksums(tmpFile, fallbackHashFile, fallbackSignatureFile)
-			if !verified {
-				logger.Errorf("Signature of checksum file could not be verified with %s either", legacyBuiltinKeyIdentifier)
-				targetFile.Close()
-				os.Remove(targetFile.Name())
-				return "", errors.New("Signature of checksum file could not be verified")
-			}
-		}
+		return true, nil
 	}
 
-	match := checkChecksumMatches(hashFilePath, targetFile)
-	if !match {
-		return "", errors.New("Checksums did not match")
+	logger.Infof("Verifying PGP signature of checksum file: %q", hashFile.Name())
+
+	keyFileContent, err := io.ReadAll(publicKeyFile)
+	if err != nil {
+		return false, fmt.Errorf("Could not read PGP key file %q: %v", publicKeyFile.Name(), err)
 	}
 
-	return zipFilePath, err
+	hashFileContent, err := io.ReadAll(hashFile)
+	if err != nil {
+		return false, fmt.Errorf("Could not read hash file %q: %v", hashFile.Name(), err)
+	}
+
+	signatureContent, err := io.ReadAll(signatureFile)
+	if err != nil {
+		return false, fmt.Errorf("Could not read PGP signature file %q: %v", signatureFile.Name(), err)
+	}
+
+	// Verify signature using key
+	verified := checkSignatureOfChecksums(keyFileContent, hashFileContent, signatureContent)
+	if verified {
+		return true, nil
+	}
+
+	// Fail fast if there is no legacy builtin PGP public key to fall back to
+	if product.GetPublicKeyLegacyLiteral() == "" {
+		return false, errors.New("Signature of checksum file could not be verified and fallback does not exist")
+	}
+
+	legacyBuiltinKeyIdentifier := "legacy builtin PGP public key"
+	logger.Warnf(
+		"Checksum file PGP signature verification failed with public key from %q file. "+
+			"Falling back to %s", publicKeyFile.Name(), legacyBuiltinKeyIdentifier,
+	)
+
+	verified = checkSignatureOfChecksums([]byte(product.GetPublicKeyLegacyLiteral()), hashFileContent, signatureContent)
+	if !verified {
+		logger.Errorf("Signature of checksum file could not be verified with %s either", legacyBuiltinKeyIdentifier)
+	}
+	return verified, nil
 }
 
 func downloadFromURL(installLocation string, url string, wg *sync.WaitGroup) (string, error) {
@@ -258,15 +252,4 @@ func downloadPublicKey(product Product, installLocation string, wg *sync.WaitGro
 		}
 	}
 	return pubKeyFilePath, nil
-}
-
-func cleanup(paths []string, wg *sync.WaitGroup) {
-	for _, path := range paths {
-		wg.Add(1)
-		logger.Infof("Deleting %q", path)
-		err := os.Remove(path)
-		if err != nil {
-			logger.Error("Error deleting %q: %v", path, err)
-		}
-	}
 }
