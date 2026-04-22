@@ -129,6 +129,7 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 			tmpFile, err := os.CreateTemp("", "tfswitch.pubkey.asc.*")
 			if err != nil {
 				logger.Errorf("Error creating temporary file for %s: %v", legacyBuiltinKeyIdentifier, err)
+				targetFile.Close()
 				os.Remove(targetFile.Name())
 				return "", err
 			}
@@ -138,13 +139,15 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 
 			if _, err := tmpFile.WriteString(product.GetPublicKeyLegacyLiteral()); err != nil {
 				logger.Errorf("Error writing %s to temporary file: %v", legacyBuiltinKeyIdentifier, err)
+				targetFile.Close()
 				os.Remove(targetFile.Name())
 				return "", err
 			}
 
 			tmpFile, err = os.Open(tmpFile.Name())
 			if err != nil {
-				logger.Errorf("Could not open temporary %s file %q: %v", legacyBuiltinKeyIdentifier, tmpFile, err)
+				logger.Errorf("Could not open temporary %s file %q: %v", legacyBuiltinKeyIdentifier, tmpFile.Name(), err)
+				targetFile.Close()
 				os.Remove(targetFile.Name())
 				return "", err
 			}
@@ -163,7 +166,8 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 
 			verified := checkSignatureOfChecksums(tmpFile, hashFile, signatureFile)
 			if !verified {
-				logger.Error("Signature of checksum file could not be verified with %s either", legacyBuiltinKeyIdentifier)
+				logger.Errorf("Signature of checksum file could not be verified with %s either", legacyBuiltinKeyIdentifier)
+				targetFile.Close()
 				os.Remove(targetFile.Name())
 				return "", errors.New("Signature of checksum file could not be verified")
 			}
