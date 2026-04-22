@@ -153,19 +153,20 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 				return "", tmpFileErr
 			}
 
-			signatureFile, signatureFileErr := os.Open(hashSigFilePath)
-			if signatureFileErr != nil {
-				logger.Errorf("Could not open hash signature file %q: %v", hashSigFilePath, signatureFileErr)
-				return "", signatureFileErr
+			fallbackSignatureFile, fallbackSignatureFileErr := os.Open(hashSigFilePath)
+			if fallbackSignatureFileErr != nil {
+				logger.Errorf("Could not open hash signature file %q: %v", hashSigFilePath, fallbackSignatureFileErr)
+				return "", fallbackSignatureFileErr
 			}
 
-			hashFile, hashFileErr := os.Open(hashFilePath)
-			if hashFileErr != nil {
-				logger.Errorf("Could not open hash file %q: %v", hashFilePath, hashFileErr)
-				return "", hashFileErr
+			fallbackHashFile, fallbackHashFileErr := os.Open(hashFilePath)
+			if fallbackHashFileErr != nil {
+				logger.Errorf("Could not open hash file %q: %v", hashFilePath, fallbackHashFileErr)
+				fallbackSignatureFile.Close()
+				return "", fallbackHashFileErr
 			}
 
-			verified := checkSignatureOfChecksums(tmpFile, hashFile, signatureFile)
+			verified := checkSignatureOfChecksums(tmpFile, fallbackHashFile, fallbackSignatureFile)
 			if !verified {
 				logger.Errorf("Signature of checksum file could not be verified with %s either", legacyBuiltinKeyIdentifier)
 				targetFile.Close()
