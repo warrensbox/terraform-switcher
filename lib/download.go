@@ -145,12 +145,12 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 				return "", writeStringErr
 			}
 
-			tmpFile, tmpFileErr = os.Open(tmpFile.Name())
-			if tmpFileErr != nil {
-				logger.Errorf("Could not open temporary %s file %q: %v", legacyBuiltinKeyIdentifier, tmpFile.Name(), tmpFileErr)
+			tmpFileRead, tmpFileReadErr := os.Open(tmpFile.Name())
+			if tmpFileReadErr != nil {
+				logger.Errorf("Could not open temporary %s file %q: %v", legacyBuiltinKeyIdentifier, tmpFile.Name(), tmpFileReadErr)
 				targetFile.Close()
 				os.Remove(targetFile.Name())
-				return "", tmpFileErr
+				return "", tmpFileReadErr
 			}
 
 			fallbackSignatureFile, fallbackSignatureFileErr := os.Open(hashSigFilePath)
@@ -166,7 +166,7 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 				return "", fallbackHashFileErr
 			}
 
-			verified := checkSignatureOfChecksums(tmpFile, fallbackHashFile, fallbackSignatureFile)
+			verified := checkSignatureOfChecksums(tmpFileRead, fallbackHashFile, fallbackSignatureFile)
 			if !verified {
 				logger.Errorf("Signature of checksum file could not be verified with %s either", legacyBuiltinKeyIdentifier)
 				targetFile.Close()
