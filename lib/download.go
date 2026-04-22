@@ -109,54 +109,57 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 	} else {
 		verified := checkSignatureOfChecksums(publicKeyFile, hashFile, signatureFile)
 		if !verified {
-			if product.GetPublicKeyLegacyLiteral() != "" {
-				legacyBuiltinKeyIdentifier := "legacy builtin PGP public key"
-				logger.Warnf(
-					"Checksum file PGP signature verification failed with public key from %q file. "+
-						"Falling back to %s", pubKeyFilename, legacyBuiltinKeyIdentifier,
-				)
+			// Fail fast if there is no legacy builtin PGP public key to fall back to
+			if product.GetPublicKeyLegacyLiteral() == "" {
+				return "", errors.New("Signature of checksum file could not be verified")
+			}
 
-				tmpFile, err := os.CreateTemp("", "tfswitch.pubkey.asc.*")
-				if err != nil {
-					logger.Errorf("Error creating temporary file for %s: %v", legacyBuiltinKeyIdentifier, err)
-					os.Remove(targetFile.Name())
-					return "", err
-				}
+			legacyBuiltinKeyIdentifier := "legacy builtin PGP public key"
+			logger.Warnf(
+				"Checksum file PGP signature verification failed with public key from %q file. "+
+					"Falling back to %s", pubKeyFilename, legacyBuiltinKeyIdentifier,
+			)
 
-				defer tmpFile.Close()
-				defer os.Remove(tmpFile.Name())
+			tmpFile, err := os.CreateTemp("", "tfswitch.pubkey.asc.*")
+			if err != nil {
+				logger.Errorf("Error creating temporary file for %s: %v", legacyBuiltinKeyIdentifier, err)
+				os.Remove(targetFile.Name())
+				return "", err
+			}
 
-				if _, err := tmpFile.WriteString(product.GetPublicKeyLegacyLiteral()); err != nil {
-					logger.Errorf("Error writing %s to temporary file: %v", legacyBuiltinKeyIdentifier, err)
-					os.Remove(targetFile.Name())
-					return "", err
-				}
+			defer tmpFile.Close()
+			defer os.Remove(tmpFile.Name())
 
-				tmpFile, err = os.Open(tmpFile.Name())
-				if err != nil {
-					logger.Errorf("Could not open temporary %s file %q: %v", legacyBuiltinKeyIdentifier, tmpFile, err)
-					os.Remove(targetFile.Name())
-					return "", err
-				}
+			if _, err := tmpFile.WriteString(product.GetPublicKeyLegacyLiteral()); err != nil {
+				logger.Errorf("Error writing %s to temporary file: %v", legacyBuiltinKeyIdentifier, err)
+				os.Remove(targetFile.Name())
+				return "", err
+			}
 
-				signatureFile, err := os.Open(hashSigFilePath)
-				if err != nil {
-					logger.Errorf("Could not open hash signature file %q: %v", hashSigFilePath, err)
-					return "", err
-				}
+			tmpFile, err = os.Open(tmpFile.Name())
+			if err != nil {
+				logger.Errorf("Could not open temporary %s file %q: %v", legacyBuiltinKeyIdentifier, tmpFile, err)
+				os.Remove(targetFile.Name())
+				return "", err
+			}
 
-				hashFile, err := os.Open(hashFilePath)
-				if err != nil {
-					logger.Errorf("Could not open hash file %q: %v", hashFilePath, err)
-					return "", err
-				}
+			signatureFile, err := os.Open(hashSigFilePath)
+			if err != nil {
+				logger.Errorf("Could not open hash signature file %q: %v", hashSigFilePath, err)
+				return "", err
+			}
 
-				verified := checkSignatureOfChecksums(tmpFile, hashFile, signatureFile)
-				if !verified {
-					logger.Error("Signature of checksum file could not be verified with %s either", legacyBuiltinKeyIdentifier)
-					os.Remove(targetFile.Name())
-					return "", errors.New("Signature of checksum file could not be verified")
-				}
+			hashFile, err := os.Open(hashFilePath)
+			if err != nil {
+				logger.Errorf("Could not open hash file %q: %v", hashFilePath, err)
+				return "", err
+			}
+
+			verified := checkSignatureOfChecksums(tmpFile, hashFile, signatureFile)
+			if !verified {
+				logger.Error("Signature of checksum file could not be verified with %s either", legacyBuiltinKeyIdentifier)
+				os.Remove(targetFile.Name())
+				return "", errors.New("Signature of checksum file could not be verified")
 			}
 		}
 	}
