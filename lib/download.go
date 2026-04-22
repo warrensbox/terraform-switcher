@@ -61,12 +61,14 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 		logger.Errorf("Could not open public key %q: %v", pubKeyFilename, err)
 		return "", err
 	}
+	defer publicKeyFile.Close()
 
 	signatureFile, err := os.Open(hashSigFilePath)
 	if err != nil {
 		logger.Errorf("Could not open hash signature file %q: %v", hashSigFilePath, err)
 		return "", err
 	}
+	defer signatureFile.Close()
 
 	targetFile, err := os.Open(zipFilePath)
 	if err != nil {
@@ -79,17 +81,12 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 		logger.Errorf("Could not open hash file %q: %v", hashFilePath, err)
 		return "", err
 	}
+	defer hashFile.Close()
 
 	var filesToCleanup []string
 	filesToCleanup = append(filesToCleanup, hashFilePath)
 	filesToCleanup = append(filesToCleanup, hashSigFilePath)
 	defer cleanup(filesToCleanup, &wg)
-
-	var fileHandlersToClose []*os.File
-	fileHandlersToClose = append(fileHandlersToClose, publicKeyFile)
-	fileHandlersToClose = append(fileHandlersToClose, hashFile)
-	fileHandlersToClose = append(fileHandlersToClose, signatureFile)
-	defer closeFileHandlers(fileHandlersToClose)
 
 	// CAUTION: Skip PGP signature verification of checksum file if TF_SKIP_SIGNATURE_VERIFICATION
 	// environment variable is set to true-ish value: 1, t, T, TRUE, true, True
