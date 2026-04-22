@@ -2,7 +2,6 @@ package lib
 
 import (
 	"os"
-	"path/filepath"
 	"slices"
 	"strings"
 	"sync"
@@ -94,26 +93,6 @@ func signDetached(t *testing.T, key *crypto.Key, payload []byte) []byte {
 	return sig
 }
 
-// writeReadableTempFile writes content to a fresh file under t.TempDir()
-// and returns it opened read-only. checkSignatureOfChecksums closes every
-// file it receives, so each test hands out its own handle. A t.Cleanup is
-// registered to close the handle even when a test aborts before
-// checkSignatureOfChecksums runs; os.File.Close on an already-closed file
-// is harmless (returns an error we ignore), so the belt-and-braces is safe.
-func writeReadableTempFile(t *testing.T, name string, content []byte) *os.File {
-	t.Helper()
-	path := filepath.Join(t.TempDir(), name)
-	if err := os.WriteFile(path, content, 0o600); err != nil {
-		t.Fatalf("WriteFile: %v", err)
-	}
-	f, err := os.Open(path)
-	if err != nil {
-		t.Fatalf("Open: %v", err)
-	}
-	t.Cleanup(func() { _ = f.Close() })
-	return f
-}
-
 func Test_parsePublicKeys_singleBlock(t *testing.T) {
 	InitLogger("DEBUG")
 	keyA, _, _ := sharedTestKeys(t)
@@ -183,11 +162,7 @@ func Test_checkSignatureOfChecksums_singleKey(t *testing.T) {
 	payload := []byte("abc123  terraform_1.7.5_linux_amd64.zip\n")
 	signature := signDetached(t, keyA, payload)
 
-	keyFile := writeReadableTempFile(t, "pubkey.asc", []byte(armoredPublicKey(t, keyA)))
-	hashFile := writeReadableTempFile(t, "SHA256SUMS", payload)
-	sigFile := writeReadableTempFile(t, "SHA256SUMS.sig", signature)
-
-	if !checkSignatureOfChecksums(keyFile, hashFile, sigFile) {
+	if !checkSignatureOfChecksums([]byte(armoredPublicKey(t, keyA)), payload, signature) {
 		t.Fatal("checkSignatureOfChecksums returned false for a single-key happy path")
 	}
 }
@@ -199,11 +174,7 @@ func Test_checkSignatureOfChecksums_signerIsFirst(t *testing.T) {
 	signature := signDetached(t, keyA, payload)
 	keyring := armoredPublicKey(t, keyA) + "\n" + armoredPublicKey(t, keyB)
 
-	keyFile := writeReadableTempFile(t, "pubkey.asc", []byte(keyring))
-	hashFile := writeReadableTempFile(t, "SHA256SUMS", payload)
-	sigFile := writeReadableTempFile(t, "SHA256SUMS.sig", signature)
-
-	if !checkSignatureOfChecksums(keyFile, hashFile, sigFile) {
+	if !checkSignatureOfChecksums([]byte(keyring), payload, signature) {
 		t.Fatal("checkSignatureOfChecksums returned false with signer at position 0")
 	}
 }
@@ -219,11 +190,7 @@ func Test_checkSignatureOfChecksums_signerIsSecond(t *testing.T) {
 	signature := signDetached(t, keyB, payload)
 	keyring := armoredPublicKey(t, keyA) + "\n" + armoredPublicKey(t, keyB)
 
-	keyFile := writeReadableTempFile(t, "pubkey.asc", []byte(keyring))
-	hashFile := writeReadableTempFile(t, "SHA256SUMS", payload)
-	sigFile := writeReadableTempFile(t, "SHA256SUMS.sig", signature)
-
-	if !checkSignatureOfChecksums(keyFile, hashFile, sigFile) {
+	if !checkSignatureOfChecksums([]byte(keyring), payload, signature) {
 		t.Fatal("checkSignatureOfChecksums returned false with signer at position 1 (GitHub issue #746 scenario)")
 	}
 }
@@ -235,11 +202,7 @@ func Test_checkSignatureOfChecksums_noMatchingKey(t *testing.T) {
 	signature := signDetached(t, keyC, payload)
 	keyring := armoredPublicKey(t, keyA) + "\n" + armoredPublicKey(t, keyB)
 
-	keyFile := writeReadableTempFile(t, "pubkey.asc", []byte(keyring))
-	hashFile := writeReadableTempFile(t, "SHA256SUMS", payload)
-	sigFile := writeReadableTempFile(t, "SHA256SUMS.sig", signature)
-
-	if checkSignatureOfChecksums(keyFile, hashFile, sigFile) {
+	if checkSignatureOfChecksums([]byte(keyring), payload, signature) {
 		t.Fatal("checkSignatureOfChecksums returned true for signature made by a key not in the file")
 	}
 }
@@ -250,11 +213,7 @@ func Test_checkSignatureOfChecksums_malformedKeyFile(t *testing.T) {
 	payload := []byte("abc123  terraform_1.7.5_linux_amd64.zip\n")
 	signature := signDetached(t, keyA, payload)
 
-	keyFile := writeReadableTempFile(t, "pubkey.asc", []byte("this is definitely not a PGP key"))
-	hashFile := writeReadableTempFile(t, "SHA256SUMS", payload)
-	sigFile := writeReadableTempFile(t, "SHA256SUMS.sig", signature)
-
-	if checkSignatureOfChecksums(keyFile, hashFile, sigFile) {
+	if checkSignatureOfChecksums([]byte("this is definitely not a PGP key"), payload, signature) {
 		t.Fatal("checkSignatureOfChecksums returned true for a malformed key file")
 	}
 	// Guard against strings.Split silently "parsing" a file that contains the
@@ -263,10 +222,7 @@ func Test_checkSignatureOfChecksums_malformedKeyFile(t *testing.T) {
 	if !strings.Contains(junkWithMarker, pgpPublicKeyBegin) {
 		t.Fatal("test fixture lost BEGIN marker; check constant")
 	}
-	keyFile2 := writeReadableTempFile(t, "pubkey2.asc", []byte(junkWithMarker))
-	hashFile2 := writeReadableTempFile(t, "SHA256SUMS", payload)
-	sigFile2 := writeReadableTempFile(t, "SHA256SUMS.sig", signature)
-	if checkSignatureOfChecksums(keyFile2, hashFile2, sigFile2) {
+	if checkSignatureOfChecksums([]byte(junkWithMarker), payload, signature) {
 		t.Fatal("checkSignatureOfChecksums returned true for a file with only a malformed armored block")
 	}
 }

@@ -44,9 +44,6 @@ func getChecksumFromHashFile(signatureFilePath string, terraformFileName string)
 // checkChecksumMatches This will calculate and compare the check sum of the downloaded zip file
 func checkChecksumMatches(hashFile string, targetFile *os.File) bool {
 	logger.Debugf("Checksum comparison for %q", targetFile.Name())
-	var fileHandlersToClose []*os.File
-	fileHandlersToClose = append(fileHandlersToClose, targetFile)
-	defer closeFileHandlers(fileHandlersToClose)
 
 	_, fileName := filepath.Split(targetFile.Name())
 	expectedChecksum, err := getChecksumFromHashFile(hashFile, fileName)
@@ -81,12 +78,10 @@ func parsePublicKeys(armored string) ([]*crypto.Key, error) {
 	// body of one block. Re-prepending the marker rather than trimming
 	// preserves the mandatory blank line between the marker/headers and
 	// the base64 payload that RFC 4880 armor requires.
+	// Along with that, skip the part[0] altogether.
 	parts := strings.Split(armored, pgpPublicKeyBegin)
 	keys := make([]*crypto.Key, 0, len(parts)-1)
-	for i, part := range parts {
-		if i == 0 {
-			continue
-		}
+	for i, part := range parts[1:] {
 		block := pgpPublicKeyBegin + part
 		key, err := crypto.NewKeyFromArmored(block)
 		if err != nil {
@@ -102,36 +97,10 @@ func parsePublicKeys(armored string) ([]*crypto.Key, error) {
 }
 
 // checkSignatureOfChecksums This will verify the signature of the file containing the hash sums
-func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFile *os.File) bool {
-	var fileHandlersToClose []*os.File
-	fileHandlersToClose = append(fileHandlersToClose, keyFile)
-	fileHandlersToClose = append(fileHandlersToClose, hashFile)
-	fileHandlersToClose = append(fileHandlersToClose, signatureFile)
-	defer closeFileHandlers(fileHandlersToClose)
-
-	logger.Infof("Verifying PGP signature of checksum file: %q", hashFile.Name())
-
-	keyFileContent, err := io.ReadAll(keyFile)
-	if err != nil {
-		logger.Errorf("Could not read PGP key file %q: %v", keyFile.Name(), err)
-		return false
-	}
-
-	hashFileContent, err := io.ReadAll(hashFile)
-	if err != nil {
-		logger.Errorf("Could not read hash file %q: %v", hashFile.Name(), err)
-		return false
-	}
-
-	signatureContent, err := io.ReadAll(signatureFile)
-	if err != nil {
-		logger.Errorf("Could not read PGP signature file %q: %v", signatureFile.Name(), err)
-		return false
-	}
-
+func checkSignatureOfChecksums(keyFileContent []byte, hashFileContent []byte, signatureContent []byte) bool {
 	keys, err := parsePublicKeys(string(keyFileContent))
 	if err != nil {
-		logger.Errorf("Could not parse PGP keys from %q: %v", keyFile.Name(), err)
+		logger.Errorf("Could not parse PGP keys: %v", err)
 		return false
 	}
 
