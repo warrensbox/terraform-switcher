@@ -19,7 +19,6 @@ func DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos,
 	return DownloadProductFromURL(product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch)
 }
 
-//nolint:gocyclo
 func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch string) (string, error) {
 	var wg sync.WaitGroup
 	defer wg.Done()
@@ -109,8 +108,7 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 	return zipFilePath, err
 }
 
-// verifySignature: Verify signature of hash file.
-// If
+// verifySignature: Verify signature of checksum (hash) file
 func verifySignature(product Product, publicKeyFile, hashFile, signatureFile *os.File) (bool, error) {
 	// CAUTION: Skip PGP signature verification of checksum file if TF_SKIP_SIGNATURE_VERIFICATION
 	// environment variable is set to true-ish value: 1, t, T, TRUE, true, True
@@ -125,7 +123,6 @@ func verifySignature(product Product, publicKeyFile, hashFile, signatureFile *os
 			"Unable to parse \"TF_SKIP_SIGNATURE_VERIFICATION\" env var value %q, defaulting to \"false\"",
 			skipSignatureVerificationStr,
 		)
-		return true, nil
 	}
 
 	if skipSignatureVerification {
