@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Fixed
 
-- fix(pgp): Fallback to legacy builtin PGP key [#753](https://github.com/warrensbox/terraform-switcher/pull/753) ([yermulnik](https://github.com/yermulnik))
+- fix(pgp): Fallback to legacy builtin PGP key [#753](https://github.com/warrensbox/terraform-switcher/pull/753) ([yermulnik](https://github.com/yermulnik) / [MatthewJohn](https://github.com/MatthewJohn))
 - fix(pgp): Re-work signature verification with multiple keys [#749](https://github.com/warrensbox/terraform-switcher/pull/749) ([yermulnik](https://github.com/yermulnik))
 
 ### Other
