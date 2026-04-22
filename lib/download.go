@@ -128,8 +128,8 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 			)
 
 			tmpFile, tmpFileErr := os.CreateTemp("", "tfswitch.pubkey.asc.*")
-			if err != nil {
-				logger.Errorf("Error creating temporary file for %s: %v", legacyBuiltinKeyIdentifier, err)
+			if tmpFileErr != nil {
+				logger.Errorf("Error creating temporary file for %s: %v", legacyBuiltinKeyIdentifier, tmpFileErr)
 				targetFile.Close()
 				os.Remove(targetFile.Name())
 				return "", tmpFileErr
@@ -139,30 +139,30 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 			defer os.Remove(tmpFile.Name())
 
 			if _, writeStringErr := tmpFile.WriteString(product.GetPublicKeyLegacyLiteral()); writeStringErr != nil {
-				logger.Errorf("Error writing %s to temporary file: %v", legacyBuiltinKeyIdentifier, err)
+				logger.Errorf("Error writing %s to temporary file: %v", legacyBuiltinKeyIdentifier, writeStringErr)
 				targetFile.Close()
 				os.Remove(targetFile.Name())
 				return "", writeStringErr
 			}
 
-			tmpFile, err = os.Open(tmpFile.Name())
-			if err != nil {
-				logger.Errorf("Could not open temporary %s file %q: %v", legacyBuiltinKeyIdentifier, tmpFile.Name(), err)
+			tmpFile, tmpFileErr = os.Open(tmpFile.Name())
+			if tmpFileErr != nil {
+				logger.Errorf("Could not open temporary %s file %q: %v", legacyBuiltinKeyIdentifier, tmpFile.Name(), tmpFileErr)
 				targetFile.Close()
 				os.Remove(targetFile.Name())
-				return "", err
+				return "", tmpFileErr
 			}
 
-			signatureFile, err := os.Open(hashSigFilePath)
-			if err != nil {
-				logger.Errorf("Could not open hash signature file %q: %v", hashSigFilePath, err)
-				return "", err
+			signatureFile, signatureFileErr := os.Open(hashSigFilePath)
+			if signatureFileErr != nil {
+				logger.Errorf("Could not open hash signature file %q: %v", hashSigFilePath, signatureFileErr)
+				return "", signatureFileErr
 			}
 
-			hashFile, err := os.Open(hashFilePath)
-			if err != nil {
-				logger.Errorf("Could not open hash file %q: %v", hashFilePath, err)
-				return "", err
+			hashFile, hashFileErr := os.Open(hashFilePath)
+			if hashFileErr != nil {
+				logger.Errorf("Could not open hash file %q: %v", hashFilePath, hashFileErr)
+				return "", hashFileErr
 			}
 
 			verified := checkSignatureOfChecksums(tmpFile, hashFile, signatureFile)
