@@ -7,6 +7,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.17.1](https://github.com/warrensbox/terraform-switcher/tree/v1.17.1) - 2026-04-21
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.17.0...v1.17.1)
+
+### Fixed
+
+- fix(pgp): Fallback to legacy builtin PGP key [#753](https://github.com/warrensbox/terraform-switcher/pull/753) ([yermulnik](https://github.com/yermulnik) / [MatthewJohn](https://github.com/MatthewJohn))
+- fix(pgp): Re-work signature verification with multiple keys [#749](https://github.com/warrensbox/terraform-switcher/pull/749) ([yermulnik](https://github.com/yermulnik))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.17.1` [#752](https://github.com/warrensbox/terraform-switcher/pull/752) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.17.0](https://github.com/warrensbox/terraform-switcher/tree/v1.17.0) - 2026-04-21
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.16.0...v1.17.0)
