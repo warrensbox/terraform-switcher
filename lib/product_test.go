@@ -26,7 +26,7 @@ func Test_GetProductById(t *testing.T) {
 		}
 	}
 
-	// Test case-insensitve match
+	// Test case-insensitive match
 	product = GetProductById("oPeNtOfU")
 	if product == nil {
 		t.Errorf("Terraform product returned nil")

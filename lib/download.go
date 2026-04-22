@@ -18,6 +18,7 @@ func DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos,
 	return DownloadProductFromURL(product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch)
 }
 
+//nolint:gocyclo
 func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch string) (string, error) {
 	var wg sync.WaitGroup
 	defer wg.Done()
@@ -126,22 +127,22 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 					"Falling back to %s", pubKeyFilename, legacyBuiltinKeyIdentifier,
 			)
 
-			tmpFile, err := os.CreateTemp("", "tfswitch.pubkey.asc.*")
+			tmpFile, tmpFileErr := os.CreateTemp("", "tfswitch.pubkey.asc.*")
 			if err != nil {
 				logger.Errorf("Error creating temporary file for %s: %v", legacyBuiltinKeyIdentifier, err)
 				targetFile.Close()
 				os.Remove(targetFile.Name())
-				return "", err
+				return "", tmpFileErr
 			}
 
 			defer tmpFile.Close()
 			defer os.Remove(tmpFile.Name())
 
-			if _, err := tmpFile.WriteString(product.GetPublicKeyLegacyLiteral()); err != nil {
+			if _, writeStringErr := tmpFile.WriteString(product.GetPublicKeyLegacyLiteral()); writeStringErr != nil {
 				logger.Errorf("Error writing %s to temporary file: %v", legacyBuiltinKeyIdentifier, err)
 				targetFile.Close()
 				os.Remove(targetFile.Name())
-				return "", err
+				return "", writeStringErr
 			}
 
 			tmpFile, err = os.Open(tmpFile.Name())
