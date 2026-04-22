@@ -84,6 +84,12 @@ func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversi
 	filesToCleanup = append(filesToCleanup, hashSigFilePath)
 	defer cleanup(filesToCleanup, &wg)
 
+	var fileHandlersToClose []*os.File
+	fileHandlersToClose = append(fileHandlersToClose, publicKeyFile)
+	fileHandlersToClose = append(fileHandlersToClose, hashFile)
+	fileHandlersToClose = append(fileHandlersToClose, signatureFile)
+	defer closeFileHandlers(fileHandlersToClose)
+
 	// CAUTION: Skip PGP signature verification of checksum file if TF_SKIP_SIGNATURE_VERIFICATION
 	// environment variable is set to true-ish value: 1, t, T, TRUE, true, True
 	// THIS IS NOT RECOMMENDED AND SHOULD ONLY BE USED FOR TESTING PURPOSES!
