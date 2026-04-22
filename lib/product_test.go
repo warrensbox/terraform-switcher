@@ -26,7 +26,7 @@ func Test_GetProductById(t *testing.T) {
 		}
 	}
 
-	// Test case-insensitve match
+	// Test case-insensitive match
 	product = GetProductById("oPeNtOfU")
 	if product == nil {
 		t.Errorf("Terraform product returned nil")
@@ -113,6 +113,13 @@ func Test_GetPublicKeyURLs_Terraform(t *testing.T) {
 	actual := product.GetPublicKeyURLs()
 	if !slices.Equal(expected, actual) {
 		t.Errorf("Product GetPublicKeyURLs does not match expected ID. Expected: %q, actual: %q", strings.Join(expected, ","), strings.Join(actual, ","))
+	}
+}
+
+func Test_GetPublicKeyLegacyLiteral_Terraform(t *testing.T) {
+	product := GetProductById("terraform")
+	if product.GetPublicKeyLegacyLiteral() == "" {
+		t.Error("Product GetPublicKeyLegacyLiteral is empty")
 	}
 }
 
@@ -230,6 +237,13 @@ func Test_GetPublicKeyUrl_OpenTofu(t *testing.T) {
 	actual := product.GetPublicKeyURLs()
 	if !slices.Equal(expected, actual) {
 		t.Errorf("Product GetPublicKeyURLs does not match expected ID. Expected: %q, actual: %q", strings.Join(expected, ","), strings.Join(actual, ","))
+	}
+}
+
+func Test_GetPublicKeyLegacyLiteral_OpenTofu(t *testing.T) {
+	product := GetProductById("opentofu")
+	if product.GetPublicKeyLegacyLiteral() != "" {
+		t.Error("Product GetPublicKeyLegacyLiteral is NOT empty")
 	}
 }
 

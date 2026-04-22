@@ -19,13 +19,6 @@ func FileExistsAndIsNotDir(filename string) bool {
 	return !info.IsDir()
 }
 
-func closeFileHandlers(handlers []*os.File) {
-	for _, handler := range handlers {
-		logger.Debugf("Closing file handler %q", handler.Name())
-		_ = handler.Close()
-	}
-}
-
 func UsageMessage() {
 	getopt.PrintUsage(os.Stderr)
 }
