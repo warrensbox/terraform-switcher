@@ -1,3 +1,4 @@
+//nolint:staticcheck //ST1005: error strings should not be capitalized (staticcheck)
 package lib
 
 import (
@@ -5,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -42,9 +44,6 @@ func getChecksumFromHashFile(signatureFilePath string, terraformFileName string)
 // checkChecksumMatches This will calculate and compare the check sum of the downloaded zip file
 func checkChecksumMatches(hashFile string, targetFile *os.File) bool {
 	logger.Debugf("Checksum comparison for %q", targetFile.Name())
-	var fileHandlersToClose []*os.File
-	fileHandlersToClose = append(fileHandlersToClose, targetFile)
-	defer closeFileHandlers(fileHandlersToClose)
 
 	_, fileName := filepath.Split(targetFile.Name())
 	expectedChecksum, err := getChecksumFromHashFile(hashFile, fileName)
@@ -79,12 +78,10 @@ func parsePublicKeys(armored string) ([]*crypto.Key, error) {
 	// body of one block. Re-prepending the marker rather than trimming
 	// preserves the mandatory blank line between the marker/headers and
 	// the base64 payload that RFC 4880 armor requires.
+	// Along with that, skip the part[0] altogether.
 	parts := strings.Split(armored, pgpPublicKeyBegin)
 	keys := make([]*crypto.Key, 0, len(parts)-1)
-	for i, part := range parts {
-		if i == 0 {
-			continue
-		}
+	for i, part := range parts[1:] {
 		block := pgpPublicKeyBegin + part
 		key, err := crypto.NewKeyFromArmored(block)
 		if err != nil {
@@ -100,64 +97,53 @@ func parsePublicKeys(armored string) ([]*crypto.Key, error) {
 }
 
 // checkSignatureOfChecksums This will verify the signature of the file containing the hash sums
-func checkSignatureOfChecksums(keyFile *os.File, hashFile *os.File, signatureFile *os.File) bool {
-	var fileHandlersToClose []*os.File
-	fileHandlersToClose = append(fileHandlersToClose, keyFile)
-	fileHandlersToClose = append(fileHandlersToClose, hashFile)
-	fileHandlersToClose = append(fileHandlersToClose, signatureFile)
-	defer closeFileHandlers(fileHandlersToClose)
-
-	logger.Infof("Verifying PGP signature of checksum file: %q", hashFile.Name())
-
-	keyFileContent, err := io.ReadAll(keyFile)
-	if err != nil {
-		logger.Errorf("Could not read PGP key file %q: %v", keyFile.Name(), err)
-		return false
-	}
-
+func checkSignatureOfChecksums(keyFileContent []byte, hashFileContent []byte, signatureContent []byte) bool {
 	keys, err := parsePublicKeys(string(keyFileContent))
 	if err != nil {
-		logger.Errorf("Could not parse PGP keys from %q: %v", keyFile.Name(), err)
+		logger.Errorf("Could not parse PGP keys: %v", err)
 		return false
 	}
 
-	verifyBuilder := crypto.PGP().Verify()
-	// Parse every armored block from the key file and register each parsed key
-	// with verify handle builder. Successive VerificationKey() calls append
-	// to the builder's internal keyring, and the key matching the signature's
-	// KeyID is picked automatically.
-	for key := range slices.Values(keys) {
-		verifyBuilder = verifyBuilder.VerificationKey(key)
-	}
-	signingKey, err := verifyBuilder.New()
-	if err != nil {
-		logger.Errorf("Could not read PGP signing key: %v", err)
-		return false
+	var verificationErrors []error
+	for idx, key := range keys {
+		logger.Debugf(
+			"Trying to verify PGP signature using key №%d (out of %d) with fingerprint %q",
+			idx+1, len(keys), key.GetFingerprint(),
+		)
+
+		verifier, err := crypto.PGP().Verify().VerificationKey(key).New()
+		if err != nil {
+			verificationErrors = append(verificationErrors, fmt.Errorf(
+				"Could not read PGP signing key №%d (out of %d): %v",
+				idx+1, len(keys), err,
+			))
+			continue
+		}
+
+		verifyRes, err := verifier.VerifyDetached(hashFileContent, signatureContent, crypto.Auto)
+		if err != nil {
+			verificationErrors = append(verificationErrors, fmt.Errorf(
+				"Could not verify detached signature PGP message using key №%d (out of %d): %v",
+				idx+1, len(keys), err,
+			))
+			continue
+		}
+
+		if err := verifyRes.SignatureError(); err != nil {
+			verificationErrors = append(verificationErrors, fmt.Errorf(
+				"Could not verify PGP signature using key №%d (out of %d): %v",
+				idx+1, len(keys), err,
+			))
+			continue
+		}
+
+		logger.Info("Checksum file PGP signature verification successful")
+		return true
 	}
 
-	hashFileContent, err := io.ReadAll(hashFile)
-	if err != nil {
-		logger.Errorf("Could not read hash file %q: %v", hashFile.Name(), err)
-		return false
+	// Print errors once (if any)
+	for verificationError := range slices.Values(verificationErrors) {
+		logger.Error(verificationError)
 	}
-
-	signatureContent, err := io.ReadAll(signatureFile)
-	if err != nil {
-		logger.Errorf("Could not read PGP signature file %q: %v", signatureFile.Name(), err)
-		return false
-	}
-
-	verifyRes, err := signingKey.VerifyDetached(hashFileContent, signatureContent, crypto.Auto)
-	if err != nil {
-		logger.Errorf("Could not verify detached signature PGP message: %v", err)
-		return false
-	}
-
-	if err := verifyRes.SignatureError(); err != nil {
-		logger.Errorf("Could not verify PGP signature using %d loaded keys from %q: %v", len(keys), keyFile.Name(), err)
-		return false
-	}
-
-	logger.Info("Checksum file PGP signature verification successful")
-	return true
+	return false
 }
