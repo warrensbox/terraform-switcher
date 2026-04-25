@@ -93,17 +93,17 @@ func Test_GetArchivePrefix_Terraform(t *testing.T) {
 
 func Test_GetArtifactUrl_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
-	actual := product.GetArtifactUrl("https://example.com/terraform", "5.3.2")
-	if expected := "https://example.com/terraform/5.3.2"; actual != expected {
-		t.Errorf("Product GetArtifactUrl does not match expected ID. Expected: %q, actual: %q", expected, actual)
+	actual := product.GetArtifactUrl("https://example.com/terraform", "random-meaningless-value")
+	if expected := "https://example.com/terraform/random-meaningless-value"; actual != expected {
+		t.Errorf("Product GetArtifactUrl match failed. Expected: %q, actual: %q", expected, actual)
 	}
 }
 
 func Test_GetArtifactUrl_Terraform_DefaultMirror(t *testing.T) {
 	product := GetProductById("terraform")
-	actual := product.GetArtifactUrl(product.GetDefaultMirrorUrl(), "5.3.2")
-	if expected := "https://releases.hashicorp.com/terraform/5.3.2"; actual != expected {
-		t.Errorf("Product GetArtifactUrl does not match expected ID. Expected: %q, actual: %q", expected, actual)
+	actual := product.GetArtifactUrl(product.GetDefaultMirrorUrl(), "random-meaningless-value")
+	if expected := "https://releases.hashicorp.com/terraform/random-meaningless-value"; actual != expected {
+		t.Errorf("Product GetArtifactUrl match failed. Expected: %q, actual: %q", expected, actual)
 	}
 }
 
@@ -225,17 +225,17 @@ func Test_GetArchivePrefix_OpenTofu(t *testing.T) {
 
 func Test_GetArtifactUrl_OpenTofu(t *testing.T) {
 	product := GetProductById("opentofu")
-	actual := product.GetArtifactUrl("https://example.com/opentofu", "5.3.2")
-	if expected := "https://github.com/opentofu/opentofu/releases/download/v5.3.2"; actual != expected {
-		t.Errorf("Product GetArtifactUrl does not match expected ID. Expected: %q, actual: %q", expected, actual)
+	actual := product.GetArtifactUrl("https://example.com/opentofu", "random-meaningless-value")
+	if expected := "https://github.com/opentofu/opentofu/releases/download/vrandom-meaningless-value"; actual != expected {
+		t.Errorf("Product GetArtifactUrl match failed. Expected: %q, actual: %q", expected, actual)
 	}
 }
 
 func Test_GetArtifactUrl_OpenTofu_DefaultMirror(t *testing.T) {
 	product := GetProductById("opentofu")
-	actual := product.GetArtifactUrl(product.GetDefaultMirrorUrl(), "5.3.2")
-	if expected := "https://github.com/opentofu/opentofu/releases/download/v5.3.2"; actual != expected {
-		t.Errorf("Product GetArtifactUrl does not match expected ID. Expected: %q, actual: %q", expected, actual)
+	actual := product.GetArtifactUrl(product.GetDefaultMirrorUrl(), "random-meaningless-value")
+	if expected := "https://github.com/opentofu/opentofu/releases/download/vrandom-meaningless-value"; actual != expected {
+		t.Errorf("Product GetArtifactUrl match failed. Expected: %q, actual: %q", expected, actual)
 	}
 }
 
