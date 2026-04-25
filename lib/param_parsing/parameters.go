@@ -20,6 +20,7 @@ type Params struct {
 	CustomBinaryPath        string
 	DefaultVersion          string
 	DryRun                  bool
+	ExplicitTFVFileVersion  bool
 	ForceColor              bool
 	HelpFlag                bool
 	InstallPath             string
@@ -97,6 +98,7 @@ func populateParams(params Params) Params {
 
 	// Bool params
 	getopt.BoolVarLong(&params.DryRun, "dry-run", 'r', "Only show what tfswitch would do. Don't download anything")
+	getopt.BoolVarLong(&params.ExplicitTFVFileVersion, "explicit-tfversion", 'e', "Sets higher priority for .terraform-version file")
 	getopt.BoolVarLong(&params.ForceColor, "force-color", 'K', "Force color output if terminal supports it")
 	getopt.BoolVarLong(&params.HelpFlag, "help", 'h', "Display help message")
 	getopt.BoolVarLong(&params.LatestFlag, "latest", 'u', "Get latest stable version")

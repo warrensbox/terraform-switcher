@@ -157,6 +157,9 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 	}
 
 	if params.MatchVersionRequirement == "" {
+		if params.ExplicitTFVFileVersion {
+			params.VersionRequirement = fmt.Sprintf("%s, %s", params.VersionRequirement, params.Version)
+		}
 		version, err2 := lib.GetSemver(params.VersionRequirement, params.MirrorURL)
 		if err2 != nil {
 			logger.Errorf("No version found matching %q", params.VersionRequirement)

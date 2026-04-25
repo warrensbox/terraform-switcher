@@ -43,6 +43,64 @@ func TestGetParameters_version_from_args(t *testing.T) {
 	})
 }
 
+func TestGetParameters_explicitTFVersionFlag_from_args(t *testing.T) {
+	os.Args = []string{"cmd", "--version", "--explicit-tfversion"}
+	params := GetParameters()
+	actual := params.ExplicitTFVFileVersion
+	if !params.ExplicitTFVFileVersion {
+		t.Errorf("ExplicitTFVFileVersion param was not parsed correctly. Actual: %t, Expected: true", actual)
+	}
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
+}
+
+func TestGetParameters_explicitTFVersionFlag_applies_terraformVersion(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	expected := "../../test-data/integration-tests/test_explicit_tfversion"
+	os.Args = []string{"cmd", "--chdir=" + expected, "--explicit-tfversion"}
+	params := Params{}
+	params = initParams(params)
+	params.TomlDir = expected
+	params = populateParams(params)
+	actual := params.ExplicitTFVFileVersion
+	if !params.ExplicitTFVFileVersion {
+		t.Errorf("ExplicitTFVFileVersion param was not parsed correctly. Actual: %t, Expected: true", actual)
+	}
+
+	expectedVersion := "1.0.2"
+	if actualVersion := params.Version; actualVersion != expectedVersion {
+		t.Error("Version Param was not as expected. Actual: " + actualVersion + ", Expected: " + expectedVersion)
+	}
+
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
+}
+
+func TestGetParameters_withoutExplicitTFVersionFlag_uses_versiontf_constraint(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	expected := "../../test-data/integration-tests/test_explicit_tfversion"
+	os.Args = []string{"cmd", "--chdir=" + expected}
+	params := Params{}
+	params = initParams(params)
+	params.TomlDir = expected
+	params = populateParams(params)
+	actual := params.ExplicitTFVFileVersion
+	if params.ExplicitTFVFileVersion {
+		t.Errorf("ExplicitTFVFileVersion param was not parsed correctly. Actual: %t, Expected: false", actual)
+	}
+
+	expectedVersion := "1.0.5"
+	if actualVersion := params.Version; actualVersion != expectedVersion {
+		t.Error("Version Param was not as expected. Actual: " + actualVersion + ", Expected: " + expectedVersion)
+	}
+
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
+}
+
 func TestGetParameters_params_are_overridden_by_toml_file(t *testing.T) {
 	t.Cleanup(func() {
 		getopt.CommandLine = getopt.New()

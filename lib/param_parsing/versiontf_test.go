@@ -110,3 +110,27 @@ func TestGetVersionFromVersionsTF_non_existent_constraint(t *testing.T) {
 		}
 	}
 }
+
+func TestGetVersionFromVersionsTF_explicitTFVersion_conflicting_constraint(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	var params Params
+	params = initParams(params)
+	params.ChDirPath = "../../test-data/skip-integration-tests/test_explicit_tfversion_conflict"
+	params.MirrorURL = lib.GetProductById("terraform").GetDefaultMirrorUrl()
+
+	params, err := GetParamsFromTerraformVersion(params)
+	if err != nil {
+		t.Errorf("Error getting version from .terraform-version file: %v", err)
+	}
+
+	params.ExplicitTFVFileVersion = true
+	params, err = GetVersionFromVersionsTF(params)
+	if err == nil {
+		t.Error("Expected error got nil")
+	} else {
+		expected := "Did not find version matching constraint: ~> 1.0.0, <=1.0.5, 1.5.2"
+		if fmt.Sprint(err) != expected {
+			t.Errorf("Expected error %q, got %q", expected, err)
+		}
+	}
+}
