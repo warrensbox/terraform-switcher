@@ -77,8 +77,13 @@ The most recently selected versions are presented at the top of the dropdown.
 ## Use custom mirror
 
 To install from a remote mirror other than the default
-(<https://releases.hashicorp.com/terraform>). Use the `-m` or `--mirror`
+(<https://releases.hashicorp.com/terraform/index.json>). Use the `-m` or `--mirror`
 parameter.
+
+Whilst tfswitch does attempt to decode JSON and then fallback to attempting to
+decoding the format found in https://releases.hashicorp.com/terraform,
+for custom URLs, the binaries must available in sub-directories from the root mirror directory
+(mirroring the) format from the directory/archive tree structure of https://releases.hashicorp.com/terraform.
 
 ```bash
 tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp
