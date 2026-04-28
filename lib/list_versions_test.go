@@ -275,6 +275,7 @@ func TestGetTFLatestImplicit(t *testing.T) {
 		version         string
 		preRelease      bool
 		expectedVersion string
+		expectFailure   bool
 	}
 	hashicorpVersions := []versionTest{
 		{
@@ -291,6 +292,17 @@ func TestGetTFLatestImplicit(t *testing.T) {
 			version:         "0.12",
 			preRelease:      true,
 			expectedVersion: "0.12.3-beta1",
+		},
+		// Ensure that 12 doesn't match 0.12
+		{
+			version:       "12",
+			preRelease:    false,
+			expectFailure: true,
+		},
+		{
+			version:       "12",
+			preRelease:    true,
+			expectFailure: true,
 		},
 	}
 	opentofuVersions := []versionTest{
@@ -331,12 +343,13 @@ func TestGetTFLatestImplicit(t *testing.T) {
 					defer server.Close()
 
 					version, err := getTFLatestImplicit(test.product, fmt.Sprintf("%s/%s", server.URL, test.url), versionTest.preRelease, versionTest.version)
-					if err != nil {
-						t.Error(err)
+
+					if versionTest.expectFailure {
+						assert.Error(t, err)
+					} else {
+						assert.NoError(t, err)
 					}
-					if version != versionTest.expectedVersion {
-						t.Errorf("Expected latest version does not match. Expected: %s, actual: %s", versionTest.expectedVersion, version)
-					}
+					assert.Equal(t, versionTest.expectedVersion, version, "Expected latest version does not match")
 				})
 			}
 		})

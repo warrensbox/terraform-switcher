@@ -140,7 +140,8 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, ver
 	}
 
 	if preRelease {
-		semver := regexp.QuoteMeta(version) + regexSemVer.PreReleaseSuffix.String()
+		// Match start of string, the specified version, and regex suffix
+		semver := "^" + regexp.QuoteMeta(version) + regexSemVer.PreReleaseSuffix.String()
 		r, errReSemVer := regexp.Compile(semver)
 		if errReSemVer != nil {
 			return "", errReSemVer
@@ -150,6 +151,7 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, ver
 				return versionItem, nil
 			}
 		}
+		return "", fmt.Errorf("Did not find version matching constraint: ~> %v", version)
 	} else {
 		version = fmt.Sprintf("~> %v", version)
 		semv, err := SemVerParser(&version, tflist)
@@ -158,7 +160,6 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, ver
 		}
 		return semv, nil
 	}
-	return "", nil
 }
 
 // getTFURLBody : Get list of versions from the mirror URL
