@@ -144,7 +144,7 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, ver
 
 	if preRelease {
 		// Match start of string, the specified version, and regex suffix
-		semver := "^" + regexp.QuoteMeta(version) + regexSemVer.PreReleaseSuffix.String()
+		semver := "^" + regexp.QuoteMeta(version) + regexSemVer.PreReleaseSuffix.String() + "$"
 		r, errReSemVer := regexp.Compile(semver)
 		if errReSemVer != nil {
 			return "", errReSemVer
