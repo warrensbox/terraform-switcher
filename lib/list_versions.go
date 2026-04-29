@@ -45,8 +45,7 @@ func getVersionsFromJSON(product Product, body string, preRelease bool, tfVersio
 	semver = "^" + semver + "$"
 	r, err := regexp.Compile(semver)
 	if err != nil {
-		logger.Fatalf("Error compiling %q regex: %v", semver, err)
-		return err
+		return fmt.Errorf("Error compiling %q regex: %v", semver, err)
 	}
 
 	parsedVersions := make([]*version.Version, 0, len(versionList))
@@ -74,7 +73,7 @@ func getVersionsFromJSON(product Product, body string, preRelease bool, tfVersio
 	return nil
 }
 
-func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionList) {
+func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionList) error {
 	var semver string
 	// Without the ending '"' pre-release folders would be tried and break.
 	if preRelease {
@@ -84,17 +83,18 @@ func getVersionsFromBody(body string, preRelease bool, tfVersionList *tfVersionL
 	}
 	r, err := regexp.Compile(semver)
 	if err != nil {
-		logger.Fatalf("Error compiling %q regex: %v", semver, err)
+		return fmt.Errorf("Error compiling %q regex: %v", semver, err)
 	}
 
 	matches := r.FindAllString(body, -1)
 	if matches == nil {
-		return
+		return nil
 	}
 	for _, match := range matches {
 		trimstr := strings.Trim(match, "/\"") // remove '/' or '"' from /X.X.X/" or /X.X.X"
 		tfVersionList.tflist = append(tfVersionList.tflist, trimstr)
 	}
+	return nil
 }
 
 // getTFList : Get the list of available versions given the mirror URL
@@ -108,8 +108,11 @@ func getTFList(product Product, mirrorURL string, preRelease bool) ([]string, er
 	var tfVerList tfVersionList
 	err = getVersionsFromJSON(product, body, preRelease, &tfVerList)
 	if err != nil {
-		logger.Info("Failed to parse mirror response as JSON; falling back to extracting versions from raw body")
-		getVersionsFromBody(body, preRelease, &tfVerList)
+		logger.Info("Failed to parse mirror response as JSON; falling back to extracting versions from raw body: %e", err)
+		err = getVersionsFromBody(body, preRelease, &tfVerList)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if len(tfVerList.tflist) == 0 {

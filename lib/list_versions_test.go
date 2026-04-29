@@ -158,7 +158,8 @@ func getMockListVersionServer(config MockListVersionServerConfig) *httptest.Serv
 func TestGetVersionsFromBodyHashicorp(t *testing.T) {
 	logger = InitLogger("DEBUG")
 	var testTfVersionList tfVersionList
-	getVersionsFromBody(hashicorpBody, false, &testTfVersionList)
+	err := getVersionsFromBody(hashicorpBody, false, &testTfVersionList)
+	assert.NoError(t, err)
 	expectedVersion := []string{"0.12.2", "0.12.1", "0.12.0", "0.11.13"}
 	if err := compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
 		t.Errorf("Parsed version does not match expected versions: %v", err)
@@ -166,7 +167,8 @@ func TestGetVersionsFromBodyHashicorp(t *testing.T) {
 
 	// Test pre-release
 	var testTfVersionListPre tfVersionList
-	getVersionsFromBody(hashicorpBody, true, &testTfVersionListPre)
+	err = getVersionsFromBody(hashicorpBody, true, &testTfVersionListPre)
+	assert.NoError(t, err)
 	expectedVersion = []string{"0.12.3-beta1", "0.12.2", "0.12.1", "0.12.0", "0.12.0-rc1", "0.12.0-beta2", "0.11.13"}
 	if err := compareLists(testTfVersionListPre.tflist, expectedVersion); err != nil {
 		t.Errorf("Parsed version does not match expected versions: %v", err)
@@ -177,7 +179,8 @@ func TestGetVersionsFromBodyHashicorp(t *testing.T) {
 func TestGetVersionsFromBodyOpenTofu(t *testing.T) {
 	logger = InitLogger("DEBUG")
 	var testTfVersionList tfVersionList
-	getVersionsFromBody(openTofuBody, false, &testTfVersionList)
+	err := getVersionsFromBody(openTofuBody, false, &testTfVersionList)
+	assert.NoError(t, err)
 	expectedVersion := []string{"1.7.0", "1.6.2"}
 	if err := compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
 		t.Errorf("Parsed version does not match expected versions: %v", err)
@@ -185,7 +188,8 @@ func TestGetVersionsFromBodyOpenTofu(t *testing.T) {
 
 	// Test pre-release
 	var testTfVersionListPre tfVersionList
-	getVersionsFromBody(openTofuBody, true, &testTfVersionListPre)
+	err = getVersionsFromBody(openTofuBody, true, &testTfVersionListPre)
+	assert.NoError(t, err)
 	expectedVersion = []string{"1.7.1-beta1", "1.7.0", "1.7.0-rc1", "1.7.0-beta1", "1.7.0-alpha1", "1.6.2", "1.6.0-alpha1"}
 	if err := compareLists(testTfVersionListPre.tflist, expectedVersion); err != nil {
 		t.Errorf("Parsed version does not match expected versions: %v", err)
