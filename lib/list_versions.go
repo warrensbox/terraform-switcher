@@ -136,7 +136,7 @@ func getTFLatest(product Product, mirrorURL string) (string, error) {
 }
 
 // getTFLatestImplicit : Get the latest implicit version given the mirror URL
-func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, version string) (string, error) {
+func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, requestedVersion string) (string, error) {
 	tflist, errTFList := getTFList(product, mirrorURL, preRelease) // get list of versions
 	if errTFList != nil {
 		return "", fmt.Errorf("Error getting list of versions from %q: %v", mirrorURL, errTFList)
@@ -144,7 +144,7 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, ver
 
 	if preRelease {
 		// Match start of string, the specified version, and regex suffix
-		semver := "^" + regexp.QuoteMeta(version) + regexSemVer.PreReleaseSuffix.String() + "$"
+		semver := "^" + regexp.QuoteMeta(requestedVersion) + regexSemVer.PreReleaseSuffix.String() + "$"
 		r, errReSemVer := regexp.Compile(semver)
 		if errReSemVer != nil {
 			return "", errReSemVer
@@ -154,10 +154,10 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, ver
 				return versionItem, nil
 			}
 		}
-		return "", fmt.Errorf("Did not find version matching constraint: ~> %v", version)
+		return "", fmt.Errorf("Did not find version matching constraint: ~> %v", requestedVersion)
 	} else {
-		version = fmt.Sprintf("~> %v", version)
-		semv, err := SemVerParser(&version, tflist)
+		versionConstraint := fmt.Sprintf("~> %v", requestedVersion)
+		semv, err := SemVerParser(&versionConstraint, tflist)
 		if err != nil {
 			return "", err
 		}
