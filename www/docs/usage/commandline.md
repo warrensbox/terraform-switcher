@@ -77,7 +77,7 @@ The most recently selected versions are presented at the top of the dropdown.
 ## Use custom mirror
 
 To install from a remote mirror other than the default
-`<https://releases.hashicorp.com/terraform/index.json>`, use the `-m` or `--mirror`
+(`<https://releases.hashicorp.com/terraform/index.json>`), use the `-m` or `--mirror`
 parameter.
 
 `tfswitch` first attempts to decode JSON, then falls back to the directory and
