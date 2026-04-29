@@ -108,7 +108,7 @@ func getTFList(product Product, mirrorURL string, preRelease bool) ([]string, er
 	var tfVerList tfVersionList
 	err = getVersionsFromJSON(product, body, preRelease, &tfVerList)
 	if err != nil {
-		logger.Info("Failed to parse mirror response as JSON; falling back to extracting versions from raw body: %e", err)
+		logger.Infof("Failed to parse mirror response as JSON; falling back to extracting versions from raw body: %v", err)
 		err = getVersionsFromBody(body, preRelease, &tfVerList)
 		if err != nil {
 			return nil, err
