@@ -161,7 +161,7 @@ func TestGetVersionsFromBodyHashicorp(t *testing.T) {
 	err := getVersionsFromBody(hashicorpBody, false, &testTfVersionList)
 	assert.NoError(t, err)
 	expectedVersion := []string{"0.12.2", "0.12.1", "0.12.0", "0.11.13"}
-	if err := compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
+	if err = compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
 		t.Errorf("Parsed version does not match expected versions: %v", err)
 	}
 
@@ -182,7 +182,7 @@ func TestGetVersionsFromBodyOpenTofu(t *testing.T) {
 	err := getVersionsFromBody(openTofuBody, false, &testTfVersionList)
 	assert.NoError(t, err)
 	expectedVersion := []string{"1.7.0", "1.6.2"}
-	if err := compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
+	if err = compareLists(testTfVersionList.tflist, expectedVersion); err != nil {
 		t.Errorf("Parsed version does not match expected versions: %v", err)
 	}
 
