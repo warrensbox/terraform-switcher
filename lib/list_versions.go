@@ -154,15 +154,16 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, req
 				return versionItem, nil
 			}
 		}
+
 		return "", fmt.Errorf("Did not find version matching constraint: ~> %v", requestedVersion)
-	} else {
-		versionConstraint := fmt.Sprintf("~> %v", requestedVersion)
-		semv, err := SemVerParser(&versionConstraint, tflist)
-		if err != nil {
-			return "", err
-		}
-		return semv, nil
 	}
+
+	versionConstraint := fmt.Sprintf("~> %v", requestedVersion)
+	semv, err := SemVerParser(&versionConstraint, tflist)
+	if err != nil {
+		return "", err
+	}
+	return semv, nil
 }
 
 // getTFURLBody : Get list of versions from the mirror URL
