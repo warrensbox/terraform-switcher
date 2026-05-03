@@ -98,7 +98,7 @@ func GetVersionFromTerragrunt(params Params) (Params, error) {
 
 	// Resolve version from the found version constraint, if version match arg was not supplied
 	if params.MatchVersionRequirement == "" {
-		version, err := lib.GetSemver(params.VersionRequirement, params.MirrorURL)
+		version, err := lib.GetSemver(params.ProductEntity, params.VersionRequirement, params.MirrorURL)
 		if err != nil {
 			return params, fmt.Errorf("no version found matching %q", params.VersionRequirement)
 		}

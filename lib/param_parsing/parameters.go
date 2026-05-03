@@ -71,6 +71,33 @@ func GetParameters() Params {
 	return params
 }
 
+func setupProductParam(params *Params) {
+	// Set defaults based on product
+	// This must be performed after TOML file, to obtain product.
+	// But the mirror URL, if set to default product URL,
+	// is used by some of the version getter methods, to
+	// obtain list of versions.
+	product := lib.GetProductById(params.Product)
+	if product == nil {
+		logger.Fatalf("Invalid \"product\" configuration value: %q", params.Product)
+	} else { // Use else as there is a warning that params maybe nil, as it does not see Fatalf as a break condition
+		if params.MirrorURL == "" {
+			params.MirrorURL = product.GetDefaultMirrorUrl()
+			logger.Debugf("Default mirror URL: %q", params.MirrorURL)
+		}
+
+		// Set default bin directory, if not configured
+		if params.CustomBinaryPath == "" {
+			if runtime.GOOS == "windows" {
+				params.CustomBinaryPath = filepath.Join(lib.GetHomeDirectory(), "bin", lib.ConvertExecutableExt(product.GetExecutableName()))
+			} else {
+				params.CustomBinaryPath = filepath.Join("/usr/local/bin", product.GetExecutableName())
+			}
+		}
+		params.ProductEntity = product
+	}
+}
+
 //nolint:gocyclo
 func populateParams(params Params) Params {
 	var productIds []string
@@ -159,6 +186,8 @@ func populateParams(params Params) Params {
 		// First pass to obtain environment variables to override product
 		params = GetParamsFromEnvironment(params)
 
+		setupProductParam(&params)
+
 		if params.ForceColor && params.NoColor {
 			logger.Fatal("(env) Cannot force color and disable color at the same time. Please choose either of them.")
 		}
@@ -174,31 +203,6 @@ func populateParams(params Params) Params {
 		// Fail fast if params.ChDirPath (defaults to current dir) is not readable
 		if !lib.CheckDirIsReadable(params.ChDirPath) {
 			logger.Fatalf("Cannot read working directory: %q", params.ChDirPath)
-		}
-
-		// Set defaults based on product
-		// This must be performed after TOML file, to obtain product.
-		// But the mirror URL, if set to default product URL,
-		// is used by some of the version getter methods, to
-		// obtain list of versions.
-		product := lib.GetProductById(params.Product)
-		if product == nil {
-			logger.Fatalf("Invalid \"product\" configuration value: %q", params.Product)
-		} else { // Use else as there is a warning that params maybe nil, as it does not see Fatalf as a break condition
-			if params.MirrorURL == "" {
-				params.MirrorURL = product.GetDefaultMirrorUrl()
-				logger.Debugf("Default mirror URL: %q", params.MirrorURL)
-			}
-
-			// Set default bin directory, if not configured
-			if params.CustomBinaryPath == "" {
-				if runtime.GOOS == "windows" {
-					params.CustomBinaryPath = filepath.Join(lib.GetHomeDirectory(), "bin", lib.ConvertExecutableExt(product.GetExecutableName()))
-				} else {
-					params.CustomBinaryPath = filepath.Join("/usr/local/bin", product.GetExecutableName())
-				}
-			}
-			params.ProductEntity = product
 		}
 
 		if tfSwitchFileExists(params) {

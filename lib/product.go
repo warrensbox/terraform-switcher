@@ -1,7 +1,10 @@
 package lib
 
 import (
+	"encoding/json"
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 )
 
@@ -49,9 +52,17 @@ type Product interface {
 	GetRecentVersionProduct(recentFile *RecentFile) []string
 	SetRecentVersionProduct(recentFile *RecentFile, versions []string)
 	GetFileExtensions() []string
+	GetVersionsFromJSON(body []byte) ([]string, error)
 }
 
 // Terraform Product
+
+// Struct representing Terraform JSON:
+// https://releases.hashicorp.com/terraform/index.json
+type TerraformVersionJSON struct {
+	Versions map[string]struct{} `json:"versions"`
+}
+
 // nolint:revive // FIXME: var-naming: method GetId should be GetID (revive)
 func (p TerraformProduct) GetId() string {
 	return p.ID
@@ -80,8 +91,29 @@ func (p TerraformProduct) GetArchivePrefix() string {
 
 // nolint:revive // FIXME: var-naming: method GetArtifactUrl should be GetArtifactURL (revive)
 func (p TerraformProduct) GetArtifactUrl(mirrorURL string, version string) string {
-	mirrorURL = strings.TrimRight(mirrorURL, "/")
-	return fmt.Sprintf("%s/%s", mirrorURL, version)
+	// Backwards compatible with old tests
+	downloadUrl := p.DefaultMirror
+
+	// Use default download mirror, if set (it should be in all cases)
+	if p.DefaultDownloadMirror != "" {
+		downloadUrl = p.DefaultDownloadMirror
+	}
+
+	// If the actual mirror is not the default, use this mirror for downloading
+	if mirrorURL != p.DefaultMirror {
+		downloadUrl = mirrorURL
+	}
+	downloadUrl = strings.TrimRight(downloadUrl, "/")
+	return fmt.Sprintf("%s/%s", downloadUrl, version)
+}
+
+func (p TerraformProduct) GetVersionsFromJSON(body []byte) ([]string, error) {
+	var versions TerraformVersionJSON
+	err := json.Unmarshal(body, &versions)
+	if err != nil {
+		return nil, err
+	}
+	return slices.Collect(maps.Keys(versions.Versions)), nil
 }
 
 // nolint:revive // FIXME: var-naming: method GetPublicKeyId should be GetPublicKeyID (revive)
@@ -114,6 +146,14 @@ func (p TerraformProduct) GetFileExtensions() []string {
 }
 
 // OpenTofu methods
+// Struct representing OpenTofu JSON:
+// https://get.opentofu.org/tofu/api.json
+type OpenTofuVersionJSON struct {
+	Versions []struct {
+		ID string `json:"id"`
+	} `json:"versions"`
+}
+
 // nolint:revive // FIXME: var-naming: method GetId should be GetID (revive)
 func (p OpenTofuProduct) GetId() string {
 	return p.ID
@@ -142,6 +182,7 @@ func (p OpenTofuProduct) GetArchivePrefix() string {
 
 // nolint:revive // FIXME: parameter 'mirrorURL' is not used (custom Mirror URL is not implemented for OpenTofu? 10-Mar-2025)
 // nolint:revive // FIXME: var-naming: method GetArtifactUrl should be GetArtifactURL (revive)
+// @TODO For a future release, use user-provided mirror, as we ONLY allow downloading via public OpenTofu URL
 func (p OpenTofuProduct) GetArtifactUrl(mirrorURL string, version string) string {
 	return fmt.Sprintf("%s/v%s", p.DefaultDownloadMirror, version)
 }
@@ -167,6 +208,19 @@ func (p OpenTofuProduct) GetRecentVersionProduct(recentFile *RecentFile) []strin
 	return recentFile.OpenTofu
 }
 
+func (p OpenTofuProduct) GetVersionsFromJSON(body []byte) ([]string, error) {
+	var versionsData OpenTofuVersionJSON
+	err := json.Unmarshal(body, &versionsData)
+	if err != nil {
+		return nil, err
+	}
+	var versions []string
+	for _, v := range versionsData.Versions {
+		versions = append(versions, v.ID)
+	}
+	return versions, nil
+}
+
 func (p OpenTofuProduct) SetRecentVersionProduct(recentFile *RecentFile, versions []string) {
 	recentFile.OpenTofu = versions
 }
@@ -179,14 +233,15 @@ func (p OpenTofuProduct) GetFileExtensions() []string {
 var products = []Product{
 	TerraformProduct{
 		ProductDetails{
-			ID:             "terraform",
-			Name:           "Terraform",
-			DefaultMirror:  "https://releases.hashicorp.com/terraform",
-			VersionPrefix:  "terraform_",
-			ExecutableName: "terraform",
-			ArchivePrefix:  "terraform_",
-			PublicKeyId:    "72D7468F",
-			PublicKeyURLs:  []string{"https://www.hashicorp.com/.well-known/pgp-key.txt", "https://keybase.io/hashicorp/pgp_keys.asc"},
+			ID:                    "terraform",
+			Name:                  "Terraform",
+			DefaultMirror:         "https://releases.hashicorp.com/terraform/index.json",
+			DefaultDownloadMirror: "https://releases.hashicorp.com/terraform",
+			VersionPrefix:         "terraform_",
+			ExecutableName:        "terraform",
+			ArchivePrefix:         "terraform_",
+			PublicKeyId:           "72D7468F",
+			PublicKeyURLs:         []string{"https://www.hashicorp.com/.well-known/pgp-key.txt", "https://keybase.io/hashicorp/pgp_keys.asc"},
 			PublicKeyLegacyLiteral: "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
 				"Comment: https://www.hashicorp.com/.well-known/pgp-key-old.txt\n" +
 				"\n" +
@@ -317,7 +372,7 @@ var products = []Product{
 		ProductDetails{
 			ID:                     "opentofu",
 			Name:                   "OpenTofu",
-			DefaultMirror:          "https://get.opentofu.org/tofu",
+			DefaultMirror:          "https://get.opentofu.org/tofu/api.json",
 			DefaultDownloadMirror:  "https://github.com/opentofu/opentofu/releases/download",
 			VersionPrefix:          "opentofu_",
 			ExecutableName:         "tofu",

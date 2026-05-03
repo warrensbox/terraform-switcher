@@ -9,9 +9,9 @@ import (
 )
 
 // GetSemver : returns version that will be installed based on server constraint provided
-func GetSemver(tfconstraint string, mirrorURL string) (string, error) {
+func GetSemver(product Product, tfconstraint string, mirrorURL string) (string, error) {
 	listAll := true
-	tflist, errTFList := getTFList(mirrorURL, listAll) // get list of versions
+	tflist, errTFList := getTFList(product, mirrorURL, listAll) // get list of versions
 	if errTFList != nil {
 		return "", fmt.Errorf("Error getting list of versions from %q: %v", mirrorURL, errTFList)
 	}
@@ -20,7 +20,7 @@ func GetSemver(tfconstraint string, mirrorURL string) (string, error) {
 	return tfversion, err
 }
 
-// SemVerParser  : Goes through the list of versions, returns a valid version for contraint provided
+// SemVerParser  : Goes through the list of versions, returns a valid version for constraint provided
 func SemVerParser(tfconstraint *string, tflist []string) (string, error) {
 	tfversion := ""
 	constraints, err := semver.NewConstraint(*tfconstraint) // NewConstraint returns a Constraints instance that a Version instance can be checked against

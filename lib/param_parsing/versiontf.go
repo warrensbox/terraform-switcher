@@ -157,7 +157,7 @@ func GetVersionFromVersionsTF(params Params) (Params, error) {
 	}
 
 	if params.MatchVersionRequirement == "" {
-		version, err2 := lib.GetSemver(params.VersionRequirement, params.MirrorURL)
+		version, err2 := lib.GetSemver(params.ProductEntity, params.VersionRequirement, params.MirrorURL)
 		if err2 != nil {
 			logger.Errorf("No version found matching %q", params.VersionRequirement)
 			return params, err2

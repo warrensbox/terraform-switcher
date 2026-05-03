@@ -53,19 +53,19 @@ func main() {
 		err = lib.InstallLatestProductImplicitVersion(parameters.ProductEntity, parameters.DryRun, parameters.ShowRequiredFlag, parameters.LatestPre, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, parameters.Arch, true)
 	case parameters.ShowLatestPre != "":
 		/* show latest pre-release implicit version. Ex: tfswitch --latest-pre 0.13 downloads 0.13.0-rc1 (latest) */
-		lib.ShowLatestImplicitVersion(parameters.ShowLatestPre, parameters.MirrorURL, true)
+		lib.ShowLatestImplicitVersion(parameters.ProductEntity, parameters.ShowLatestPre, parameters.MirrorURL, true)
 	case parameters.LatestStable != "":
 		/* latest implicit version. Ex: tfswitch --latest-stable 0.13 downloads 0.13.5 (latest) */
 		err = lib.InstallLatestProductImplicitVersion(parameters.ProductEntity, parameters.DryRun, parameters.ShowRequiredFlag, parameters.LatestStable, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, parameters.Arch, false)
 	case parameters.ShowLatestStable != "":
 		/* show latest implicit stable version. Ex: tfswitch --show-latest-stable 0.13 downloads 0.13.5 (latest) */
-		lib.ShowLatestImplicitVersion(parameters.ShowLatestStable, parameters.MirrorURL, false)
+		lib.ShowLatestImplicitVersion(parameters.ProductEntity, parameters.ShowLatestStable, parameters.MirrorURL, false)
 	case parameters.LatestFlag:
 		/* latest stable version */
 		err = lib.InstallLatestProductVersion(parameters.ProductEntity, parameters.DryRun, parameters.ShowRequiredFlag, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, parameters.Arch)
 	case parameters.ShowLatestFlag:
 		/* show latest stable version */
-		lib.ShowLatestVersion(parameters.MirrorURL)
+		lib.ShowLatestVersion(parameters.ProductEntity, parameters.MirrorURL)
 	case parameters.Version != "":
 		err = lib.InstallProductVersion(parameters.ProductEntity, parameters.DryRun, parameters.ShowRequiredFlag, parameters.Version, parameters.CustomBinaryPath, parameters.InstallPath, parameters.MirrorURL, parameters.Arch)
 	case parameters.DefaultVersion != "":
