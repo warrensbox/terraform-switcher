@@ -1074,8 +1074,12 @@
 </ol>
 <h2 id="use-custom-mirror">Use custom mirror</h2>
 <p>To install from a remote mirror other than the default
-(<a href="https://releases.hashicorp.com/terraform">https://releases.hashicorp.com/terraform</a>). Use the <code>-m</code> or <code>--mirror</code>
+(<code>&lt;https://releases.hashicorp.com/terraform/index.json&gt;</code>), use the <code>-m</code> or <code>--mirror</code>
 parameter.</p>
+<p><code>tfswitch</code> first attempts to decode JSON, then falls back to the directory and
+archive tree structure used by <code>&lt;https://releases.hashicorp.com/terraform&gt;</code>.
+For custom mirror URLs, the binaries must be available in subdirectories under
+the mirror root, matching that same layout.</p>
 <pre><code class="language-bash">tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp
 </code></pre>
 <h2 id="install-to-non-default-location">Install to non-default location</h2>
