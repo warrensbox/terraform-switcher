@@ -7,6 +7,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.18.0](https://github.com/warrensbox/terraform-switcher/tree/v1.18.0) - 2026-05-03
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.17.1...v1.18.0)
+
+### Added
+
+- Replace version body parsing with JSON version [#739](https://github.com/warrensbox/terraform-switcher/pull/739) ([MatthewJohn](https://github.com/MatthewJohn))
+
+### Fixed
+
+- Avoid erroneous fake opentofu release, due to markup within the Opentofu releases page when parsing version from HTML body [#738](https://github.com/warrensbox/terraform-switcher/issues/738)
+
+### Other
+
+- docs: Update CHANGELOG with `v1.18.0` [#759](https://github.com/warrensbox/terraform-switcher/pull/759) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.17.1](https://github.com/warrensbox/terraform-switcher/tree/v1.17.1) - 2026-04-21
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.17.0...v1.17.1)
