@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - Replace version body parsing with JSON version [#739](https://github.com/warrensbox/terraform-switcher/pull/739) ([MatthewJohn](https://github.com/MatthewJohn))
 
+### Fixed
+
+- Avoid erroneous fake opentofu release, due to markup within the Opentofu releases page when parsing version from HTML body [#738](https://github.com/warrensbox/terraform-switcher/issues/738)
+
 ### Other
 
 - docs: Update CHANGELOG with `v1.18.0` [#759](https://github.com/warrensbox/terraform-switcher/pull/759) ([yermulnik](https://github.com/yermulnik))
