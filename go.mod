@@ -6,7 +6,7 @@ toolchain go1.25.7
 
 require (
 	github.com/ProtonMail/gopenpgp/v3 v3.4.1
-	github.com/gookit/color v1.6.0
+	github.com/gookit/color v1.6.1
 	github.com/gookit/slog v0.6.0
 	github.com/hashicorp/go-version v1.9.0
 	github.com/hashicorp/hcl/v2 v2.24.0
