@@ -180,11 +180,17 @@ func (p OpenTofuProduct) GetArchivePrefix() string {
 	return p.ArchivePrefix
 }
 
-// nolint:revive // FIXME: parameter 'mirrorURL' is not used (custom Mirror URL is not implemented for OpenTofu? 10-Mar-2025)
 // nolint:revive // FIXME: var-naming: method GetArtifactUrl should be GetArtifactURL (revive)
-// @TODO For a future release, use user-provided mirror, as we ONLY allow downloading via public OpenTofu URL
 func (p OpenTofuProduct) GetArtifactUrl(mirrorURL string, version string) string {
-	return fmt.Sprintf("%s/v%s", p.DefaultDownloadMirror, version)
+	downloadUrl := p.DefaultDownloadMirror
+
+	// If the actual mirror is not the default, use this mirror for downloading
+	if mirrorURL != p.DefaultMirror {
+		downloadUrl = mirrorURL
+	}
+
+	downloadUrl = strings.TrimRight(downloadUrl, "/")
+	return fmt.Sprintf("%s/%s", downloadUrl, version)
 }
 
 // nolint:revive // FIXME: var-naming: method GetPublicKeyId should be GetPublicKeyID (revive)
@@ -373,7 +379,7 @@ var products = []Product{
 			ID:                     "opentofu",
 			Name:                   "OpenTofu",
 			DefaultMirror:          "https://get.opentofu.org/tofu/api.json",
-			DefaultDownloadMirror:  "https://github.com/opentofu/opentofu/releases/download",
+			DefaultDownloadMirror:  "https://get.opentofu.org/tofu/",
 			VersionPrefix:          "opentofu_",
 			ExecutableName:         "tofu",
 			ArchivePrefix:          "tofu_",

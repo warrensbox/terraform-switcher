@@ -224,9 +224,10 @@ func Test_GetArchivePrefix_OpenTofu(t *testing.T) {
 }
 
 func Test_GetArtifactUrl_OpenTofu(t *testing.T) {
+	mirrorURL := "https://example.com/opentofu/"
 	product := GetProductById("opentofu")
-	actual := product.GetArtifactUrl("https://example.com/opentofu", "random-meaningless-value")
-	if expected := "https://github.com/opentofu/opentofu/releases/download/vrandom-meaningless-value"; actual != expected {
+	actual := product.GetArtifactUrl(mirrorURL, "random-meaningless-value")
+	if expected := mirrorURL + "random-meaningless-value"; actual != expected {
 		t.Errorf("Product GetArtifactUrl match failed. Expected: %q, actual: %q", expected, actual)
 	}
 }
@@ -234,7 +235,7 @@ func Test_GetArtifactUrl_OpenTofu(t *testing.T) {
 func Test_GetArtifactUrl_OpenTofu_DefaultMirror(t *testing.T) {
 	product := GetProductById("opentofu")
 	actual := product.GetArtifactUrl(product.GetDefaultMirrorUrl(), "random-meaningless-value")
-	if expected := "https://github.com/opentofu/opentofu/releases/download/vrandom-meaningless-value"; actual != expected {
+	if expected := "https://get.opentofu.org/tofu/random-meaningless-value"; actual != expected {
 		t.Errorf("Product GetArtifactUrl match failed. Expected: %q, actual: %q", expected, actual)
 	}
 }
