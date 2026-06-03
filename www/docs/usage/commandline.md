@@ -89,6 +89,24 @@ the mirror root, matching that same layout.
 tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp
 ```
 
+### Local file mirror
+
+The version list can also be read from a local file using a `file://` URL. This
+is useful in air-gapped environments where no HTTP mirror is reachable: generate
+the version list ahead of time and point `tfswitch` at the file on disk.
+
+```bash
+tfswitch --mirror file:///opt/tfswitch/index.json
+```
+
+The file must contain the same content an HTTP mirror would serve — either the
+JSON index (e.g. the body of `<https://releases.hashicorp.com/terraform/index.json>`)
+or the HTML directory listing. A missing or unreadable file causes `tfswitch` to
+exit with an error rather than silently producing an empty version list.
+
+This affects only how the list of available versions is resolved; the binaries
+themselves are still downloaded over HTTP from the mirror's archive tree.
+
 ## Install to non-default location
 
 By default `tfswitch` will download the Terraform binary to the user home
