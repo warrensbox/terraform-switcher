@@ -108,7 +108,20 @@ func (p TerraformProduct) GetArtifactUrl(mirrorURL string, version string) strin
 	if mirrorURL != "" && mirrorURL != p.DefaultDownloadMirror {
 		downloadUrl = mirrorURL
 	}
+
 	downloadUrl = strings.TrimRight(downloadUrl, "/")
+
+	// Fail if no download URL is found (this should not happen)
+	if downloadUrl == "" {
+		logger.Error("No download URL found")
+		return ""
+	}
+
+	if err := IsValidRemoteURL(downloadUrl); err != nil {
+		logger.Error(err)
+		return ""
+	}
+
 	return fmt.Sprintf("%s/%s", downloadUrl, version)
 }
 
@@ -203,12 +216,18 @@ func (p OpenTofuProduct) GetArtifactUrl(mirrorURL string, version string) string
 		downloadUrl = mirrorURL
 	}
 
+	downloadUrl = strings.TrimRight(downloadUrl, "/")
+
 	// Fail if no download URL is found (this should not happen)
 	if downloadUrl == "" {
 		logger.Fatal("No download URL found")
 	}
 
-	downloadUrl = strings.TrimRight(downloadUrl, "/")
+	if err := IsValidRemoteURL(downloadUrl); err != nil {
+		logger.Error(err)
+		return ""
+	}
+
 	return fmt.Sprintf("%s/v%s", downloadUrl, version)
 }
 
