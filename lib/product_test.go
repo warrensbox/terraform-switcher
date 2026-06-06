@@ -107,6 +107,14 @@ func Test_GetArtifactUrl_Terraform_DefaultMirror(t *testing.T) {
 	}
 }
 
+func Test_GetArtifactUrl_Terraform_Failure(t *testing.T) {
+	product := GetProductById("terraform")
+	actual := product.GetArtifactUrl("invalidURL", "random-meaningless-value")
+	if actual != "" {
+		t.Errorf("Product GetArtifactUrl should return empty string for invalid URL. Actual: %q", actual)
+	}
+}
+
 func Test_GetPublicKeyId_Terraform(t *testing.T) {
 	product := GetProductById("terraform")
 	actual := product.GetPublicKeyId()
@@ -236,6 +244,14 @@ func Test_GetArtifactUrl_OpenTofu_DefaultMirror(t *testing.T) {
 	actual := product.GetArtifactUrl(product.GetDefaultDownloadMirrorURL(), "random-meaningless-value")
 	if expected := "https://github.com/opentofu/opentofu/releases/download/vrandom-meaningless-value"; actual != expected {
 		t.Errorf("Product GetArtifactUrl match failed. Expected: %q, actual: %q", expected, actual)
+	}
+}
+
+func Test_GetArtifactUrl_OpenTofu_Failure(t *testing.T) {
+	product := GetProductById("opentofu")
+	actual := product.GetArtifactUrl("invalidURL", "random-meaningless-value")
+	if actual != "" {
+		t.Errorf("Product GetArtifactUrl should return empty string for invalid URL. Actual: %q", actual)
 	}
 }
 
