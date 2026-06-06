@@ -88,7 +88,7 @@ func setupProductParam(params *Params) {
 		}
 
 		if params.MirrorDownloadURL == "" {
-			params.MirrorDownloadURL = product.GetDefaultDownloadMirrorUrl()
+			params.MirrorDownloadURL = product.GetDefaultDownloadMirrorURL()
 			logger.Debugf("Default download URL: %q", params.MirrorDownloadURL)
 		}
 
@@ -112,7 +112,7 @@ func populateParams(params Params) Params {
 	for _, product := range lib.GetAllProducts() {
 		productIds = append(productIds, product.GetId())
 		defaultMirrors = append(defaultMirrors, fmt.Sprintf("%s: %s", product.GetName(), product.GetDefaultMirrorUrl()))
-		defaultMirrorsDownload = append(defaultMirrorsDownload, fmt.Sprintf("%s: %s", product.GetName(), product.GetDefaultDownloadMirrorUrl()))
+		defaultMirrorsDownload = append(defaultMirrorsDownload, fmt.Sprintf("%s: %s", product.GetName(), product.GetDefaultDownloadMirrorURL()))
 	}
 
 	// String params

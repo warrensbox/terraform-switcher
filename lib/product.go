@@ -41,7 +41,7 @@ type Product interface {
 	GetId() string
 	GetName() string
 	GetDefaultMirrorUrl() string
-	GetDefaultDownloadMirrorUrl() string
+	GetDefaultDownloadMirrorURL() string
 	GetVersionPrefix() string
 	GetExecutableName() string
 	GetArchivePrefix() string
@@ -78,7 +78,7 @@ func (p TerraformProduct) GetDefaultMirrorUrl() string {
 	return p.DefaultMirror
 }
 
-func (p TerraformProduct) GetDefaultDownloadMirrorUrl() string {
+func (p TerraformProduct) GetDefaultDownloadMirrorURL() string {
 	return p.DefaultDownloadMirror
 }
 
@@ -173,7 +173,7 @@ func (p OpenTofuProduct) GetDefaultMirrorUrl() string {
 	return p.DefaultMirror
 }
 
-func (p OpenTofuProduct) GetDefaultDownloadMirrorUrl() string {
+func (p OpenTofuProduct) GetDefaultDownloadMirrorURL() string {
 	return p.DefaultDownloadMirror
 }
 
