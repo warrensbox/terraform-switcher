@@ -76,17 +76,35 @@ The most recently selected versions are presented at the top of the dropdown.
 
 ## Use custom mirror
 
-To install from a remote mirror other than the default
-(`<https://releases.hashicorp.com/terraform/index.json>`), use the `-m` or `--mirror`
-parameter.
+To install from a remote mirror other than the default, use the `-m`/`--mirror`
+and `-M`/`--mirror-download` parameters.
 
-`tfswitch` first attempts to decode JSON, then falls back to the directory and
+* The `-m`/`--mirror` parameter is used to specify the mirror URL for fetching
+  the list of available versions.
+* The `-M`/`--mirror-download` parameter is used to specify the mirror URL for
+  downloading the binaries.
+
+Each parameter can be used independently, allowing you to fetch the list of
+available versions from one mirror and download the binaries from another
+mirror if needed.
+
+To fetch list of available versions, `tfswitch` first attempts to decode JSON
+from default endpoint, and then, if fails, falls back to the directory and
 archive tree structure used by `<https://releases.hashicorp.com/terraform>`.
-For custom mirror URLs, the binaries must be available in subdirectories under
-the mirror root, matching that same layout.
 
+Custom JSON endpoint must return a JSON object that matches the object
+structure of the default endpoint.
+
+For custom download mirror URL, the directory structure and files alignment
+(zip-archive, checksums and signatures) must match the same layout as the
+default download mirror:
+* Terraform: `https://<host>/<optional_path>/<version>/terraform_<version>_<os>_<arch>.zip`
+* OpenTofu: `https://<host>/<optional_path>/v<version>/tofu_<version>_<os>_<arch>.zip`
+
+Example:
 ```bash
-tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp
+tfswitch --mirror https://example.jfrog.io/artifactory/terraform/versions.json \
+  --mirror-download https://example.jfrog.io/artifactory/downloads/terraform
 ```
 
 ## Install to non-default location
