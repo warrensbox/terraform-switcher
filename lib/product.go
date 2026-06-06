@@ -41,6 +41,7 @@ type Product interface {
 	GetId() string
 	GetName() string
 	GetDefaultMirrorUrl() string
+	GetDefaultDownloadMirrorUrl() string
 	GetVersionPrefix() string
 	GetExecutableName() string
 	GetArchivePrefix() string
@@ -77,6 +78,10 @@ func (p TerraformProduct) GetDefaultMirrorUrl() string {
 	return p.DefaultMirror
 }
 
+func (p TerraformProduct) GetDefaultDownloadMirrorUrl() string {
+	return p.DefaultDownloadMirror
+}
+
 func (p TerraformProduct) GetVersionPrefix() string {
 	return p.VersionPrefix
 }
@@ -100,7 +105,7 @@ func (p TerraformProduct) GetArtifactUrl(mirrorURL string, version string) strin
 	}
 
 	// If the actual mirror is not the default, use this mirror for downloading
-	if mirrorURL != p.DefaultMirror {
+	if mirrorURL != "" && mirrorURL != p.DefaultDownloadMirror {
 		downloadUrl = mirrorURL
 	}
 	downloadUrl = strings.TrimRight(downloadUrl, "/")
@@ -168,6 +173,10 @@ func (p OpenTofuProduct) GetDefaultMirrorUrl() string {
 	return p.DefaultMirror
 }
 
+func (p OpenTofuProduct) GetDefaultDownloadMirrorUrl() string {
+	return p.DefaultDownloadMirror
+}
+
 func (p OpenTofuProduct) GetVersionPrefix() string {
 	return p.VersionPrefix
 }
@@ -180,11 +189,27 @@ func (p OpenTofuProduct) GetArchivePrefix() string {
 	return p.ArchivePrefix
 }
 
-// nolint:revive // FIXME: parameter 'mirrorURL' is not used (custom Mirror URL is not implemented for OpenTofu? 10-Mar-2025)
 // nolint:revive // FIXME: var-naming: method GetArtifactUrl should be GetArtifactURL (revive)
-// @TODO For a future release, use user-provided mirror, as we ONLY allow downloading via public OpenTofu URL
 func (p OpenTofuProduct) GetArtifactUrl(mirrorURL string, version string) string {
-	return fmt.Sprintf("%s/v%s", p.DefaultDownloadMirror, version)
+	var downloadUrl string
+
+	// Use default download mirror, if set (it should be in all cases)
+	if p.DefaultDownloadMirror != "" {
+		downloadUrl = p.DefaultDownloadMirror
+	}
+
+	// If the actual mirror is not the default, use this mirror for downloading
+	if mirrorURL != "" && mirrorURL != p.DefaultDownloadMirror {
+		downloadUrl = mirrorURL
+	}
+
+	// Fail if no download URL is found (this should not happen)
+	if downloadUrl == "" {
+		logger.Fatal("No download URL found")
+	}
+
+	downloadUrl = strings.TrimRight(downloadUrl, "/")
+	return fmt.Sprintf("%s/v%s", downloadUrl, version)
 }
 
 // nolint:revive // FIXME: var-naming: method GetPublicKeyId should be GetPublicKeyID (revive)

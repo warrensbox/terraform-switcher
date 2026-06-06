@@ -30,6 +30,7 @@ type Params struct {
 	LogLevel                string
 	MatchVersionRequirement string
 	MirrorURL               string
+	MirrorDownloadURL       string
 	NoColor                 bool
 	ProductEntity           lib.Product
 	Product                 string
@@ -86,6 +87,11 @@ func setupProductParam(params *Params) {
 			logger.Debugf("Default mirror URL: %q", params.MirrorURL)
 		}
 
+		if params.MirrorDownloadURL == "" {
+			params.MirrorDownloadURL = product.GetDefaultDownloadMirrorUrl()
+			logger.Debugf("Default download URL: %q", params.MirrorDownloadURL)
+		}
+
 		// Set default bin directory, if not configured
 		if params.CustomBinaryPath == "" {
 			if runtime.GOOS == "windows" {
@@ -102,9 +108,11 @@ func setupProductParam(params *Params) {
 func populateParams(params Params) Params {
 	var productIds []string
 	var defaultMirrors []string
+	var defaultMirrorsDownload []string
 	for _, product := range lib.GetAllProducts() {
 		productIds = append(productIds, product.GetId())
 		defaultMirrors = append(defaultMirrors, fmt.Sprintf("%s: %s", product.GetName(), product.GetDefaultMirrorUrl()))
+		defaultMirrorsDownload = append(defaultMirrorsDownload, fmt.Sprintf("%s: %s", product.GetName(), product.GetDefaultDownloadMirrorUrl()))
 	}
 
 	// String params
@@ -118,6 +126,7 @@ func populateParams(params Params) Params {
 	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: `tfswitch --latest-stable 0.13.0` downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
 	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', fmt.Sprintf("Set tfswitch logging level. One of (in the order of increasing level of verbosity): %s. Use `OFF` to disable (suppress) logging", strings.Join(lib.LogLevels(), ", ")))
 	getopt.StringVarLong(&params.MirrorURL, "mirror", 'm', fmt.Sprintf("Install from a remote API other than the default.\nDefault (based on value of `--product`):\n  - %s", strings.Join(defaultMirrors, "\n  - ")))
+	getopt.StringVarLong(&params.MirrorDownloadURL, "mirror-download", 'M', fmt.Sprintf("Download artifacts from an URL other than the default.\nDefault (based on value of `--product`):\n  - %s", strings.Join(defaultMirrorsDownload, "\n  - ")))
 	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: `tfswitch --show-latest-pre 0.13` prints 0.13.0-rc1 (latest)")
 	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: `tfswitch --show-latest-stable 0.13` prints 0.13.7 (latest)")
 	getopt.StringVarLong(&params.Product, "product", 't', fmt.Sprintf("Specify which product to use. Ex: `tfswitch --product opentofu` will install OpenTofu. Options: %s. Default: %s", strings.Join(productIds, ", "), lib.DefaultProductId))
@@ -260,6 +269,7 @@ func populateParams(params Params) Params {
 			logger.Debugf("Resolved fallback version: %q", params.DefaultVersion)
 		}
 		logger.Debugf("Resolved binary path: %q", params.CustomBinaryPath)
+		logger.Debugf("Resolved download URL: %q", params.MirrorDownloadURL)
 		logger.Debugf("Resolved force color: %t", params.ForceColor)
 		logger.Debugf("Resolved install path: %q", filepath.Join(params.InstallPath, lib.InstallDir))
 		logger.Debugf("Resolved install version: %q", params.Version)
@@ -288,6 +298,7 @@ func initParams(params Params) Params {
 	params.ListAllFlag = false
 	params.LogLevel = "INFO"
 	params.MirrorURL = ""
+	params.MirrorDownloadURL = ""
 	params.NoColor = false
 	params.ShowLatestFlag = false
 	params.ShowLatestPre = lib.DefaultLatest
