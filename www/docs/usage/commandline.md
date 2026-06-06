@@ -89,13 +89,14 @@ available versions from one mirror and download the binaries from another
 mirror if needed.
 
 To fetch list of available versions, `tfswitch` first attempts to decode JSON
-from the configured endpoint, and then, if fails, falls back to the directory and
-archive tree structure used by `<https://releases.hashicorp.com/terraform>`.
+from the configured endpoint, and then, if it fails, falls back to the
+directory and archive tree structure used by
+`<https://releases.hashicorp.com/terraform>`.
 
 Custom JSON endpoint must return a JSON object that matches the object
 structure of the default endpoint.
 
-For custom download mirror URL, the directory structure and files alignment
+For custom download mirror URL, the directory structure and files layout
 (zip-archive, checksums and signatures) must match the same layout as the
 default download mirror:
 

@@ -92,7 +92,7 @@ func IsValidRemoteURL(urlString string) error {
 		return fmt.Errorf("URL %v", err)
 	}
 
-	allowedSchemes := []string{"file", "http", "https"}
+	allowedSchemes := []string{"ftp", "http", "https"}
 
 	if !slices.Contains(allowedSchemes, parsedURL.Scheme) || parsedURL.Host == "" {
 		return fmt.Errorf("URL must have a valid host and a scheme must be one of: %s: %q", strings.Join(allowedSchemes, ", "), urlString)
