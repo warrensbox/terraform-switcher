@@ -79,9 +79,9 @@ The most recently selected versions are presented at the top of the dropdown.
 To install from a remote mirror other than the default, use the `-m`/`--mirror`
 and `-M`/`--mirror-download` parameters.
 
-* The `-m`/`--mirror` parameter is used to specify the mirror URL for fetching
+- The `-m`/`--mirror` parameter is used to specify the mirror URL for fetching
   the list of available versions.
-* The `-M`/`--mirror-download` parameter is used to specify the mirror URL for
+- The `-M`/`--mirror-download` parameter is used to specify the mirror URL for
   downloading the binaries.
 
 Each parameter can be used independently, allowing you to fetch the list of
@@ -98,10 +98,12 @@ structure of the default endpoint.
 For custom download mirror URL, the directory structure and files alignment
 (zip-archive, checksums and signatures) must match the same layout as the
 default download mirror:
-* Terraform: `https://<host>/<optional_path>/<version>/terraform_<version>_<os>_<arch>.zip`
-* OpenTofu: `https://<host>/<optional_path>/v<version>/tofu_<version>_<os>_<arch>.zip`
+
+- Terraform: `https://<host>/<optional_path>/<version>/terraform_<version>_<os>_<arch>.zip`
+- OpenTofu: `https://<host>/<optional_path>/v<version>/tofu_<version>_<os>_<arch>.zip`
 
 Example:
+
 ```bash
 tfswitch --mirror https://example.jfrog.io/artifactory/terraform/versions.json \
   --mirror-download https://example.jfrog.io/artifactory/downloads/terraform
