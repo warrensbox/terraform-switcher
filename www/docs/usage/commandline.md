@@ -89,7 +89,7 @@ available versions from one mirror and download the binaries from another
 mirror if needed.
 
 To fetch list of available versions, `tfswitch` first attempts to decode JSON
-from default endpoint, and then, if fails, falls back to the directory and
+from the configured endpoint, and then, if fails, falls back to the directory and
 archive tree structure used by `<https://releases.hashicorp.com/terraform>`.
 
 Custom JSON endpoint must return a JSON object that matches the object

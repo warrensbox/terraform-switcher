@@ -220,7 +220,8 @@ func (p OpenTofuProduct) GetArtifactUrl(mirrorURL string, version string) string
 
 	// Fail if no download URL is found (this should not happen)
 	if downloadUrl == "" {
-		logger.Fatal("No download URL found")
+		logger.Error("No download URL found")
+		return ""
 	}
 
 	if err := IsValidRemoteURL(downloadUrl); err != nil {
