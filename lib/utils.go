@@ -3,6 +3,7 @@ package lib
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -85,8 +86,8 @@ func RemoveDuplicateStrings(slice []string) []string {
 	return res
 }
 
-func IsValidRemoteURL(url string) error {
-	parsedURL, err := url.ParseRequestURI(url)
+func IsValidRemoteURL(urlString string) error {
+	parsedURL, err := url.ParseRequestURI(urlString)
 	if err != nil {
 		return fmt.Errorf("URL %v", err)
 	}
@@ -94,7 +95,7 @@ func IsValidRemoteURL(url string) error {
 	allowedSchemes := []string{"file", "http", "https"}
 
 	if !slices.Contains(allowedSchemes, parsedURL.Scheme) || parsedURL.Host == "" {
-		return fmt.Errorf("URL must have a valid host and a scheme must be one of: %s: %q", strings.Join(allowedSchemes, ", "), url)
+		return fmt.Errorf("URL must have a valid host and a scheme must be one of: %s: %q", strings.Join(allowedSchemes, ", "), urlString)
 	}
 
 	return nil
