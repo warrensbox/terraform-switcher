@@ -127,7 +127,7 @@ func install(product Product, dryRun, showRequiredFlag bool, tfversion, binPath,
 	if err != nil {
 		return fmt.Errorf("Failed to look up current user: %v", err)
 	}
-	lockFile := filepath.Join(os.TempDir(), ".tfswitch."+currentUser.Username+".lock")
+	lockFile := filepath.Join(os.TempDir(), ".tfswitch."+currentUser.Uid+".lock")
 	// 90 attempts * 2 seconds = 3 minutes to acquire lock, otherwise bail out
 	lockedFH, err := acquireLock(lockFile, 90, 2*time.Second)
 	if err != nil {
