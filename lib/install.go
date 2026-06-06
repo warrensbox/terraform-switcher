@@ -117,17 +117,21 @@ func install(product Product, dryRun, showRequiredFlag bool, tfversion, binPath,
 
 	var wg sync.WaitGroup
 
-	// Create exclusive lock to prevent multiple concurrent installations
-	// Put lockfile in temp directory to get it cleaned up on reboot
-	// Assume no race condition between different users running tfswitch on
-	// the same machine as they're meant to use user-specific locations and
-	// only root is expected to write to system-wide location
-	// (user.Current() would resolve to root under sudo)
+	// * Create exclusive lock to prevent multiple concurrent installations
+	// * Put lockfile in temp directory to get it cleaned up on reboot
+	// * Assume no race condition between different users running tfswitch on
+	//   the same machine as they're meant to use user-specific locations and
+	//   only root is expected to write to system-wide location
+	//   (JFYI: user.Current() would resolve to "root" under "sudo")
+	// * user.Current() can fail in statically linked builds (CGO_ENABLED=0)
+	//   or minimal/container environments without user database entries, so
+	//   default to "unknown" if we can't get a UID for the current user
+	uid := "unknown"
 	currentUser, err := user.Current()
-	if err != nil {
-		return fmt.Errorf("Failed to look up current user: %v", err)
+	if err == nil && currentUser != nil && currentUser.Uid != "" {
+		uid = currentUser.Uid
 	}
-	lockFile := filepath.Join(os.TempDir(), ".tfswitch."+currentUser.Uid+".lock")
+	lockFile := filepath.Join(os.TempDir(), ".tfswitch."+uid+".lock")
 	// 90 attempts * 2 seconds = 3 minutes to acquire lock, otherwise bail out
 	lockedFH, err := acquireLock(lockFile, 90, 2*time.Second)
 	if err != nil {
