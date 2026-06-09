@@ -43,8 +43,8 @@ FATAL Error downloading: Unable to verify checksum signature against PGP key
 Solution: Your locally cached copy of HashiCorp's PGP public key is stale.
 Starting with Terraform 1.14.9, HashiCorp began signing releases with a
 refreshed key block after the original key block expired. This was fixed in
-_tfswitch_[v1.17.0](https://github.com/warrensbox/terraform-switcher/releases/tag/v1.17.0)
-and [v1.17.1](https://github.com/warrensbox/terraform-switcher/releases/tag/v1.17.1),
+_tfswitch_ [v1.17.0](https://github.com/warrensbox/terraform-switcher/releases/tag/v1.17.0)
+/ [v1.17.1](https://github.com/warrensbox/terraform-switcher/releases/tag/v1.17.1),
 but upgrading alone is not enough — if _tfswitch_ had already cached the key
 before that point, the stale single-block file remains on disk and the same
 error persists. Delete (rename to preserve just in case) the cached file so
