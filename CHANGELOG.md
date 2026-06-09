@@ -7,6 +7,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.19.0](https://github.com/warrensbox/terraform-switcher/tree/v1.19.0) - 2026-06-10
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.18.0...v1.19.0)
+
+### Added
+
+- feat(download): Allow user-provided mirror for artifact download [#777](https://github.com/warrensbox/terraform-switcher/pull/777) ([yermulnik](https://github.com/yermulnik))
+- docs: add troubleshooting entry for stale HashiCorp PGP key cache [#781](https://github.com/warrensbox/terraform-switcher/pull/781) ([shanukk27](https://github.com/shanukk27))
+
+### Other
+
+- docs: Update CHANGELOG with `v1.19.0` [#782](https://github.com/warrensbox/terraform-switcher/pull/782) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.18.0](https://github.com/warrensbox/terraform-switcher/tree/v1.18.0) - 2026-05-03
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.17.1...v1.18.0)
