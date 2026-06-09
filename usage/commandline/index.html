@@ -1073,14 +1073,33 @@
    show the required version that would be installed by those options.</li>
 </ol>
 <h2 id="use-custom-mirror">Use custom mirror</h2>
-<p>To install from a remote mirror other than the default
-(<code>&lt;https://releases.hashicorp.com/terraform/index.json&gt;</code>), use the <code>-m</code> or <code>--mirror</code>
-parameter.</p>
-<p><code>tfswitch</code> first attempts to decode JSON, then falls back to the directory and
-archive tree structure used by <code>&lt;https://releases.hashicorp.com/terraform&gt;</code>.
-For custom mirror URLs, the binaries must be available in subdirectories under
-the mirror root, matching that same layout.</p>
-<pre><code class="language-bash">tfswitch --mirror https://example.jfrog.io/artifactory/hashicorp
+<p>To install from a remote mirror other than the default, use the <code>-m</code>/<code>--mirror</code>
+and <code>-M</code>/<code>--mirror-download</code> parameters.</p>
+<ul>
+<li>The <code>-m</code>/<code>--mirror</code> parameter is used to specify the mirror URL for fetching
+  the list of available versions.</li>
+<li>The <code>-M</code>/<code>--mirror-download</code> parameter is used to specify the mirror URL for
+  downloading the binaries.</li>
+</ul>
+<p>Each parameter can be used independently, allowing you to fetch the list of
+available versions from one mirror and download the binaries from another
+mirror if needed.</p>
+<p>To fetch list of available versions, <code>tfswitch</code> first attempts to decode JSON
+from the configured endpoint, and then, if it fails, falls back to the
+directory and archive tree structure used by
+<code>&lt;https://releases.hashicorp.com/terraform&gt;</code>.</p>
+<p>Custom JSON endpoint must return a JSON object that matches the object
+structure of the default endpoint.</p>
+<p>For custom download mirror URL, the directory structure and files layout
+(zip-archive, checksums and signatures) must match the same layout as the
+default download mirror:</p>
+<ul>
+<li>Terraform: <code>https://&lt;host&gt;/&lt;optional_path&gt;/&lt;version&gt;/terraform_&lt;version&gt;_&lt;os&gt;_&lt;arch&gt;.zip</code></li>
+<li>OpenTofu: <code>https://&lt;host&gt;/&lt;optional_path&gt;/v&lt;version&gt;/tofu_&lt;version&gt;_&lt;os&gt;_&lt;arch&gt;.zip</code></li>
+</ul>
+<p>Example:</p>
+<pre><code class="language-bash">tfswitch --mirror https://example.jfrog.io/artifactory/terraform/versions.json \
+  --mirror-download https://example.jfrog.io/artifactory/downloads/terraform
 </code></pre>
 <h2 id="install-to-non-default-location">Install to non-default location</h2>
 <p>By default <code>tfswitch</code> will download the Terraform binary to the user home
