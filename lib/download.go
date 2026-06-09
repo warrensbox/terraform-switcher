@@ -20,6 +20,10 @@ func DownloadFromURL(installLocation, mirrorURL, tfversion, versionPrefix, goos,
 }
 
 func DownloadProductFromURL(product Product, installLocation, mirrorURL, tfversion, versionPrefix, goos, goarch string) (string, error) {
+	if mirrorURL == "" {
+		return "", errors.New("download URL is invalid")
+	}
+
 	var wg sync.WaitGroup
 	defer wg.Done()
 	// nolint:revive // FIXME: var-naming: var zipUrl should be zipURL (revive)

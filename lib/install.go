@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/user"
 	"path/filepath"
 	"runtime"
 	"sync"
@@ -57,7 +58,7 @@ func GetInstallLocation(installPath string) string {
 // install : install the provided version in the argument
 //
 //nolint:gocyclo
-func install(product Product, dryRun, showRequiredFlag bool, tfversion, binPath, installPath, mirrorURL, goarch string) error {
+func install(product Product, dryRun, showRequiredFlag bool, tfversion, binPath, installPath, mirrorURL, mirrorDownloadURL, goarch string) error {
 	installLocation := GetInstallLocation(installPath)
 	installFileVersionPath := ConvertExecutableExt(filepath.Join(installLocation, product.GetVersionPrefix()+tfversion))
 
@@ -116,9 +117,21 @@ func install(product Product, dryRun, showRequiredFlag bool, tfversion, binPath,
 
 	var wg sync.WaitGroup
 
-	// Create exclusive lock to prevent multiple concurrent installations
-	// Put lockfile in temp directory to get it cleaned up on reboot
-	lockFile := filepath.Join(os.TempDir(), ".tfswitch."+product.GetId()+".lock")
+	// * Create exclusive lock to prevent multiple concurrent installations
+	// * Put lockfile in temp directory to get it cleaned up on reboot
+	// * Assume no race condition between different users running tfswitch on
+	//   the same machine as they're meant to use user-specific locations and
+	//   only root is expected to write to system-wide location
+	//   (JFYI: user.Current() would resolve to "root" under "sudo")
+	// * user.Current() can fail in statically linked builds (CGO_ENABLED=0)
+	//   or minimal/container environments without user database entries, so
+	//   default to "unknown" if we can't get a UID for the current user
+	uid := "unknown"
+	currentUser, err := user.Current()
+	if err == nil && currentUser != nil && currentUser.Uid != "" {
+		uid = currentUser.Uid
+	}
+	lockFile := filepath.Join(os.TempDir(), ".tfswitch."+uid+".lock")
 	// 90 attempts * 2 seconds = 3 minutes to acquire lock, otherwise bail out
 	lockedFH, err := acquireLock(lockFile, 90, 2*time.Second)
 	if err != nil {
@@ -128,7 +141,7 @@ func install(product Product, dryRun, showRequiredFlag bool, tfversion, binPath,
 	defer releaseLock(lockFile, lockedFH)
 
 	// If selected version doesn't already exist, proceed to download it
-	zipFile, errDownload := DownloadProductFromURL(product, installLocation, product.GetArtifactUrl(mirrorURL, tfversion), tfversion, product.GetArchivePrefix(), goos, goarch)
+	zipFile, errDownload := DownloadProductFromURL(product, installLocation, product.GetArtifactUrl(mirrorDownloadURL, tfversion), tfversion, product.GetArchivePrefix(), goos, goarch)
 
 	/* If unable to download file from url, exit(1) immediately */
 	if errDownload != nil {
@@ -230,34 +243,34 @@ func installableBinLocation(product Product, userBinPath string) string {
 // InstallLatestVersion install latest stable tf version
 //
 // Deprecated: This function has been deprecated in favor of InstallLatestProductVersion and will be removed in v2.0.0
-func InstallLatestVersion(dryRun, showRequiredFlag bool, customBinaryPath, installPath, mirrorURL, arch string) {
+func InstallLatestVersion(dryRun, showRequiredFlag bool, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch string) {
 	product := getLegacyProduct()
 	//nolint:errcheck // Function is deprecated
-	InstallLatestProductVersion(product, dryRun, showRequiredFlag, customBinaryPath, installPath, mirrorURL, arch)
+	InstallLatestProductVersion(product, dryRun, showRequiredFlag, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch)
 }
 
 // InstallLatestProductVersion install latest stable tf version
-func InstallLatestProductVersion(product Product, dryRun, showRequiredFlag bool, customBinaryPath, installPath, mirrorURL, arch string) error {
+func InstallLatestProductVersion(product Product, dryRun, showRequiredFlag bool, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch string) error {
 	logger.Infof("Latest version requested explicitly")
 	tfversion, err := getTFLatest(product, mirrorURL)
 	if err != nil {
 		return fmt.Errorf("Error getting latest %s version from %q: %v", product.GetName(), mirrorURL, err)
 	}
 
-	return install(product, dryRun, showRequiredFlag, tfversion, customBinaryPath, installPath, mirrorURL, arch)
+	return install(product, dryRun, showRequiredFlag, tfversion, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch)
 }
 
 // InstallLatestImplicitVersion install latest - argument (version) must be provided
 //
 // Deprecated: This function has been deprecated in favor of InstallLatestProductImplicitVersion and will be removed in v2.0.0
-func InstallLatestImplicitVersion(dryRun, showRequiredFlag bool, requestedVersion, customBinaryPath, installPath, mirrorURL, arch string, preRelease bool) {
+func InstallLatestImplicitVersion(dryRun, showRequiredFlag bool, requestedVersion, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch string, preRelease bool) {
 	product := getLegacyProduct()
 	//nolint:errcheck // Function is deprecated
-	InstallLatestProductImplicitVersion(product, dryRun, showRequiredFlag, requestedVersion, customBinaryPath, installPath, mirrorURL, arch, preRelease)
+	InstallLatestProductImplicitVersion(product, dryRun, showRequiredFlag, requestedVersion, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch, preRelease)
 }
 
 // InstallLatestProductImplicitVersion install latest - argument (version) must be provided
-func InstallLatestProductImplicitVersion(product Product, dryRun, showRequiredFlag bool, requestedVersion, customBinaryPath, installPath, mirrorURL, arch string, preRelease bool) error {
+func InstallLatestProductImplicitVersion(product Product, dryRun, showRequiredFlag bool, requestedVersion, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch string, preRelease bool) error {
 	logger.Infof("Latest implicit version matching %q requested explicitly", requestedVersion)
 	_, err := version.NewConstraint(requestedVersion)
 	if err != nil {
@@ -266,7 +279,7 @@ func InstallLatestProductImplicitVersion(product Product, dryRun, showRequiredFl
 	}
 	tfversion, err := getTFLatestImplicit(product, mirrorURL, preRelease, requestedVersion)
 	if err == nil && tfversion != "" {
-		if errInstall := install(product, dryRun, showRequiredFlag, tfversion, customBinaryPath, installPath, mirrorURL, arch); errInstall != nil {
+		if errInstall := install(product, dryRun, showRequiredFlag, tfversion, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch); errInstall != nil {
 			return fmt.Errorf("Error installing %s version %q: %v", product.GetName(), tfversion, errInstall)
 		}
 		return nil
@@ -278,14 +291,14 @@ func InstallLatestProductImplicitVersion(product Product, dryRun, showRequiredFl
 // InstallVersion install Terraform product
 //
 // Deprecated: This function has been deprecated in favor of InstallProductVersion and will be removed in v2.0.0
-func InstallVersion(dryRun, showRequiredFlag bool, version, customBinaryPath, installPath, mirrorURL, arch string) {
+func InstallVersion(dryRun, showRequiredFlag bool, version, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch string) {
 	product := getLegacyProduct()
 	//nolint:errcheck // Function is deprecated
-	InstallProductVersion(product, dryRun, showRequiredFlag, version, customBinaryPath, installPath, mirrorURL, arch)
+	InstallProductVersion(product, dryRun, showRequiredFlag, version, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch)
 }
 
 // InstallProductVersion install with provided version as argument
-func InstallProductVersion(product Product, dryRun, showRequiredFlag bool, version, customBinaryPath, installPath, mirrorURL, arch string) error {
+func InstallProductVersion(product Product, dryRun, showRequiredFlag bool, version, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch string) error {
 	var logPrefix string
 	if dryRun {
 		logPrefix = "[DRY-RUN] "
@@ -293,7 +306,7 @@ func InstallProductVersion(product Product, dryRun, showRequiredFlag bool, versi
 	logger.Debugf("%sTargeting %s version %q", logPrefix, product.GetName(), version)
 
 	if validVersionFormat(version) {
-		return install(product, dryRun, showRequiredFlag, version, customBinaryPath, installPath, mirrorURL, arch)
+		return install(product, dryRun, showRequiredFlag, version, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch)
 	}
 	PrintInvalidTFVersion()
 	return fmt.Errorf("Argument must be a valid %s version", product.GetName())
@@ -304,10 +317,10 @@ func InstallProductVersion(product Product, dryRun, showRequiredFlag bool, versi
 // listAll = false - only official stable release are displayed */
 //
 // Deprecated: This function has been deprecated in favor of InstallProductOption and will be removed in v2.0.0
-func InstallOption(listAll, dryRun, showRequiredFlag bool, customBinaryPath, installPath, mirrorURL, arch string) {
+func InstallOption(listAll, dryRun, showRequiredFlag bool, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch string) {
 	product := getLegacyProduct()
 	//nolint:errcheck // Function is deprecated
-	InstallProductOption(product, listAll, dryRun, showRequiredFlag, customBinaryPath, installPath, mirrorURL, arch)
+	InstallProductOption(product, listAll, dryRun, showRequiredFlag, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch)
 }
 
 type VersionSelector struct {
@@ -318,7 +331,7 @@ type VersionSelector struct {
 // InstallProductOption displays & installs tf version
 /* listAll = true - all versions including beta and rc will be displayed */
 /* listAll = false - only official stable release are displayed */
-func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag bool, customBinaryPath, installPath, mirrorURL, arch string) error {
+func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag bool, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch string) error {
 	var selectedVersion string
 
 	if !showRequiredFlag {
@@ -398,5 +411,5 @@ func InstallProductOption(product Product, listAll, dryRun, showRequiredFlag boo
 		logger.Warnf("No required or otherwise explicitly requested version found: defaulting to latest %s version (%s)", product.GetName(), selectedVersion)
 	}
 
-	return install(product, dryRun, showRequiredFlag, selectedVersion, customBinaryPath, installPath, mirrorURL, arch)
+	return install(product, dryRun, showRequiredFlag, selectedVersion, customBinaryPath, installPath, mirrorURL, mirrorDownloadURL, arch)
 }
