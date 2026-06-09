@@ -9,7 +9,7 @@
 
 Solution: You probably need to have privileges to install _tfswitch_ at `/usr/local/bin`
 
-Try the following by installing `tfswtich` to your local bin directory instead:
+Try the following by installing `tfswitch` to your local bin directory instead:
 
 ```sh
 mkdir -p "$HOME/.local/bin"
