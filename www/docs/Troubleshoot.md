@@ -2,10 +2,10 @@
 
 ## Permissions issues when installing tfswitch
 
-* `install: can't change permissions of /usr/local/bin: Operation not permitted`
-* `"Unable to remove symlink. You must have SUDO privileges"`
-* `"Unable to create symlink. You must have SUDO privileges"`
-* `install: cannot create regular file '/usr/local/bin/tfswitch': Permission denied`
+- `install: can't change permissions of /usr/local/bin: Operation not permitted`
+- `"Unable to remove symlink. You must have SUDO privileges"`
+- `"Unable to create symlink. You must have SUDO privileges"`
+- `install: cannot create regular file '/usr/local/bin/tfswitch': Permission denied`
 
 Solution: You probably need to have privileges to install _tfswitch_ at `/usr/local/bin`
 
@@ -27,7 +27,6 @@ tfswitch -b $HOME/.local/bin/terraform
 
 See the custom directory option `-b`:  
 ![custom directory](static/tfswitch-v7.gif "Custom binary path")
-
 
 ## PGP signature verification error when installing Terraform 1.14.9+
 
