@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"reflect"
 	"regexp"
 	"slices"
@@ -168,6 +169,14 @@ func getTFLatestImplicit(product Product, mirrorURL string, preRelease bool, req
 
 // getTFURLBody : Get list of versions from the mirror URL
 func getTFURLBody(mirrorURL string) (string, error) {
+	// Local file mirror: read the version list straight off disk instead of
+	// fetching it over HTTP. Useful for air-gapped environments where no HTTP
+	// mirror is reachable. The file is expected to contain the same JSON (or
+	// HTML directory listing) that an HTTP mirror would serve.
+	if strings.HasPrefix(mirrorURL, "file://") {
+		return getTFFileBody(mirrorURL)
+	}
+
 	hasSlash := strings.HasSuffix(mirrorURL, "/")
 	isJSON := strings.HasSuffix(mirrorURL, ".json")
 	if !hasSlash && !isJSON {
@@ -192,6 +201,18 @@ func getTFURLBody(mirrorURL string) (string, error) {
 	bodyString := string(body)
 
 	return bodyString, nil
+}
+
+// getTFFileBody : Read the version list from a local `file://` mirror URL.
+// Unlike the HTTP path, a missing or unreadable file returns an error rather
+// than terminating the process, so callers can surface a clear failure.
+func getTFFileBody(mirrorURL string) (string, error) {
+	filePath := strings.TrimPrefix(mirrorURL, "file://")
+	body, errBody := os.ReadFile(filePath) // nolint:gosec // `filePath' is expected to be variable
+	if errBody != nil {
+		return "", fmt.Errorf("Error reading version list from file %q: %v", filePath, errBody)
+	}
+	return string(body), nil
 }
 
 // versionExist : Check if requested version exists
