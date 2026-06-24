@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"reflect"
 	"slices"
 	"strings"
@@ -372,6 +374,57 @@ func TestGetTFURLBody(t *testing.T) {
 	}
 	if body != hashicorpBody {
 		t.Errorf("Body not returned correctly. Expected: %s, actual: %s", hashicorpBody, body)
+	}
+}
+
+// TestGetTFURLBody_File : Test getTFURLBody reads from a local file:// mirror
+func TestGetTFURLBody_File(t *testing.T) {
+	logger = InitLogger("DEBUG")
+
+	tempDir := t.TempDir()
+	versionFile := filepath.Join(tempDir, "index.json")
+	if err := os.WriteFile(versionFile, []byte(hashicorpJSONData), 0o600); err != nil {
+		t.Fatalf("Could not write version list fixture: %v", err)
+	}
+
+	body, err := getTFURLBody("file://" + versionFile)
+	if err != nil {
+		t.Errorf("Unexpected error reading file:// mirror: %v", err)
+	}
+	if body != hashicorpJSONData {
+		t.Errorf("Body not returned correctly. Expected: %s, actual: %s", hashicorpJSONData, body)
+	}
+}
+
+// TestGetTFURLBody_FileMissing : Test getTFURLBody returns an error (rather
+// than terminating the process) when a file:// mirror points at a missing file
+func TestGetTFURLBody_FileMissing(t *testing.T) {
+	logger = InitLogger("DEBUG")
+
+	missing := filepath.Join(t.TempDir(), "does-not-exist.json")
+	_, err := getTFURLBody("file://" + missing)
+	if err == nil {
+		t.Error("Expected an error for a missing file:// mirror, got nil")
+	}
+}
+
+// TestGetTFList_File : Test getTFList resolves versions end-to-end from a
+// local file:// mirror
+func TestGetTFList_File(t *testing.T) {
+	logger = InitLogger("DEBUG")
+
+	tempDir := t.TempDir()
+	versionFile := filepath.Join(tempDir, "index.json")
+	if err := os.WriteFile(versionFile, []byte(hashicorpJSONData), 0o600); err != nil {
+		t.Fatalf("Could not write version list fixture: %v", err)
+	}
+
+	list, err := getTFList(GetProductById("terraform"), "file://"+versionFile, true)
+	if err != nil {
+		t.Errorf("Unexpected error listing versions from file:// mirror: %v", err)
+	}
+	if !slices.Contains(list, "0.12.2") {
+		t.Errorf("Expected version list from file:// mirror to contain 0.12.2, got: %v", list)
 	}
 }
 
