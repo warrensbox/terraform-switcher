@@ -1,0 +1,17 @@
+# https://trivy.dev/docs/latest/guide/configuration/filtering/#suppression
+
+vulnerabilities:
+  # 09-Jul-2026
+  # ┌─────────────────────┬───────────────┬──────────┬──────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────┐
+  # │       Library       │ Vulnerability │ Severity │  Status  │ Installed Version │ Fixed Version │                          Title                           │
+  # ├─────────────────────┼───────────────┼──────────┼──────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────┤
+  # │ golang.org/x/crypto │ GO-2026-5932  │ UNKNOWN  │ affected │ v0.54.0           │               │ The golang.org/x/crypto/openpgp package is unmaintained, │
+  # │                     │               │          │          │                   │               │ unsafe by design, and has known security...              │
+  # └─────────────────────┴───────────────┴──────────┴──────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────┘
+  # > go mod why -m golang.org/x/crypto/openpgp
+  # # golang.org/x/crypto/openpgp
+  # (main module does not need module golang.org/x/crypto/openpgp)
+  - id: GO-2026-5932
+    paths:
+      - "go.mod"
+    statement: "main module does not need module golang.org/x/crypto/openpgp"
