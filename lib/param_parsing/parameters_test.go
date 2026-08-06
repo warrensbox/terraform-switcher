@@ -295,9 +295,10 @@ terraform_version_constraint = ">= 0.13, < 0.14"
 	os.Unsetenv("TF_DEFAULT_VERSION")
 }
 
-func checkExpectedPrecedenceProduct(t *testing.T, baseDir string, expectedProduct lib.Product) {
+func checkExpectedPrecedenceProduct(t *testing.T, baseDir string, expectedProduct lib.Product, args ...string) {
 	getopt.CommandLine = getopt.New()
 	os.Args = []string{"cmd", fmt.Sprintf("--chdir=%s", baseDir)}
+	os.Args = append(os.Args, args...)
 	parameters := Params{}
 	parameters = initParams(parameters)
 	parameters.TomlDir = baseDir
@@ -342,6 +343,9 @@ product = "opentofu"
 	os.Setenv("TF_PRODUCT", "terraform")
 	t.Log("Testing with environment variable")
 	checkExpectedPrecedenceProduct(t, tempDir, terraformProduct)
+
+	// Pass via command line and verify override
+	checkExpectedPrecedenceProduct(t, tempDir, openTofuProduct, "--product", "opentofu")
 
 	os.Unsetenv("TF_VERSION")
 }
