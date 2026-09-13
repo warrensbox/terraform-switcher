@@ -249,6 +249,10 @@ func populateParams(params Params) Params {
 	// Parse again to overwrite anything that might be defined on the command line AND in any config file (CLI always wins)
 	getopt.Parse()
 	args := getopt.Args()
+
+	// Re-setup product for final time to handle any changes to product in CLI (that override other config sources)
+	setupProductParam(&params)
+
 	if len(args) == 1 && isNotShortRun { // Disregard args if "short" run (version or help)
 		/* version provided on command line as arg */
 		logger = lib.InitLogger(params.LogLevel)
