@@ -65,7 +65,7 @@ jobs:
         run: |
           set -euo pipefail
           found=0
-          for bin in $(find dist -path '*darwin*' -type f -name tfswitch); do
+          while IFS= read -r -d '' bin; do
             found=1
             echo "::group::${bin}"
             codesign --verify --strict --verbose=2 "${bin}"
@@ -76,7 +76,7 @@ jobs:
             grep -q "flags=.*runtime" <<< "${info}"
             case "${bin}" in *arm64*) "${bin}" --version ;; esac # runner is arm64
             echo "::endgroup::"
-          done
+          done < <(find dist -path '*darwin*' -type f -name tfswitch -print0)
           if [ "${found}" -eq 0 ]; then
             echo "No darwin binaries found in dist/"
             exit 1
