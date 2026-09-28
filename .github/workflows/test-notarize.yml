@@ -69,8 +69,11 @@ jobs:
             found=1
             echo "::group::${bin}"
             codesign --verify --strict --verbose=2 "${bin}"
-            codesign --display --verbose=4 "${bin}" 2>&1 | tee /dev/stderr | grep -q "Authority=Developer ID Application"
-            codesign --display --verbose=4 "${bin}" 2>&1 | grep -q "flags=.*runtime"
+            # Capture first: grep -q exits on first match, SIGPIPEs the writer, and pipefail fails the step
+            info="$(codesign --display --verbose=4 "${bin}" 2>&1)"
+            echo "${info}"
+            grep -q "Authority=Developer ID Application" <<< "${info}"
+            grep -q "flags=.*runtime" <<< "${info}"
             case "${bin}" in *arm64*) "${bin}" --version ;; esac # runner is arm64
             echo "::endgroup::"
           done
