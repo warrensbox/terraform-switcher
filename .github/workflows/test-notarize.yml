@@ -31,15 +31,28 @@ jobs:
           go-version-file: "go.mod"
           cache: false
 
-      # Snapshot build: signs and notarizes darwin binaries, publishes nothing
-      - name: Run GoReleaser (snapshot)
+      # Snapshot mode skips notarization, so fake a release on a local-only tag instead
+      - name: Create local test tag
+        run: git tag v0.0.0-notarize-test
+
+      # Wait for Apple's verdict so a rejection fails this job (test-only; real releases unchanged)
+      - name: Enable notarization wait
+        run: |
+          set -euo pipefail
+          perl -0pi -e 's/^(\s+)wait: false$/$1wait: true\n$1timeout: 20m/m or die "wait: false not found\n"' .goreleaser.yml
+          grep -n -A1 'wait:' .goreleaser.yml
+
+      # Real (non-snapshot) build: signs and notarizes darwin binaries, publishes nothing
+      - name: Run GoReleaser (no publish)
         uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
         with:
           version: latest
-          args: release --snapshot --clean
+          args: release --clean --skip=publish,announce,validate
         env:
+          GORELEASER_CURRENT_TAG: v0.0.0-notarize-test
+          GITHUB_TOKEN: ${{ github.token }}
           RELEASE_VERSION: 0.0.0-notarize-test
-          PERSONAL_ACCESS_TOKEN: unused-in-snapshot
+          PERSONAL_ACCESS_TOKEN: unused-with-skip-publish
           NO_CREATE_CHANGELOG: true
           MACOS_SIGN_P12: ${{ secrets.MACOS_SIGN_P12 }} # zizmor: ignore[secrets-outside-env]
           MACOS_SIGN_PASSWORD: ${{ secrets.MACOS_SIGN_PASSWORD }} # zizmor: ignore[secrets-outside-env]
