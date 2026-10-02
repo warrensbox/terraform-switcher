@@ -3,7 +3,7 @@ module github.com/warrensbox/terraform-switcher
 go 1.26.0
 
 require (
-	github.com/ProtonMail/gopenpgp/v3 v3.4.1
+	github.com/ProtonMail/gopenpgp/v3 v3.5.0
 	github.com/gookit/color v1.6.1
 	github.com/gookit/slog v0.7.1
 	github.com/hashicorp/go-version v1.9.0
@@ -19,7 +19,7 @@ require (
 )
 
 require (
-	github.com/ProtonMail/go-crypto v1.4.1 // indirect
+	github.com/ProtonMail/go-crypto v1.5.2 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v17 v17.0.1 // indirect
