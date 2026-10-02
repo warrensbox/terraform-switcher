@@ -55,6 +55,7 @@ yay tfswitch
 # precompiled
 yay tfswitch-bin
 ```
+
 ## Windows
 
 Download and extract the Windows version of `tfswitch` that is compatible with your system.  
