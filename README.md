@@ -52,7 +52,7 @@ brew install tfswitch
 ```
 
 > [!NOTE]
-> For users who want the latest release as soon as it is published, you can install tfswitch from our Homebrew tap:
+> For users who want the latest release as soon as it is published, you can install `tfswitch` from our Homebrew tap:
 >
 > ```shell
 > brew install warrensbox/tap/tfswitch
