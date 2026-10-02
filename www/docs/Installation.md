@@ -10,13 +10,19 @@ See the [release page](https://github.com/warrensbox/terraform-switcher/releases
 
 ## Homebrew
 
-Installation for macOS is the easiest with Homebrew. <a href="https://brew.sh/" target="_blank">If you do not have Homebrew installed, click here</a>.
+Installation for macOS or Linux (where supported) is the easiest with Homebrew. <a href="https://brew.sh/" target="_blank">If you do not have Homebrew installed, click here</a>.
 
 > **⚠** _Homebrew on Linux (formerly referred to as Linuxbrew) requires at least Homebrew [v5.0.6](https://github.com/Homebrew/brew/releases/tag/5.0.6) (released Dec 16, 2025)_
 
 ```shell
-brew install warrensbox/tap/tfswitch
+brew install tfswitch
 ```
+
+> For those who prefer faster iteration, we're also maintaining a Homebrew tap that receives updates immediately after a new release is published (Homebrew picks up updates about every three hours).  
+> Also we're distributing precompiled binaries (a Cask in terms of Homebrew), while `tfswitch` in the main Homebrew repository is compiled from source (and is distributed as Bottles — pre-compiled binaries for supported platforms and maintained by Homebrew).
+> ```shell
+> brew install warrensbox/tap/tfswitch
+> ```
 
 ## Linux
 
@@ -58,6 +64,6 @@ yay tfswitch-bin
 
 ## Install from source
 
-Alternatively, you can install the binary from the source <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">here</a>.
+Alternatively, you can build from source by cloning the repo and running `make tfswitch` and have the built binaries put in the `build` directory (run `make install` to build and store built binary in `~/bin/` directory on supported platforms) or otherwise download and extract the pre-compiled binary from <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">releases</a>.
 
 [Having trouble installing](https://tfswitch.warrensbox.com/Troubleshoot/).
