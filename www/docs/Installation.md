@@ -18,10 +18,13 @@ Installation for macOS or Linux (where supported) is the easiest with Homebrew. 
 brew install tfswitch
 ```
 
-> For those who prefer faster iteration, we're also maintaining a Homebrew tap that receives updates immediately after a new release is published (Homebrew picks up updates about every three hours).  
-> Also we're distributing precompiled binaries (a Cask in terms of Homebrew), while `tfswitch` in the main Homebrew repository is compiled from source (and is distributed as Bottles — pre-compiled binaries for supported platforms and maintained by Homebrew).
+> For users who want the latest release as soon as it is published, you can install tfswitch from our Homebrew tap:
 >
-> `brew install warrensbox/tap/tfswitch`
+> ```shell
+> brew install warrensbox/tap/tfswitch
+> ```
+>
+> The official Homebrew formula, `brew install tfswitch`, remains the recommended installation method for most users. The tap is mainly for users who want to get new releases before they are picked up by the main Homebrew repository.
 
 ## Linux
 
