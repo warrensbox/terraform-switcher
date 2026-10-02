@@ -5,6 +5,12 @@
 ### Homebrew
 
 ```shell
+brew upgrade tfswitch
+```
+
+If installed from the tap, run:
+
+```shell
 brew upgrade warrensbox/tap/tfswitch
 ```
 
@@ -19,6 +25,12 @@ curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/i
 ## Uninstall
 
 ### Homebrew
+
+```shell
+brew uninstall tfswitch
+```
+
+If installed from the tap, run:
 
 ```shell
 brew uninstall warrensbox/tap/tfswitch
