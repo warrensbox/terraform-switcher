@@ -9,6 +9,7 @@ brew upgrade tfswitch
 ```
 
 If installed from the tap, run:
+
 ```shell
 brew upgrade warrensbox/tap/tfswitch
 ```
@@ -30,6 +31,7 @@ brew uninstall tfswitch
 ```
 
 If installed from the tap, run:
+
 ```shell
 brew uninstall warrensbox/tap/tfswitch
 ```
