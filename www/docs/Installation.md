@@ -1,12 +1,6 @@
 # Installation
 
-`tfswitch` is available for Windows, macOS and Linux based operating systems.
-
-## Windows
-
-Download and extract the Windows version of `tfswitch` that is compatible with your system.  
-We are building binaries for 386, amd64, arm6 and arm7 CPU structure.  
-See the [release page](https://github.com/warrensbox/terraform-switcher/releases/latest) for your download.
+`tfswitch` is available for macOS, Linux and Windows based operating systems.
 
 ## Homebrew
 
@@ -61,6 +55,11 @@ yay tfswitch
 # precompiled
 yay tfswitch-bin
 ```
+## Windows
+
+Download and extract the Windows version of `tfswitch` that is compatible with your system.  
+We are building binaries for 386, amd64, arm6 and arm7 CPU structure.  
+See the [release page](https://github.com/warrensbox/terraform-switcher/releases/latest) for your download.
 
 ## Install from source
 
