@@ -54,6 +54,7 @@ brew install tfswitch
 > [!NOTE]
 > For those who prefer faster iteration, we're also maintaining a Homebrew tap that receives updates immediately after a new release is published (Homebrew picks up updates about every three hours).  
 > Also we're distributing precompiled binaries (a Cask in terms of Homebrew), while `tfswitch` in the main Homebrew repository is compiled from source (and is distributed as Bottles — pre-compiled binaries for supported platforms and maintained by Homebrew).
+>
 > ```shell
 > brew install warrensbox/tap/tfswitch
 > ```
