@@ -789,12 +789,18 @@
 We are building binaries for 386, amd64, arm6 and arm7 CPU structure.<br />
 See the <a href="https://github.com/warrensbox/terraform-switcher/releases/latest">release page</a> for your download.</p>
 <h2 id="homebrew">Homebrew</h2>
-<p>Installation for macOS is the easiest with Homebrew. <a href="https://brew.sh/" target="_blank">If you do not have Homebrew installed, click here</a>.</p>
+<p>Installation for macOS or Linux (where supported) is the easiest with Homebrew. <a href="https://brew.sh/" target="_blank">If you do not have Homebrew installed, click here</a>.</p>
 <blockquote>
 <p><strong>⚠</strong> <em>Homebrew on Linux (formerly referred to as Linuxbrew) requires at least Homebrew <a href="https://github.com/Homebrew/brew/releases/tag/5.0.6">v5.0.6</a> (released Dec 16, 2025)</em></p>
 </blockquote>
-<pre><code class="language-shell">brew install warrensbox/tap/tfswitch
+<pre><code class="language-shell">brew install tfswitch
 </code></pre>
+<blockquote>
+<p>For those who prefer faster iteration, we're also maintaining a Homebrew tap that receives updates immediately after a new release is published (Homebrew picks up updates about every three hours).<br />
+Also we're distributing precompiled binaries (a Cask in terms of Homebrew), while <code>tfswitch</code> in the main Homebrew repository is compiled from source (and is distributed as Bottles — pre-compiled binaries for supported platforms and maintained by Homebrew).</p>
+<p><code>shell
+brew install warrensbox/tap/tfswitch</code></p>
+</blockquote>
 <h2 id="linux">Linux</h2>
 <p>Installation for Linux operating systems.</p>
 <pre><code class="language-sh">curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/master/install.sh | bash
@@ -818,7 +824,7 @@ yay tfswitch
 yay tfswitch-bin
 </code></pre>
 <h2 id="install-from-source">Install from source</h2>
-<p>Alternatively, you can install the binary from the source <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">here</a>.</p>
+<p>Alternatively, you can build from source by cloning the repository and running <code>make tfswitch</code> and have the built binaries put in the <code>build</code> directory (run <code>make install</code> to build and store built binary in <code>~/bin/</code> directory on supported platforms) or otherwise download and extract the pre-compiled binary from <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">releases</a>.</p>
 <p><a href="https://tfswitch.warrensbox.com/Troubleshoot/">Having trouble installing</a>.</p>
 
 
