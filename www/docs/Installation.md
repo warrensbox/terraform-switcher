@@ -20,6 +20,7 @@ brew install tfswitch
 
 > For those who prefer faster iteration, we're also maintaining a Homebrew tap that receives updates immediately after a new release is published (Homebrew picks up updates about every three hours).  
 > Also we're distributing precompiled binaries (a Cask in terms of Homebrew), while `tfswitch` in the main Homebrew repository is compiled from source (and is distributed as Bottles — pre-compiled binaries for supported platforms and maintained by Homebrew).
+>
 > ```shell
 > brew install warrensbox/tap/tfswitch
 > ```
@@ -64,6 +65,6 @@ yay tfswitch-bin
 
 ## Install from source
 
-Alternatively, you can build from source by cloning the repo and running `make tfswitch` and have the built binaries put in the `build` directory (run `make install` to build and store built binary in `~/bin/` directory on supported platforms) or otherwise download and extract the pre-compiled binary from <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">releases</a>.
+Alternatively, you can build from source by cloning the repository and running `make tfswitch` and have the built binaries put in the `build` directory (run `make install` to build and store built binary in `~/bin/` directory on supported platforms) or otherwise download and extract the pre-compiled binary from <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">releases</a>.
 
 [Having trouble installing](https://tfswitch.warrensbox.com/Troubleshoot/).

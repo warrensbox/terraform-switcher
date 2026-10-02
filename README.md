@@ -78,7 +78,7 @@ yay tfswitch-bin
 
 ## Install from source
 
-Alternatively, you can build from source by cloning the repo and running `make tfswitch` and have the built binaries put in the `build` directory (run `make install` to build and store built binary in `~/bin/` directory on supported platforms) or otherwise download and extract the pre-compiled binary from <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">releases</a>.
+Alternatively, you can build from source by cloning the repository and running `make tfswitch` and have the built binaries put in the `build` directory (run `make install` to build and store built binary in `~/bin/` directory on supported platforms) or otherwise download and extract the pre-compiled binary from <a href="https://github.com/warrensbox/terraform-switcher/releases" target="_blank">releases</a>.
 
 See [our installation documentation](https://tfswitch.warrensbox.com/Installation) for more details.
 
