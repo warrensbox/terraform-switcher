@@ -3,7 +3,7 @@ module github.com/warrensbox/terraform-switcher
 go 1.26.0
 
 require (
-	github.com/ProtonMail/gopenpgp/v3 v3.5.0
+	github.com/ProtonMail/gopenpgp/v3 v3.5.2
 	github.com/gookit/color v1.6.1
 	github.com/gookit/slog v0.7.1
 	github.com/hashicorp/go-version v1.9.0
