@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/ProtonMail/gopenpgp/v3 v3.5.2
-	github.com/gookit/color v1.6.1
+	github.com/gookit/color v1.6.2
 	github.com/gookit/slog v0.7.1
 	github.com/hashicorp/go-version v1.9.0
 	github.com/hashicorp/hcl/v2 v2.25.0
