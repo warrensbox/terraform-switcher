@@ -7,6 +7,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.20.0](https://github.com/warrensbox/terraform-switcher/tree/v1.20.0) - 2026-09-29
+
+[Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.19.0...v1.20.0)
+
+### Other
+
+- chore(release): notarize and sign macOS binaries with Apple [#830](https://github.com/warrensbox/terraform-switcher/pull/830) ([warrensbox](https://github.com/warrensbox))
+- docs: Update CHANGELOG with `v1.20.0` [#831](https://github.com/warrensbox/terraform-switcher/pull/831) ([yermulnik](https://github.com/yermulnik))
+
 ## [v1.19.0](https://github.com/warrensbox/terraform-switcher/tree/v1.19.0) - 2026-06-10
 
 [Full Changelog](https://github.com/warrensbox/terraform-switcher/compare/v1.18.0...v1.19.0)
