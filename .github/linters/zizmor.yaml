@@ -1,0 +1,7 @@
+rules:
+  dependabot-cooldown:
+    config:
+      # https://docs.zizmor.sh/audits/#dependabot-cooldown
+      # Use default Dependabot's cooldown period on dependency updates
+      # (zizmor recommends a cooldown of seven days by default)
+      days: 3

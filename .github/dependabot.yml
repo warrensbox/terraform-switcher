@@ -25,3 +25,7 @@ updates:
     labels:
       - gh-actions
       - dependencies
+    groups:
+      codeql-action:
+        patterns:
+          - "github/codeql-action/*"
