@@ -206,3 +206,12 @@ tfswitch --match-version-requirement=1.10.5; echo $?
 20:41:52.372 WARNING No version requirement found to match against (version "1.10.5" is acceptable)
 0
 ```
+
+## Customize HTTP timeout for downloading binaries
+
+`tfswitch` defaults to a 60 seconds timeout for downloading binaries.
+You can customize the timeout by using the `--http-timeout` (`-T`) flag.
+
+```bash
+tfswitch --http-timeout 120
+```
