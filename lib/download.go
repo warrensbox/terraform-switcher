@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -185,7 +184,7 @@ func downloadFromURL(installLocation string, url string, wg *sync.WaitGroup) (st
 	fileName := tokens[len(tokens)-1]
 	logger.Infof("Downloading to %q", filepath.Join(installLocation, "/", fileName))
 
-	response, err := http.Get(url) // nolint:gosec // `url' is expected to be variable
+	response, err := httpGet(url)
 	if err != nil {
 		logger.Errorf("Error downloading %s: %v", url, err)
 		return "", err
@@ -195,7 +194,7 @@ func downloadFromURL(installLocation string, url string, wg *sync.WaitGroup) (st
 	if response.StatusCode != 200 {
 		// Sometimes hashicorp terraform file names are not consistent
 		// For example 0.12.0-alpha4 naming convention in the release repo is not consistent
-		return "", errors.New("Unable to download from " + url)
+		return "", statusError(url, response.StatusCode)
 	}
 
 	filePath := filepath.Join(installLocation, fileName)

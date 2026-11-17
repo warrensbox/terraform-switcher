@@ -3,6 +3,7 @@ set -l COMMAND tfswitch
 
 complete -c $COMMAND -f
 
+complete -c $COMMAND -s a -l auth                       -d "Authenticate to the mirror using Terraform credentials.tfrc.json"
 complete -c $COMMAND -s A -l arch                       -d "Override CPU architecture type for downloaded binary" -r -f -a "386 amd64 arm arm64"
 complete -c $COMMAND -s b -l bin                        -d "Custom binary path" -r -a "(__fish_complete_directories)"
 complete -c $COMMAND -s c -l chdir                      -d "Switch to a different working directory" -r -a "(__fish_complete_directories)"

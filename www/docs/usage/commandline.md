@@ -110,6 +110,59 @@ tfswitch --mirror https://example.jfrog.io/artifactory/terraform/versions.json \
   --mirror-download https://example.jfrog.io/artifactory/downloads/terraform
 ```
 
+## Authenticate to a custom mirror
+
+If your mirror requires authentication (e.g. a private Artifactory repository),
+`tfswitch` can send a Bearer token with every request to the mirror host.
+Authentication is optional and disabled by default.
+
+There are two ways to provide the token:
+
+1. `-a`/`--auth` flag: look up the token in Terraform's credentials file, the
+   same one `terraform login` writes:
+   - Linux/macOS: `~/.terraform.d/credentials.tfrc.json`
+   - Windows: `%APPDATA%\terraform.d\credentials.tfrc.json`
+2. [`TF_MIRROR_TOKEN`](environment-variables.md#tf_mirror_token) environment
+   variable, which is handy in CI/CD pipelines.
+
+With `--auth`, the host of each of the `-m`/`--mirror` and
+`-M`/`--mirror-download` URLs (including the port, if present) is matched,
+case-insensitively, against the entries in the credentials file:
+
+```json
+{
+  "credentials": {
+    "example.jfrog.io": {
+      "token": "<access token>"
+    }
+  }
+}
+```
+
+```bash
+tfswitch --auth \
+  --mirror https://example.jfrog.io/artifactory/hashicorp-releases/terraform/index.json \
+  --mirror-download https://example.jfrog.io/artifactory/hashicorp-releases/terraform
+```
+
+Notes:
+
+- If `--auth` is set and there is no matching entry with a non-empty token,
+  `tfswitch` exits with an error instead of falling back to unauthenticated
+  requests.
+- If `TF_MIRROR_TOKEN` is set, it takes precedence over the credentials file.
+- The token is sent **only** to the hosts of the mirror URLs you configured,
+  never to other hosts (e.g. PGP public key hosts). It is also not forwarded if
+  the mirror redirects to a different host (e.g. to a CDN or pre-signed
+  storage URL).
+- There is intentionally no command line value or `.tfswitch.toml` key for the
+  token itself, to keep secrets out of shell history, process lists and
+  committed configuration files.
+- Custom credentials file locations (`TF_CLI_CONFIG_FILE`), credentials helpers
+  and `TF_TOKEN_<host>` variables are not supported.
+- A `401`/`403` response from the mirror produces an error that points back to
+  these options.
+
 ## Install to non-default location
 
 By default `tfswitch` will download the Terraform binary to the user home
