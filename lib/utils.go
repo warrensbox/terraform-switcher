@@ -24,7 +24,7 @@ func FileExistsAndIsNotDir(filename string) bool {
 
 func UsageMessage() {
 	// Set the display width for getopt usage messages
-	getopt.DisplayWidth = getTerminalWidth()
+	getopt.DisplayWidth = max(getTerminalWidth(), getopt.HelpColumn+1)
 	getopt.PrintUsage(os.Stderr)
 }
 
