@@ -10,7 +10,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/pborman/getopt"
+	"github.com/pborman/getopt/v2"
 )
 
 // FileExistsAndIsNotDir checks if a file exists and is not a directory before we try using it to prevent further errors
@@ -23,6 +23,8 @@ func FileExistsAndIsNotDir(filename string) bool {
 }
 
 func UsageMessage() {
+	// Set the display width for getopt usage messages
+	getopt.DisplayWidth = getTerminalWidth()
 	getopt.PrintUsage(os.Stderr)
 }
 

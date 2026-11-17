@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/gookit/slog"
-	"github.com/pborman/getopt"
+	"github.com/pborman/getopt/v2"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
@@ -22,6 +22,7 @@ type Params struct {
 	DryRun                  bool
 	ForceColor              bool
 	HelpFlag                bool
+	HTTPTimeout             int
 	InstallPath             string
 	LatestFlag              bool
 	LatestPre               string
@@ -44,7 +45,7 @@ type Params struct {
 	VersionRequirement      string
 }
 
-// This is used to automatically instate Environment variables and TOML keys
+// This is used to automatically instantiate Environment variables and TOML keys
 var paramMappings = []struct {
 	description string
 	env         string
@@ -56,6 +57,7 @@ var paramMappings = []struct {
 	{param: "CustomBinaryPath", ptype: reflect.String, env: "TF_BINARY_PATH", toml: "bin", description: "Custom binary path"},
 	{param: "DefaultVersion", ptype: reflect.String, env: "TF_DEFAULT_VERSION", toml: "default-version", description: "Default version"},
 	{param: "ForceColor", ptype: reflect.Bool, env: "FORCE_COLOR", toml: "force-color", description: "Force color output if terminal supports it"},
+	{param: "HTTPTimeout", ptype: reflect.Int64, env: "TF_HTTP_TIMEOUT", toml: "http-timeout", description: "HTTP timeout in seconds for downloading binaries"},
 	{param: "InstallPath", ptype: reflect.String, env: "TF_INSTALL_PATH", toml: "install", description: "Custom install path"},
 	{param: "LogLevel", ptype: reflect.String, env: "TF_LOG_LEVEL", toml: "log-level", description: "Log level"},
 	{param: "NoColor", ptype: reflect.Bool, env: "NO_COLOR", toml: "no-color", description: "Disable color output"},
@@ -116,31 +118,34 @@ func populateParams(params Params) Params {
 	}
 
 	// String params
-	getopt.StringVarLong(&params.Arch, "arch", 'A', fmt.Sprintf("Override CPU architecture type for downloaded binary. Ex: `tfswitch --arch amd64` will attempt to download the amd64 version of the binary. Default: %s", runtime.GOARCH))
-	getopt.StringVarLong(&params.ChDirPath, "chdir", 'c', "Switch to a different working directory before executing the given command. Ex: `tfswitch --chdir terraform_project` will run tfswitch in the `terraform_project` directory")
-	getopt.StringVarLong(&params.CustomBinaryPath, "bin", 'b', fmt.Sprintf("Custom binary path. Ex: `tfswitch -b %s`", lib.ConvertExecutableExt("/Users/username/bin/terraform")))
-	getopt.StringVarLong(&params.DefaultVersion, "default", 'd', "Default to this version in case no other versions could be detected. Ex: `tfswitch --default 1.2.4`")
-	getopt.StringVarLong(&params.MatchVersionRequirement, "match-version-requirement", 'n', "Check if the requested version matches the requirement mandated by the configuration (env var, module version constraint, config files). Exit successfully if it does (or if there's no requirement found), otherwise exit with a code of `2` (code of `1` denotes a general error)")
-	getopt.StringVarLong(&params.InstallPath, "install", 'i', fmt.Sprintf("Custom install path. Ex: `tfswitch -i /Users/username`. The binaries will be in the sub installDir directory e.g. `/Users/username/%s`", lib.InstallDir))
-	getopt.StringVarLong(&params.LatestPre, "latest-pre", 'p', "Latest pre-release implicit version. Ex: `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1 (latest)")
-	getopt.StringVarLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: `tfswitch --latest-stable 0.13.0` downloads 0.13.7 and 0.13 downloads 0.15.5 (latest)")
-	getopt.StringVarLong(&params.LogLevel, "log-level", 'g', fmt.Sprintf("Set tfswitch logging level. One of (in the order of increasing level of verbosity): %s. Use `OFF` to disable (suppress) logging", strings.Join(lib.LogLevels(), ", ")))
-	getopt.StringVarLong(&params.MirrorURL, "mirror", 'm', fmt.Sprintf("Install from a remote API other than the default.\nDefault (based on value of `--product`):\n  - %s", strings.Join(defaultMirrors, "\n  - ")))
-	getopt.StringVarLong(&params.MirrorDownloadURL, "mirror-download", 'M', fmt.Sprintf("Download artifacts from a URL other than the default.\nDefault (based on value of `--product`):\n  - %s", strings.Join(defaultMirrorsDownload, "\n  - ")))
-	getopt.StringVarLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: `tfswitch --show-latest-pre 0.13` prints 0.13.0-rc1 (latest)")
-	getopt.StringVarLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: `tfswitch --show-latest-stable 0.13` prints 0.13.7 (latest)")
-	getopt.StringVarLong(&params.Product, "product", 't', fmt.Sprintf("Specify which product to use. Ex: `tfswitch --product opentofu` will install OpenTofu. Options: %s. Default: %s", strings.Join(productIds, ", "), lib.DefaultProductId))
+	getopt.FlagLong(&params.Arch, "arch", 'A', "Override CPU architecture type for downloaded binary. Ex: `tfswitch --arch amd64` will attempt to download the amd64 version of the binary. Default:", "ARCH")
+	getopt.FlagLong(&params.ChDirPath, "chdir", 'c', "Switch to a different working directory before executing the given command. Ex: `tfswitch --chdir terraform_project` will run tfswitch in the `terraform_project` directory. Default:", "DIR")
+	getopt.FlagLong(&params.CustomBinaryPath, "bin", 'b', fmt.Sprintf("Custom binary path. Ex: `tfswitch -b %s`", lib.ConvertExecutableExt("/Users/username/bin/terraform")), "PATH")
+	getopt.FlagLong(&params.DefaultVersion, "default", 'd', "Default to this version in case no other versions could be detected. Ex: `tfswitch --default 1.2.4`", "VERSION")
+	getopt.FlagLong(&params.MatchVersionRequirement, "match-version-requirement", 'n', "Check if the requested version matches the requirement mandated by the configuration (env var, module version constraint, config files). Exit successfully if it does (or if there's no requirement found), otherwise exit with a code of `2` (code of `1` denotes a general error).", "VERSION")
+	getopt.FlagLong(&params.InstallPath, "install", 'i', fmt.Sprintf("Custom install path. Ex: `tfswitch -i /Users/username`. The binaries will be in the sub installDir directory e.g. `/Users/username/%s`. Default:", lib.InstallDir), "PATH")
+	getopt.FlagLong(&params.LatestPre, "latest-pre", 'p', "Latest pre-release implicit version. Ex: `tfswitch --latest-pre 0.13` downloads 0.13.0-rc1 (latest).", "VERSION")
+	getopt.FlagLong(&params.LatestStable, "latest-stable", 's', "Latest implicit version based on a constraint. Ex: `tfswitch --latest-stable 0.13.0` downloads 0.13.7 and 0.13 downloads 0.15.5 (latest).", "VERSION")
+	getopt.FlagLong(&params.LogLevel, "log-level", 'g', fmt.Sprintf("Set tfswitch logging level. One of (in the order of increasing level of verbosity): %s. Use `OFF` to disable (suppress) logging. Default:", strings.Join(lib.LogLevels(), ", ")), "LEVEL")
+	getopt.FlagLong(&params.MirrorURL, "mirror", 'm', fmt.Sprintf("Install from a remote API other than the default.\nDefault (based on value of `--product`):\n  - %s", strings.Join(defaultMirrors, "\n  - ")), "URL")
+	getopt.FlagLong(&params.MirrorDownloadURL, "mirror-download", 'M', fmt.Sprintf("Download artifacts from a URL other than the default.\nDefault (based on value of `--product`):\n  - %s", strings.Join(defaultMirrorsDownload, "\n  - ")), "URL")
+	getopt.FlagLong(&params.ShowLatestPre, "show-latest-pre", 'P', "Show latest pre-release implicit version. Ex: `tfswitch --show-latest-pre 0.13` prints 0.13.0-rc1 (latest).", "VERSION")
+	getopt.FlagLong(&params.ShowLatestStable, "show-latest-stable", 'S', "Show latest implicit version. Ex: `tfswitch --show-latest-stable 0.13` prints 0.13.7 (latest).", "VERSION")
+	getopt.FlagLong(&params.Product, "product", 't', fmt.Sprintf("Specify which product to use. Ex: `tfswitch --product opentofu` will install OpenTofu. Options: %s. Default:", strings.Join(productIds, ", ")), "PRODUCT")
 
 	// Bool params
-	getopt.BoolVarLong(&params.DryRun, "dry-run", 'r', "Only show what tfswitch would do. Don't download anything")
-	getopt.BoolVarLong(&params.ForceColor, "force-color", 'K', "Force color output if terminal supports it")
-	getopt.BoolVarLong(&params.HelpFlag, "help", 'h', "Display help message")
-	getopt.BoolVarLong(&params.LatestFlag, "latest", 'u', "Get latest stable version")
-	getopt.BoolVarLong(&params.ListAllFlag, "list-all", 'l', "List all versions of product (see `--product`), including Beta and RC versions")
-	getopt.BoolVarLong(&params.NoColor, "no-color", 'k', "Disable color output. Useful for piping output to a file or when the terminal does not support colors")
-	getopt.BoolVarLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version")
-	getopt.BoolVarLong(&params.ShowRequiredFlag, "show-required", 'R', "Show required (or explicitly requested) version. Defaults to latest version if no constraints found")
-	getopt.BoolVarLong(&params.VersionFlag, "version", 'v', "Display the version of tfswitch")
+	getopt.FlagLong(&params.DryRun, "dry-run", 'r', "Only show what tfswitch would do. Don't download anything.", "BOOL")
+	getopt.FlagLong(&params.ForceColor, "force-color", 'K', "Force color output if terminal supports it.", "BOOL")
+	getopt.FlagLong(&params.HelpFlag, "help", 'h', "Display help message.", "BOOL")
+	getopt.FlagLong(&params.LatestFlag, "latest", 'u', "Get latest stable version.", "BOOL")
+	getopt.FlagLong(&params.ListAllFlag, "list-all", 'l', "List all versions of product (see `--product`), including Beta and RC versions.", "BOOL")
+	getopt.FlagLong(&params.NoColor, "no-color", 'k', "Disable color output. Useful for piping output to a file or when the terminal does not support colors.", "BOOL")
+	getopt.FlagLong(&params.ShowLatestFlag, "show-latest", 'U', "Show latest stable version.", "BOOL")
+	getopt.FlagLong(&params.ShowRequiredFlag, "show-required", 'R', "Show required (or explicitly requested) version. Defaults to latest version if no constraints found.", "BOOL")
+	getopt.FlagLong(&params.VersionFlag, "version", 'v', "Display the version of tfswitch.", "BOOL")
+
+	// Int params
+	getopt.FlagLong(&params.HTTPTimeout, "http-timeout", 'T', "Set the HTTP timeout in seconds for downloading binaries. Default:", "SECONDS")
 
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
@@ -271,6 +276,7 @@ func populateParams(params Params) Params {
 		logger.Debugf("Resolved binary path: %q", params.CustomBinaryPath)
 		logger.Debugf("Resolved download URL: %q", params.MirrorDownloadURL)
 		logger.Debugf("Resolved force color: %t", params.ForceColor)
+		logger.Debugf("Resolved HTTP timeout: %d", params.HTTPTimeout)
 		logger.Debugf("Resolved install path: %q", filepath.Join(params.InstallPath, lib.InstallDir))
 		logger.Debugf("Resolved install version: %q", params.Version)
 		logger.Debugf("Resolved log level: %q", params.LogLevel)
@@ -291,6 +297,7 @@ func initParams(params Params) Params {
 	params.DryRun = false
 	params.ForceColor = false
 	params.HelpFlag = false
+	params.HTTPTimeout = 60
 	params.InstallPath = lib.GetHomeDirectory()
 	params.LatestFlag = false
 	params.LatestPre = lib.DefaultLatest

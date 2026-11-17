@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/gookit/color"
-	"github.com/pborman/getopt"
+	"github.com/pborman/getopt/v2"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 

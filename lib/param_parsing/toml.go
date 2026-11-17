@@ -80,6 +80,15 @@ func getParamsTOML(params Params) (Params, error) {
 				switch ptype {
 				case reflect.Bool:
 					paramKey.SetBool(configKeyValue.(bool))
+				case reflect.Int64:
+					if configKeyValue.(int64) < 0 {
+						logger.Warnf(
+							"TOML key %q value \"%v\" must be a non-negative integer, skipping assignment",
+							toml, configKeyValue,
+						)
+						continue
+					}
+					paramKey.SetInt(configKeyValue.(int64))
 				case reflect.String:
 					paramKey.SetString(configKeyValue.(string))
 				default:

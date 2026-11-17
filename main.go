@@ -7,7 +7,9 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
+	"time"
 
 	lib "github.com/warrensbox/terraform-switcher/lib"
 	"github.com/warrensbox/terraform-switcher/lib/param_parsing"
@@ -22,6 +24,13 @@ var (
 //nolint:gocyclo
 func main() {
 	var err error
+
+	// Set custom HTTP client timeout since `http.Get()` defaults to no timeout
+	logger.Debugf("Setting HTTP client timeout to %d seconds", parameters.HTTPTimeout)
+	http.DefaultClient = &http.Client{
+		Timeout: time.Duration(parameters.HTTPTimeout) * time.Second,
+	}
+
 	switch {
 	case parameters.VersionFlag:
 		fmt.Printf("Version: ")
