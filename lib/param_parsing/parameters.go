@@ -245,10 +245,6 @@ func populateParams(params Params) Params {
 
 		params = GetParamsFromEnvironment(params)
 
-		if params.HTTPTimeout < 0 {
-			logger.Fatalf("HTTP timeout value must be a non-negative integer (got \"%d\")", params.HTTPTimeout)
-		}
-
 		// Logger config was changed by the config files. Reinitialise.
 		if params.LogLevel != oldLogLevel {
 			logger = lib.InitLogger(params.LogLevel)
@@ -267,6 +263,11 @@ func populateParams(params Params) Params {
 	}
 
 	if isNotShortRun {
+		// Reject negative HTTP timeout values as they disable the timeout
+		if params.HTTPTimeout < 0 {
+			logger.Fatalf("HTTP timeout value must be a non-negative integer (got \"%d\")", params.HTTPTimeout)
+		}
+
 		if params.DryRun {
 			logger.Info("[DRY-RUN] No changes will be made")
 		} else {
