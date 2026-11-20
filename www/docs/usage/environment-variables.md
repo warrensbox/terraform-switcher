@@ -118,6 +118,28 @@ export TF_LOG_LEVEL="DEBUG"
 tfswitch # Will output debug logs
 ```
 
+### `TF_MIRROR_TOKEN`
+
+`TF_MIRROR_TOKEN` environment variable can be set to a Bearer token that
+`tfswitch` sends in the `Authorization` header when talking to the custom
+mirror(s) set with `-m`/`--mirror` and `-M`/`--mirror-download`.
+
+- The token is only sent to the hosts of those mirror URLs.
+- Takes precedence over the token from Terraform's credentials file (see
+  [`--auth`](commandline.md#authenticate-to-a-custom-mirror)).
+- Can only be set via environment variable (no command line parameter and no
+  `.tfswitch.toml` key) so that the secret does not end up in shell history or
+  committed files.
+
+For example:
+
+```bash
+export TF_MIRROR_TOKEN="<access token>"
+tfswitch \
+  --mirror https://example.jfrog.io/artifactory/hashicorp-releases/terraform/index.json \
+  --mirror-download https://example.jfrog.io/artifactory/hashicorp-releases/terraform
+```
+
 ### `TF_PRODUCT`
 
 `TF_PRODUCT` environment variable can be set to the desired product/tool.
