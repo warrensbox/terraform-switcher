@@ -81,14 +81,11 @@ func getParamsTOML(params Params) (Params, error) {
 				case reflect.Bool:
 					paramKey.SetBool(configKeyValue.(bool))
 				case reflect.Int64:
-					if toml == "http-timeout" {
-						if !lib.IsValidHTTPTimeoutValue(configKeyValue.(int64)) {
-							logger.Fatalf(
-								"TOML key %q value \"%v\" must be a non-negative valid integer, skipping assignment",
-								toml, configKeyValue,
-							)
-							continue
-						}
+					if toml == "http-timeout" && !lib.IsValidHTTPTimeoutValue(configKeyValue.(int64)) {
+						logger.Fatalf(
+							"TOML key %q value \"%v\" must be a non-negative valid integer, skipping assignment",
+							toml, configKeyValue,
+						)
 					}
 					paramKey.SetInt(configKeyValue.(int64))
 				case reflect.String:

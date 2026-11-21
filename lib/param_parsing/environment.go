@@ -59,14 +59,11 @@ func GetParamsFromEnvironment(params Params) Params {
 				)
 				continue
 			}
-			if env == "TF_HTTP_TIMEOUT" {
-				if !lib.IsValidHTTPTimeoutValue(parsedInt) {
-					logger.Fatalf(
-						"Environment variable %q value %q must be a non-negative valid integer, skipping assignment",
-						env, envVarValue,
-					)
-					continue
-				}
+			if env == "TF_HTTP_TIMEOUT" && !lib.IsValidHTTPTimeoutValue(parsedInt) {
+				logger.Fatalf(
+					"Environment variable %q value %q must be a non-negative valid integer, skipping assignment",
+					env, envVarValue,
+				)
 			}
 			paramKey.SetInt(parsedInt)
 		case reflect.String:
