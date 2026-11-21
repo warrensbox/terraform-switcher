@@ -13,6 +13,8 @@ import (
 const tfSwitchTOMLFileName = ".tfswitch.toml"
 
 // getParamsTOML parses everything in the toml file, return required version and bin path
+//
+//nolint:gocyclo
 func getParamsTOML(params Params) (Params, error) {
 	tomlPath := filepath.Join(params.TomlDir, tfSwitchTOMLFileName)
 	if tomlFileExists(params) {
