@@ -25,9 +25,11 @@ func FileExistsAndIsNotDir(filename string) bool {
 }
 
 func UsageMessage() {
-	// Set the display width for getopt usage messages
+	// Set the display width for getopt usage messages.
+	// Measure the same stream we print to (stderr), since stdout and stderr
+	// can be redirected independently and may not share a terminal.
 	// (getTerminalWidth never returns a value <= getopt.HelpColumn, so no extra clamping needed here)
-	getopt.DisplayWidth = getTerminalWidth()
+	getopt.DisplayWidth = getTerminalWidth(os.Stderr)
 	getopt.PrintUsage(os.Stderr)
 }
 

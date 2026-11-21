@@ -73,17 +73,20 @@ func removeContents(dir string) error {
 	return nil
 }
 
-// Returns the width of the terminal, or a fallback value if it cannot be determined
+// Returns the width of the terminal backing the given file (typically os.Stdout or os.Stderr),
+// or a fallback value if it cannot be determined
 // (or if the terminal is too narrow for `getopt` to wrap help text in a readable way)
+// Callers must pass the same file they intend to write the width-formatted output to,
+// since stdout and stderr can be redirected independently and may not share a terminal.
 // For user convenience, the fallback value can be specified as an argument (or otherwise defaults to `defaultTerminalWidth`)
 // Errors out if more than one fallback value is specified
-func getTerminalWidth(fallback ...int) int {
+func getTerminalWidth(file *os.File, fallback ...int) int {
 	if len(fallback) > 1 {
 		logger.Warnf("getTerminalWidth received %d fallback arguments, ignoring extras", len(fallback))
 	}
 
 	indentCols := 5 // Indent 5 columns from right side of the window for the readability's sake
-	if width, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil && width > indentCols {
+	if width, _, err := term.GetSize(int(file.Fd())); err == nil && width > indentCols {
 		// Below `getopt.HelpColumn`, there's no room left for help text, so `getopt` wraps it
 		// one character per line. Treat that as if detection failed and fall back below:
 		// a too-wide-for-the-terminal but readable rendering beats a vertically shredded one.
