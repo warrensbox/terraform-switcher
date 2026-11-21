@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/pborman/getopt/v2"
 	"golang.org/x/term"
 )
 
@@ -73,6 +74,7 @@ func removeContents(dir string) error {
 }
 
 // Returns the width of the terminal, or a fallback value if it cannot be determined
+// (or if the terminal is too narrow for `getopt` to wrap help text in a readable way)
 // For user convenience, the fallback value can be specified as an argument (or otherwise defaults to `defaultTerminalWidth`)
 // Errors out if more than one fallback value is specified
 func getTerminalWidth(fallback ...int) int {
@@ -82,7 +84,12 @@ func getTerminalWidth(fallback ...int) int {
 
 	indentCols := 5 // Indent 5 columns from right side of the window for the readability's sake
 	if width, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil && width > indentCols {
-		return width - indentCols
+		// Below `getopt.HelpColumn`, there's no room left for help text, so `getopt` wraps it
+		// one character per line. Treat that as if detection failed and fall back below:
+		// a too-wide-for-the-terminal but readable rendering beats a vertically shredded one.
+		if usableWidth := width - indentCols; usableWidth > getopt.HelpColumn {
+			return usableWidth
+		}
 	}
 	if len(fallback) > 0 && fallback[0] > 0 {
 		return fallback[0]
