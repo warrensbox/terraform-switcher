@@ -7,7 +7,7 @@ import (
 )
 
 func TestIsValidHTTPTimeoutValue(t *testing.T) {
-	maxValidSeconds := int64(math.MaxInt64 / int64(time.Second))
+	maxValidSeconds := math.MaxInt64 / int64(time.Second)
 
 	tests := []struct {
 		name    string
