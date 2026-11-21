@@ -188,6 +188,21 @@ running scripts in CI/CD pipeline or when piping output to other commands.
 
 **NOTE**: `no-color` and `force-color` parameters are mutually exclusive.
 
+### Customize HTTP client timeout
+
+`tfswitch` defaults to a 60 seconds timeout for HTTP requests.
+
+The `.tfswitch.toml` file can be configured with a `http-timeout` parameter to
+specify a custom timeout value in seconds.
+
+```toml
+http-timeout = 120
+```
+
+**NOTE**: Setting `http-timeout` to `0` disables the timeout entirely
+(HTTP requests will wait indefinitely), it does not make requests fail
+instantly.
+
 ## Use `terragrunt.hcl` (or `root.hcl`) file
 
 If a `terragrunt.hcl` file with the terraform constraint is included in the
@@ -203,14 +218,3 @@ terraform_version_constraint = ">= 0.13, < 0.14"
 If there's no `terragrunt.hcl` file or it has no `terraform_version_constraint`
 defined, `tfswitch` will look for a `root.hcl` file in the same directory. If found, it
 will use the `terraform_version_constraint` defined there.
-
-### Customize HTTP client timeout
-
-`tfswitch` defaults to a 60 seconds timeout for HTTP requests.
-
-The `.tfswitch.toml` file can be configured with a `http-timeout` parameter to
-specify a custom timeout value in seconds.
-
-```toml
-http-timeout = 120
-```

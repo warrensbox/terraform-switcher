@@ -167,7 +167,7 @@ export TF_VERSION="0.14.4"
 tfswitch # Will automatically switch to terraform version 0.14.4
 ```
 
-## `TF_HTTP_TIMEOUT`
+### `TF_HTTP_TIMEOUT`
 
 `TF_HTTP_TIMEOUT` environment variable can be set to override default timeout
 value in seconds for HTTP requests.
@@ -180,3 +180,7 @@ For example:
 export TF_HTTP_TIMEOUT="120"
 tfswitch # Will set HTTP timeout to 120 seconds
 ```
+
+**NOTE**: Setting `TF_HTTP_TIMEOUT` to `0` disables the timeout entirely
+(HTTP requests will wait indefinitely), it does not make requests fail
+instantly.

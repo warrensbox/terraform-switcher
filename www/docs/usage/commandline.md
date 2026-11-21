@@ -216,3 +216,7 @@ You can customize the timeout by using the `--http-timeout` (`-T`) flag.
 ```bash
 tfswitch --http-timeout 120
 ```
+
+**NOTE**: Setting `--http-timeout` to `0` disables the timeout entirely
+(HTTP requests will wait indefinitely), it does not make requests fail
+instantly.
