@@ -22,6 +22,7 @@ var (
 //nolint:gocyclo
 func main() {
 	var err error
+
 	switch {
 	case parameters.VersionFlag:
 		fmt.Printf("Version: ")

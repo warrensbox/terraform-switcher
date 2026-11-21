@@ -3,7 +3,12 @@ package lib
 import (
 	"os"
 	"path/filepath"
+
+	"golang.org/x/term"
 )
+
+// Default value used as fallback in `getTerminalWidth()`
+const defaultTerminalWidth = 80
 
 func checkFileExist(file string) bool {
 	_, err := os.Stat(file)
@@ -65,4 +70,22 @@ func removeContents(dir string) error {
 		}
 	}
 	return nil
+}
+
+// Returns the width of the terminal, or a fallback value if it cannot be determined
+// For user convenience, the fallback value can be specified as an argument (or otherwise defaults to `defaultTerminalWidth`)
+// Errors out if more than one fallback value is specified
+func getTerminalWidth(fallback ...int) int {
+	if len(fallback) > 1 {
+		logger.Warnf("getTerminalWidth received %d fallback arguments, ignoring extras", len(fallback))
+	}
+
+	indentCols := 5 // Indent 5 columns from right side of the window for the readability's sake
+	if width, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil && width > indentCols {
+		return width - indentCols
+	}
+	if len(fallback) > 0 && fallback[0] > 0 {
+		return fallback[0]
+	}
+	return defaultTerminalWidth
 }
