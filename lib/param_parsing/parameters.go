@@ -3,11 +3,13 @@ package param_parsing
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/gookit/slog"
 	"github.com/pborman/getopt/v2"
@@ -149,6 +151,7 @@ func populateParams(params Params) Params {
 
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()
+	cliHTTPTimeout, cliHTTPTimeoutSet := params.HTTPTimeout, getopt.IsSet("http-timeout")
 
 	isNotShortRun := !params.VersionFlag && !params.HelpFlag
 
@@ -199,6 +202,18 @@ func populateParams(params Params) Params {
 
 		// First pass to obtain environment variables to override product
 		params = GetParamsFromEnvironment(params)
+
+		if cliHTTPTimeoutSet {
+			params.HTTPTimeout = cliHTTPTimeout
+		}
+		if params.HTTPTimeout < 0 {
+			logger.Fatalf("HTTP timeout value must be a non-negative integer (got \"%d\")", params.HTTPTimeout)
+		}
+		// Set custom HTTP client timeout since `http.Get()` defaults to no timeout
+		logger.Debugf("Setting HTTP client timeout to %d seconds", params.HTTPTimeout)
+		http.DefaultClient = &http.Client{
+			Timeout: time.Duration(params.HTTPTimeout) * time.Second,
+		}
 
 		setupProductParam(&params)
 
@@ -263,11 +278,6 @@ func populateParams(params Params) Params {
 	}
 
 	if isNotShortRun {
-		// Reject negative HTTP timeout values as they disable the timeout
-		if params.HTTPTimeout < 0 {
-			logger.Fatalf("HTTP timeout value must be a non-negative integer (got \"%d\")", params.HTTPTimeout)
-		}
-
 		if params.DryRun {
 			logger.Info("[DRY-RUN] No changes will be made")
 		} else {

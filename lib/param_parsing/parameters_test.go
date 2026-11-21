@@ -2,18 +2,140 @@
 package param_parsing
 
 import (
+	"context"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gookit/color"
 	"github.com/pborman/getopt/v2"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
+
+func TestHTTPTimeoutDuringConstraintResolution(t *testing.T) {
+	tests := []struct {
+		name, env, flag string
+		want            time.Duration
+		toml            bool
+		terragrunt      bool
+	}{
+		{name: "default", want: 60 * time.Second},
+		{name: "toml", want: 3 * time.Second, toml: true},
+		{name: "environment", env: "2", want: 2 * time.Second, toml: true, terragrunt: true},
+		{name: "cli", env: "2", flag: "1", want: time.Second, toml: true},
+		{name: "explicit zero", env: "2", flag: "0", toml: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			oldArgs, oldClient := os.Args, http.DefaultClient
+			getopt.CommandLine = getopt.New()
+			t.Cleanup(func() {
+				os.Args, http.DefaultClient = oldArgs, oldClient
+				getopt.CommandLine = getopt.New()
+			})
+			t.Setenv("TF_HTTP_TIMEOUT", tt.env)
+			t.Setenv("TF_PRODUCT", "")
+			t.Setenv("TF_VERSION", "")
+
+			seenTimeout := make(chan time.Duration, 1)
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				seenTimeout <- http.DefaultClient.Timeout
+				fmt.Fprint(w, `{"versions":{"1.2.3":{}}}`)
+			}))
+			defer server.Close()
+
+			dir := t.TempDir()
+			if tt.toml {
+				writeTestFile(t, dir, ".tfswitch.toml", "http-timeout = 3\n")
+			}
+			if tt.terragrunt {
+				writeTestFile(t, dir, "terragrunt.hcl", "terraform_version_constraint = \">= 1.0\"\n")
+			} else {
+				writeTestFile(t, dir, "versions.tf", "terraform {\n  required_version = \">= 1.0\"\n}\n")
+			}
+			os.Args = []string{"cmd", "--chdir=" + dir, "--mirror=" + server.URL}
+			if tt.flag != "" {
+				os.Args = append(os.Args, "--http-timeout="+tt.flag)
+			}
+			params := initParams(Params{})
+			params.TomlDir = dir
+			params = populateParams(params)
+			if got := <-seenTimeout; got != tt.want {
+				t.Errorf("timeout during request = %s, want %s", got, tt.want)
+			}
+			if got := time.Duration(params.HTTPTimeout) * time.Second; got != tt.want {
+				t.Errorf("resolved timeout = %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestHTTPTimeoutStopsConstraintLookup(t *testing.T) {
+	if os.Getenv("TFSWITCH_TIMEOUT_HELPER") == "1" {
+		os.Args = []string{"cmd", "--chdir=" + os.Getenv("TFSWITCH_TEST_DIR"),
+			"--mirror=" + os.Getenv("TFSWITCH_TEST_MIRROR"), "--http-timeout=" + os.Getenv("TFSWITCH_TEST_TIMEOUT")}
+		params := initParams(Params{})
+		params.TomlDir = os.Getenv("TFSWITCH_TEST_DIR")
+		populateParams(params)
+		return
+	}
+
+	dir := t.TempDir()
+	writeTestFile(t, dir, "versions.tf", "terraform {\n  required_version = \">= 1.0\"\n}\n")
+	release := make(chan struct{})
+	requested := make(chan struct{}, 1)
+	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+		requested <- struct{}{}
+		select {
+		case <-release:
+		case <-r.Context().Done():
+		}
+	}))
+	defer server.Close()
+	defer close(release)
+
+	for _, tt := range []struct {
+		name, timeout, message string
+		request                bool
+	}{
+		{"timeout", "1", "Client.Timeout exceeded", true},
+		{"negative", "-1", "HTTP timeout value must be a non-negative integer", false},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			cmd := exec.CommandContext(ctx, os.Args[0], "-test.run=^TestHTTPTimeoutStopsConstraintLookup$")
+			cmd.Env = append(os.Environ(), "TFSWITCH_TIMEOUT_HELPER=1", "TFSWITCH_TEST_DIR="+dir,
+				"TFSWITCH_TEST_MIRROR="+server.URL, "TFSWITCH_TEST_TIMEOUT="+tt.timeout,
+				"TF_HTTP_TIMEOUT=10", "TF_PRODUCT=", "TF_VERSION=")
+			out, err := cmd.CombinedOutput()
+			if ctx.Err() != nil {
+				t.Fatalf("constraint lookup did not terminate: %v", ctx.Err())
+			}
+			if err == nil || !strings.Contains(string(out), tt.message) {
+				t.Fatalf("expected %q; err=%v, output=%s", tt.message, err, out)
+			}
+			select {
+			case <-requested:
+				if !tt.request {
+					t.Error("unexpected request before timeout validation")
+				}
+			default:
+				if tt.request {
+					t.Error("expected a mirror request")
+				}
+			}
+		})
+	}
+}
 
 var ansiCodesRegex = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
 
