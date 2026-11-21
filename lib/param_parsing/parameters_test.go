@@ -505,3 +505,65 @@ func TestNoAndForceColorFlagsOutput(t *testing.T) {
 		t.Logf("Success: %q", expectedOutput)
 	}
 }
+
+func checkExpectedHTTPTimeoutPrecedence(t *testing.T, chDir string, expected int64) {
+	getopt.CommandLine = getopt.New()
+	os.Args = []string{"cmd", "--chdir=" + chDir}
+	parameters := Params{}
+	parameters = initParams(parameters)
+	parameters.TomlDir = chDir
+	parameters = populateParams(parameters)
+	if parameters.HTTPTimeout != expected {
+		t.Errorf("HTTPTimeout Param was not as expected. Actual: %d, Expected: %d", parameters.HTTPTimeout, expected)
+	}
+}
+
+// TestGetParameters_check_http_timeout_precedence verifies the full HTTP
+// timeout precedence chain: CLI flag > environment variable > TOML > default.
+func TestGetParameters_check_http_timeout_precedence(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
+	chDir := "../../test-data/skip-integration-tests/test_precedence"
+
+	// Default value when no TOML, environment variable or CLI flag is set
+	checkExpectedHTTPTimeoutPrecedence(t, chDir, 60)
+
+	// TOML overrides default
+	writeTestFile(t, chDir, ".tfswitch.toml", "http-timeout = 90\n")
+	checkExpectedHTTPTimeoutPrecedence(t, chDir, 90)
+
+	// Environment variable overrides TOML
+	os.Setenv("TF_HTTP_TIMEOUT", "150")
+	checkExpectedHTTPTimeoutPrecedence(t, chDir, 150)
+
+	// CLI flag overrides environment variable and TOML
+	getopt.CommandLine = getopt.New()
+	os.Args = []string{"cmd", "--chdir=" + chDir, "--http-timeout=30"}
+	parameters := Params{}
+	parameters = initParams(parameters)
+	parameters.TomlDir = chDir
+	parameters = populateParams(parameters)
+	if expected := int64(30); parameters.HTTPTimeout != expected {
+		t.Errorf("HTTPTimeout Param was not as expected. Actual: %d, Expected: %d", parameters.HTTPTimeout, expected)
+	}
+
+	os.Unsetenv("TF_HTTP_TIMEOUT")
+}
+
+// TestGetParameters_http_timeout_zero_disables_timeout is a regression test for
+// the documented (but easy to overlook) behavior that `0` is accepted as a
+// valid HTTP timeout value, and disables the timeout entirely rather than
+// making requests fail instantly.
+func TestGetParameters_http_timeout_zero_disables_timeout(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
+	os.Args = []string{"cmd", "--http-timeout=0"}
+	parameters := GetParameters()
+	if expected := int64(0); parameters.HTTPTimeout != expected {
+		t.Errorf("HTTPTimeout Param was not as expected. Actual: %d, Expected: %d", parameters.HTTPTimeout, expected)
+	}
+}

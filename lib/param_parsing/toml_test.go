@@ -107,6 +107,18 @@ func TestGetParamsTOML_force_color(t *testing.T) {
 	}
 }
 
+func TestGetParamsTOML_http_timeout(t *testing.T) {
+	expected := int64(90)
+	params, err := prepare("../../test-data/integration-tests/test_tfswitchtoml")
+	if err != nil {
+		t.Fatalf("Got error: %v", err)
+	}
+	actual := params.HTTPTimeout
+	if actual != expected {
+		t.Errorf("%s not matching. Got %d, expected %d", "HTTPTimeout", actual, expected)
+	}
+}
+
 func TestGetParamsTOML_no_file(t *testing.T) {
 	params, err := prepare("../../test-data/skip-integration-tests/test_no_file")
 	if err != nil {
