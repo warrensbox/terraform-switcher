@@ -92,7 +92,7 @@ func RemoveDuplicateStrings(slice []string) []string {
 
 // isValidHTTPTimeoutValue : check if the given value is a valid HTTP timeout value
 func IsValidHTTPTimeoutValue(seconds int64) bool {
-	if seconds < 0 || seconds > math.MaxInt/int64(time.Second) {
+	if seconds < 0 || seconds > math.MaxInt64/int64(time.Second) {
 		return false
 	}
 	return true
