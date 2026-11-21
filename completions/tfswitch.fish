@@ -21,7 +21,7 @@ complete -c $COMMAND -s R -l show-required              -d "Show required (or ex
 complete -c $COMMAND -s r -l dry-run                    -d "Only show what tfswitch would do"
 complete -c $COMMAND -s S -l show-latest-stable         -d "Show latest implicit version"
 complete -c $COMMAND -s s -l latest-stable              -d "Latest implicit version based on a constraint"
-complete -c $COMMAND -s T -l http-timeout               -d "Set HTTP timeout for downloading binaries (in seconds)" -r -f
+complete -c $COMMAND -s T -l http-timeout               -d "Set HTTP client timeout in seconds" -r -f
 complete -c $COMMAND -s t -l product                    -d "Specify which product to use" -r -f -a "opentofu terraform"
 complete -c $COMMAND -s U -l show-latest                -d "Show latest stable version"
 complete -c $COMMAND -s u -l latest                     -d "Get latest stable version"

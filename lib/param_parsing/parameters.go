@@ -57,7 +57,7 @@ var paramMappings = []struct {
 	{param: "CustomBinaryPath", ptype: reflect.String, env: "TF_BINARY_PATH", toml: "bin", description: "Custom binary path"},
 	{param: "DefaultVersion", ptype: reflect.String, env: "TF_DEFAULT_VERSION", toml: "default-version", description: "Default version"},
 	{param: "ForceColor", ptype: reflect.Bool, env: "FORCE_COLOR", toml: "force-color", description: "Force color output if terminal supports it"},
-	{param: "HTTPTimeout", ptype: reflect.Int64, env: "TF_HTTP_TIMEOUT", toml: "http-timeout", description: "HTTP timeout in seconds for downloading binaries"},
+	{param: "HTTPTimeout", ptype: reflect.Int64, env: "TF_HTTP_TIMEOUT", toml: "http-timeout", description: "HTTP client timeout in seconds"},
 	{param: "InstallPath", ptype: reflect.String, env: "TF_INSTALL_PATH", toml: "install", description: "Custom install path"},
 	{param: "LogLevel", ptype: reflect.String, env: "TF_LOG_LEVEL", toml: "log-level", description: "Log level"},
 	{param: "NoColor", ptype: reflect.Bool, env: "NO_COLOR", toml: "no-color", description: "Disable color output"},
@@ -145,7 +145,7 @@ func populateParams(params Params) Params {
 	getopt.FlagLong(&params.VersionFlag, "version", 'v', "Display the version of tfswitch.", "BOOL")
 
 	// Int params
-	getopt.FlagLong(&params.HTTPTimeout, "http-timeout", 'T', "Set the HTTP timeout in seconds for downloading binaries. Default:", "SECONDS")
+	getopt.FlagLong(&params.HTTPTimeout, "http-timeout", 'T', "Set HTTP client timeout in seconds. Default:", "SECONDS")
 
 	// Parse the command line parameters to fetch stuff like chdir
 	getopt.Parse()

@@ -204,11 +204,12 @@ If there's no `terragrunt.hcl` file or it has no `terraform_version_constraint`
 defined, `tfswitch` will look for a `root.hcl` file in the same directory. If found, it
 will use the `terraform_version_constraint` defined there.
 
-### Customize HTTP timeout for downloading binaries
+### Customize HTTP client timeout
 
-`tfswitch` defaults to a 60 seconds timeout for downloading binaries.__
+`tfswitch` defaults to a 60 seconds timeout for HTTP requests.
+
 The `.tfswitch.toml` file can be configured with a `http-timeout` parameter to
-specify a custom timeout value in seconds for downloading binaries.
+specify a custom timeout value in seconds.
 
 ```toml
 http-timeout = 120
