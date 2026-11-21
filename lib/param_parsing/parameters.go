@@ -24,7 +24,7 @@ type Params struct {
 	DryRun                  bool
 	ForceColor              bool
 	HelpFlag                bool
-	HTTPTimeout             int
+	HTTPTimeout             int64
 	InstallPath             string
 	LatestFlag              bool
 	LatestPre               string
@@ -206,8 +206,8 @@ func populateParams(params Params) Params {
 		if cliHTTPTimeoutSet {
 			params.HTTPTimeout = cliHTTPTimeout
 		}
-		if params.HTTPTimeout < 0 {
-			logger.Fatalf("HTTP timeout value must be a non-negative integer (got \"%d\")", params.HTTPTimeout)
+		if !lib.IsValidHTTPTimeoutValue(params.HTTPTimeout) {
+			logger.Fatalf("HTTP timeout value must be a non-negative valid integer (got \"%d\")", params.HTTPTimeout)
 		}
 		// Set custom HTTP client timeout since `http.Get()` defaults to no timeout
 		logger.Debugf("Setting HTTP client timeout to %d seconds", params.HTTPTimeout)

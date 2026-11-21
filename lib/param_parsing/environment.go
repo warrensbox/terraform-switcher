@@ -5,6 +5,8 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+
+	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 func GetParamsFromEnvironment(params Params) Params {
@@ -51,18 +53,20 @@ func GetParamsFromEnvironment(params Params) Params {
 			// Convert string to int64 (base 10, 64-bit size)
 			parsedInt, err := strconv.ParseInt(envVarValue, 10, 64)
 			if err != nil {
-				logger.Warnf(
+				logger.Fatalf(
 					"Failed to parse environment variable %q value %q, skipping assignment",
 					env, envVarValue,
 				)
 				continue
 			}
-			if parsedInt < 0 {
-				logger.Warnf(
-					"Environment variable %q value %q must be a non-negative integer, skipping assignment",
-					env, envVarValue,
-				)
-				continue
+			if env == "TF_HTTP_TIMEOUT" {
+				if !lib.IsValidHTTPTimeoutValue(parsedInt) {
+					logger.Fatalf(
+						"Environment variable %q value %q must be a non-negative valid integer, skipping assignment",
+						env, envVarValue,
+					)
+					continue
+				}
 			}
 			paramKey.SetInt(parsedInt)
 		case reflect.String:
