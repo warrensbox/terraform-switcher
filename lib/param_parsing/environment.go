@@ -4,6 +4,9 @@ package param_parsing
 import (
 	"os"
 	"reflect"
+	"strconv"
+
+	"github.com/warrensbox/terraform-switcher/lib"
 )
 
 func GetParamsFromEnvironment(params Params) Params {
@@ -42,12 +45,29 @@ func GetParamsFromEnvironment(params Params) Params {
 		logger.Debugf("%s (%q) from environment variable %q: %q", description, toml, env, envVarValue)
 
 		switch ptype {
-		case reflect.String:
-			paramKey.SetString(envVarValue)
 		case reflect.Bool:
 			// Inherit `gookit/color` lib's behavior: whatever the value is, set it to true
 			// E.g. NO_COLOR: https://github.com/gookit/color/blob/master/color.go#L49
 			paramKey.SetBool(true)
+		case reflect.Int64:
+			// Convert string to int64 (base 10, 64-bit size)
+			parsedInt, err := strconv.ParseInt(envVarValue, 10, 64)
+			if err != nil {
+				logger.Fatalf(
+					"Failed to parse environment variable %q value %q, skipping assignment",
+					env, envVarValue,
+				)
+				continue
+			}
+			if env == "TF_HTTP_TIMEOUT" && !lib.IsValidHTTPTimeoutValue(parsedInt) {
+				logger.Fatalf(
+					"Environment variable %q value %q must be a non-negative valid integer, skipping assignment",
+					env, envVarValue,
+				)
+			}
+			paramKey.SetInt(parsedInt)
+		case reflect.String:
+			paramKey.SetString(envVarValue)
 		default:
 			logger.Errorf(
 				"Internal error: unhandled switch case for \"%T\" type of %q parameter (env var %q)",

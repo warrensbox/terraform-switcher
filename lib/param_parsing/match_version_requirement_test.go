@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/pborman/getopt"
+	"github.com/pborman/getopt/v2"
 )
 
 func TestMatchVersionRequirement_match(t *testing.T) {

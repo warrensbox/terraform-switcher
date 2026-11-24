@@ -2,16 +2,21 @@
 package param_parsing
 
 import (
+	"errors"
 	"fmt"
+	"net"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gookit/color"
-	"github.com/pborman/getopt"
+	"github.com/pborman/getopt/v2"
 	"github.com/warrensbox/terraform-switcher/lib"
 )
 
@@ -503,5 +508,150 @@ func TestNoAndForceColorFlagsOutput(t *testing.T) {
 		t.Errorf("Expected %q, got: %q", expectedOutput, out)
 	} else {
 		t.Logf("Success: %q", expectedOutput)
+	}
+}
+
+func checkExpectedHTTPTimeoutPrecedence(t *testing.T, chDir string, expected int64) {
+	getopt.CommandLine = getopt.New()
+	os.Args = []string{"cmd", "--chdir=" + chDir}
+	parameters := Params{}
+	parameters = initParams(parameters)
+	parameters.TomlDir = chDir
+	parameters = populateParams(parameters)
+	if parameters.HTTPTimeout != expected {
+		t.Errorf("HTTPTimeout Param was not as expected. Actual: %d, Expected: %d", parameters.HTTPTimeout, expected)
+	}
+}
+
+// TestGetParameters_check_http_timeout_precedence verifies the full HTTP
+// timeout precedence chain: CLI flag > environment variable > TOML > default.
+func TestGetParameters_check_http_timeout_precedence(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
+	chDir := "../../test-data/skip-integration-tests/test_precedence"
+
+	// Default value when no TOML, environment variable or CLI flag is set
+	checkExpectedHTTPTimeoutPrecedence(t, chDir, 60)
+
+	// TOML overrides default
+	writeTestFile(t, chDir, ".tfswitch.toml", "http-timeout = 90\n")
+	checkExpectedHTTPTimeoutPrecedence(t, chDir, 90)
+
+	// Environment variable overrides TOML
+	os.Setenv("TF_HTTP_TIMEOUT", "150")
+	checkExpectedHTTPTimeoutPrecedence(t, chDir, 150)
+
+	// CLI flag overrides environment variable and TOML
+	getopt.CommandLine = getopt.New()
+	os.Args = []string{"cmd", "--chdir=" + chDir, "--http-timeout=30"}
+	parameters := Params{}
+	parameters = initParams(parameters)
+	parameters.TomlDir = chDir
+	parameters = populateParams(parameters)
+	if expected := int64(30); parameters.HTTPTimeout != expected {
+		t.Errorf("HTTPTimeout Param was not as expected. Actual: %d, Expected: %d", parameters.HTTPTimeout, expected)
+	}
+
+	os.Unsetenv("TF_HTTP_TIMEOUT")
+}
+
+// TestGetParameters_http_timeout_zero_disables_timeout is a regression test for
+// the documented (but easy to overlook) behavior that `0` is accepted as a
+// valid HTTP timeout value, and disables the timeout entirely rather than
+// making requests fail instantly.
+func TestGetParameters_http_timeout_zero_disables_timeout(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+	})
+	os.Args = []string{"cmd", "--http-timeout=0"}
+	parameters := GetParameters()
+	if expected := int64(0); parameters.HTTPTimeout != expected {
+		t.Errorf("HTTPTimeout Param was not as expected. Actual: %d, Expected: %d", parameters.HTTPTimeout, expected)
+	}
+}
+
+// TestGetParameters_http_timeout_is_enforced_on_stalled_requests is an end-to-end
+// regression test proving that a configured HTTP timeout (here, via the CLI flag,
+// exactly as a user would set it) is actually wired into `http.DefaultClient` and
+// terminates a request to a server that never responds.
+func TestGetParameters_http_timeout_is_enforced_on_stalled_requests(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	originalDefaultClient := http.DefaultClient
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+		http.DefaultClient = originalDefaultClient
+	})
+
+	// A server that stalls indefinitely, simulating a hung/unresponsive remote endpoint.
+	stall := make(chan struct{})
+	server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {
+		<-stall
+	}))
+	t.Cleanup(server.Close)
+
+	// Configure the shortest meaningful HTTP timeout via the CLI flag.
+	getopt.CommandLine = getopt.New()
+	os.Args = []string{"cmd", "--http-timeout=1"}
+	parameters := GetParameters()
+	if expected := int64(1); parameters.HTTPTimeout != expected {
+		t.Fatalf("HTTPTimeout Param was not as expected. Actual: %d, Expected: %d", parameters.HTTPTimeout, expected)
+	}
+
+	start := time.Now()
+	_, err := http.DefaultClient.Get(server.URL) //nolint:noctx,bodyclose // request is expected to error out before a body exists
+	elapsed := time.Since(start)
+
+	// Unblock the handler unconditionally (before any assertion that could fail/return
+	// early) so `server.Close()` registered above doesn't hang waiting for it to finish.
+	close(stall)
+
+	if err == nil {
+		t.Fatal("Expected a timeout error for a stalled request, got none")
+	}
+
+	var netErr net.Error
+	if !errors.As(err, &netErr) || !netErr.Timeout() {
+		t.Errorf("Expected a timeout error, got: %v", err)
+	}
+
+	if elapsed >= 5*time.Second {
+		t.Errorf("Request took too long to time out: %v (expected close to the configured 1s timeout)", elapsed)
+	}
+}
+
+// TestGetParameters_http_timeout_does_not_abort_requests_within_the_limit complements
+// the above test: it proves a configured timeout does not prematurely abort requests
+// that complete well within it.
+func TestGetParameters_http_timeout_does_not_abort_requests_within_the_limit(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	originalDefaultClient := http.DefaultClient
+	t.Cleanup(func() {
+		getopt.CommandLine = getopt.New()
+		http.DefaultClient = originalDefaultClient
+	})
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	t.Cleanup(server.Close)
+
+	getopt.CommandLine = getopt.New()
+	os.Args = []string{"cmd", "--http-timeout=5"}
+	parameters := GetParameters()
+	if expected := int64(5); parameters.HTTPTimeout != expected {
+		t.Fatalf("HTTPTimeout Param was not as expected. Actual: %d, Expected: %d", parameters.HTTPTimeout, expected)
+	}
+
+	resp, err := http.DefaultClient.Get(server.URL) //nolint:noctx // exercising the configured client as-is
+	if err != nil {
+		t.Fatalf("Unexpected error for a fast-responding server: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Unexpected status code. Got: %d, expected: %d", resp.StatusCode, http.StatusOK)
 	}
 }

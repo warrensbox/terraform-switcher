@@ -102,6 +102,39 @@ func TestGetParamsFromEnvironment_log_level_from_env(t *testing.T) {
 	}
 }
 
+func TestGetParamsFromEnvironment_http_timeout_from_env(t *testing.T) {
+	logger = lib.InitLogger("DEBUG")
+	var params Params
+	expected := int64(120)
+	_ = os.Setenv("TF_HTTP_TIMEOUT", "120")
+	params = initParams(params)
+	params = GetParamsFromEnvironment(params)
+	_ = os.Unsetenv("TF_HTTP_TIMEOUT")
+	if params.HTTPTimeout != expected {
+		t.Errorf("Determined HTTP timeout is not matching. Got %d, expected %d", params.HTTPTimeout, expected)
+	}
+}
+
+func TestInvalidHTTPTimeoutEnvVarOutput(t *testing.T) {
+	envVarName := "TF_HTTP_TIMEOUT"
+	_ = os.Setenv(envVarName, "-1")
+
+	expectedOutput := "must be a non-negative valid integer"
+
+	goCommandArgs := []string{"run", "../../main.go", "--dry-run", "1.10.5"}
+
+	t.Logf("Testing %q env var with an invalid (negative) value", envVarName)
+
+	out, _ := exec.Command("go", goCommandArgs...).CombinedOutput() // nolint:errcheck // We want to test the output even if it fails
+	_ = os.Unsetenv(envVarName)
+
+	if !strings.Contains(string(out), expectedOutput) {
+		t.Errorf("Expected output to contain %q, got: %q", expectedOutput, out)
+	} else {
+		t.Logf("Success: %q", expectedOutput)
+	}
+}
+
 func TestNoColorEnvVar(t *testing.T) {
 	envVarName := "NO_COLOR"
 	_ = os.Setenv(envVarName, "true")

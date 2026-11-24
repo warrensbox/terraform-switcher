@@ -3,14 +3,16 @@ package lib
 
 import (
 	"fmt"
+	"math"
 	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
 	"slices"
 	"strings"
+	"time"
 
-	"github.com/pborman/getopt"
+	"github.com/pborman/getopt/v2"
 )
 
 // FileExistsAndIsNotDir checks if a file exists and is not a directory before we try using it to prevent further errors
@@ -23,6 +25,11 @@ func FileExistsAndIsNotDir(filename string) bool {
 }
 
 func UsageMessage() {
+	// Set the display width for getopt usage messages.
+	// Measure the same stream we print to (stderr), since stdout and stderr
+	// can be redirected independently and may not share a terminal.
+	// (getTerminalWidth never returns a value <= getopt.HelpColumn, so no extra clamping needed here)
+	getopt.DisplayWidth = getTerminalWidth(os.Stderr)
 	getopt.PrintUsage(os.Stderr)
 }
 
@@ -86,6 +93,15 @@ func RemoveDuplicateStrings(slice []string) []string {
 	return res
 }
 
+// isValidHTTPTimeoutValue : check if the given value is a valid HTTP timeout value
+func IsValidHTTPTimeoutValue(seconds int64) bool {
+	if seconds < 0 || seconds > math.MaxInt64/int64(time.Second) {
+		return false
+	}
+	return true
+}
+
+// IsValidRemoteURL : check if the given URL is a valid remote URL
 func IsValidRemoteURL(urlString string) error {
 	parsedURL, err := url.ParseRequestURI(urlString)
 	if err != nil {

@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.25.0
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/pborman/getopt v1.1.0
+	github.com/pborman/getopt/v2 v2.2.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.12.1
 	github.com/zclconf/go-cty v1.20.0

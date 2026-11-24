@@ -13,6 +13,8 @@ import (
 const tfSwitchTOMLFileName = ".tfswitch.toml"
 
 // getParamsTOML parses everything in the toml file, return required version and bin path
+//
+//nolint:gocyclo
 func getParamsTOML(params Params) (Params, error) {
 	tomlPath := filepath.Join(params.TomlDir, tfSwitchTOMLFileName)
 	if tomlFileExists(params) {
@@ -80,6 +82,14 @@ func getParamsTOML(params Params) (Params, error) {
 				switch ptype {
 				case reflect.Bool:
 					paramKey.SetBool(configKeyValue.(bool))
+				case reflect.Int64:
+					if toml == "http-timeout" && !lib.IsValidHTTPTimeoutValue(configKeyValue.(int64)) {
+						logger.Fatalf(
+							"TOML key %q value \"%v\" must be a non-negative valid integer, skipping assignment",
+							toml, configKeyValue,
+						)
+					}
+					paramKey.SetInt(configKeyValue.(int64))
 				case reflect.String:
 					paramKey.SetString(configKeyValue.(string))
 				default:

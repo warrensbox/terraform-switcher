@@ -206,3 +206,17 @@ tfswitch --match-version-requirement=1.10.5; echo $?
 20:41:52.372 WARNING No version requirement found to match against (version "1.10.5" is acceptable)
 0
 ```
+
+## Customize HTTP client timeout
+
+`tfswitch` defaults to a 60 seconds timeout for HTTP requests.
+
+You can customize the timeout by using the `--http-timeout` (`-T`) flag.
+
+```bash
+tfswitch --http-timeout 120
+```
+
+**NOTE**: Setting `--http-timeout` to `0` disables the timeout entirely
+(HTTP requests will wait indefinitely), it does not make requests fail
+instantly.

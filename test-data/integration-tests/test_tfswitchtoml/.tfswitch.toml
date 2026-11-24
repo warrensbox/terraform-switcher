@@ -2,6 +2,7 @@ arch = "amd64"
 bin = "$BIN_DIR_FROM_TOML/terraform_from_toml"
 default-version = "1.5.4"
 force-color = false
+http-timeout = 90
 install = "$INSTALL_DIR_FROM_TOML"
 log-level = "NOTICE"
 no-color = false
