@@ -4,7 +4,6 @@ package lib
 import (
 	"fmt"
 	"io"
-	"net/http"
 	"reflect"
 	"regexp"
 	"slices"
@@ -174,14 +173,14 @@ func getTFURLBody(mirrorURL string) (string, error) {
 		// if it does not have slash - append slash
 		mirrorURL = fmt.Sprintf("%s/", mirrorURL)
 	}
-	resp, errURL := http.Get(mirrorURL) // nolint:gosec // `mirrorURL' is expected to be variable
+	resp, errURL := httpGet(mirrorURL)
 	if errURL != nil {
 		logger.Fatalf("Error getting url: %v", errURL)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		logger.Fatalf("Error retrieving contents from url: %s", mirrorURL)
+		logger.Fatalf("Error retrieving contents from url: %v", statusError(mirrorURL, resp.StatusCode))
 	}
 
 	body, errBody := io.ReadAll(resp.Body)

@@ -22,6 +22,11 @@ var (
 //nolint:gocyclo
 func main() {
 	var err error
+	tokens, errAuth := lib.ResolveMirrorTokens(os.Getenv(lib.MirrorTokenEnvVar), parameters.Auth, "", parameters.MirrorURL, parameters.MirrorDownloadURL)
+	if errAuth != nil {
+		logger.Fatalf("Mirror authentication: %v", errAuth)
+	}
+	lib.SetMirrorAuth(tokens)
 	switch {
 	case parameters.VersionFlag:
 		fmt.Printf("Version: ")

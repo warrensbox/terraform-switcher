@@ -15,6 +15,7 @@ import (
 )
 
 type Params struct {
+	Auth                    bool
 	Arch                    string
 	ChDirPath               string
 	CustomBinaryPath        string
@@ -132,6 +133,7 @@ func populateParams(params Params) Params {
 	getopt.StringVarLong(&params.Product, "product", 't', fmt.Sprintf("Specify which product to use. Ex: `tfswitch --product opentofu` will install OpenTofu. Options: %s. Default: %s", strings.Join(productIds, ", "), lib.DefaultProductId))
 
 	// Bool params
+	getopt.BoolVarLong(&params.Auth, "auth", 'a', "Authenticate to the mirror (`--mirror`/`--mirror-download`) with the Bearer token found in Terraform's credentials file (~/.terraform.d/credentials.tfrc.json) for the mirror's host. The `TF_MIRROR_TOKEN` environment variable, if set, takes precedence")
 	getopt.BoolVarLong(&params.DryRun, "dry-run", 'r', "Only show what tfswitch would do. Don't download anything")
 	getopt.BoolVarLong(&params.ForceColor, "force-color", 'K', "Force color output if terminal supports it")
 	getopt.BoolVarLong(&params.HelpFlag, "help", 'h', "Display help message")
@@ -285,6 +287,7 @@ func populateParams(params Params) Params {
 
 func initParams(params Params) Params {
 	params.Arch = runtime.GOARCH
+	params.Auth = false
 	params.ChDirPath = lib.GetCurrentDirectory()
 	params.CustomBinaryPath = ""
 	params.DefaultVersion = lib.DefaultLatest
